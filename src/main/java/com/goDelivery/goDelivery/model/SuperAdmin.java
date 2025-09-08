@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -46,6 +47,9 @@ public class SuperAdmin {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDate updatedAt;
+
+    @OneToMany(mappedBy = "reviewedBy", fetch = FetchType.LAZY)
+    private List<RestaurantApplication> reviewedApplications;
 
 
     @PrePersist

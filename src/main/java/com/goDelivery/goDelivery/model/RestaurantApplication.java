@@ -47,4 +47,14 @@ public class RestaurantApplication {
     @Column(name = "approved_at", nullable = false)
     private LocalDate approvedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewed_by")
+    private SuperAdmin reviewedBy;
+
+    @OneToOne(mappedBy = "application", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Restaurant restaurant;
+
+    @OneToOne(mappedBy = "application", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private RestaurantUsers restaurantAdmin;
+
 }

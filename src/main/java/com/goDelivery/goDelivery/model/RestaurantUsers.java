@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class Users {
+public class RestaurantUsers {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id", nullable = false)
@@ -63,5 +64,16 @@ public class Users {
     protected void onUpdate() {
         updatedAt = LocalDate.now();
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "application_id")
+    private RestaurantApplication application;
+
+    @OneToMany(mappedBy = "restaurantUser", fetch = FetchType.LAZY)
+    private List<ReviewResponse>  reviewResponses;
 
 }

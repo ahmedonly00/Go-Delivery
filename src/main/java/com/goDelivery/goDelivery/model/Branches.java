@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -26,6 +27,7 @@ public class Branches {
 
     @Column(name = "address", nullable = false)
     private String address;
+
     @Column(name = "latitude", nullable = false)
     private Float latitude;
 
@@ -58,4 +60,12 @@ public class Branches {
     protected void onUpdate() {
         updatedAt = LocalDate.now();
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY)
+    private List<Order> orders;
+
 }
