@@ -45,7 +45,7 @@ public class BikerEarnings {
     // Many Earnings belong to One Biker
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "biker_id", nullable = false)
-    private Bikers biker;
+    private Bikers bikers;
 
     // Each Earning is from One Order
     @OneToOne(fetch = FetchType.LAZY)

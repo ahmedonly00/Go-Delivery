@@ -51,7 +51,6 @@ public class SuperAdmin {
     @OneToMany(mappedBy = "reviewedBy", fetch = FetchType.LAZY)
     private List<RestaurantApplication> reviewedApplications;
 
-
     @PrePersist
     protected void onCreate() {
         LocalDate now = LocalDate.now();

@@ -84,19 +84,19 @@ public class Bikers {
     private LocalDate lastActive;
 
     // One Biker can deliver many Orders
-    @OneToMany(mappedBy = "biker", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bikers", fetch = FetchType.LAZY)
     private List<Order> orders;
 
     // One Biker can receive many Reviews
-    @OneToMany(mappedBy = "biker", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bikers", fetch = FetchType.LAZY)
     private List<Review> reviews;
 
     // One Biker updates many Delivery Tracking records
-    @OneToMany(mappedBy = "biker", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bikers", fetch = FetchType.LAZY)
     private List<DeliveryTracking> trackingUpdates;
 
     // One Biker earns from many orders
-    @OneToMany(mappedBy = "biker", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bikers", fetch = FetchType.LAZY)
     private List<BikerEarnings> earnings;
 
 

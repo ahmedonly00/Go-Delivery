@@ -59,6 +59,10 @@ public class MenuItem {
     @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MenuItemVariant> variants;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private MenuCategory category;
+
     @OneToMany(mappedBy = "menuItem", fetch = FetchType.LAZY)
     private List<OrderItem> orderItems;
 

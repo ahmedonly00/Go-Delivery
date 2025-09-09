@@ -89,7 +89,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
-    private Branches branches;
+    private Branches branch;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "biker_id")

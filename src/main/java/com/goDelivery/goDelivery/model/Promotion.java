@@ -2,7 +2,6 @@ package com.goDelivery.goDelivery.model;
 
 import com.goDelivery.goDelivery.Enum.PromotionType;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

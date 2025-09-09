@@ -1,0 +1,60 @@
+package com.goDelivery.goDelivery.dtos.restaurant;
+
+import com.goDelivery.goDelivery.Enum.ApplicationStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class RestaurantApplicationResponse {
+    private Long applicationId;
+    private String businessName;
+    private String email;
+    private String location;
+    private ApplicationStatus applicationStatus;
+    private String rejectionReason;
+    private LocalDate appliedAt;
+    private LocalDate reviewedAt;
+    private LocalDate approvedAt;
+    
+    // Nested DTOs for related entities
+    private SimpleAdminDto reviewedBy;
+    private SimpleRestaurantDto restaurant;
+    private SimpleUserDto restaurantAdmin;
+    
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SimpleAdminDto {
+        private Long adminId;
+        private String fullName;
+        private String email;
+    }
+    
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SimpleRestaurantDto {
+        private Long restaurantId;
+        private String name;
+        private String status;
+    }
+    
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SimpleUserDto {
+        private Long userId;
+        private String fullName;
+        private String email;
+    }
+}

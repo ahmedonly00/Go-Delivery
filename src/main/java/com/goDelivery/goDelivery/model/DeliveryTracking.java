@@ -46,7 +46,7 @@ public class DeliveryTracking {
     // Many Tracking records updated by One Biker
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "biker_id", nullable = false)
-    private Bikers biker;
+    private Bikers bikers;
 
 
 }
