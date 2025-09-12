@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Application Status Update</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .status {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .approved {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .under-review {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>GoDelivery Restaurant Application</h1>
+    <h2>Status Update</h2>
+</div>
+
+<div class="content">
+    <p>Dear <span th:text="${restaurantName}">Restaurant Owner</span>,</p>
+
+    <p>We are writing to inform you about the status of your restaurant application.</p>
+
+    <div class="status"
+         th:classappend="${status == 'APPROVED'} ? 'approved' : (${status == 'REJECTED'} ? 'rejected' : 'under-review')">
+        Application Status: <span th:text="${status}">STATUS</span>
+    </div>
+
+    <div th:if="${reviewNote}">
+        <h3>Review Notes:</h3>
+        <p th:text="${reviewNote}">Review notes will appear here</p>
+    </div>
+
+    <div th:if="${rejectionReason}">
+        <h3>Rejection Reason:</h3>
+        <p th:text="${rejectionReason}">Rejection reason will appear here</p>
+    </div>
+
+    <div th:if="${status == 'APPROVED'}">
+        <p><strong>Congratulations!</strong> Your restaurant application has been approved. You can now start using the GoDelivery platform.</p>
+    </div>
+
+    <div th:if="${status == 'REJECTED'}">
+        <p>Unfortunately, your application has been rejected. Please review the feedback provided and feel free to reapply after addressing the concerns.</p>
+    </div>
+
+    <div th:if="${reviewedAt}">
+        <p><small>Reviewed on: <span th:text="${#temporals.format(reviewedAt, 'dd/MM/yyyy')}">Review Date</span></small></p>
+    </div>
+</div>
+
+<div class="footer">
+    <p>Thank you for your interest in GoDelivery!</p>
+    <p>If you have any questions, please contact our support team.</p>
+    <p><strong>GoDelivery Team</strong></p>
+</div>
+</body>
+</html>

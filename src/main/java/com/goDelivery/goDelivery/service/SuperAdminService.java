@@ -59,7 +59,7 @@ public class SuperAdminService {
         existingSuperAdmin.setFullNames(superAdmin.getFullNames());
         existingSuperAdmin.setEmail(superAdmin.getEmail());
         existingSuperAdmin.setRole(superAdmin.getRole());
-        existingSuperAdmin.setIsActive(superAdmin.getIsActive());
+        existingSuperAdmin.setActive(true);
         existingSuperAdmin.setUpdatedAt(LocalDate.now());
         return superAdminRepository.save(existingSuperAdmin);
     }

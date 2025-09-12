@@ -52,14 +52,40 @@ public class RestaurantApplicationController {
         return ResponseEntity.ok(applicationService.getAllApplications(status, pageable));
     }
 
+//    @PutMapping(value = "/{id}/review")
+//    public ResponseEntity<RestaurantApplicationResponse> reviewApplication(
+//            @PathVariable Long id,
+//            @Valid @RequestBody RestaurantApplicationReviewRequest request,
+//            @AuthenticationPrincipal UserDetails userDetails) {
+//
+//        String adminEmail = userDetails.getUsername();
+//        return ResponseEntity.ok(applicationService.reviewApplication(id, request, adminEmail));
+//    }
+
     @PutMapping(value = "/{id}/review")
     public ResponseEntity<RestaurantApplicationResponse> reviewApplication(
             @PathVariable Long id,
             @Valid @RequestBody RestaurantApplicationReviewRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
-                
-        String adminEmail = userDetails.getUsername();
-        return ResponseEntity.ok(applicationService.reviewApplication(id, request, adminEmail));
+
+        System.out.println("=== REVIEW APPLICATION ENDPOINT CALLED ===");
+        System.out.println("Path ID: " + id);
+        System.out.println("Request: " + request);
+        System.out.println("User: " + userDetails.getUsername());
+
+        try {
+            String adminEmail = userDetails.getUsername();
+
+            // The service should set reviewedAt, approvedAt, and reviewedById internally
+            RestaurantApplicationResponse response = applicationService.reviewApplication(id, request, adminEmail);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            System.err.println("Exception: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @GetMapping(value = "/status")

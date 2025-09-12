@@ -25,4 +25,14 @@ public class RestaurantApplicationReviewRequest {
     private LocalDate approvedAt;
     
     private Long reviewedById;
+
+
+    @Override
+    public String toString() {
+        return "RestaurantApplicationReviewRequest{" +
+                "applicationStatus=" + applicationStatus +
+                ", reviewNote='" + reviewNote + '\'' +
+                ", rejectionReason='" + rejectionReason + '\'' +
+                '}';
+    }
 }
