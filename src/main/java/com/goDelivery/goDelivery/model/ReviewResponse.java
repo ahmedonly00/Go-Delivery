@@ -37,6 +37,10 @@ public class ReviewResponse {
     @JoinColumn(name = "restaurant_user_id", nullable = false)
     private RestaurantUsers restaurantUser;
 
-
+    @PrePersist
+    protected void onCreate() {
+        LocalDate now = LocalDate.now();
+        createdAt = now;
+    }
 
 }

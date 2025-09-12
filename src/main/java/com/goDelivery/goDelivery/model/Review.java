@@ -73,5 +73,10 @@ public class Review {
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReviewResponse> responses;
 
+    @PrePersist
+    protected void onCreate() {
+        LocalDate now = LocalDate.now();
+        createdAt = now;
+    }
 
 }

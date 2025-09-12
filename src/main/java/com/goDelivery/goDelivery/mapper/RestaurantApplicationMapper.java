@@ -1,6 +1,8 @@
 package com.goDelivery.goDelivery.mapper;
 
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationRequest;
+import com.goDelivery.goDelivery.dtos.restaurant.CreateRestaurantApplicationRequest;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationReviewRequest;
+import com.goDelivery.goDelivery.Enum.ApplicationStatus;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationResponse;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationResponse.SimpleAdminDto;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationResponse.SimpleRestaurantDto;
@@ -33,9 +35,15 @@ public class RestaurantApplicationMapper {
                 .email(application.getEmail())
                 .location(application.getLocation())
                 .applicationStatus(application.getApplicationStatus())
-                .rejectionReason(application.getRejectionReason())
+                .reviewNote(application.getReviewNote())
+                .ownerName(application.getOwnerName())
+                .phoneNumber(application.getPhoneNumber())
+                .cuisineType(application.getCuisineType())
+                .yearsInBusiness(application.getYearsInBusiness())
+                .description(application.getDescription())
                 .appliedAt(application.getAppliedAt())
                 .reviewedAt(application.getReviewedAt())
+                .rejectionReason(application.getRejectionReason())
                 .approvedAt(application.getApprovedAt())
                 .reviewedBy(mapToSimpleAdminDto(application.getReviewedBy()))
                 .restaurant(mapToSimpleRestaurantDto(application.getRestaurant()))
@@ -48,7 +56,7 @@ public class RestaurantApplicationMapper {
      * @param request the request DTO
      * @return a new RestaurantApplication entity
      */
-    public RestaurantApplication toEntity(RestaurantApplicationRequest request) {
+    public RestaurantApplication toEntity(CreateRestaurantApplicationRequest request) {
         if (request == null) {
             return null;
         }
@@ -57,39 +65,39 @@ public class RestaurantApplicationMapper {
                 .businessName(request.getBusinessName())
                 .email(request.getEmail())
                 .location(request.getLocation())
-                .applicationStatus(request.getApplicationStatus())
-                .rejectionReason(request.getRejectionReason())
+                .ownerName(request.getOwnerName())
+                .phoneNumber(request.getPhoneNumber())
+                .cuisineType(request.getCuisineType())
+                .yearsInBusiness(request.getYearsInBusiness())
+                .description(request.getDescription())
                 .appliedAt(LocalDate.now())
+                .applicationStatus(ApplicationStatus.PENDING)
                 .build();
     }
 
     /**
-     * Updates an existing RestaurantApplication from a RestaurantApplicationRequest.
+     * Updates an existing RestaurantApplication entity from a RestaurantApplicationRequest DTO.
      *
      * @param application the entity to update
      * @param request    the request DTO with updated values
      * @return the updated entity
      */
-    public RestaurantApplication updateFromRequest(RestaurantApplication application, RestaurantApplicationRequest request) {
+    public RestaurantApplication updateFromRequest(RestaurantApplication application, RestaurantApplicationReviewRequest request) {
         if (application == null || request == null) {
             return application;
         }
 
-        if (request.getBusinessName() != null) {
-            application.setBusinessName(request.getBusinessName());
-        }
-        if (request.getEmail() != null) {
-            application.setEmail(request.getEmail());
-        }
-        if (request.getLocation() != null) {
-            application.setLocation(request.getLocation());
-        }
         if (request.getApplicationStatus() != null) {
             application.setApplicationStatus(request.getApplicationStatus());
         }
+        if (request.getReviewNote() != null) {
+            application.setReviewNote(request.getReviewNote());
+        }
+        
         if (request.getRejectionReason() != null) {
             application.setRejectionReason(request.getRejectionReason());
         }
+
         if (request.getReviewedAt() != null) {
             application.setReviewedAt(request.getReviewedAt());
         }

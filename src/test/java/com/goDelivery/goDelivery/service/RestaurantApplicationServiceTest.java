@@ -2,7 +2,8 @@ package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.ApplicationStatus;
 import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationRequest;
+import com.goDelivery.goDelivery.dtos.restaurant.CreateRestaurantApplicationRequest;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationReviewRequest;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationResponse;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.model.*;
@@ -51,16 +52,22 @@ class RestaurantApplicationServiceTest {
     @InjectMocks
     private RestaurantApplicationService applicationService;
 
-    private RestaurantApplicationRequest request;
+    private CreateRestaurantApplicationRequest request;
     private RestaurantApplication application;
     private SuperAdmin admin;
 
     @BeforeEach
     void setUp() {
-        request = new RestaurantApplicationRequest();
-        request.setBusinessName("Test Restaurant");
-        request.setEmail("test@example.com");
-        request.setLocation("Test Location");
+        request = CreateRestaurantApplicationRequest.builder()
+                .businessName("Test Restaurant")
+                .email("test@example.com")
+                .location("Test Location")
+                .ownerName("Test Owner")
+                .phoneNumber("1234567890")
+                .cuisineType("Italian")
+                .yearsInBusiness(5)
+                .description("Test Description")
+                .build();
 
         application = RestaurantApplication.builder()
                 .applicationId(1L)
@@ -124,9 +131,10 @@ class RestaurantApplicationServiceTest {
 
     @Test
     void reviewApplication_ShouldUpdateApplicationStatus() {
-        RestaurantApplicationRequest reviewRequest = new RestaurantApplicationRequest();
-        reviewRequest.setApplicationStatus(ApplicationStatus.APPROVED);
-        reviewRequest.setReviewedById(1L);
+        RestaurantApplicationReviewRequest reviewRequest = RestaurantApplicationReviewRequest.builder()
+                .applicationStatus(ApplicationStatus.APPROVED)
+                .reviewedById(1L)
+                .build();
         
         when(applicationRepository.findById(1L)).thenReturn(Optional.of(application));
         when(adminRepository.findById(1L)).thenReturn(Optional.of(admin));
@@ -134,7 +142,7 @@ class RestaurantApplicationServiceTest {
         when(restaurantRepository.save(any(Restaurant.class))).thenReturn(new Restaurant());
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
         
-        RestaurantApplicationResponse response = applicationService.reviewApplication(1L, reviewRequest);
+        RestaurantApplicationResponse response = applicationService.reviewApplication(1L, reviewRequest, "admin@example.com");
         
         assertNotNull(response);
         verify(applicationRepository, times(1)).save(any(RestaurantApplication.class));

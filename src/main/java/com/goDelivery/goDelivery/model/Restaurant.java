@@ -94,5 +94,18 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderAnalytics> orderAnalytics;
+    
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDate now = LocalDate.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDate.now();
+    }
 
 }

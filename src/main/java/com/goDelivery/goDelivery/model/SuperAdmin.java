@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -16,7 +19,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "super_admin")
-public class SuperAdmin {
+public class SuperAdmin implements CustomUserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -61,5 +64,51 @@ public class SuperAdmin {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDate.now();
+    }
+
+    // UserDetails methods
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.isActive;
+    }
+
+    @Override
+    public Long getId() {
+        return this.adminId;
+    }
+
+    @Override
+    public String getFullName() {
+        return this.fullNames;
     }
 }

@@ -8,15 +8,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
-public class RestaurantUsers {
+@Table(name = "restaurant_users")
+public class RestaurantUsers implements CustomUserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id", nullable = false)
@@ -75,5 +79,50 @@ public class RestaurantUsers {
 
     @OneToMany(mappedBy = "restaurantUser", fetch = FetchType.LAZY)
     private List<ReviewResponse>  reviewResponses;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    public String getPassword() {
+
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.isActive;
+    }
+
+    @Override
+    public Long getId() {
+        return this.userId;
+    }
+
+    @Override
+    public String getFullName() {
+        return this.fullNames;
+    }  
 
 }

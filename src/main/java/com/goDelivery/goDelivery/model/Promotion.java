@@ -73,5 +73,10 @@ public class Promotion {
     @OneToMany(mappedBy = "promotion", fetch = FetchType.LAZY)
     private List<Order> orders;
 
+    @PrePersist
+    protected void onCreate() {
+        LocalDate now = LocalDate.now();
+        createdAt = now;
+    }
 
 }

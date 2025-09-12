@@ -17,7 +17,13 @@ public class RestaurantApplicationResponse {
     private String businessName;
     private String email;
     private String location;
+    private String ownerName;
+    private String phoneNumber;
+    private String cuisineType;
+    private Integer yearsInBusiness;
+    private String description;
     private ApplicationStatus applicationStatus;
+    private String reviewNote;
     private String rejectionReason;
     private LocalDate appliedAt;
     private LocalDate reviewedAt;

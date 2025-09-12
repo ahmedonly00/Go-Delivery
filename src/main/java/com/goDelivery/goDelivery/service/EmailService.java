@@ -49,4 +49,34 @@ public class EmailService {
             throw new RuntimeException("Failed to send welcome email", e);
         }
     }
+    
+    @Async
+    public void sendApplicationStatusEmail(String to, String subject, String businessName, String status, String message) {
+        try {
+            MimeMessage email = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(email, true, "UTF-8");
+            
+            // Set email properties
+            helper.setTo(to);
+            helper.setSubject(subject);
+            
+            // Create the Thymeleaf context and add variables
+            Context context = new Context();
+            context.setVariable("businessName", businessName);
+            context.setVariable("status", status);
+            context.setVariable("message", message);
+            
+            // Process the HTML template
+            String htmlContent = templateEngine.process("email/application-status", context);
+            
+            // Set the HTML content
+            helper.setText(htmlContent, true);
+            
+            // Send the email
+            mailSender.send(email);
+            
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send application status email", e);
+        }
+    }
 }

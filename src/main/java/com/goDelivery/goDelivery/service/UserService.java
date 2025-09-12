@@ -14,9 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Optional;
 
-/**
- * Service for user-related operations.
- */
+
 @Service
 public class UserService {
 

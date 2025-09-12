@@ -8,6 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface RestaurantUsersRepository extends JpaRepository<RestaurantUsers, Long> {
-    // Additional custom query methods can be added here if needed
     Optional<RestaurantUsers> findByEmail(String email);
+    Optional<RestaurantUsers> findByFullNames(String fullNames);
+    Optional<RestaurantUsers> findByUserId(Long userId);
 }

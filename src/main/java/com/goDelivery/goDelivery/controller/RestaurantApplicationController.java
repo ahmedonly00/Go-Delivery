@@ -1,6 +1,7 @@
 package com.goDelivery.goDelivery.controller;
 
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationRequest;
+import com.goDelivery.goDelivery.dtos.restaurant.CreateRestaurantApplicationRequest;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationReviewRequest;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationResponse;
 import com.goDelivery.goDelivery.service.RestaurantApplicationService;
 import jakarta.validation.Valid;
@@ -9,7 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -22,9 +24,9 @@ public class RestaurantApplicationController {
 
     private final RestaurantApplicationService applicationService;
 
-    @PostMapping
+    @PostMapping(value = "/submit")
     public ResponseEntity<RestaurantApplicationResponse> submitApplication(
-            @Valid @RequestBody RestaurantApplicationRequest request) {
+            @Valid @RequestBody CreateRestaurantApplicationRequest request) {
         
         RestaurantApplicationResponse response = applicationService.submitApplication(request);
         
@@ -37,12 +39,12 @@ public class RestaurantApplicationController {
         return ResponseEntity.created(location).body(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<RestaurantApplicationResponse> getApplication(@PathVariable Long id) {
         return ResponseEntity.ok(applicationService.getApplicationById(id));
     }
 
-    @GetMapping
+    @GetMapping(value = "/all")
     public ResponseEntity<Page<RestaurantApplicationResponse>> getAllApplications(
             @RequestParam(required = false) String status,
             @PageableDefault(size = 20) Pageable pageable) {
@@ -50,16 +52,17 @@ public class RestaurantApplicationController {
         return ResponseEntity.ok(applicationService.getAllApplications(status, pageable));
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    @PutMapping("/{id}/review")
+    @PutMapping(value = "/{id}/review")
     public ResponseEntity<RestaurantApplicationResponse> reviewApplication(
             @PathVariable Long id,
-            @Valid @RequestBody RestaurantApplicationRequest request) {
+            @Valid @RequestBody RestaurantApplicationReviewRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
                 
-        return ResponseEntity.ok(applicationService.reviewApplication(id, request));
+        String adminEmail = userDetails.getUsername();
+        return ResponseEntity.ok(applicationService.reviewApplication(id, request, adminEmail));
     }
 
-    @GetMapping("/status")
+    @GetMapping(value = "/status")
     public ResponseEntity<RestaurantApplicationResponse> checkStatus(
             @RequestParam String email) {
                 
