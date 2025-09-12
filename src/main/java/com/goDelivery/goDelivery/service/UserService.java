@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -23,6 +22,7 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
 
     public Page<RestaurantUsers> getAllUsers(int page, int size, String sortBy, String direction) {
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name())
@@ -42,7 +42,6 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
 
-    @Transactional
     public String registerUser(RestaurantUsers user) {
         try {
             // Set additional user properties
@@ -59,7 +58,6 @@ public class UserService {
         }
     }
 
-    @Transactional
     public RestaurantUsers updateUser(Long id, RestaurantUsers userDetails) {
         return restaurantUsersRepository.findById(id)
                 .map(user -> {
@@ -74,7 +72,6 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
-    @Transactional
     public void deleteUser(Long id) {
         if (restaurantUsersRepository.existsById(id)) {
             restaurantUsersRepository.deleteById(id);
@@ -83,7 +80,6 @@ public class UserService {
         }
     }
 
-    @Transactional
     public RestaurantUsers createUser(RestaurantUsers user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setCreatedAt(LocalDate.now());

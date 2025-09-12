@@ -41,7 +41,7 @@ public class Branches {
     private String operatingHours;
 
     @Column(name = "is_active", nullable = false)
-    private LocalDate isActive;
+    private boolean isActive;
 
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;

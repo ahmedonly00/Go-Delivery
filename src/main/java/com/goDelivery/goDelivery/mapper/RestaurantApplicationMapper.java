@@ -12,18 +12,10 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
-/**
- * Mapper class for converting between RestaurantApplication entities and DTOs.
- */
+
 @Component
 public class RestaurantApplicationMapper {
 
-    /**
-     * Converts a RestaurantApplication entity to a RestaurantApplicationResponse DTO.
-     *
-     * @param application the entity to convert
-     * @return the converted DTO
-     */
     public RestaurantApplicationResponse toResponse(RestaurantApplication application) {
         if (application == null) {
             return null;
@@ -50,12 +42,6 @@ public class RestaurantApplicationMapper {
                 .build();
     }
 
-    /**
-     * Creates a new RestaurantApplication from a RestaurantApplicationRequest.
-     *
-     * @param request the request DTO
-     * @return a new RestaurantApplication entity
-     */
     public RestaurantApplication toEntity(CreateRestaurantApplicationRequest request) {
         if (request == null) {
             return null;
@@ -75,13 +61,6 @@ public class RestaurantApplicationMapper {
                 .build();
     }
 
-    /**
-     * Updates an existing RestaurantApplication entity from a RestaurantApplicationRequest DTO.
-     *
-     * @param application the entity to update
-     * @param request    the request DTO with updated values
-     * @return the updated entity
-     */
     public RestaurantApplication updateFromRequest(RestaurantApplication application, RestaurantApplicationReviewRequest request) {
         if (application == null || request == null) {
             return application;
