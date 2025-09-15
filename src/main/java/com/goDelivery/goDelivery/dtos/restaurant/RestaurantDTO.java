@@ -18,7 +18,8 @@ public class RestaurantDTO {
     private String cuisineType;
     private String email;
     private String phoneNumber;
-    private String logo;
+    private String logoUrl;
+    private String bannerUrl;
     private Float rating;
     private Integer totalReviews;
     private Integer totalOrders;
@@ -26,5 +27,5 @@ public class RestaurantDTO {
     private Float deliveryFee;
     private Float minimumOrderAmount;
     private boolean isActive;
-    private List<BranchDTO> branches;
+    private List<BranchesDTO> branches;
 }

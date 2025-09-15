@@ -38,7 +38,7 @@ public class SecurityConfig {
                     ).permitAll()
                     .requestMatchers(
                         "/api/restaurant-applications/submit",
-                        "/api/v1/super-admin/register"
+                        "/api/super-admin/register"
                     ).permitAll()
                     .requestMatchers(
                         "/api/restaurant-applications/all",

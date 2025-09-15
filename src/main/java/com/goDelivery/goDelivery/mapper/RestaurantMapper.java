@@ -35,7 +35,8 @@ public class RestaurantMapper {
                 .cuisineType(restaurant.getCuisineType())
                 .email(restaurant.getEmail())
                 .phoneNumber(restaurant.getPhoneNumber())
-                .logo(restaurant.getLogo())
+                .logoUrl(restaurant.getLogoUrl())
+                .bannerUrl(restaurant.getBannerUrl())
                 .rating(restaurant.getRating())
                 .totalReviews(restaurant.getTotalReviews())
                 .totalOrders(restaurant.getTotalOrders())
@@ -60,7 +61,8 @@ public class RestaurantMapper {
                 .cuisineType(restaurantDTO.getCuisineType())
                 .email(restaurantDTO.getEmail())
                 .phoneNumber(restaurantDTO.getPhoneNumber())
-                .logo(restaurantDTO.getLogo())
+                .logoUrl(restaurantDTO.getLogoUrl())
+                .bannerUrl(restaurantDTO.getBannerUrl())
                 .rating(restaurantDTO.getRating())
                 .totalReviews(restaurantDTO.getTotalReviews() != null ? restaurantDTO.getTotalReviews() : 0)
                 .totalOrders(restaurantDTO.getTotalOrders() != null ? restaurantDTO.getTotalOrders() : 0)
@@ -73,6 +75,7 @@ public class RestaurantMapper {
                 .build();
     }
 
+    //Branches
     public List<BranchesDTO> mapBranchesToDTOs(List<Branches> branches) {
         if (branches == null) {
             return null;

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BranchDTO {
+public class BranchesDTO {
     private Long branchId;
     private String branchName;
     private String address;

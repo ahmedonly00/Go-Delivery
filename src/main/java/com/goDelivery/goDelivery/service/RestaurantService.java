@@ -24,6 +24,7 @@ public class RestaurantService {
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
         return restaurantMapper.toRestaurantDTO(savedRestaurant);
     }
+    
 
     public RestaurantDTO getRestaurantById(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
@@ -43,7 +44,8 @@ public class RestaurantService {
         existingRestaurant.setCuisineType(restaurantDTO.getCuisineType());
         existingRestaurant.setEmail(restaurantDTO.getEmail());
         existingRestaurant.setPhoneNumber(restaurantDTO.getPhoneNumber());
-        existingRestaurant.setLogo(restaurantDTO.getLogo());
+        existingRestaurant.setLogoUrl(restaurantDTO.getLogoUrl());
+        existingRestaurant.setBannerUrl(restaurantDTO.getBannerUrl());
         existingRestaurant.setAveragePreparationTime(restaurantDTO.getAveragePreparationTime());
         existingRestaurant.setDeliveryFee(restaurantDTO.getDeliveryFee());
         existingRestaurant.setMinimumOrderAmount(restaurantDTO.getMinimumOrderAmount());
@@ -59,4 +61,19 @@ public class RestaurantService {
         return restaurantMapper.toRestaurantDTO(restaurants);
     }
 
+    public Restaurant updateRestaurantLogo(Long restaurantId, String logoUrl) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        restaurant.setLogoUrl(logoUrl);
+        restaurant.setUpdatedAt(java.time.LocalDate.now());
+        return restaurantRepository.save(restaurant);
+    }
+
+    public Restaurant updateRestaurantBanner(Long restaurantId, String bannerUrl) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        restaurant.setBannerUrl(bannerUrl);
+        restaurant.setUpdatedAt(java.time.LocalDate.now());
+        return restaurantRepository.save(restaurant);
+    }
 }

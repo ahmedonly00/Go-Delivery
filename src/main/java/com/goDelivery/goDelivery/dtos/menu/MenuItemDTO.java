@@ -7,10 +7,15 @@ import com.goDelivery.goDelivery.model.MenuItemVariant;
 import com.goDelivery.goDelivery.model.OrderItem;
 import com.goDelivery.goDelivery.model.Restaurant;
 
+import lombok.*;
 import lombok.Data;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MenuItemDTO {
+    
     private Long itemId;
 
     private String itemName;

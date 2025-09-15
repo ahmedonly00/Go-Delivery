@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/super-admin")
+@RequestMapping("/api/super-admin")
 @RequiredArgsConstructor
 public class SuperAdminController {
 

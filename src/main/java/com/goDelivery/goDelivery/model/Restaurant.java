@@ -37,8 +37,11 @@ public class Restaurant {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "logo", nullable = false)
-    private String logo;
+    @Column(name = "logo_url")
+    private String logoUrl;
+
+    @Column(name = "banner_url")
+    private String bannerUrl;
 
     @Column(name = "rating", nullable = false)
     private Float rating;

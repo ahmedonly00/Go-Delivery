@@ -1,5 +1,6 @@
 package com.goDelivery.goDelivery.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -56,15 +58,18 @@ public class MenuItem {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MenuItemVariant> variants;
+    @Builder.Default
+    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<MenuItemVariant> variants = new ArrayList<>();
 
+    @JsonBackReference("menu-category-items")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private MenuCategory category;
 
+    @Builder.Default
     @OneToMany(mappedBy = "menuItem", fetch = FetchType.LAZY)
-    private List<OrderItem> orderItems;
+    private List<OrderItem> orderItems = new ArrayList<>();
 
 
 

@@ -3,6 +3,8 @@ package com.goDelivery.goDelivery.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
@@ -11,6 +13,7 @@ import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.repository.BranchesRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
 
+@Service
 public class BranchesService {
 
     private final BranchesRepository branchesRepository;

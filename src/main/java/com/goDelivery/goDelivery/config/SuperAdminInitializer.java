@@ -20,7 +20,7 @@ public class SuperAdminInitializer {
     private final SuperAdminRepository superAdminRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${app.superadmin.email:ahmedndayizeye@gmail.com}")
+    @Value("${app.superadmin.email:ndayizeye.ahmedy@gmail.com}")
     private String defaultAdminEmail;
 
     @Value("${app.superadmin.password:Admin@123}")
