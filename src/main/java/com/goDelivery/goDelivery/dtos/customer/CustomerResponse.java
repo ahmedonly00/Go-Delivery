@@ -1,6 +1,8 @@
 package com.goDelivery.goDelivery.dtos.customer;
 
 import com.goDelivery.goDelivery.Enum.Gender;
+import com.goDelivery.goDelivery.Enum.Roles;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +21,7 @@ public class CustomerResponse {
     private String phoneNumber;
     private LocalDate dateOfBirth;
     private Gender gender;
-    private String profileImage;
+    private Roles roles;
     private boolean emailVerified;
     private boolean phoneVerified;
     private boolean isActive;

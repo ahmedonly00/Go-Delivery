@@ -1,6 +1,8 @@
 package com.goDelivery.goDelivery.dtos.customer;
 
 import com.goDelivery.goDelivery.Enum.Gender;
+import com.goDelivery.goDelivery.Enum.Roles;
+
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -28,5 +30,6 @@ public class CustomerRegistrationRequest {
     @NotNull(message = "Gender is required")
     private Gender gender;
     
-    private String profileImage;
-}
+    @NotNull(message = "Roles is required")
+    private Roles roles;
+}       

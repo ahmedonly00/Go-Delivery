@@ -23,6 +23,4 @@ public class CustomerUpdateRequest {
     
     private LocalDate dateOfBirth;
     private Gender gender;
-    private String profileImage;
-    private String currentPassword;
 }

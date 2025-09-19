@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,28 +46,28 @@ public class RestaurantUsers implements CustomUserDetails {
     @Column(name = "permissions", nullable = false)
     private String permissions;
 
-    @Column(name = "is_active", nullable = false)
+    @Column(name = "is_active")
     private boolean isActive;
 
     @Column(name = "last_login", nullable = true)
     private LocalDate lastLogin;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        LocalDate now = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
         createdAt = now;
         updatedAt = now;
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDate.now();
+        updatedAt = LocalDateTime.now();
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

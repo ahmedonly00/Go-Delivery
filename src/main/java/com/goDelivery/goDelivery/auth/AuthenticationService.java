@@ -66,4 +66,5 @@ public class AuthenticationService {
                         .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email))
                 );
     }
+
 }

@@ -2,7 +2,6 @@ package com.goDelivery.goDelivery.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,16 +15,15 @@ import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
 import com.goDelivery.goDelivery.service.MenuCategoryService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/menu-category")
+@RequiredArgsConstructor
 public class MenuCategoryController {
 
-    @Autowired
-    private MenuCategoryService menuCategoryService;
+    private final MenuCategoryService menuCategoryService;
 
-    @Autowired
-    private MenuCategoryDTO menuCategoryDTO;
     
     @PostMapping("/restaurants/{restaurantId}/menu-categories")
     public ResponseEntity<MenuCategoryDTO> createMenuCategory(@PathVariable Long restaurantId, @RequestBody MenuCategoryDTO menuCategoryDTO){

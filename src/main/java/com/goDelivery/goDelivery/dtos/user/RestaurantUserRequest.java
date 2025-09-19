@@ -29,8 +29,6 @@ public class RestaurantUserRequest {
     
     @NotNull(message = "Restaurant ID is required")
     private Long restaurantId;
-    
-    private Long applicationId;  // Optional, for linking to application
-    
+        
     private boolean isActive = true;
 }

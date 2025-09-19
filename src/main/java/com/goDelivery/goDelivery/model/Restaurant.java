@@ -43,31 +43,31 @@ public class Restaurant {
     @Column(name = "banner_url")
     private String bannerUrl;
 
-    @Column(name = "rating", nullable = false)
+    @Column(name = "rating")
     private Float rating;
 
-    @Column(name = "total_reviews", nullable = false)
+    @Column(name = "total_reviews")
     private Integer totalReviews;
 
-    @Column(name = "total_orders", nullable = false)
+    @Column(name = "total_orders")
     private Integer totalOrders;
 
-    @Column(name = "average_preparation_time", nullable = false)
+    @Column(name = "average_preparation_time")
     private Integer averagePreparationTime;
 
-    @Column(name = "delivery_fee", nullable = false)
+    @Column(name = "delivery_fee")
     private Float deliveryFee;
 
-    @Column(name = "minimum_order_amount", nullable = false)
+    @Column(name = "minimum_order_amount")
     private Float minimumOrderAmount;
 
-    @Column(name = "is_active", nullable = false)
+    @Column(name = "is_active")
     private boolean isActive;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private LocalDate createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private LocalDate updatedAt;
 
     @OneToOne(fetch = FetchType.LAZY)

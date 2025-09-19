@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,5 +25,4 @@ public class RestaurantDTO {
     private Float deliveryFee;
     private Float minimumOrderAmount;
     private boolean isActive;
-    private List<BranchesDTO> branches;
 }

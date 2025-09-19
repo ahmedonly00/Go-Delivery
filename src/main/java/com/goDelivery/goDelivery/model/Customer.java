@@ -1,6 +1,8 @@
 package com.goDelivery.goDelivery.model;
 
 import com.goDelivery.goDelivery.Enum.Gender;
+import com.goDelivery.goDelivery.Enum.Roles;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,29 +27,30 @@ public class Customer {
     @Column(name = "full_names", nullable = false)
     private String fullNames;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     private String email;
 
     @Column(name = "password",nullable = false)
     private String password;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "date_of_birth", nullable = false)
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     @Column(name = "gender", nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "profile_image", nullable = false)
-    private String profileImage;
+    @Column(name = "roles", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Roles roles;
 
-    @Column(name = "email_verified", nullable = false)
+    @Column(name = "email_verified", nullable = true)
     private boolean emailVerified;
 
-    @Column(name = "phone_verified", nullable = false)
+    @Column(name = "phone_verified", nullable = true)
     private boolean phoneVerified;
 
     @Column(name = "is_active", nullable = false)

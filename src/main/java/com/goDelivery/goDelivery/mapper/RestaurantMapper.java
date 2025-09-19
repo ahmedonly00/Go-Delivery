@@ -23,6 +23,7 @@ public class RestaurantMapper {
                 .collect(Collectors.toList());
     }
     
+    //Convert Restaurant to RestaurantDTO
     public RestaurantDTO toRestaurantDTO(Restaurant restaurant) {
         if (restaurant == null) {
             return null;
@@ -44,11 +45,10 @@ public class RestaurantMapper {
                 .deliveryFee(restaurant.getDeliveryFee())
                 .minimumOrderAmount(restaurant.getMinimumOrderAmount())
                 .isActive(restaurant.isActive())
-                .branches(mapBranchesToDTOs(restaurant.getBranches()))
                 .build();
     }
 
-
+    //Convert RestaurantDTO to Restaurant
     public Restaurant toRestaurant(RestaurantDTO restaurantDTO) {
         if (restaurantDTO == null) {
             return null;
@@ -85,6 +85,7 @@ public class RestaurantMapper {
                 .collect(Collectors.toList());
     }
 
+    //Convert Branches to BranchesDTO
     public BranchesDTO toBranchDTO(Branches branch) {
         if (branch == null) {
             return null;
@@ -105,6 +106,7 @@ public class RestaurantMapper {
                 .build();
     }
 
+    //Convert BranchesDTO to Branches
     public Branches toBranch(BranchesDTO branchDTO) {
         if (branchDTO == null) {
             return null;

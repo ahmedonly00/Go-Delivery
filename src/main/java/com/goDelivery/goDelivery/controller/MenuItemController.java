@@ -2,7 +2,6 @@ package com.goDelivery.goDelivery.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,37 +15,37 @@ import org.springframework.web.bind.annotation.RestController;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemDTO;
 import com.goDelivery.goDelivery.service.MenuItemService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/menu-item")
+@RequiredArgsConstructor
 public class MenuItemController {
 
-    @Autowired
-    private MenuItemService menuItemService;
+    private final MenuItemService menuItemService;
 
-    @Autowired
-    private MenuItemDTO menuItemDTO;
-
-    @PostMapping("/restaurants/{restaurantId}/menu-items")
+    
+    @PostMapping("/createMenuItem/{restaurantId}")
     public ResponseEntity<MenuItemDTO> createMenuItem(@PathVariable Long restaurantId, @RequestBody MenuItemDTO menuItemDTO){
         return ResponseEntity.ok(menuItemService.createMenuItem(menuItemDTO));
     }
     
-    @GetMapping("/restaurants/{restaurantId}/menu-items")
+    @GetMapping("/getAllMenuItems/{restaurantId}")
     public ResponseEntity<List<MenuItemDTO>> getAllMenuItems(@PathVariable Long restaurantId){
         return ResponseEntity.ok(menuItemService.getAllMenuItems());
     }
     
-    @GetMapping("/menu-items/{itemId}")
+    @GetMapping("/getMenuItemById/{itemId}")
     public ResponseEntity<MenuItemDTO> getMenuItemById(@PathVariable Long itemId){
         return ResponseEntity.ok(menuItemService.getMenuItemById(itemId));
     }
     
-    @PutMapping("/menu-items/{itemId}")
+    @PutMapping("/updateMenuItem/{itemId}")
     public ResponseEntity<MenuItemDTO> updateMenuItem(@PathVariable Long itemId, @RequestBody MenuItemDTO menuItemDTO){
         return ResponseEntity.ok(menuItemService.updateMenuItem(itemId, menuItemDTO));
     }
     
-    @DeleteMapping("/menu-items/{itemId}")
+    @DeleteMapping("/deleteMenuItem/{itemId}")
     public ResponseEntity<Void> deleteMenuItem(@PathVariable Long itemId){
         menuItemService.deleteMenuItem(itemId);
         return ResponseEntity.noContent().build();

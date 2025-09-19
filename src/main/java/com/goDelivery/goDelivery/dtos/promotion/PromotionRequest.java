@@ -2,11 +2,14 @@ package com.goDelivery.goDelivery.dtos.promotion;
 
 import com.goDelivery.goDelivery.Enum.PromotionType;
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PromotionRequest {
     @NotBlank(message = "Title is required")
     private String title;

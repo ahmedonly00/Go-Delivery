@@ -1,34 +1,38 @@
 package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantSearchRequest;
 import com.goDelivery.goDelivery.service.RestaurantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/restaurant-admin")
+@RequestMapping("/api/restaurants")
 @RequiredArgsConstructor
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
 
-    @PostMapping("/restaurants")
+    @PostMapping("/registerRestaurant")
     public ResponseEntity<RestaurantDTO> registerRestaurant(
             @Valid @RequestBody RestaurantDTO restaurantDTO) {
         RestaurantDTO createdRestaurant = restaurantService.registerRestaurant(restaurantDTO);
         return new ResponseEntity<>(createdRestaurant, HttpStatus.CREATED);
     }
 
-    @GetMapping("/restaurants/{restaurantId}")
+    @GetMapping("/getRestaurantById/{restaurantId}")
     public ResponseEntity<RestaurantDTO> getRestaurantById(@PathVariable Long restaurantId) {
         RestaurantDTO restaurant = restaurantService.getRestaurantById(restaurantId);
         return ResponseEntity.ok(restaurant);
     }
 
-    @PutMapping("/restaurants/{restaurantId}")
+    @PutMapping("/updateRestaurant/{restaurantId}")
     public ResponseEntity<RestaurantDTO> updateRestaurant(
             @PathVariable Long restaurantId,
             @Valid @RequestBody RestaurantDTO restaurantDTO) {
@@ -36,4 +40,28 @@ public class RestaurantController {
         return ResponseEntity.ok(updatedRestaurant);
     }
 
+    @GetMapping("/getRestaurantsByLocation/{location}")
+    public ResponseEntity<List<RestaurantDTO>> getRestaurantsByLocation(@PathVariable String location) {
+        List<RestaurantDTO> restaurants = restaurantService.getRestaurantsByLocation(location);
+        return ResponseEntity.ok(restaurants);
+    }
+
+    @GetMapping("/getRestaurantsByCuisineType/{cuisineType}")
+    public ResponseEntity<List<RestaurantDTO>> getRestaurantsByCuisineType(@PathVariable String cuisineType) {
+        List<RestaurantDTO> restaurants = restaurantService.getRestaurantsByCuisineType(cuisineType);
+        return ResponseEntity.ok(restaurants);
+    }
+
+    @GetMapping("/searchRestaurants")
+    public ResponseEntity<List<RestaurantDTO>> searchRestaurants(@Valid @RequestBody RestaurantSearchRequest searchRequest) {
+        List<RestaurantDTO> restaurants = restaurantService.searchRestaurants(searchRequest);
+        return ResponseEntity.ok(restaurants);
+    }
+    
+    @GetMapping("/getAllActiveRestaurants")
+    public ResponseEntity<List<RestaurantDTO>> getAllActiveRestaurants() {
+        List<RestaurantDTO> restaurants = restaurantService.getAllActiveRestaurants();
+        return ResponseEntity.ok(restaurants);
+    }
+    
 }

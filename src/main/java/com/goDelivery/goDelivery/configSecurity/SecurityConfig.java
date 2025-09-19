@@ -38,14 +38,47 @@ public class SecurityConfig {
                     ).permitAll()
                     .requestMatchers(
                         "/api/restaurant-applications/submit",
-                        "/api/super-admin/register"
+                        "/api/super-admin/register",
+                        "/api/restaurant-applications/test-email",
+                        "/api/customers/registerCustomer"
                     ).permitAll()
+
                     .requestMatchers(
                         "/api/restaurant-applications/all",
                         "/api/restaurant-applications/status"
+
                     ).hasRole("SUPER_ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/api/restaurant-applications/*/review")
                     .hasRole("SUPER_ADMIN")
+
+                    .requestMatchers(
+                        "api/users/*",
+                        "/api/users/*/deactivate",
+                        "/api/users/*/activate",
+                        "/api/users/*/role/*"
+                    ).hasRole("RESTAURANT_ADMIN")
+                    
+                    // Cart endpoints - only for authenticated customers
+                    .requestMatchers(
+                        "/api/cart/getCart",
+                        "/api/cart/addItem",
+                        "/api/cart/updateItem/*",
+                        "/api/cart/removeItem/*",
+                        "/api/cart/clearCart",
+                        "/api/customers/getAllCustomers",
+                        "/api/customers/getCustomerByEmail/*",
+                        "/api/customers/getCustomerProfile/*",
+                        "/api/customers/getCustomerById/*",
+                        "/api/restaurants/getRestaurantsByLocation/*",
+                        "/api/restaurants/getRestaurantsByCuisineType/*",
+                        "/api/restaurants/searchRestaurants",
+                        "/api/restaurants/getAllActiveRestaurants",
+                        "/api/menu-items/createMenuItem/*",
+                        "/api/menu-items/getAllMenuItems/*",
+                        "/api/menu-items/getMenuItemById/*",
+                        "/api/menu-items/updateMenuItem/*",
+                        "/api/menu-items/deleteMenuItem/*"
+                    ).hasRole("CUSTOMER")
 
                     .anyRequest().authenticated()
             )

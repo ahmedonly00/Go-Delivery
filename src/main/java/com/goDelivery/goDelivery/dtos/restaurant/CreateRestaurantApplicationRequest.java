@@ -34,4 +34,8 @@ public class CreateRestaurantApplicationRequest {
     private Integer yearsInBusiness;
     
     private String description;
+
+    private String logoUrl;
+    
+    private String bannerUrl;
 }

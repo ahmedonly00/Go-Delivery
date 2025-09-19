@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -20,12 +20,12 @@ public class RestaurantUserResponse {
     private Roles role;
     private String permissions;
     private boolean isActive;
-    private LocalDate lastLogin;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime lastLogin;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     
     // Related entities
-    private Long restaurantId;
+    @Builder.Default
+    private Long restaurantId = null;
     private String restaurantName;
-    private Long applicationId;  // ID of the related application, if any
 }

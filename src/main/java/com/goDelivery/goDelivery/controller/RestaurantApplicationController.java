@@ -3,6 +3,7 @@ package com.goDelivery.goDelivery.controller;
 import com.goDelivery.goDelivery.dtos.restaurant.CreateRestaurantApplicationRequest;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationReviewRequest;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationResponse;
+import com.goDelivery.goDelivery.service.EmailService;
 import com.goDelivery.goDelivery.service.RestaurantApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ import java.net.URI;
 public class RestaurantApplicationController {
 
     private final RestaurantApplicationService applicationService;
+
+    private final EmailService emailService;
 
     @PostMapping(value = "/submit")
     public ResponseEntity<RestaurantApplicationResponse> submitApplication(
@@ -68,4 +71,15 @@ public class RestaurantApplicationController {
                 
         return ResponseEntity.ok(applicationService.checkApplicationStatus(email));
     }
+
+    @GetMapping("/test-email")
+    public ResponseEntity<String> testEmail(@RequestParam String to) {
+        try {
+            emailService.sendTestEmail(to);
+            return ResponseEntity.ok("Test email sent to " + to);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Email sending failed: " + e.getMessage());
+        }
+    }
+
 }

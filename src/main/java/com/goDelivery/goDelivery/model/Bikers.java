@@ -1,5 +1,6 @@
 package com.goDelivery.goDelivery.model;
 
+import com.goDelivery.goDelivery.Enum.Roles;
 import com.goDelivery.goDelivery.Enum.VehicleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,10 @@ public class Bikers  {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "roles", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Roles roles;
 
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;

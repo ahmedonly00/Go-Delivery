@@ -22,6 +22,8 @@ public class RestaurantApplicationResponse {
     private String cuisineType;
     private Integer yearsInBusiness;
     private String description;
+    private String logoUrl;
+    private String bannerUrl;
     private ApplicationStatus applicationStatus;
     private String reviewNote;
     private String rejectionReason;
@@ -33,6 +35,9 @@ public class RestaurantApplicationResponse {
     private SimpleAdminDto reviewedBy;
     private SimpleRestaurantDto restaurant;
     private SimpleUserDto restaurantAdmin;
+
+    private String adminUsername;
+    private String adminPassword;
     
     @Data
     @Builder
