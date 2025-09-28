@@ -48,6 +48,15 @@ public class Order {
     @Column(name = "discount_amount", nullable = false)
     private Float discountAmount;
 
+    @Column(name = "accepted_at")
+    private LocalDate acceptedAt;
+
+    @Column(name = "estimated_prep_time_minutes")
+    private Integer estimatedPrepTimeMinutes;
+
+    @Column(name = "actual_prep_completed_at")
+    private LocalDate actualPrepCompletedAt;
+
     @Column(name = "final_amount", nullable = false)
     private Float finalAmount;
 

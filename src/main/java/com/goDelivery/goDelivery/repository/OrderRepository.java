@@ -3,6 +3,8 @@ package com.goDelivery.goDelivery.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.goDelivery.goDelivery.Enum.OrderStatus;
@@ -15,6 +17,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByRestaurantRestaurantId(Long restaurantId);
     List<Order> findAllByBikersBikerId(Long bikerId);
     List<Order> findAllByOrderStatus(OrderStatus orderStatus);
+    
+    Page<Order> findAllByOrderStatus(OrderStatus orderStatus, Pageable pageable);
 
     
 }

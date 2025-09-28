@@ -17,21 +17,21 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping
+    @PostMapping("/process")
     public ResponseEntity<PaymentResponse> processPayment(@Valid @RequestBody PaymentRequest paymentRequest) {
         log.info("Received payment request for order ID: {}", paymentRequest.getOrderId());
         PaymentResponse response = paymentService.processPayment(paymentRequest);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{paymentId}")
+    @GetMapping("/getPaymentById/{paymentId}")
     public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable Long paymentId) {
         log.info("Fetching payment with ID: {}", paymentId);
         PaymentResponse response = paymentService.getPaymentById(paymentId);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/order/{orderId}")
+    @GetMapping("/getPaymentByOrderId/{orderId}")
     public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable Long orderId) {
         log.info("Fetching payment for order ID: {}", orderId);
         PaymentResponse response = paymentService.getPaymentByOrderId(orderId);
