@@ -8,9 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
 
 @Data
 @Builder
@@ -18,54 +18,47 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderResponse {
     private Long orderId;
-    private Integer orderNumber;
+    private String orderNumber;
     private OrderStatus orderStatus;
-    private PaymentStatus paymentStatus;
+    private String deliveryAddress;
+    private String contactNumber;
+    private String specialInstructions;
     private Float subTotal;
     private Float deliveryFee;
     private Float discountAmount;
-    private Float totalAmount;
+    private Float finalAmount;
     private PaymentMenthod paymentMethod;
-    private String specialInstructions;
-    private LocalDate estimatedDelivery;
+    private PaymentStatus paymentStatus;
     private LocalDate orderPlacedAt;
     private LocalDate orderConfirmedAt;
     private LocalDate foodReadyAt;
     private LocalDate pickedUpAt;
     private LocalDate deliveredAt;
     private LocalDate cancelledAt;
-    private String cancellationReason;
     private LocalDate createdAt;
+    private LocalDate updatedAt;
+    private LocalDate estimatedDeliveryTime;
+    private String cancellationReason;
     
     // Related entity IDs
     private Long customerId;
     private Long restaurantId;
-    private Long branchId;
     private Long bikerId;
-    private Long deliveryAddressId;
-    private Long promotionId;
-    private Long paymentId;
-    private Long reviewId;
-    
-    // Basic related entity info (optional, can be loaded separately)
-    private String customerName;
-    private String restaurantName;
-    private String bikerName;
     
     // Order items
-    private List<OrderItemResponse> orderItems;
+    private List<OrderItemResponse> items;
     
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OrderItemResponse {
-        private Long orderItemId;
+        private Long itemId;
         private Long menuItemId;
-        private String menuItemName;
+        private String itemName;
         private Integer quantity;
-        private BigDecimal unitPrice;
-        private BigDecimal totalPrice;
+        private Float unitPrice;
+        private Float totalPrice;
         private String specialInstructions;
         private List<Long> variantIds;
     }

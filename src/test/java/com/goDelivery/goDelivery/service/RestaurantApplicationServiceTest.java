@@ -44,7 +44,7 @@ class RestaurantApplicationServiceTest {
     private RestaurantUsersRepository restaurantUsersRepository;
 
     @Mock
-    private UserService userService;
+    private UsersService userService;
 
     @Mock
     private PasswordEncoder passwordEncoder;

@@ -20,13 +20,13 @@ public class CustomerAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "address_id", nullable = false)
-    private Long addressId;
+    private Long customerAddressId;
 
     @Column(name = "address_line", nullable = false)
-    private String addressLine;
+    private String customerAddressLine;
 
     @Column(name = "city", nullable = false)
-    private String city;
+    private String customerCity;
 
     @Column(name = "postal_code", nullable = false)
     private String postalCode;
@@ -46,6 +46,24 @@ public class CustomerAddress {
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
 
+    @Column(name = "updated_at", nullable = false)
+    private LocalDate updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDate now = LocalDate.now();
+        createdAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        LocalDate now = LocalDate.now();
+        updatedAt = now;
+    }
 
 
 }

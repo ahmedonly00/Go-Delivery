@@ -113,7 +113,7 @@ public class RestaurantUsers implements CustomUserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.isActive;
+        return true;
     }
 
     @Override

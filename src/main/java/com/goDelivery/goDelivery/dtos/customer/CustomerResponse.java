@@ -18,6 +18,7 @@ public class CustomerResponse {
     private Long customerId;
     private String fullNames;
     private String email;
+    private String password;
     private String phoneNumber;
     private LocalDate dateOfBirth;
     private Gender gender;

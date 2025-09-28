@@ -3,7 +3,7 @@ package com.goDelivery.goDelivery.controller;
 import com.goDelivery.goDelivery.dtos.restaurant.CreateRestaurantApplicationRequest;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationReviewRequest;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantApplicationResponse;
-import com.goDelivery.goDelivery.service.EmailService;
+import com.goDelivery.goDelivery.service.EmailServiceInterface;
 import com.goDelivery.goDelivery.service.RestaurantApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class RestaurantApplicationController {
 
     private final RestaurantApplicationService applicationService;
 
-    private final EmailService emailService;
+    private final EmailServiceInterface emailService;
 
     @PostMapping(value = "/submit")
     public ResponseEntity<RestaurantApplicationResponse> submitApplication(

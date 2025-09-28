@@ -12,19 +12,22 @@ import com.goDelivery.goDelivery.dtos.customer.CustomerRegistrationRequest;
 import com.goDelivery.goDelivery.dtos.customer.CustomerResponse;
 import com.goDelivery.goDelivery.service.CustomerService;
 
+import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/customers")
+@RequiredArgsConstructor
 public class CustomerController {
 
     private final CustomerService customerService;
 
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
-
     @PostMapping("/registerCustomer")
-    public ResponseEntity<CustomerResponse> registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
+    public ResponseEntity<CustomerResponse> registerCustomer(@Valid @RequestBody CustomerRegistrationRequest customerRegistrationRequest) {
+        System.out.println("Received registration request: " + customerRegistrationRequest);
         if (customerRegistrationRequest == null) {
+            System.out.println("Request body is null");
             return ResponseEntity.badRequest().build();
         }
         CustomerResponse customerResponse = customerService.registerCustomer(customerRegistrationRequest);

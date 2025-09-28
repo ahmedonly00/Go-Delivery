@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to MozFood - Your Restaurant Account is Ready!</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { max-width: 200px; margin-bottom: 20px; }
+        .content { background-color: #f9f9f9; padding: 20px; border-radius: 5px; }
+        .button {
+            display: inline-block; 
+            padding: 10px 20px; 
+            background-color: #4CAF50; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .footer { margin-top: 30px; font-size: 12px; color: #777; text-align: center; }
+        .credentials { background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://mozfood.com/logo.png" alt="MozFood Logo" class="logo">
+        <h1>Welcome to MozFood!</h1>
+    </div>
+    
+    <div class="content">
+        <p>Dear <span th:text="${ownerName}">Owner</span>,</p>
+        
+        <p>Congratulations! Your restaurant <strong th:text="${restaurantName}">Restaurant Name</strong> has been approved and is now part of the MozFood platform.</p>
+        
+        <div class="credentials">
+            <h3>Your Admin Dashboard Access:</h3>
+            <p>• Website: <a href="https://admin.mozfood.com">https://admin.mozfood.com</a></p>
+            <p>• Email: <span th:text="${ownerEmail}">user@example.com</span></p>
+            <p>• Temporary Password: <span th:text="${temporaryPassword}">********</span></p>
+        </div>
+        
+        <p><strong>Important Security Note:</strong><br>
+        Please change your password immediately after your first login for security.</p>
+        
+        <h3>Next Steps:</h3>
+        <ol>
+            <li>Log in to your dashboard using the credentials above</li>
+            <li>Complete your restaurant profile</li>
+            <li>Upload your menu</li>
+            <li>Start receiving orders!</li>
+        </ol>
+        
+        <div style="text-align: center; margin: 25px 0;">
+            <a href="https://admin.mozfood.com/login" class="button">Go to Dashboard</a>
+        </div>
+        
+        <p>Need help? Contact our support team at <a href="mailto:support@mozfood.com">support@mozfood.com</a></p>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 MozFood. All rights reserved.</p>
+        <p>You're receiving this email because you registered an account with MozFood.</p>
+        <p><a href="https://mozfood.com/privacy">Privacy Policy</a> | <a href="https://mozfood.com/terms">Terms of Service</a></p>
+    </div>
+</body>
+</html>

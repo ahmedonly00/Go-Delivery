@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/restaurants")
+@RequestMapping("/api/file-upload/restaurants")
 public class FileUploadController {
 
     @Autowired

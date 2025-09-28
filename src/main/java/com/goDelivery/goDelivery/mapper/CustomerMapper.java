@@ -6,13 +6,20 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.goDelivery.goDelivery.Enum.Gender;
 import com.goDelivery.goDelivery.dtos.customer.CustomerRegistrationRequest;
 import com.goDelivery.goDelivery.dtos.customer.CustomerResponse;
 import com.goDelivery.goDelivery.dtos.customer.CustomerUpdateRequest;
 import com.goDelivery.goDelivery.model.Customer;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class CustomerMapper {
+
+    private final PasswordEncoder passwordEncoder;
 
     //convert customer registration request to customer entity
     public Customer toEntity(CustomerRegistrationRequest customerRegistrationRequest) {
@@ -20,18 +27,20 @@ public class CustomerMapper {
             return null;
         }
 
-        return Customer.builder()
-                .fullNames(customerRegistrationRequest.getFullNames())
-                .email(customerRegistrationRequest.getEmail())
-                .password(customerRegistrationRequest.getPassword())
-                .phoneNumber(customerRegistrationRequest.getPhoneNumber())
-                .dateOfBirth(customerRegistrationRequest.getDateOfBirth())
-                .gender(customerRegistrationRequest.getGender())
-                .roles(customerRegistrationRequest.getRoles())
-                .build();
+        Customer customer = new Customer();
+        customer.setFullNames(customerRegistrationRequest.getFullNames());
+        customer.setEmail(customerRegistrationRequest.getEmail());
+        customer.setPassword(passwordEncoder.encode(customerRegistrationRequest.getPassword()));
+        customer.setPhoneNumber(customerRegistrationRequest.getPhoneNumber());
+        customer.setDateOfBirth(customerRegistrationRequest.getDateOfBirth());
+        customer.setGender(customerRegistrationRequest.getGender());
+        customer.setRoles(customerRegistrationRequest.getRoles());
+        customer.setEmailVerified(true);
+        customer.setPhoneVerified(true);
+        customer.setLastLogin(LocalDate.now());
+        return customer; 
         
     }
-
 
     //convert customer to customer response
     public CustomerResponse toResponse(Customer customer) {
@@ -43,12 +52,13 @@ public class CustomerMapper {
                 .customerId(customer.getCustomerId())
                 .fullNames(customer.getFullNames())
                 .email(customer.getEmail())
+                .password(passwordEncoder.encode(customer.getPassword()))
                 .phoneNumber(customer.getPhoneNumber())
                 .dateOfBirth(customer.getDateOfBirth())
                 .gender(customer.getGender())
                 .roles(customer.getRoles())
-                .emailVerified(customer.isEmailVerified())
-                .phoneVerified(customer.isPhoneVerified())
+                .emailVerified(true)
+                .phoneVerified(true)
                 .isActive(true)
                 .lastLogin(LocalDate.now())
                 .createdAt(LocalDate.now())
@@ -68,7 +78,7 @@ public class CustomerMapper {
         customer.setEmail(customerUpdateRequest.getEmail());
         customer.setPhoneNumber(customerUpdateRequest.getPhoneNumber());
         customer.setDateOfBirth(customerUpdateRequest.getDateOfBirth());
-        customer.setGender(customerUpdateRequest.getGender());
+        customer.setGender(Gender.valueOf(customerUpdateRequest.getGender().name()));
 
         return customer;
 

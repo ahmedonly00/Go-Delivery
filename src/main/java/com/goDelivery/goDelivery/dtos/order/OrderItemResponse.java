@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,8 +17,8 @@ public class OrderItemResponse {
     private Long menuItemId;
     private String menuItemName;
     private Integer quantity;
-    private BigDecimal unitPrice;
-    private BigDecimal totalPrice;
+    private Float unitPrice;
+    private Float totalPrice;
     private String specialRequests;
     private LocalDate createdAt;
     

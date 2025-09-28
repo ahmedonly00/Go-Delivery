@@ -52,13 +52,13 @@ class CartServiceTest {
     void setUp() {
         customer = new Customer();
         customer.setCustomerId(1L);
-        customer.setName("Test User");
+        customer.setFullNames("Test User");
         customer.setEmail("test@example.com");
 
         menuItem = new MenuItem();
-        menuItem.setItemId(1L);
-        menuItem.setItemName("Test Item");
-        menuItem.setPrice(BigDecimal.valueOf(10.99));
+        menuItem.setMenuItemId(1L);
+        menuItem.setMenuItemName("Test Item");
+        menuItem.setPrice(Float.valueOf(10.5));
         menuItem.setDescription("Test Description");
 
         cart = new ShoppingCart();
@@ -75,7 +75,7 @@ class CartServiceTest {
                 .id(1L)
                 .menuItemId(1L)
                 .menuItemName("Test Item")
-                .price(10.99)
+                .price(10.5)
                 .quantity(1)
                 .build();
 

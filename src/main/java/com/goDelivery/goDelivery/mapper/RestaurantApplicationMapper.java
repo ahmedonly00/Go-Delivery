@@ -39,8 +39,8 @@ public class RestaurantApplicationMapper {
                 .approvedAt(application.getApprovedAt())
                 .reviewedBy(mapToSimpleAdminDto(application.getReviewedBy()))
                 .restaurant(mapToSimpleRestaurantDto(application.getRestaurant()))
-                .adminUsername(application.getRestaurantAdmin().getUsername())
-                .adminPassword(application.getRestaurantAdmin().getPassword())
+                .adminUsername(application.getRestaurantAdmin() != null ? application.getRestaurantAdmin().getUsername() : null)
+                .adminPassword(application.getRestaurantAdmin() != null ? application.getRestaurantAdmin().getPassword() : null)
                 .build();
     }
 

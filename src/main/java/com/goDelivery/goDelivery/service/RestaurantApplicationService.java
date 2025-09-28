@@ -35,7 +35,7 @@ public class RestaurantApplicationService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     private final RestaurantApplicationMapper applicationMapper;
-    private final EmailService emailService;
+    private final EmailServiceInterface emailService;
     private final UsersRepository usersRepository;
 
 
@@ -75,13 +75,13 @@ public class RestaurantApplicationService {
         // Create restaurant and admin user
         createRestaurantAndAdmin(application);
         
-        // Send approval email
-        emailService.sendApplicationStatusEmail(
-            application.getEmail(),
-            "Restaurant Application Approved",
+        // Send welcome email with temporary password
+        String tempPassword = generateTemporaryPassword();
+        emailService.sendRestaurantWelcomeEmail(
             application.getBusinessName(),
-            "approved",
-            "Your restaurant application has been approved. You can now log in to your restaurant dashboard."
+            application.getEmail(),
+            application.getOwnerName(),
+            tempPassword
         );
 
         return applicationMapper.toResponse(applicationRepository.save(application));
@@ -105,11 +105,9 @@ public class RestaurantApplicationService {
         }
 
         // Send rejection email
-        emailService.sendApplicationStatusEmail(
-            application.getEmail(),
-            "Restaurant Application Rejected",
+        emailService.sendApplicationRejectionEmail(
             application.getBusinessName(),
-            "rejected",
+            application.getEmail(),
             "Your restaurant application has been rejected. Reason: " + reason
         );
 
@@ -160,12 +158,11 @@ public class RestaurantApplicationService {
 
                     // Send approval email (not blocking if it fails)
                     try {
-                        emailService.sendApplicationStatusEmail(
-                                application.getEmail(),
-                                "Restaurant Application Approved",
-                                application.getBusinessName(),
-                                "approved",
-                                "Your restaurant application has been approved. You can now log in to your restaurant dashboard."
+                        emailService.sendRestaurantWelcomeEmail(
+                            application.getBusinessName(),
+                            application.getEmail(),
+                            application.getOwnerName(),
+                            credentials.getPassword()
                         );
                     } catch (Exception emailEx) {
                         log.warn("Approval email failed to send for application {}: {}", applicationId, emailEx.getMessage());
@@ -187,11 +184,9 @@ public class RestaurantApplicationService {
 
                 // Send rejection email (not blocking if it fails)
                 try {
-                    emailService.sendApplicationStatusEmail(
-                            application.getEmail(),
-                            "Restaurant Application Rejected",
+                    emailService.sendApplicationRejectionEmail(
                             application.getBusinessName(),
-                            "rejected",
+                            application.getEmail(),
                             "Your restaurant application has been rejected. Reason: " + request.getRejectionReason()
                     );
                 } catch (Exception emailEx) {
@@ -325,7 +320,7 @@ public class RestaurantApplicationService {
             // Using a separate thread to send email asynchronously
             new Thread(() -> {
                 try {
-                    emailService.sendWelcomeEmail(email, businessName, email, tempPassword);
+                    emailService.sendRestaurantWelcomeEmail(businessName, email, email, tempPassword);
                 } catch (Exception e) {
                     // Log the error but don't throw it since this is an async operation
                     System.err.println("Failed to send welcome email: " + e.getMessage());

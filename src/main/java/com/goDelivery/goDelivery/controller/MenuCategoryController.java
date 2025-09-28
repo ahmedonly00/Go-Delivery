@@ -18,7 +18,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/menu-category")
+@RequestMapping("/api/menu-category")
 @RequiredArgsConstructor
 public class MenuCategoryController {
 

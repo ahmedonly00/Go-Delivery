@@ -20,8 +20,8 @@ public class CartMapper {
 
         return CartItemDTO.builder()
                 .id(cartItem.getId())
-                .menuItemId(cartItem.getMenuItem().getItemId())
-                .menuItemName(cartItem.getMenuItem().getItemName())
+                .menuItemId(cartItem.getMenuItem().getMenuItemId())
+                .menuItemName(cartItem.getMenuItem().getMenuItemName())
                 .price(cartItem.getMenuItem().getPrice().doubleValue())
                 .quantity(cartItem.getQuantity())
                 .specialInstructions(cartItem.getSpecialInstructions())

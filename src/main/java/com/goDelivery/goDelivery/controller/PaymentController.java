@@ -1,0 +1,40 @@
+package com.goDelivery.goDelivery.controller;
+
+import com.goDelivery.goDelivery.dtos.payment.PaymentRequest;
+import com.goDelivery.goDelivery.dtos.payment.PaymentResponse;
+import com.goDelivery.goDelivery.service.PaymentService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/payments")
+@RequiredArgsConstructor
+@Slf4j
+public class PaymentController {
+
+    private final PaymentService paymentService;
+
+    @PostMapping
+    public ResponseEntity<PaymentResponse> processPayment(@Valid @RequestBody PaymentRequest paymentRequest) {
+        log.info("Received payment request for order ID: {}", paymentRequest.getOrderId());
+        PaymentResponse response = paymentService.processPayment(paymentRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{paymentId}")
+    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable Long paymentId) {
+        log.info("Fetching payment with ID: {}", paymentId);
+        PaymentResponse response = paymentService.getPaymentById(paymentId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable Long orderId) {
+        log.info("Fetching payment for order ID: {}", orderId);
+        PaymentResponse response = paymentService.getPaymentByOrderId(orderId);
+        return ResponseEntity.ok(response);
+    }
+}

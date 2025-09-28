@@ -50,7 +50,7 @@ public class CartService {
         ShoppingCart cart = getOrCreateCart(customerId);
         MenuItem menuItem = getMenuItem(cartItemDTO.getMenuItemId());
         
-        Optional<CartItem> existingItem = findCartItem(cart, menuItem.getItemId());
+        Optional<CartItem> existingItem = findCartItem(cart, menuItem.getMenuItemId());
         
         if (existingItem.isPresent()) {
             updateExistingCartItem(existingItem.get(), cartItemDTO);
@@ -128,7 +128,7 @@ public class CartService {
     
     private Optional<CartItem> findCartItem(ShoppingCart cart, Long menuItemId) {
         return cart.getItems().stream()
-                .filter(item -> item.getMenuItem().getItemId().equals(menuItemId))
+                .filter(item -> item.getMenuItem().getMenuItemId().equals(menuItemId))
                 .findFirst();
     }
     

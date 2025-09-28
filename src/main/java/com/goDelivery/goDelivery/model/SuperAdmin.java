@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -69,17 +70,17 @@ public class SuperAdmin implements CustomUserDetails {
     // UserDetails methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return this.email;
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
     public String getPassword() {
-        return this.password;
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override
@@ -99,13 +100,14 @@ public class SuperAdmin implements CustomUserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.isActive;
+        return true;
     }
-
+    
     @Override
     public Long getId() {
-        return this.adminId;
+        return adminId;
     }
+    
 
     @Override
     public String getFullName() {

@@ -26,7 +26,10 @@ public class Order {
     private Long orderId;
 
     @Column(name = "order_number", nullable = false)
-    private Integer orderNumber;
+    private String orderNumber;
+
+    @Column(name = "delivery_address", nullable = false)
+    private String deliveryAddress;
 
     @Column(name = "order_status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -45,18 +48,18 @@ public class Order {
     @Column(name = "discount_amount", nullable = false)
     private Float discountAmount;
 
-    @Column(name = "total_amount", nullable = false)
-    private Float totalAmount;
+    @Column(name = "final_amount", nullable = false)
+    private Float finalAmount;
 
     @Column(name = "payment_method", nullable = false)
     @Enumerated(EnumType.STRING)
-    private PaymentMenthod paymentMenthod;
+    private PaymentMenthod paymentMethod;
 
     @Column(name = "special_instructions", nullable = false)
     private String specialInstructions;
 
-    @Column(name = "estimated_delivery", nullable = false)
-    private LocalDate estimatedDelivery;
+    @Column(name = "estimated_delivery_time", nullable = false)
+    private LocalDate estimatedDeliveryTime;
 
     @Column(name = "order_placed_at", nullable = false)
     private LocalDate orderPlacedAt;
@@ -95,9 +98,9 @@ public class Order {
     @JoinColumn(name = "biker_id")
     private Bikers bikers;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "delivery_address_id", nullable = false)
-    private CustomerAddress deliveryAddress;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "delivery_address_id", nullable = false)
+    // private CustomerAddress deliveryAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "promotion_id")

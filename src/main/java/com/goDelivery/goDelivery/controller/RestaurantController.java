@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantSearchRequest;
+import com.goDelivery.goDelivery.dtos.restaurant.UpdateOperatingHoursRequest;
 import com.goDelivery.goDelivery.service.RestaurantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,14 @@ public class RestaurantController {
             @Valid @RequestBody RestaurantDTO restaurantDTO) {
         RestaurantDTO createdRestaurant = restaurantService.registerRestaurant(restaurantDTO);
         return new ResponseEntity<>(createdRestaurant, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{restaurantId}/operating-hours")
+    public ResponseEntity<RestaurantDTO> updateOperatingHours(
+            @PathVariable Long restaurantId,
+            @Valid @RequestBody UpdateOperatingHoursRequest request) {
+        RestaurantDTO updatedRestaurant = restaurantService.updateOperatingHours(restaurantId, request);
+        return ResponseEntity.ok(updatedRestaurant);
     }
 
     @GetMapping("/getRestaurantById/{restaurantId}")

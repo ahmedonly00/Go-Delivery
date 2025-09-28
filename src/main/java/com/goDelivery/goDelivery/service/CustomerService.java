@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.goDelivery.goDelivery.dtos.customer.CustomerRegistrationRequest;
@@ -21,6 +22,7 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public CustomerResponse registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
         Customer customer = customerMapper.toEntity(customerRegistrationRequest);
@@ -41,7 +43,7 @@ public class CustomerService {
         
         existingCustomer.setFullNames(customerRegistrationRequest.getFullNames());
         existingCustomer.setEmail(customerRegistrationRequest.getEmail());
-        existingCustomer.setPassword(customerRegistrationRequest.getPassword());
+        existingCustomer.setPassword(passwordEncoder.encode(customerRegistrationRequest.getPassword()));
         existingCustomer.setPhoneNumber(customerRegistrationRequest.getPhoneNumber());
         existingCustomer.setDateOfBirth(customerRegistrationRequest.getDateOfBirth());
         existingCustomer.setGender(customerRegistrationRequest.getGender());

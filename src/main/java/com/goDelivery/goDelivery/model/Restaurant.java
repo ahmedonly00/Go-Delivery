@@ -63,6 +63,9 @@ public class Restaurant {
 
     @Column(name = "is_active")
     private boolean isActive;
+    
+    @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private OperatingHours operatingHours;
 
     @Column(name = "created_at")
     private LocalDate createdAt;

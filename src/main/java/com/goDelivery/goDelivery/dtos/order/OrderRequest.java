@@ -4,12 +4,18 @@ import com.goDelivery.goDelivery.Enum.OrderStatus;
 import com.goDelivery.goDelivery.Enum.PaymentMenthod;
 import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderRequest {
     @NotNull(message = "Restaurant ID is required")
     private Long restaurantId;
@@ -27,6 +33,9 @@ public class OrderRequest {
     
     @NotNull(message = "Order status is required")
     private OrderStatus orderStatus;
+
+    @NotNull(message = "Delivery address is required")
+    private String deliveryAddress;
     
     @NotNull(message = "Payment status is required")
     private PaymentStatus paymentStatus;
@@ -43,9 +52,9 @@ public class OrderRequest {
     @PositiveOrZero(message = "Discount amount must be zero or positive")
     private Float discountAmount;
     
-    @NotNull(message = "Total amount is required")
-    @PositiveOrZero(message = "Total amount must be positive")
-    private Float totalAmount;
+    @NotNull(message = "Final amount is required")
+    @PositiveOrZero(message = "Final amount must be positive")
+    private Float finalAmount;
     
     @NotNull(message = "Payment method is required")
     private PaymentMenthod paymentMethod;
@@ -57,6 +66,10 @@ public class OrderRequest {
     private LocalDate estimatedDelivery;
     
     private String cancellationReason;
+
+    private String orderNumber;
+
+    private LocalDate orderPlacedAt;
     
     @NotEmpty(message = "At least one order item is required")
     private List<OrderItemRequest> orderItems;

@@ -9,7 +9,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Data
 @Builder
@@ -17,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "bikers")
-public class Bikers  {
+public class Bikers implements CustomUserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -103,6 +107,55 @@ public class Bikers  {
     // One Biker earns from many orders
     @OneToMany(mappedBy = "bikers", fetch = FetchType.LAZY)
     private List<BikerEarnings> earnings;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + roles.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public Long getId() {
+        return this.bikerId;
+    }
+
+    @Override
+    public String getFullName() {
+        return this.fullNames;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.isActive;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.isActive;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return this.isActive;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.isActive;
+    }
+
+    
+
+    
 
 
 }

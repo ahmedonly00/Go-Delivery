@@ -11,8 +11,10 @@ import com.goDelivery.goDelivery.model.Order;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findByOrderId(Long orderId);
-    List<Order> findAllByCustomerId(Long customerId);
-    List<Order> findAllByBikerId(Long bikerId);
-    List<Order> findAllByStatus(OrderStatus status);
+    List<Order> findAllByCustomerCustomerId(Long customerId);
+    List<Order> findAllByRestaurantRestaurantId(Long restaurantId);
+    List<Order> findAllByBikersBikerId(Long bikerId);
+    List<Order> findAllByOrderStatus(OrderStatus orderStatus);
+
     
 }

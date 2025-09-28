@@ -21,11 +21,11 @@ public class MenuItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "item_id", nullable = false)
-    private Long itemId;
+    @Column(name = "menu_item_id", nullable = false)
+    private Long menuItemId;
 
-    @Column(name = "item_name", nullable = false)
-    private String itemName;
+    @Column(name = "menu_item_name", nullable = false)
+    private String menuItemName;
 
     @Column(name = "description", nullable = false)
     private String description;

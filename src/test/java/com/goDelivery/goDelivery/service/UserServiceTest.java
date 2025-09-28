@@ -26,7 +26,7 @@ class UserServiceTest {
     private RestaurantUsersRepository restaurantUsersRepository;
 
     @Autowired
-    private UserService userService;
+    private UsersService userService;
 
     private RestaurantUsers testUser;
     private Restaurant testRestaurant;
@@ -56,7 +56,7 @@ class UserServiceTest {
         when(restaurantUsersRepository.save(any(RestaurantUsers.class))).thenReturn(testUser);
 
         // Act
-        userService.createUser(testUser);
+        userService.createUser(testUser, "test@example.com");
 
         // Assert
         verify(restaurantUsersRepository).save(any(RestaurantUsers.class));

@@ -1,55 +1,73 @@
 package com.goDelivery.goDelivery.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
-import com.goDelivery.goDelivery.dtos.menu.MenuItemDTO;
+import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
+import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
+import com.goDelivery.goDelivery.dtos.menu.UpdateMenuItemRequest;
 import com.goDelivery.goDelivery.service.MenuItemService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/menu-item")
+@RequestMapping("/api/restaurants/{restaurantId}/menu-items")
 @RequiredArgsConstructor
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
 
-    
-    @PostMapping("/createMenuItem/{restaurantId}")
-    public ResponseEntity<MenuItemDTO> createMenuItem(@PathVariable Long restaurantId, @RequestBody MenuItemDTO menuItemDTO){
-        return ResponseEntity.ok(menuItemService.createMenuItem(menuItemDTO));
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public MenuItemResponse createMenuItem(
+            @PathVariable Long restaurantId,
+            @Valid @RequestBody MenuItemRequest request) {
+        // Set the restaurant ID from path variable
+        request.setRestaurantId(restaurantId);
+        return menuItemService.createMenuItem(request);
     }
-    
-    @GetMapping("/getAllMenuItems/{restaurantId}")
-    public ResponseEntity<List<MenuItemDTO>> getAllMenuItems(@PathVariable Long restaurantId){
-        return ResponseEntity.ok(menuItemService.getAllMenuItems());
+
+    @GetMapping
+    public List<MenuItemResponse> getMenuItemsByRestaurant(
+            @PathVariable Long restaurantId,
+            @RequestParam(required = false) Boolean available) {
+        return menuItemService.getMenuItemsByRestaurantId(restaurantId).stream()
+            .map(menuItemService::mapToResponse)
+            .collect(Collectors.toList());
     }
-    
-    @GetMapping("/getMenuItemById/{itemId}")
-    public ResponseEntity<MenuItemDTO> getMenuItemById(@PathVariable Long itemId){
-        return ResponseEntity.ok(menuItemService.getMenuItemById(itemId));
+
+    @GetMapping("/{menuItemId}")
+    public MenuItemResponse getMenuItemById(
+            @PathVariable Long restaurantId,
+            @PathVariable Long menuItemId) {
+        return menuItemService.getMenuItemById(menuItemId);
     }
-    
-    @PutMapping("/updateMenuItem/{itemId}")
-    public ResponseEntity<MenuItemDTO> updateMenuItem(@PathVariable Long itemId, @RequestBody MenuItemDTO menuItemDTO){
-        return ResponseEntity.ok(menuItemService.updateMenuItem(itemId, menuItemDTO));
+
+    @PutMapping("/{menuItemId}")
+    public MenuItemResponse updateMenuItem(
+            @PathVariable Long restaurantId,
+            @PathVariable Long menuItemId,
+            @Valid @RequestBody UpdateMenuItemRequest request) {
+        return menuItemService.updateMenuItem(menuItemId, request);
     }
-    
-    @DeleteMapping("/deleteMenuItem/{itemId}")
-    public ResponseEntity<Void> deleteMenuItem(@PathVariable Long itemId){
-        menuItemService.deleteMenuItem(itemId);
-        return ResponseEntity.noContent().build();
+
+    @DeleteMapping("/{menuItemId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMenuItem(
+            @PathVariable Long restaurantId,
+            @PathVariable Long menuItemId) {
+        menuItemService.deleteMenuItem(menuItemId);
     }
-    
-    
+
+    @PatchMapping("/{menuItemId}/availability")
+    public MenuItemResponse updateMenuItemAvailability(
+            @PathVariable Long restaurantId,
+            @PathVariable Long menuItemId,
+            @RequestParam boolean available) {
+        return menuItemService.updateMenuItemAvailability(menuItemId, available);
+    }
 }

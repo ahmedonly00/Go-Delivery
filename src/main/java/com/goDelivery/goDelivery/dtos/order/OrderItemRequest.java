@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -24,7 +23,7 @@ public class OrderItemRequest {
     
     @NotNull(message = "Unit price is required")
     @Positive(message = "Unit price must be positive")
-    private BigDecimal unitPrice;
+    private Float unitPrice;
     
     private String specialRequests;
     
@@ -32,5 +31,5 @@ public class OrderItemRequest {
     private List<Long> variantIds;
     
     // Optional: Additional price for all variants combined
-    private BigDecimal totalAdditionalPrice;
+    private Float totalAdditionalPrice;
 }

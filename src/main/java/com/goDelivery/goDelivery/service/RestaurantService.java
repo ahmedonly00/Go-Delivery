@@ -2,9 +2,12 @@ package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantSearchRequest;
+import com.goDelivery.goDelivery.dtos.restaurant.UpdateOperatingHoursRequest;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
+import com.goDelivery.goDelivery.model.OperatingHours;
 import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.repository.OperatingHoursRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final OperatingHoursRepository operatingHoursRepository;
     private final RestaurantMapper restaurantMapper;
 
     public RestaurantDTO registerRestaurant(RestaurantDTO restaurantDTO) {
@@ -147,25 +151,84 @@ public class RestaurantService {
                     break;
             }
         }
-        
+
         return restaurants.stream()
                 .map(restaurantMapper::toRestaurantDTO)
                 .collect(Collectors.toList());
     }
-    
-    public RestaurantDTO getRestaurantById(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+
+    /**
+     * Retrieves a restaurant by ID
+     * 
+     * @param id Restaurant ID
+     * @return Restaurant
+     */
+    public RestaurantDTO getRestaurantById(Long id) {
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + id));
+        return restaurantMapper.toRestaurantDTO(restaurant);
+    }
+
+    /**
+     * Updates the operating hours of a restaurant
+     * 
+     * @param restaurantId Restaurant ID
+     * @param request      Update operating hours request
+     * @return Updated restaurant
+     */
+    public RestaurantDTO updateOperatingHours(Long restaurantId, UpdateOperatingHoursRequest request) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        
+        OperatingHours operatingHours = restaurant.getOperatingHours();
+        if (operatingHours == null) {
+            operatingHours = new OperatingHours();
+            operatingHours.setRestaurant(restaurant);
+        }
+        
+        // Update operating hours
+        operatingHours.setMondayOpen(request.getMondayOpen());
+        operatingHours.setMondayClose(request.getMondayClose());
+        operatingHours.setTuesdayOpen(request.getTuesdayOpen());
+        operatingHours.setTuesdayClose(request.getTuesdayClose());
+        operatingHours.setWednesdayOpen(request.getWednesdayOpen());
+        operatingHours.setWednesdayClose(request.getWednesdayClose());
+        operatingHours.setThursdayOpen(request.getThursdayOpen());
+        operatingHours.setThursdayClose(request.getThursdayClose());
+        operatingHours.setFridayOpen(request.getFridayOpen());
+        operatingHours.setFridayClose(request.getFridayClose());
+        operatingHours.setSaturdayOpen(request.getSaturdayOpen());
+        operatingHours.setSaturdayClose(request.getSaturdayClose());
+        operatingHours.setSundayOpen(request.getSundayOpen());
+        operatingHours.setSundayClose(request.getSundayClose());
+        
+        // Save the operating hours first
+        operatingHoursRepository.save(operatingHours);
+        
+        // Update the restaurant's updatedAt timestamp
+        restaurant.setUpdatedAt(LocalDate.now());
+        restaurantRepository.save(restaurant);
         
         return restaurantMapper.toRestaurantDTO(restaurant);
     }
-    
- 
+
+    /**
+     * Retrieves all active restaurants
+     * 
+     * @return List of active restaurants
+     */
     public List<RestaurantDTO> getAllActiveRestaurants() {
         return restaurantRepository.findByIsActive(true).stream()
                 .map(restaurantMapper::toRestaurantDTO)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Retrieves restaurants by cuisine
+     * 
+     * @param cuisineType Cuisine type
+     * @return List of restaurants
+     */
     
     public List<RestaurantDTO> getRestaurantsByCuisine(String cuisineType) {
         return restaurantRepository.findByCuisineTypeAndIsActive(cuisineType, true).stream()
