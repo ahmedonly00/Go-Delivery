@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/file-upload/restaurants")
+@CrossOrigin(origins = "http://localhost:3000")
 public class FileUploadController {
 
     @Autowired

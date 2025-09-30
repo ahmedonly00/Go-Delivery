@@ -3,6 +3,7 @@ package com.goDelivery.goDelivery.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/branches")
+@CrossOrigin(origins = "http://localhost:3000")
 public class BranchesController {
 
     
@@ -26,7 +28,7 @@ public class BranchesController {
     private BranchesService branchesService;
 
     
-    @PostMapping("/restaurants/{restaurantId}/branches")
+    @PostMapping("/addBranch/{restaurantId}")
     public ResponseEntity<BranchesDTO> addBranchToRestaurant(
             @PathVariable Long restaurantId,
             @Valid @RequestBody BranchesDTO branchDTO) {
@@ -34,13 +36,13 @@ public class BranchesController {
         return new ResponseEntity<>(createdBranch, HttpStatus.CREATED);
     }
 
-    @GetMapping("/branches/{branchId}")
+    @GetMapping("/getBranches/{branchId}")
     public ResponseEntity<BranchesDTO> getBranchById(@PathVariable Long branchId) {
         BranchesDTO branch = branchesService.getBranchById(branchId);
         return ResponseEntity.ok(branch);
     }
 
-    @PutMapping("/branches/{branchId}")
+    @PutMapping("/updateBranch/{branchId}")
     public ResponseEntity<BranchesDTO> updateBranch(
             @PathVariable Long branchId,
             @Valid @RequestBody BranchesDTO branchDTO) {
@@ -48,7 +50,7 @@ public class BranchesController {
         return ResponseEntity.ok(updatedBranch);
     }
 
-    @DeleteMapping("/branches/{branchId}")
+    @DeleteMapping("/deleteBranch/{branchId}")
     public ResponseEntity<Void> deleteBranch(@PathVariable Long branchId) {
         branchesService.deleteBranch(branchId);
         return ResponseEntity.noContent().build();

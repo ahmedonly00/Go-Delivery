@@ -9,8 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.Claims;
-import java.util.List;
 import java.util.Collection;
 
 import io.jsonwebtoken.io.IOException;
@@ -54,25 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                    // Get claims from the token
-                    Claims claims = jwtService.extractAllClaims(jwt);
-                    
-                    // Log token claims for debugging
-                    System.out.println("JWT Token Claims: " + claims);
-                    
-                    // Extract authorities from the token
-                    @SuppressWarnings("unchecked")
-                    List<String> authorities = (List<String>) claims.get("authorities");
-                    System.out.println("Extracted authorities from token: " + authorities);
-                    System.out.println("UserDetails authorities: " + userDetails.getAuthorities());
-                    
-                    // Use the authorities from userDetails to ensure consistency
-                    // The CustomUserDetailsService already handles the ROLE_ prefix
                     Collection<? extends GrantedAuthority> grantedAuthorities = userDetails.getAuthorities();
-                    System.out.println("Using authorities from UserDetails: " + grantedAuthorities);
-                    
-                    // Log the final granted authorities for debugging
-                    System.out.println("Final granted authorities: " + grantedAuthorities);
                     
                     // Create authentication token with the extracted authorities
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -88,7 +68,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {
-                System.err.println("JWT Authentication error: " + e.getMessage());
             }
         }
 

@@ -17,11 +17,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class UsersController {
 
     private final UsersService usersService;
 
-    @PostMapping(value = "/{restaurantId}")
+    @PostMapping(value = "/createUser/{restaurantId}")
     public ResponseEntity<RestaurantUserResponse> createUser(
             @PathVariable Long restaurantId,
             @Valid @RequestBody RestaurantUserRequest request, @AuthenticationPrincipal UserDetails userDetails) {
@@ -33,7 +34,7 @@ public class UsersController {
                 .body(response);
     }
 
-    @PutMapping(value = "/{userId}")
+    @PutMapping(value = "/updateUser/{userId}")
     public ResponseEntity<RestaurantUserResponse> updateUser(
             @PathVariable Long userId,
             @Valid @RequestBody RestaurantUserRequest request, @AuthenticationPrincipal UserDetails userDetails) {
@@ -42,21 +43,21 @@ public class UsersController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping(value = "/{userId}")
+    @DeleteMapping(value = "/deleteUser/{userId}")
     public ResponseEntity<Void> deleteUser( @PathVariable Long userId, @AuthenticationPrincipal UserDetails userDetails) {
         String adminEmail = userDetails.getUsername();
         usersService.deleteUser(userId, adminEmail);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(value = "/{userId}")
+    @GetMapping(value = "/getUserById/{userId}")
     public ResponseEntity<RestaurantUserResponse> getUserById( @PathVariable Long userId, @AuthenticationPrincipal UserDetails userDetails) {
         String adminEmail = userDetails.getUsername();
         RestaurantUserResponse response = usersService.getUserById(userId, adminEmail);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(value = "/{restaurantId}")
+    @GetMapping(value = "/getAllUsersByRestaurant/{restaurantId}")
     public ResponseEntity<List<RestaurantUserResponse>> getAllUsersByRestaurant(
         @PathVariable Long restaurantId, @AuthenticationPrincipal UserDetails userDetails) {
         String adminEmail = userDetails.getUsername();
@@ -64,7 +65,7 @@ public class UsersController {
         return ResponseEntity.ok(userList);
     }
 
-    @GetMapping("/active")
+    @GetMapping(value = "/getActiveUsersByRestaurant/{restaurantId}")
     public ResponseEntity<List<RestaurantUserResponse>> getActiveUsersByRestaurant(
             @PathVariable Long restaurantId, @AuthenticationPrincipal UserDetails userDetails) {
         String adminEmail = userDetails.getUsername();
@@ -72,7 +73,7 @@ public class UsersController {
         return ResponseEntity.ok(userList);
     }
 
-    @PutMapping("/{userId}/role/{role}")
+    @PutMapping(value = "/updateUserRole/{userId}/role/{role}")
     public ResponseEntity<RestaurantUserResponse> updateUserRole(
             @PathVariable Long userId,
             @PathVariable Roles role, @AuthenticationPrincipal UserDetails userDetails) {
@@ -81,7 +82,7 @@ public class UsersController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{userId}/deactivate")
+    @PostMapping(value = "/deactivateUser/{userId}")
     public ResponseEntity<RestaurantUserResponse> deactivateUser(
             @PathVariable Long userId, @AuthenticationPrincipal UserDetails userDetails) {
         String adminEmail = userDetails.getUsername();
@@ -89,7 +90,7 @@ public class UsersController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{userId}/activate")
+    @PostMapping(value = "/activateUser/{userId}")
     public ResponseEntity<RestaurantUserResponse> activateUser(
             @PathVariable Long userId, @AuthenticationPrincipal UserDetails userDetails) {
         String adminEmail = userDetails.getUsername();

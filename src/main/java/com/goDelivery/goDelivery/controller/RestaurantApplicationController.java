@@ -21,13 +21,14 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/restaurant-applications")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class RestaurantApplicationController {
 
     private final RestaurantApplicationService applicationService;
 
     private final EmailServiceInterface emailService;
 
-    @PostMapping(value = "/submit")
+    @PostMapping(value = "/submitApplication")
     public ResponseEntity<RestaurantApplicationResponse> submitApplication(
             @Valid @RequestBody CreateRestaurantApplicationRequest request) {
         
@@ -42,12 +43,12 @@ public class RestaurantApplicationController {
         return ResponseEntity.created(location).body(response);
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<RestaurantApplicationResponse> getApplication(@PathVariable Long id) {
+    @GetMapping(value = "/getApplicationById/{id}")
+    public ResponseEntity<RestaurantApplicationResponse> getApplicationById(@PathVariable Long id) {
         return ResponseEntity.ok(applicationService.getApplicationById(id));
     }
 
-    @GetMapping(value = "/all")
+    @GetMapping(value = "/getAllApplications")
     public ResponseEntity<Page<RestaurantApplicationResponse>> getAllApplications(
             @RequestParam(required = false) String status,
             @PageableDefault(size = 20) Pageable pageable) {
@@ -55,8 +56,8 @@ public class RestaurantApplicationController {
         return ResponseEntity.ok(applicationService.getAllApplications(status, pageable));
     }
 
-   @PutMapping(value = "/{id}/review")
-   public ResponseEntity<RestaurantApplicationResponse> reviewApplication(
+   @PutMapping(value = "/reviewApplicationById/{id}")
+   public ResponseEntity<RestaurantApplicationResponse> reviewApplicationById(
            @PathVariable Long id,
            @Valid @RequestBody RestaurantApplicationReviewRequest request,
            @AuthenticationPrincipal UserDetails userDetails) {
@@ -65,14 +66,14 @@ public class RestaurantApplicationController {
        return ResponseEntity.ok(applicationService.reviewApplication(id, request, adminEmail));
    }
 
-    @GetMapping(value = "/status")
-    public ResponseEntity<RestaurantApplicationResponse> checkStatus(
+    @GetMapping(value = "/checkStatusByEmail")
+    public ResponseEntity<RestaurantApplicationResponse> checkStatusByEmail(
             @RequestParam String email) {
                 
         return ResponseEntity.ok(applicationService.checkApplicationStatus(email));
     }
 
-    @GetMapping("/test-email")
+    @GetMapping(value = "/testEmail")
     public ResponseEntity<String> testEmail(@RequestParam String to) {
         try {
             emailService.sendTestEmail(to);

@@ -15,13 +15,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/restaurants/{restaurantId}/menu-items")
+@RequestMapping("/api/menu-items")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
 
-    @PostMapping
+    @PostMapping(value = "/createMenuItem/{restaurantId}")
     @ResponseStatus(HttpStatus.CREATED)
     public MenuItemResponse createMenuItem(
             @PathVariable Long restaurantId,
@@ -31,7 +32,7 @@ public class MenuItemController {
         return menuItemService.createMenuItem(request);
     }
 
-    @GetMapping
+    @GetMapping(value = "/getMenuItemsByRestaurant/{restaurantId}")
     public List<MenuItemResponse> getMenuItemsByRestaurant(
             @PathVariable Long restaurantId,
             @RequestParam(required = false) Boolean available) {
@@ -40,14 +41,14 @@ public class MenuItemController {
             .collect(Collectors.toList());
     }
 
-    @GetMapping("/{menuItemId}")
+    @GetMapping(value = "/getMenuItemById/{menuItemId}")
     public MenuItemResponse getMenuItemById(
             @PathVariable Long restaurantId,
             @PathVariable Long menuItemId) {
         return menuItemService.getMenuItemById(menuItemId);
     }
 
-    @PutMapping("/{menuItemId}")
+    @PutMapping(value = "/updateMenuItem/{menuItemId}")
     public MenuItemResponse updateMenuItem(
             @PathVariable Long restaurantId,
             @PathVariable Long menuItemId,
@@ -55,7 +56,7 @@ public class MenuItemController {
         return menuItemService.updateMenuItem(menuItemId, request);
     }
 
-    @DeleteMapping("/{menuItemId}")
+    @DeleteMapping(value = "/deleteMenuItem/{menuItemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMenuItem(
             @PathVariable Long restaurantId,
@@ -63,7 +64,7 @@ public class MenuItemController {
         menuItemService.deleteMenuItem(menuItemId);
     }
 
-    @PatchMapping("/{menuItemId}/availability")
+    @PatchMapping(value = "/updateMenuItemAvailability/{menuItemId}")
     public MenuItemResponse updateMenuItemAvailability(
             @PathVariable Long restaurantId,
             @PathVariable Long menuItemId,

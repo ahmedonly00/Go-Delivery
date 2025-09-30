@@ -21,18 +21,19 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @PreAuthorize("hasAnyRole('CASHIER', 'ADMIN')")
+@CrossOrigin(origins = "http://localhost:3000")
 public class CashierController {
 
     private final CashierService cashierService;
 
-    @GetMapping("/orders/pending")
+    @GetMapping(value = "/getPendingOrders")
     public ResponseEntity<Page<OrderResponse>> getPendingOrders(
             @PageableDefault(size = 20) Pageable pageable) {
         log.info("Fetching pending orders");
         return ResponseEntity.ok(cashierService.getPendingOrders(pageable));
     }
 
-    @PostMapping("/orders/{orderId}/accept")
+    @PostMapping(value = "/acceptOrder/{orderId}")
     public ResponseEntity<OrderResponse> acceptOrder(
             @PathVariable Long orderId,
             @RequestParam @NotNull(message = "Estimated preparation time is required") Integer estimatedPrepTime) {
@@ -40,42 +41,42 @@ public class CashierController {
         return ResponseEntity.ok(cashierService.acceptOrder(orderId, estimatedPrepTime));
     }
 
-    @PutMapping("/orders/status")
+    @PutMapping(value = "/updateOrderStatus")
     public ResponseEntity<OrderResponse> updateOrderStatus(
             @Valid @RequestBody OrderStatusUpdate statusUpdate) {
         log.info("Updating status for order ID: {} to {}", statusUpdate.getOrderId(), statusUpdate.getStatus());
         return ResponseEntity.ok(cashierService.updateOrderStatus(statusUpdate));
     }
 
-    @GetMapping("/orders/{orderId}")
+    @GetMapping(value = "/getOrderDetails/{orderId}")
     public ResponseEntity<OrderResponse> getOrderDetails(@PathVariable Long orderId) {
         log.info("Fetching details for order ID: {}", orderId);
         return ResponseEntity.ok(cashierService.getOrderDetails(orderId));
     }
 
-    @GetMapping("/orders/{orderId}/timeline")
+    @GetMapping(value = "/getOrderTimeline/{orderId}")
     public ResponseEntity<OrderResponse> getOrderTimeline(@PathVariable Long orderId) {
         log.info("Fetching timeline for order ID: {}", orderId);
         return ResponseEntity.ok(cashierService.getOrderTimeline(orderId));
     }
     
-    @PostMapping("/orders/{orderId}/ready-for-pickup")
+    @PostMapping(value = "/markOrderReadyForPickup/{orderId}")
     public ResponseEntity<OrderResponse> markOrderReadyForPickup(@PathVariable Long orderId) {
         log.info("Marking order ID: {} as ready for pickup", orderId);
         return ResponseEntity.ok(cashierService.markOrderReadyForPickup(orderId));
     }
     
-    @PostMapping("/orders/{orderId}/confirm-dispatch")
+    @PostMapping(value = "/confirmOrderDispatch/{orderId}")
     public ResponseEntity<OrderResponse> confirmOrderDispatch(@PathVariable Long orderId) {
         log.info("Confirming dispatch for order ID: {}", orderId);
         return ResponseEntity.ok(cashierService.confirmOrderDispatch(orderId));
     }
 
-    @PostMapping("/orders/{orderId}/assign-delivery")
+    @PostMapping(value = "/assignToDelivery/{orderId}")
     public ResponseEntity<OrderResponse> assignToDelivery(
             @PathVariable Long orderId,
-            @RequestParam Long deliveryPersonId) {
-        log.info("Assigning order ID: {} to delivery person ID: {}", orderId, deliveryPersonId);
-        return ResponseEntity.ok(cashierService.assignToDelivery(orderId, deliveryPersonId));
+            @RequestParam Long bikerId) {
+        log.info("Assigning order ID: {} to delivery person ID: {}", orderId, bikerId);
+        return ResponseEntity.ok(cashierService.assignToDelivery(orderId, bikerId));
     }
 }

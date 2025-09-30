@@ -21,11 +21,12 @@ import java.util.List;
 @RequestMapping("/api/analytics")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
 
-    @GetMapping("/orders/history")
+    @GetMapping(value = "/getOrdersHistory")
     public ResponseEntity<Page<OrderResponse>> getOrderHistory(
             @RequestParam Long restaurantId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -41,7 +42,7 @@ public class AnalyticsController {
         return ResponseEntity.ok(orders);
     }
 
-    @GetMapping("/sales/report")
+    @GetMapping(value = "/getSalesReport")
     public ResponseEntity<SalesReportDTO> generateSalesReport(
             @RequestParam Long restaurantId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -57,7 +58,7 @@ public class AnalyticsController {
         return ResponseEntity.ok(report);
     }
 
-    @GetMapping("/customers/trends")
+    @GetMapping(value = "/getCustomerTrends")
     public ResponseEntity<List<CustomerTrendsDTO>> analyzeCustomerTrends(
             @RequestParam Long restaurantId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,

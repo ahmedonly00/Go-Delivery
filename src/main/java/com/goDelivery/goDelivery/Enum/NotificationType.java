@@ -4,5 +4,6 @@ public enum NotificationType {
     ORDER,
     PROMOTION,
     SYSTEM,
-    PAYMENT
+    PAYMENT,
+    DELIVERY
 }

@@ -13,38 +13,39 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping
+    @PostMapping("/createOrder")
     public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
         return ResponseEntity.ok(orderService.createOrder(orderRequest));
     }
 
-    @GetMapping("/{orderId}")
+    @GetMapping("/getOrderById/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.getOrderById(orderId));
     }
 
-    @GetMapping("/customer/{customerId}")
+    @GetMapping("/getOrdersByCustomer/{customerId}")
     public ResponseEntity<List<OrderResponse>> getOrdersByCustomer(@PathVariable Long customerId) {
         return ResponseEntity.ok(orderService.getOrdersByCustomer(customerId));
     }
 
-    @GetMapping("/restaurant/{restaurantId}")
+    @GetMapping("/getOrdersByRestaurant/{restaurantId}")
     public ResponseEntity<List<OrderResponse>> getOrdersByRestaurant(@PathVariable Long restaurantId) {
         return ResponseEntity.ok(orderService.getOrdersByRestaurant(restaurantId));
     }
 
-    @PutMapping("/{orderId}/status")
+    @PutMapping("/updateOrderStatus/{orderId}")
     public ResponseEntity<OrderResponse> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestBody OrderStatusUpdate statusUpdate) {
         return ResponseEntity.ok(orderService.updateOrderStatus(orderId, statusUpdate));
     }
 
-    @PostMapping("/{orderId}/cancel")
+    @PostMapping("/cancelOrder/{orderId}")
     public ResponseEntity<OrderResponse> cancelOrder(
             @PathVariable Long orderId,
             @RequestParam(required = false) String cancellationReason) {

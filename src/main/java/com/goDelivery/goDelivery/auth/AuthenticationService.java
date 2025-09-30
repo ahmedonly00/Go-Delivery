@@ -1,23 +1,27 @@
 package com.goDelivery.goDelivery.auth;
 
-import com.goDelivery.goDelivery.configSecurity.JwtService;
-import com.goDelivery.goDelivery.dtos.auth.LoginRequest;
-import com.goDelivery.goDelivery.dtos.auth.LoginResponse;
-import com.goDelivery.goDelivery.model.CustomUserDetails;
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.model.SuperAdmin;
+import com.goDelivery.goDelivery.dtos.auth.*;
+import com.goDelivery.goDelivery.dtos.auth.PasswordResetToken;
+import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
+import com.goDelivery.goDelivery.repository.PasswordResetTokenRepository;
 import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.repository.SuperAdminRepository;
+import com.goDelivery.goDelivery.configSecurity.JwtService;
+import com.goDelivery.goDelivery.service.EmailServiceInterface;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,50 +33,40 @@ public class AuthenticationService {
     private final CustomerRepository customerRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailServiceInterface emailService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     public LoginResponse authenticate(LoginRequest request) {
         if (request == null) {
-            log.error("Login request is null");
             throw new IllegalArgumentException("Login request cannot be null");
         }
         
         String email = request.getEmail();
         if (email == null || email.trim().isEmpty()) {
-            log.error("Email is null or empty in login request");
             throw new IllegalArgumentException("Email is required");
         }
         
         try {
-            log.info("Attempting to authenticate user with email: {}", email);
-            
             // Check if user exists first
             CustomUserDetails user = findUserByEmail(email);
-            log.debug("User found: {}", user.getUsername());
-
             // Verify password
             if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                log.warn("Invalid password for user: {}", request.getEmail());
                 throw new BadCredentialsException("Invalid email or password");
             }
 
             // Check if account is active
             if (!user.isAccountNonLocked() || !user.isEnabled()) {
-                log.warn("Account is locked or disabled for user: {}", request.getEmail());
                 throw new RuntimeException("Account is locked or disabled");
             }
 
             try {
                 // Generate token
                 String jwtToken = jwtService.generateToken(user);
-                log.debug("JWT token generated successfully for user: {}", user.getUsername());
-
                 // Extract role
                 String role = user.getAuthorities().stream()
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("No roles found for user"))
                     .getAuthority();
-
-                log.info("User {} authenticated successfully with role: {}", user.getUsername(), role);
 
                 // Return response with full details
                 return new LoginResponse(
@@ -85,63 +79,138 @@ public class AuthenticationService {
                 );
 
             } catch (Exception e) {
-                log.error("Error during token generation or response creation", e);
                 throw new RuntimeException("Authentication processing failed", e);
             }
 
         } catch (UsernameNotFoundException e) {
-            log.warn("User not found: {}", e.getMessage());
             throw e;
         } catch (BadCredentialsException e) {
-            log.warn("Authentication failed for user: {}", request.getEmail());
             throw e;
         } catch (RuntimeException e) {
-            log.error("Authentication error: {}", e.getMessage(), e);
             throw e;
         } catch (Exception e) {
-            log.error("Unexpected error during authentication", e);
             throw new RuntimeException("Authentication failed: " + e.getMessage(), e);
         }
     }
 
     private CustomUserDetails findUserByEmail(String email) {
         if (email == null) {
-            log.error("Email parameter is null in findUserByEmail");
             throw new UsernameNotFoundException("Email cannot be null");
         }
-        
-        log.debug("Looking up user with email: {}", email);
         
         try {
             // Check Restaurant Users (includes ADMIN, CASHIER, BIKER, RESTAURANT_ADMIN roles)
             Optional<RestaurantUsers> restaurantUser = restaurantUsersRepository.findByEmail(email);
             if (restaurantUser.isPresent()) {
-                log.debug("Found restaurant user: {}", email);
                 return restaurantUser.get();
             }
 
             // Check Super Admin
             Optional<SuperAdmin> superAdmin = superAdminRepository.findByEmail(email);
             if (superAdmin.isPresent()) {
-                log.debug("Found super admin: {}", email);
                 return superAdmin.get();
             }
 
             // Check Customer
             Optional<Customer> customer = customerRepository.findByEmail(email);
             if (customer.isPresent()) {
-                log.debug("Found customer: {}", email);
                 return customer.get();
             }
 
             // If no user found with the given email
-            log.warn("No user found with email: {}", email);
             throw new UsernameNotFoundException("User not found with email: " + email);
             
         } catch (Exception e) {
-            log.error("Error finding user by email: {}", email, e);
             throw new UsernameNotFoundException("Error finding user with email: " + email, e);
         }
+    }
+
+    public void logout(@RequestParam String token) {
+
+    }
+
+    public void refreshToken(@RequestParam String token) {
+        // Implementation for token refresh
+    }
+
+    public void forgotPassword(ForgotPasswordRequest request) {
+        String email = request.getEmail();
+        try {
+            // Check if user exists
+            CustomUserDetails user = findUserByEmail(email);
+            
+            // Generate token
+            String token = UUID.randomUUID().toString();
+            
+            // Create and save password reset token
+            PasswordResetToken passwordResetToken = new PasswordResetToken();
+            passwordResetToken.setToken(token);
+            passwordResetToken.setUserEmail(user.getUsername());
+            passwordResetToken.setExpiryDate(calculateExpiryDate(24 * 60)); // 24 hours
+            passwordResetTokenRepository.save(passwordResetToken);
+            
+            // Send email with reset link
+            sendPasswordResetEmail(user.getUsername(), token);
+            
+        } catch (UsernameNotFoundException e) {
+            // For security reasons, we don't reveal if the email exists or not
+        }
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        // Validate token
+        PasswordResetToken token = passwordResetTokenRepository.findByToken(request.getToken())
+            .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
+            
+        // Check if token is expired
+        if (token.getExpiryDate().before(new Date())) {
+            passwordResetTokenRepository.delete(token);
+            throw new RuntimeException("Token has expired");
+        }
+        
+        // Validate password match
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("Passwords do not match");
+        }
+        
+        try {
+            // Find user and update password
+            CustomUserDetails userDetails = findUserByEmail(token.getUserEmail());
+            String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+            
+            // Update and save the user based on their type
+            if (userDetails instanceof Customer) {
+                Customer customer = (Customer) userDetails;
+                customer.setPassword(encodedPassword);
+                customerRepository.save(customer);
+            } else if (userDetails instanceof RestaurantUsers) {
+                RestaurantUsers restaurantUser = (RestaurantUsers) userDetails;
+                restaurantUser.setPassword(encodedPassword);
+                restaurantUsersRepository.save(restaurantUser);
+            } else if (userDetails instanceof SuperAdmin) {
+                SuperAdmin superAdmin = (SuperAdmin) userDetails;
+                superAdmin.setPassword(encodedPassword);
+                superAdminRepository.save(superAdmin);
+            }
+            
+            // Delete the used token
+            passwordResetTokenRepository.delete(token);
+            
+        } catch (Exception e) {
+            throw new RuntimeException("Error resetting password: " + e.getMessage());
+        }
+    }
+    
+    private Date calculateExpiryDate(int expiryTimeInMinutes) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(new Date().getTime());
+        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
+        return new Date(cal.getTime().getTime());
+    }
+    
+    private void sendPasswordResetEmail(String email, String token) {
+        // Delegate the email sending to the EmailService
+        emailService.sendPasswordResetEmail(email, token);
     }
 
 }

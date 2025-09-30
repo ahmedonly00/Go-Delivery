@@ -24,6 +24,7 @@ public class OrderStatusUpdateService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final NotificationService notificationService;
+    private final BikerService bikerService;
 
     @Transactional
     public OrderResponse updateOrderStatusWithNotification(Order order, OrderStatus newStatus) {
@@ -66,34 +67,62 @@ public class OrderStatusUpdateService {
     
     private void sendStatusUpdateNotification(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
         try {
-            // Get the customer from the order
-            Customer customer = order.getCustomer();
-            if (customer == null) {
-                log.warn("Cannot send notification: No customer associated with order {}", order.getOrderId());
-                return;
+            // Send notification to customer
+            notifyCustomer(order, oldStatus, newStatus);
+            
+            // Send notification to biker when order is confirmed/accepted by restaurant
+            if (newStatus == OrderStatus.CONFIRMED) {
+                notifyBikersForNewOrder(order);
             }
-            
-            String customerEmail = customer.getEmail();
-            String message = generateStatusUpdateMessage(order, oldStatus, newStatus);
-            
-            Map<String, Object> templateData = new HashMap<>();
-            templateData.put("orderNumber", order.getOrderNumber());
-            templateData.put("oldStatus", oldStatus.toString());
-            templateData.put("newStatus", newStatus.toString());
-            templateData.put("message", message);
-            
-            notificationService.sendEmail(
-                customerEmail,
-                "Order #" + order.getOrderNumber() + " Status Update",
-                "order-status-update",
-                templateData
-            );
             
             log.info("Sent status update notification for order {}: {} -> {}", 
                     order.getOrderId(), oldStatus, newStatus);
                     
         } catch (Exception e) {
             log.error("Failed to send status update notification for order {}: {}", 
+                    order.getOrderId(), e.getMessage(), e);
+        }
+    }
+    
+    private void notifyCustomer(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
+        Customer customer = order.getCustomer();
+        if (customer == null) {
+            log.warn("Cannot send notification: No customer associated with order {}", order.getOrderId());
+            return;
+        }
+        
+        String customerEmail = customer.getEmail();
+        String message = generateStatusUpdateMessage(order, oldStatus, newStatus);
+        
+        Map<String, Object> templateData = new HashMap<>();
+        templateData.put("orderNumber", order.getOrderNumber());
+        templateData.put("oldStatus", oldStatus.toString());
+        templateData.put("newStatus", newStatus.toString());
+        templateData.put("message", message);
+        
+        notificationService.sendEmail(
+            customerEmail,
+            "Order #" + order.getOrderNumber() + " Status Update",
+            "order-status-update",
+            templateData
+        );
+    }
+    
+    private void notifyBikersForNewOrder(Order order) {
+        try {
+            // If a biker is already assigned, notify them specifically
+            if (order.getBikers() != null) {
+                Bikers assignedBiker = order.getBikers();
+                bikerService.assignBikerToOrder(assignedBiker, order);
+                log.info("Notified assigned biker {} about order {}", 
+                        assignedBiker.getBikerId(), order.getOrderNumber());
+            } else {
+                // Broadcast to all available bikers
+                bikerService.broadcastOrderToAvailableBikers(order);
+                log.info("Broadcast order {} to all available bikers", order.getOrderNumber());
+            }
+        } catch (Exception e) {
+            log.error("Failed to notify bikers for order {}: {}", 
                     order.getOrderId(), e.getMessage(), e);
         }
     }

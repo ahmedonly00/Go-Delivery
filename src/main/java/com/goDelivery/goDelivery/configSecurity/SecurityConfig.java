@@ -75,17 +75,55 @@ public class SecurityConfig {
                     ).hasRole("SUPER_ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/api/restaurant-applications/*/review")
                     .hasRole("SUPER_ADMIN")
+                    // Customer endpoints - require CUSTOMER role
+                    .requestMatchers(
+                        "/api/customers/**",
+                        "/api/orders/createOrder",
+                        "/api/orders/cancelOrder/*",
+                        "/api/payments/process",
+                        "/api/payments/customer/*"
+                    ).hasRole("CUSTOMER")
+                    // Restaurant Admin endpoints - require RESTAURANT_ADMIN role
                     .requestMatchers(
                         "/api/users/**",
-                        "/api/orders/**",
                         "/api/menu-item/**",
                         "/api/menu-category/**",
                         "/api/file-upload/**",
-                        "/api/payments/**"
-                    ).hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER")
+                        "/api/restaurants/**"
+                    ).hasRole("RESTAURANT_ADMIN")
+                    // Shared endpoints - both CUSTOMER and RESTAURANT_ADMIN
+                    .requestMatchers(
+                        "/api/orders/**"
+                    ).hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER")
+                    // Public order tracking
                     .requestMatchers(
                         "/api/orders/*/track"
                     ).permitAll()
+                    // Biker endpoints - require BIKER role
+                    .requestMatchers(
+                        "/api/bikers/*/availableOrders",
+                        "/api/bikers/*/activeOrders",
+                        "/api/bikers/*/customerDetails/*",
+                        "/api/bikers/*/navigation/*",
+                        "/api/bikers/acceptDelivery",
+                        "/api/bikers/rejectDelivery",
+                        "/api/bikers/confirmPickup",
+                        "/api/bikers/confirmDelivery",
+                        "/api/bikers/updateLocation",
+                        "/api/bikers/getNavigation"
+                    ).hasRole("BIKER")
+                    // Public tracking endpoint - no authentication required
+                    .requestMatchers(
+                        "/api/bikers/tracking/*"
+                    ).permitAll()
+                    // Cashier endpoints
+                    .requestMatchers(
+                        "/api/cashier/**"
+                    ).hasRole("CASHIER")
+                    // Analytics endpoints
+                    .requestMatchers(
+                        "/api/analytics/**"
+                    ).hasAnyRole("RESTAURANT_ADMIN", "SUPER_ADMIN")
                     .anyRequest().authenticated()
             )
             .sessionManagement(session -> 
@@ -100,6 +138,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

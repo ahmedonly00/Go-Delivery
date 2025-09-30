@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/api/test/email")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class TestEmailController {
 
     private final EmailServiceInterface emailService;
