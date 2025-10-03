@@ -3,11 +3,12 @@ package com.goDelivery.goDelivery.dtos.menu;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MenuItemRequest {
     @NotBlank(message = "Menu item name is required")
     private String menuItemName;
@@ -20,6 +21,7 @@ public class MenuItemRequest {
 
     private String image;
     private String ingredients;
+    @Builder.Default
     private boolean isAvailable = true;
     
     @Positive(message = "Preparation time must be greater than 0")

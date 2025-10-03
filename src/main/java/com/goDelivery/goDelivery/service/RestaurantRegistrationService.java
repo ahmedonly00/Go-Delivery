@@ -1,8 +1,19 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
-import com.goDelivery.goDelivery.dtos.restaurant.*;
+import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
+import com.goDelivery.goDelivery.dtos.restaurant.OperatingHoursDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantAdminRegistrationDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantAdminResponseDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantBasicInfoDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantSettingsDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantSetupProgressDTO;
 import com.goDelivery.goDelivery.exception.ResourceAlreadyExistsException;
+import com.goDelivery.goDelivery.model.MenuItem;
+import com.goDelivery.goDelivery.model.MenuCategory;
+import com.goDelivery.goDelivery.repository.MenuItemRepository;
+import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
 import com.goDelivery.goDelivery.model.OperatingHours;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
@@ -20,9 +31,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 
 @Slf4j
 @Service
@@ -35,6 +46,8 @@ public class RestaurantRegistrationService {
     private final RestaurantUserMapper userMapper;
     private final RestaurantMapper restaurantMapper;
     private final EmailService emailService;
+    private final MenuItemRepository menuItemRepository;
+    private final MenuCategoryRepository menuCategoryRepository;
     @Transactional
     public RestaurantAdminResponseDTO registerRestaurantAdmin(RestaurantAdminRegistrationDTO registrationDTO) {
         // Check if email already exists
@@ -141,9 +154,43 @@ public class RestaurantRegistrationService {
         restaurant.setPhoneNumber(basicInfoDTO.getPhoneNumber());
         restaurant.setLocation(basicInfoDTO.getLocation());
         restaurant.setLogoUrl(basicInfoDTO.getLogoUrl());
-        restaurant.setSetupStatus(RestaurantSetupStatus.BASIC_INFO_ADDED);
         
+        // Save the restaurant first to get an ID
         restaurant = restaurantRepository.save(restaurant);
+        
+        // Create a default category for the restaurant
+        MenuCategory defaultCategory = MenuCategory.builder()
+                .categoryName("Main Menu")
+                .description("Main menu items")
+                .image("")
+                .sortOrder(1)
+                .isActive(true)
+                .createdAt(LocalDate.now())
+                .restaurant(restaurant)
+                .build();
+        defaultCategory = menuCategoryRepository.save(defaultCategory);
+        
+        // Save menu items
+        if (basicInfoDTO.getMenuItems() != null && !basicInfoDTO.getMenuItems().isEmpty()) {
+            for (MenuItemRequest menuItemRequest : basicInfoDTO.getMenuItems()) {
+                MenuItem menuItem = new MenuItem();
+                menuItem.setMenuItemName(menuItemRequest.getMenuItemName());
+                menuItem.setDescription(menuItemRequest.getDescription() != null ? menuItemRequest.getDescription() : "");
+                menuItem.setPrice(menuItemRequest.getPrice());
+                menuItem.setImage(menuItemRequest.getImage() != null ? menuItemRequest.getImage() : "");
+                menuItem.setIngredients(menuItemRequest.getIngredients() != null ? menuItemRequest.getIngredients() : "");
+                menuItem.setAvailable(menuItemRequest.isAvailable());
+                menuItem.setPreparationTime(menuItemRequest.getPreparationTime() != null ? menuItemRequest.getPreparationTime() : 15);
+                menuItem.setPreparationScore(0);
+                menuItem.setCreatedAt(LocalDate.now());
+                menuItem.setUpdatedAt(LocalDate.now());
+                menuItem.setRestaurant(restaurant);
+                menuItem.setCategory(defaultCategory);
+                
+                menuItemRepository.save(menuItem);
+            }
+        }
+        
         return restaurantMapper.toRestaurantDTO(restaurant);
     }
 

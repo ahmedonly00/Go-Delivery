@@ -285,9 +285,7 @@ public class BikerService {
                 .toList();
     }
     
-    /**
-     * Get biker's active/assigned orders
-     */
+ 
     @Transactional(readOnly = true)
     public List<Order> getBikerActiveOrders(Long bikerId) {
         Bikers biker = bikersRepository.findById(bikerId)
@@ -301,9 +299,7 @@ public class BikerService {
                 .toList();
     }
     
-    /**
-     * Confirm pickup at restaurant
-     */
+    
     @Transactional
     public PickupConfirmationResponse confirmPickup(PickupConfirmationRequest request) {
         log.info("Biker {} confirming pickup for order {}", request.getBikerId(), request.getOrderId());
@@ -372,9 +368,7 @@ public class BikerService {
                 .build();
     }
     
-    /**
-     * Calculate estimated delivery time based on distance
-     */
+    
     private Integer calculateEstimatedDeliveryTime(Order order, Bikers biker) {
         // In a real implementation, use Google Maps API or similar
         // For now, return a reasonable estimate based on distance
@@ -383,18 +377,14 @@ public class BikerService {
         return 20;
     }
     
-    /**
-     * Generate navigation URL to customer address
-     */
+    
     private String generateNavigationUrl(String address) {
         // Generate Google Maps URL for navigation
         String encodedAddress = address.replace(" ", "+");
         return "https://www.google.com/maps/dir/?api=1&destination=" + encodedAddress;
     }
     
-    /**
-     * Update biker's current location
-     */
+    
     @Transactional
     public void updateLocation(LocationUpdateRequest request) {
         log.info("Updating location for biker {}: lat={}, lon={}", 
@@ -426,9 +416,7 @@ public class BikerService {
         log.info("Location updated for biker {}", request.getBikerId());
     }
     
-    /**
-     * Get navigation details for order
-     */
+    
     @Transactional(readOnly = true)
     public NavigationResponse getNavigation(NavigationRequest request) {
         log.info("Getting navigation for biker {} and order {}", request.getBikerId(), request.getOrderId());
@@ -506,9 +494,7 @@ public class BikerService {
                 .build();
     }
     
-    /**
-     * Start navigation to destination
-     */
+    
     @Transactional
     public NavigationResponse startNavigation(Long bikerId, Long orderId, String destinationType) {
         log.info("Biker {} starting navigation to {} for order {}", bikerId, destinationType, orderId);
@@ -528,9 +514,7 @@ public class BikerService {
         return navigation;
     }
     
-    /**
-     * Get delivery tracking info
-     */
+    
     @Transactional(readOnly = true)
     public DeliveryTrackingResponse getDeliveryTracking(Long orderId) {
         Order order = orderRepository.findById(orderId)
@@ -576,9 +560,7 @@ public class BikerService {
         return response;
     }
     
-    /**
-     * Confirm successful delivery
-     */
+    
     @Transactional
     public DeliveryConfirmationResponse confirmDelivery(DeliveryConfirmationRequest request) {
         log.info("Biker {} confirming delivery for order {}", request.getBikerId(), request.getOrderId());
@@ -682,9 +664,7 @@ public class BikerService {
                 .build();
     }
     
-    /**
-     * Get customer interaction details for delivery
-     */
+    
     @Transactional(readOnly = true)
     public CustomerInteractionDetails getCustomerInteractionDetails(Long orderId, Long bikerId) {
         log.info("Getting customer interaction details for order {} and biker {}", orderId, bikerId);

@@ -1,10 +1,17 @@
 package com.goDelivery.goDelivery.dtos.restaurant;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class RestaurantBasicInfoDTO {
@@ -29,4 +36,10 @@ public class RestaurantBasicInfoDTO {
     
     @NotBlank(message = "Location is required")
     private String location;
+    
+    @NotBlank(message = "Logo URL is required")
+    private String logoUrl;
+    
+    @NotEmpty(message = "At least one menu item is required")
+    private List<@Valid MenuItemRequest> menuItems = new ArrayList<>();
 }
