@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.dtos.restaurant;
 
-import com.goDelivery.goDelivery.model.enums.RestaurantSetupStatus;
+import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

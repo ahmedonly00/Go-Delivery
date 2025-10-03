@@ -119,7 +119,7 @@ public class MenuUploadService {
                 
                 for (String line : lines) {
                     line = line.trim();
-                    if (line.matches(".*\d+\s*\$.*")) { // Simple check for price pattern
+                    if (line.matches(".*\\d+\\s*\\$.*")) { // Simple check for price pattern
                         String[] parts = line.split("\\s+\\$");
                         if (parts.length >= 2) {
                             String name = parts[0].trim();
@@ -134,7 +134,7 @@ public class MenuUploadService {
                                         .preparationTime(15) // Default value
                                         .build());
                             } catch (NumberFormatException e) {
-                                log.warn("Could not parse price from: " + line);
+                                log.warn("Could not parse: {}", line);
                             }
                         }
                     }
@@ -192,7 +192,7 @@ public class MenuUploadService {
             
             for (String line : lines) {
                 line = line.trim();
-                if (line.matches(".*\\d+\\.?\\d*\s*\$?\\s*\\d+.*") || line.matches(".*\\$\\s*\\d+\\.?\\d*.*")) {
+                if (line.matches(".*\\d+\\.?\\d*\\s*\\$?\\s*\\d+.*") || line.matches(".*\\$\\s*\\d+\\.?\\d*.*")) {
                     // This is a simple pattern match for menu items with prices
                     // You might need to adjust this based on your menu format
                     String[] parts = line.split("\\s+\\$");
@@ -253,7 +253,7 @@ public class MenuUploadService {
                     return defaultValue;
             }
         } catch (Exception e) {
-            log.warn("Error getting cell value: " + e.getMessage());
+            log.warn("Error getting cell value: {}", e.getMessage());
             return defaultValue;
         }
     }
@@ -262,7 +262,7 @@ public class MenuUploadService {
         try {
             return Float.parseFloat(value);
         } catch (NumberFormatException e) {
-            log.warn("Could not parse float from: " + value + ", using default: " + defaultValue);
+            log.warn("Could not parse float from: {}, using default: {}", value, defaultValue);
             return Float.parseFloat(defaultValue);
         }
     }
