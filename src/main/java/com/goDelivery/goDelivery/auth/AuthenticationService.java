@@ -8,7 +8,6 @@ import com.goDelivery.goDelivery.repository.PasswordResetTokenRepository;
 import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.repository.SuperAdminRepository;
 import com.goDelivery.goDelivery.configSecurity.JwtService;
-import com.goDelivery.goDelivery.service.EmailServiceInterface;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +30,6 @@ public class AuthenticationService {
     private final CustomerRepository customerRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private final EmailServiceInterface emailService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     public LoginResponse authenticate(LoginRequest request) {
@@ -133,30 +129,6 @@ public class AuthenticationService {
         // Implementation for token refresh
     }
 
-    public void forgotPassword(ForgotPasswordRequest request) {
-        String email = request.getEmail();
-        try {
-            // Check if user exists
-            CustomUserDetails user = findUserByEmail(email);
-            
-            // Generate token
-            String token = UUID.randomUUID().toString();
-            
-            // Create and save password reset token
-            PasswordResetToken passwordResetToken = new PasswordResetToken();
-            passwordResetToken.setToken(token);
-            passwordResetToken.setUserEmail(user.getUsername());
-            passwordResetToken.setExpiryDate(calculateExpiryDate(24 * 60)); // 24 hours
-            passwordResetTokenRepository.save(passwordResetToken);
-            
-            // Send email with reset link
-            sendPasswordResetEmail(user.getUsername(), token);
-            
-        } catch (UsernameNotFoundException e) {
-            // For security reasons, we don't reveal if the email exists or not
-        }
-    }
-
     public void resetPassword(ResetPasswordRequest request) {
         // Validate token
         PasswordResetToken token = passwordResetTokenRepository.findByToken(request.getToken())
@@ -199,18 +171,6 @@ public class AuthenticationService {
         } catch (Exception e) {
             throw new RuntimeException("Error resetting password: " + e.getMessage());
         }
-    }
-    
-    private Date calculateExpiryDate(int expiryTimeInMinutes) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(new Date().getTime());
-        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
-        return new Date(cal.getTime().getTime());
-    }
-    
-    private void sendPasswordResetEmail(String email, String token) {
-        // Delegate the email sending to the EmailService
-        emailService.sendPasswordResetEmail(email, token);
     }
 
 }

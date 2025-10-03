@@ -29,16 +29,6 @@ public class FileUploadController {
         return ResponseEntity.ok().body("{\"filePath\": \"" + filePath + "\"}");
     }
 
-    @PostMapping("/{restaurantId}/banner")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
-    public ResponseEntity<String> uploadBanner(
-            @PathVariable Long restaurantId,
-            @RequestParam("file") MultipartFile file) {
-        String filePath = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/banners");
-        restaurantService.updateRestaurantBanner(restaurantId, filePath);
-        return ResponseEntity.ok().body("{\"filePath\": \"" + filePath + "\"}");
-    }
-
     @PostMapping("/{restaurantId}/promotions")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     public ResponseEntity<String> uploadPromotion(

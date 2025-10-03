@@ -52,9 +52,9 @@ public class RestaurantRegistrationService {
         admin.setVerificationToken(UUID.randomUUID().toString());
         admin.setVerificationTokenExpiry(LocalDateTime.now().plusHours(24));
 
-        // Create a new restaurant
+        // Create a new restaurant with default values
+        // Restaurant name will be set in the saveBasicInfo step
         Restaurant restaurant = new Restaurant();
-        restaurant.setRestaurantName(registrationDTO.getRestaurantName());
         restaurant.setSetupStatus(RestaurantSetupStatus.ACCOUNT_CREATED);
         restaurant = restaurantRepository.save(restaurant);
 
@@ -135,49 +135,18 @@ public class RestaurantRegistrationService {
             .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
         Restaurant restaurant = user.getRestaurant();
+        restaurant.setRestaurantName(basicInfoDTO.getRestaurantName());
         restaurant.setDescription(basicInfoDTO.getDescription());
         restaurant.setCuisineType(basicInfoDTO.getCuisineType());
         restaurant.setPhoneNumber(basicInfoDTO.getPhoneNumber());
+        restaurant.setLocation(basicInfoDTO.getLocation());
+        restaurant.setLogoUrl(basicInfoDTO.getLogoUrl());
         restaurant.setSetupStatus(RestaurantSetupStatus.BASIC_INFO_ADDED);
         
         restaurant = restaurantRepository.save(restaurant);
         return restaurantMapper.toRestaurantDTO(restaurant);
     }
 
-    @Transactional
-    public RestaurantDTO saveLocation(String email, RestaurantLocationDTO locationDTO) {
-        RestaurantUsers user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
-
-        Restaurant restaurant = user.getRestaurant();
-        restaurant.setAddress(locationDTO.getAddress());
-        restaurant.setCity(locationDTO.getCity());
-        restaurant.setPostalCode(locationDTO.getPostalCode());
-        restaurant.setLatitude(locationDTO.getLatitude());
-        restaurant.setLongitude(locationDTO.getLongitude());
-        restaurant.setDeliveryRadius(locationDTO.getDeliveryRadius());
-        restaurant.setSetupStatus(RestaurantSetupStatus.LOCATION_ADDED);
-        
-        restaurant = restaurantRepository.save(restaurant);
-        return restaurantMapper.toRestaurantDTO(restaurant);
-    }
-
-    @Transactional
-    public RestaurantDTO saveBranding(String email, RestaurantBrandingDTO brandingDTO) {
-        RestaurantUsers user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
-
-        Restaurant restaurant = user.getRestaurant();
-        // Handle file uploads here (logo, banner, etc.)
-        // This is a simplified version - you'll need to implement file handling
-        restaurant.setLogoUrl(brandingDTO.getLogoUrl());
-        restaurant.setBannerUrl(brandingDTO.getBannerUrl());
-        restaurant.setCoverImageUrl(brandingDTO.getCoverImageUrl());
-        restaurant.setSetupStatus(RestaurantSetupStatus.BRANDING_ADDED);
-        
-        restaurant = restaurantRepository.save(restaurant);
-        return restaurantMapper.toRestaurantDTO(restaurant);
-    }
 
     @Transactional
     public RestaurantDTO saveSettings(String email, RestaurantSettingsDTO settingsDTO) {

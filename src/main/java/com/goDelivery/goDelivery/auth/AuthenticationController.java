@@ -1,6 +1,5 @@
 package com.goDelivery.goDelivery.auth;
 
-import com.goDelivery.goDelivery.dtos.auth.ForgotPasswordRequest;
 import com.goDelivery.goDelivery.dtos.auth.LoginRequest;
 import com.goDelivery.goDelivery.dtos.auth.LoginResponse;
 import com.goDelivery.goDelivery.dtos.auth.ResetPasswordRequest;
@@ -48,17 +47,6 @@ public class AuthenticationController {
         } catch (Exception e) {
             log.error("Login failed for user: {}", email, e);
             return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-    
-    @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-        try {
-            service.forgotPassword(request);
-            return ResponseEntity.ok("If an account with that email exists, a password reset link has been sent");
-        } catch (Exception e) {
-            log.error("Error processing forgot password request for email: {}", request.getEmail(), e);
-            return ResponseEntity.badRequest().body("Error processing your request");
         }
     }
     

@@ -52,20 +52,6 @@ public class RestaurantRegistrationController {
         return ResponseEntity.ok(registrationService.saveBasicInfo(userDetails.getUsername(), basicInfoDTO));
     }
 
-    @PostMapping("/location")
-    public ResponseEntity<RestaurantDTO> saveLocation(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody RestaurantLocationDTO locationDTO) {
-        return ResponseEntity.ok(registrationService.saveLocation(userDetails.getUsername(), locationDTO));
-    }
-
-    @PostMapping("/branding")
-    public ResponseEntity<RestaurantDTO> saveBranding(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody RestaurantBrandingDTO brandingDTO) {
-        return ResponseEntity.ok(registrationService.saveBranding(userDetails.getUsername(), brandingDTO));
-    }
-
     @PostMapping("/settings")
     public ResponseEntity<RestaurantDTO> saveSettings(
             @AuthenticationPrincipal UserDetails userDetails,

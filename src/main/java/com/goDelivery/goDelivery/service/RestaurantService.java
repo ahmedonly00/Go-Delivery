@@ -43,9 +43,6 @@ public class RestaurantService {
         existingRestaurant.setEmail(restaurantDTO.getEmail());
         existingRestaurant.setPhoneNumber(restaurantDTO.getPhoneNumber());
         existingRestaurant.setLogoUrl(restaurantDTO.getLogoUrl());
-        existingRestaurant.setAveragePreparationTime(restaurantDTO.getAveragePreparationTime());
-        existingRestaurant.setDeliveryFee(restaurantDTO.getDeliveryFee());
-        existingRestaurant.setMinimumOrderAmount(restaurantDTO.getMinimumOrderAmount());
         existingRestaurant.setActive(restaurantDTO.isActive());
         existingRestaurant.setUpdatedAt(java.time.LocalDate.now());
 
@@ -62,14 +59,6 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
         restaurant.setLogoUrl(logoUrl);
-        restaurant.setUpdatedAt(LocalDate.now());
-        return restaurantMapper.toRestaurantDTO(restaurantRepository.save(restaurant));
-    }
-
-    public RestaurantDTO updateRestaurantBanner(Long restaurantId, String bannerUrl) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
-        restaurant.setBannerUrl(bannerUrl);
         restaurant.setUpdatedAt(LocalDate.now());
         return restaurantMapper.toRestaurantDTO(restaurantRepository.save(restaurant));
     }
@@ -156,25 +145,13 @@ public class RestaurantService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Retrieves a restaurant by ID
-     * 
-     * @param id Restaurant ID
-     * @return Restaurant
-     */
-    public RestaurantDTO getRestaurantById(Long id) {
-        Restaurant restaurant = restaurantRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + id));
+   
+    public RestaurantDTO getRestaurantById(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
         return restaurantMapper.toRestaurantDTO(restaurant);
     }
 
-    /**
-     * Updates the operating hours of a restaurant
-     * 
-     * @param restaurantId Restaurant ID
-     * @param request      Update operating hours request
-     * @return Updated restaurant
-     */
     public RestaurantDTO updateOperatingHours(Long restaurantId, UpdateOperatingHoursRequest request) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
@@ -201,7 +178,7 @@ public class RestaurantService {
         operatingHours.setSundayOpen(request.getSundayOpen());
         operatingHours.setSundayClose(request.getSundayClose());
         
-        // Save the operating hours first
+        // Save the updated operating hours
         operatingHoursRepository.save(operatingHours);
         
         // Update the restaurant's updatedAt timestamp
@@ -210,24 +187,13 @@ public class RestaurantService {
         
         return restaurantMapper.toRestaurantDTO(restaurant);
     }
-
-    /**
-     * Retrieves all active restaurants
-     * 
-     * @return List of active restaurants
-     */
+    
     public List<RestaurantDTO> getAllActiveRestaurants() {
         return restaurantRepository.findByIsActive(true).stream()
                 .map(restaurantMapper::toRestaurantDTO)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Retrieves restaurants by cuisine
-     * 
-     * @param cuisineType Cuisine type
-     * @return List of restaurants
-     */
     
     public List<RestaurantDTO> getRestaurantsByCuisine(String cuisineType) {
         return restaurantRepository.findByCuisineTypeAndIsActive(cuisineType, true).stream()

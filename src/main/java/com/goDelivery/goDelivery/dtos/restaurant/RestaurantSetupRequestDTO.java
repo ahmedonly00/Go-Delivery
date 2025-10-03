@@ -13,16 +13,9 @@ public class RestaurantSetupRequestDTO {
     @Valid
     private RestaurantBasicInfoDTO basicInfo;
 
-    @NotNull(message = "Location information is required")
-    @Valid
-    private RestaurantLocationDTO location;
-
     @NotNull(message = "Operating hours are required")
     @Valid
     private Map<String, OperatingHoursDTO> operatingHours;
-
-    @Valid
-    private RestaurantBrandingDTO branding;
 
     @Valid
     private RestaurantSettingsDTO settings;

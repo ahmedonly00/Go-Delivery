@@ -54,31 +54,6 @@ public class Restaurant {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "banner_url")
-    private String bannerUrl;
-
-    @Column(name = "cover_image_url")
-    private String coverImageUrl;
-
-    @Column(name = "address")
-    private String address;
-
-    @Column(name = "city")
-    private String city;
-
-    @Column(name = "postal_code")
-    private String postalCode;
-
-    @Column(name = "latitude")
-    private Double latitude;
-
-    @Column(name = "longitude")
-    private Double longitude;
-
-    @Column(name = "delivery_radius")
-    @Builder.Default
-    private Double deliveryRadius = 5.0; // Default 5km
-
     @Builder.Default
     @Column(name = "is_active")
     private boolean isActive = true;
