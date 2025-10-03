@@ -1,4 +1,4 @@
-package com.goDelivery.goDelivery.service;
+package com.goDelivery.goDelivery.exception;
 
 public class ResourceAlreadyExistsException extends RuntimeException {
     public ResourceAlreadyExistsException(String message) {

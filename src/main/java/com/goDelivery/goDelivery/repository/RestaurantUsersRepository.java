@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface RestaurantUsersRepository extends JpaRepository<RestaurantUsers, Long> {
     boolean existsByEmail(String email);
     Optional<RestaurantUsers> findByEmail(String email);
-    Optional<RestaurantUsers> findByFullNames(String fullNames);
+    Optional<RestaurantUsers> findByFullName(String fullName);
     Optional<RestaurantUsers> findByUserId(Long userId);
     Optional<RestaurantUsers> findByVerificationToken(String token);
 }
