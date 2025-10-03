@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.ss.usermodel.*;
@@ -19,10 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,7 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -61,16 +57,16 @@ public class MenuUploadService {
 
             switch (fileExtension.toLowerCase()) {
                 case "pdf":
-                    menuItems = processPdfFile(file.getInputStream());
+                    menuItems = processPdfFile(file.getInputStream(), defaultCategory.getCategoryId(), restaurantId);
                     break;
                 case "xlsx":
                 case "xls":
-                    menuItems = processExcelFile(file.getInputStream());
+menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryId(), restaurantId);
                     break;
                 case "jpg":
                 case "jpeg":
                 case "png":
-                    menuItems = processImageFile(file);
+                    menuItems = processImageFile(file, defaultCategory.getCategoryId(), restaurantId);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unsupported file format: " + fileExtension);
@@ -106,10 +102,13 @@ public class MenuUploadService {
         return menuCategoryRepository.save(category);
     }
 
-    private List<MenuItemRequest> processPdfFile(InputStream inputStream) throws IOException {
+    private List<MenuItemRequest> processPdfFile(InputStream inputStream, Long categoryId, Long restaurantId) throws IOException {
         List<MenuItemRequest> items = new ArrayList<>();
         
-        try (PDDocument document = PDDocument.load(inputStream)) {
+        // Convert InputStream to byte array
+        byte[] pdfBytes = inputStream.readAllBytes();
+        
+        try (PDDocument document = Loader.loadPDF(pdfBytes)) {
             if (!document.isEncrypted()) {
                 PDFTextStripper stripper = new PDFTextStripper();
                 String text = stripper.getText(document);
@@ -132,6 +131,8 @@ public class MenuUploadService {
                                         .price(price)
                                         .isAvailable(true)
                                         .preparationTime(15) // Default value
+                                        .categoryId(categoryId)
+                                        .restaurantId(restaurantId)
                                         .build());
                             } catch (NumberFormatException e) {
                                 log.warn("Could not parse: {}", line);
@@ -145,7 +146,7 @@ public class MenuUploadService {
         return items;
     }
 
-    private List<MenuItemRequest> processExcelFile(InputStream inputStream) throws IOException {
+    private List<MenuItemRequest> processExcelFile(InputStream inputStream, Long categoryId, Long restaurantId) throws IOException {
         List<MenuItemRequest> items = new ArrayList<>();
         try (Workbook workbook = new XSSFWorkbook(inputStream)) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -158,9 +159,9 @@ public class MenuUploadService {
                         MenuItemRequest item = MenuItemRequest.builder()
                                 .menuItemName(getCellValue(row.getCell(0)))
                                 .description(getCellValue(row.getCell(1)))
-                                .price(parseFloatSafely(getCellValue(row.getCell(2), "0")))
+                                .price(parseFloatSafely(getCellValue(row.getCell(2)), "0"))
                                 .ingredients(getCellValue(row.getCell(3)))
-                                .preparationTime(parseIntSafely(getCellValue(row.getCell(4), "15")))
+                                .preparationTime(parseIntSafely(getCellValue(row.getCell(4)), "15"))
                                 .isAvailable(true)
                                 .build();
                         items.add(item);
@@ -173,7 +174,7 @@ public class MenuUploadService {
         return items;
     }
 
-    private List<MenuItemRequest> processImageFile(MultipartFile file) throws IOException, TesseractException {
+    private List<MenuItemRequest> processImageFile(MultipartFile file, Long categoryId, Long restaurantId) throws IOException, TesseractException {
         List<MenuItemRequest> items = new ArrayList<>();
         
         // Convert MultipartFile to File
