@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
+
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -40,9 +42,6 @@ public class Restaurant {
     @Column(name = "logo_url")
     private String logoUrl;
 
-    @Column(name = "banner_url")
-    private String bannerUrl;
-
     @Column(name = "rating")
     private Float rating;
 
@@ -51,6 +50,53 @@ public class Restaurant {
 
     @Column(name = "total_orders")
     private Integer totalOrders;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "banner_url")
+    private String bannerUrl;
+
+    @Column(name = "cover_image_url")
+    private String coverImageUrl;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "postal_code")
+    private String postalCode;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
+    @Column(name = "delivery_radius")
+    @Builder.Default
+    private Double deliveryRadius = 5.0; // Default 5km
+
+    @Builder.Default
+    @Column(name = "is_active")
+    private boolean isActive = true;
+
+    @Builder.Default
+    @Column(name = "setup_status")
+    @Enumerated(EnumType.STRING)
+    private RestaurantSetupStatus setupStatus = RestaurantSetupStatus.ACCOUNT_CREATED;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_user_id")
+    private RestaurantUsers createdBy;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDate createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDate updatedAt;
 
     @Column(name = "average_preparation_time")
     private Integer averagePreparationTime;
@@ -61,17 +107,8 @@ public class Restaurant {
     @Column(name = "minimum_order_amount")
     private Float minimumOrderAmount;
 
-    @Column(name = "is_active")
-    private boolean isActive;
-    
     @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     private OperatingHours operatingHours;
-
-    @Column(name = "created_at")
-    private LocalDate createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDate updatedAt;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id")

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congratulations! Your Restaurant is Now Live on GoDelivery</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { max-width: 200px; margin-bottom: 20px; }
+        .content { background-color: #f9f9f9; padding: 25px; border-radius: 5px; }
+        .button {
+            display: inline-block; 
+            padding: 12px 24px; 
+            background-color: #4CAF50; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .footer { margin-top: 30px; font-size: 12px; color: #777; text-align: center; }
+        .highlight-box { 
+            background-color: #e8f5e9; 
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Congratulations!</h1>
+        <p>Your Restaurant is Now Live on GoDelivery</p>
+    </div>
+    
+    <div class="content">
+        <p>Dear <span th:text="${name}">Restaurant Owner</span>,</p>
+        
+        <p>Great news! Your restaurant <strong th:text="${restaurantName}">[Restaurant Name]</strong> is now live and visible to customers on GoDelivery. You're all set to start receiving orders!</p>
+        
+        <div class="highlight-box">
+            <h3 style="margin-top: 0;">Your Restaurant is Live!</h3>
+            <p>Customers can now discover and order from your restaurant. Here's your restaurant's public page:</p>
+            <p style="text-align: center; margin: 20px 0;">
+                <a th:href="${restaurantUrl}" style="color: #4CAF50; text-decoration: underline;">View Your Restaurant</a>
+            </p>
+        </div>
+        
+        <h3>What's Next?</h3>
+        <p>Here are some things you can do to make the most of your GoDelivery experience:</p>
+        
+        <ul>
+            <li><strong>Promote Your Menu</strong> - Share your restaurant's link on social media</li>
+            <li><strong>Manage Orders</strong> - Keep an eye on incoming orders in your dashboard</li>
+            <li><strong>Update Your Menu</strong> - Add daily specials or update your offerings</li>
+            <li><strong>Review Analytics</strong> - Track your performance and customer preferences</li>
+        </ul>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a th:href="${dashboardUrl}" class="button">Go to Dashboard</a>
+        </div>
+        
+        <p>Need help or have questions? Our support team is always here to assist you at <a href="mailto:support@godelivery.com">support@godelivery.com</a>.</p>
+        
+        <p>Thank you for choosing GoDelivery. We're excited to help grow your business!</p>
+        
+        <p>Best regards,<br>The GoDelivery Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 GoDelivery. All rights reserved.</p>
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</body>
+</html>

@@ -64,10 +64,16 @@ public class SecurityConfig {
                         "/favicon.ico"
                     ).permitAll()
                     .requestMatchers(
+                        // Public endpoints
                         "/api/restaurant-applications/submit",
                         "/api/super-admin/register",
                         "/api/test/email/**",
-                        "/api/customers/registerCustomer"
+                        "/api/customers/registerCustomer",
+                        
+                        // Registration and verification endpoints
+                        "/api/restaurants/registration/register",
+                        "/api/restaurants/registration/verify-email",
+                        "/api/restaurants/registration/resend-verification"
                     ).permitAll()
                     .requestMatchers(
                         "/api/restaurant-applications/all",

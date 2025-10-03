@@ -43,7 +43,6 @@ public class RestaurantService {
         existingRestaurant.setEmail(restaurantDTO.getEmail());
         existingRestaurant.setPhoneNumber(restaurantDTO.getPhoneNumber());
         existingRestaurant.setLogoUrl(restaurantDTO.getLogoUrl());
-        existingRestaurant.setBannerUrl(restaurantDTO.getBannerUrl());
         existingRestaurant.setAveragePreparationTime(restaurantDTO.getAveragePreparationTime());
         existingRestaurant.setDeliveryFee(restaurantDTO.getDeliveryFee());
         existingRestaurant.setMinimumOrderAmount(restaurantDTO.getMinimumOrderAmount());

@@ -79,8 +79,8 @@ public class UsersService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
     
         // Update fields only if provided (null-safe updates)
-        if (request.getFullNames() != null && !request.getFullNames().trim().isEmpty()) {
-            user.setFullNames(request.getFullNames());
+        if (request.getFullName() != null && !request.getFullName().trim().isEmpty()) {
+            user.setFullName(request.getFullName());
         }
         
         if (request.getPhoneNumber() != null && !request.getPhoneNumber().trim().isEmpty()) {

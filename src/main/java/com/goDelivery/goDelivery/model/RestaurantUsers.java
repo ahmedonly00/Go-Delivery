@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -27,8 +26,8 @@ public class RestaurantUsers implements CustomUserDetails {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "full_names",nullable = false)
-    private String fullNames;
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
 
     @Column(name = "email", nullable = false)
     private String email;
@@ -46,17 +45,34 @@ public class RestaurantUsers implements CustomUserDetails {
     @Column(name = "permissions", nullable = false)
     private String permissions;
 
+    @Builder.Default
     @Column(name = "is_active")
-    private boolean isActive;
+    private boolean isActive = true;
+    
+    @Builder.Default
+    @Column(name = "email_verified")
+    private boolean emailVerified = false;
+    
+    @Builder.Default
+    @Column(name = "setup_complete")
+    private boolean setupComplete = false;
+    
+    @Column(name = "verification_token")
+    private String verificationToken;
+    
+    @Column(name = "verification_token_expiry")
+    private LocalDateTime verificationTokenExpiry;
+    
+    @Builder.Default
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Builder.Default
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @Column(name = "last_login", nullable = true)
-    private LocalDate lastLogin;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
 
     @PrePersist
     protected void onCreate() {
@@ -122,8 +138,8 @@ public class RestaurantUsers implements CustomUserDetails {
     }
 
     @Override
-    public String getFullName() {
-        return this.fullNames;
-    }  
+   public String getFullName() {
+       return this.fullName;
+   }
 
 }

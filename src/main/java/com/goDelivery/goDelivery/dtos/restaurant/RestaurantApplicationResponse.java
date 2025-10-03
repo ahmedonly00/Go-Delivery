@@ -23,7 +23,6 @@ public class RestaurantApplicationResponse {
     private Integer yearsInBusiness;
     private String description;
     private String logoUrl;
-    private String bannerUrl;
     private ApplicationStatus applicationStatus;
     private String reviewNote;
     private String rejectionReason;
