@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dtos.restaurant.*;
 import com.goDelivery.goDelivery.service.RestaurantRegistrationService;
+import com.goDelivery.goDelivery.service.email.EmailVerificationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class RestaurantRegistrationController {
     private final RestaurantRegistrationService registrationService;
     private final EmailVerificationService emailVerificationService;
 
-    @PostMapping("/register")
+    @PostMapping("/registerRestaurantAdmin")
     public ResponseEntity<RestaurantAdminResponseDTO> registerRestaurant(
             @Valid @RequestBody RestaurantAdminRegistrationDTO registrationDTO) {
         return new ResponseEntity<>(
@@ -45,28 +46,28 @@ public class RestaurantRegistrationController {
     }
 
     @PostMapping("/basic-info")
-    public ResponseEntity<RestaurantResponseDTO> saveBasicInfo(
+    public ResponseEntity<RestaurantDTO> saveBasicInfo(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody RestaurantBasicInfoDTO basicInfoDTO) {
         return ResponseEntity.ok(registrationService.saveBasicInfo(userDetails.getUsername(), basicInfoDTO));
     }
 
     @PostMapping("/location")
-    public ResponseEntity<RestaurantResponseDTO> saveLocation(
+    public ResponseEntity<RestaurantDTO> saveLocation(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody RestaurantLocationDTO locationDTO) {
         return ResponseEntity.ok(registrationService.saveLocation(userDetails.getUsername(), locationDTO));
     }
 
     @PostMapping("/branding")
-    public ResponseEntity<RestaurantResponseDTO> saveBranding(
+    public ResponseEntity<RestaurantDTO> saveBranding(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody RestaurantBrandingDTO brandingDTO) {
         return ResponseEntity.ok(registrationService.saveBranding(userDetails.getUsername(), brandingDTO));
     }
 
     @PostMapping("/settings")
-    public ResponseEntity<RestaurantResponseDTO> saveSettings(
+    public ResponseEntity<RestaurantDTO> saveSettings(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody RestaurantSettingsDTO settingsDTO) {
         return ResponseEntity.ok(registrationService.saveSettings(userDetails.getUsername(), settingsDTO));
@@ -79,11 +80,9 @@ public class RestaurantRegistrationController {
     }
 
     @PostMapping("/complete-setup")
-    public ResponseEntity<RestaurantResponseDTO> completeSetup(
+    public ResponseEntity<RestaurantDTO> completeSetup(
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(registrationService.completeSetup(userDetails.getUsername()));
     }
-        }
-        throw new IllegalArgumentException("Invalid Authorization header");
-    }
+    
 }

@@ -31,9 +31,5 @@ public class RestaurantAdminRegistrationDTO {
     
     @NotBlank(message = "Please confirm your password")
     private String confirmPassword;
-    
-    @NotBlank(message = "Restaurant name is required")
-    @Size(min = 2, max = 100, message = "Restaurant name must be between 2 and 100 characters")
-    private String restaurantName;
 
 }
