@@ -2,7 +2,6 @@ package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dtos.restaurant.*;
 import com.goDelivery.goDelivery.service.RestaurantRegistrationService;
-import com.goDelivery.goDelivery.service.email.EmailVerificationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class RestaurantRegistrationController {
 
     private final RestaurantRegistrationService registrationService;
-    private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/registerRestaurantAdmin")
     public ResponseEntity<RestaurantAdminResponseDTO> registerRestaurant(
@@ -27,22 +25,6 @@ public class RestaurantRegistrationController {
                 registrationService.registerRestaurantAdmin(registrationDTO),
                 HttpStatus.CREATED
         );
-    }
-
-    @GetMapping("/verify-email")
-    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
-        boolean isVerified = emailVerificationService.verifyEmail(token);
-        if (isVerified) {
-            return ResponseEntity.ok("Email verified successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired verification token");
-        }
-    }
-
-    @PostMapping("/resend-verification")
-    public ResponseEntity<String> resendVerificationEmail(@RequestParam String email) {
-        emailVerificationService.resendVerificationEmail(email);
-        return ResponseEntity.ok("Verification email resent successfully");
     }
 
     @PostMapping("/basic-info")

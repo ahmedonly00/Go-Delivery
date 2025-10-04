@@ -12,24 +12,11 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.goDelivery.goDelivery.exception.EmailSendingException;
+
 import java.util.concurrent.CompletableFuture;
 
-/**
- * Custom exception for email sending failures
- */
-class EmailSendingException extends RuntimeException {
-    public EmailSendingException(String message) {
-        super(message);
-    }
 
-    public EmailSendingException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
-
-/**
- * Service for sending various types of emails
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor

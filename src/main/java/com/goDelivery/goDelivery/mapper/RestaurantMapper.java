@@ -40,10 +40,7 @@ public class RestaurantMapper {
                 .rating(restaurant.getRating())
                 .totalReviews(restaurant.getTotalReviews())
                 .totalOrders(restaurant.getTotalOrders())
-                .averagePreparationTime(restaurant.getAveragePreparationTime())
-                .deliveryFee(restaurant.getDeliveryFee())
-                .minimumOrderAmount(restaurant.getMinimumOrderAmount())
-                .isActive(restaurant.isActive())
+                .isActive(true)
                 .build();
     }
 
@@ -64,10 +61,7 @@ public class RestaurantMapper {
                 .rating(restaurantDTO.getRating())
                 .totalReviews(restaurantDTO.getTotalReviews() != null ? restaurantDTO.getTotalReviews() : 0)
                 .totalOrders(restaurantDTO.getTotalOrders() != null ? restaurantDTO.getTotalOrders() : 0)
-                .averagePreparationTime(restaurantDTO.getAveragePreparationTime())
-                .deliveryFee(restaurantDTO.getDeliveryFee())
-                .minimumOrderAmount(restaurantDTO.getMinimumOrderAmount())
-                .isActive(restaurantDTO.isActive())
+                .isActive(true)
                 .createdAt(LocalDate.now())
                 .updatedAt(LocalDate.now())
                 .build();

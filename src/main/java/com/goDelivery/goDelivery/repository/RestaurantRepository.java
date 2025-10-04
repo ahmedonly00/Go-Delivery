@@ -33,9 +33,4 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("SELECT r FROM Restaurant r WHERE r.rating >= :minRating")
     List<Restaurant> findRestaurantsWithMinRating(@Param("minRating") float minRating);
     
-    @Query("SELECT r FROM Restaurant r WHERE r.deliveryFee <= :maxFee")
-    List<Restaurant> findRestaurantsWithMaxDeliveryFee(@Param("maxFee") float maxFee);
-    
-    @Query("SELECT r FROM Restaurant r WHERE r.averagePreparationTime <= :maxTime")
-    List<Restaurant> findRestaurantsWithMaxDeliveryTime(@Param("maxTime") int maxTime);
 }

@@ -1,12 +1,13 @@
 package com.goDelivery.goDelivery.dtos.restaurant;
 
-import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
 
 @Data
 @Builder

@@ -43,7 +43,7 @@ public class RestaurantService {
         existingRestaurant.setEmail(restaurantDTO.getEmail());
         existingRestaurant.setPhoneNumber(restaurantDTO.getPhoneNumber());
         existingRestaurant.setLogoUrl(restaurantDTO.getLogoUrl());
-        existingRestaurant.setActive(restaurantDTO.isActive());
+        existingRestaurant.setIsActive(restaurantDTO.isActive());
         existingRestaurant.setUpdatedAt(java.time.LocalDate.now());
 
         Restaurant updatedRestaurant = restaurantRepository.save(existingRestaurant);
@@ -96,20 +96,7 @@ public class RestaurantService {
                     .filter(r -> r.getRating() != null && r.getRating() >= searchRequest.getMinRating())
                     .collect(Collectors.toList());
         }
-        
-        if (searchRequest.getMaxDeliveryFee() != null) {
-            restaurants = restaurants.stream()
-                    .filter(r -> r.getDeliveryFee() != null && r.getDeliveryFee() <= searchRequest.getMaxDeliveryFee())
-                    .collect(Collectors.toList());
-        }
-        
-        if (searchRequest.getMaxDeliveryTime() != null) {
-            restaurants = restaurants.stream()
-                    .filter(r -> r.getAveragePreparationTime() != null && 
-                               r.getAveragePreparationTime() <= searchRequest.getMaxDeliveryTime())
-                    .collect(Collectors.toList());
-        }
-        
+                
         // Apply sorting
         if (searchRequest.getSortBy() != null && !searchRequest.getSortBy().isEmpty()) {
             switch (searchRequest.getSortBy().toLowerCase()) {
@@ -123,18 +110,6 @@ public class RestaurantService {
                     restaurants.sort((r1, r2) -> Integer.compare(
                             r2.getTotalOrders() != null ? r2.getTotalOrders() : 0,
                             r1.getTotalOrders() != null ? r1.getTotalOrders() : 0
-                    ));
-                    break;
-                case "deliverytime":
-                    restaurants.sort((r1, r2) -> Integer.compare(
-                            r1.getAveragePreparationTime() != null ? r1.getAveragePreparationTime() : Integer.MAX_VALUE,
-                            r2.getAveragePreparationTime() != null ? r2.getAveragePreparationTime() : Integer.MAX_VALUE
-                    ));
-                    break;
-                case "deliveryfee":
-                    restaurants.sort((r1, r2) -> Float.compare(
-                            r1.getDeliveryFee() != null ? r1.getDeliveryFee() : Float.MAX_VALUE,
-                            r2.getDeliveryFee() != null ? r2.getDeliveryFee() : Float.MAX_VALUE
                     ));
                     break;
             }

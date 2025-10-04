@@ -24,8 +24,5 @@ public class RestaurantSettingsDTO {
     @NotNull(message = "Operating hours are required")
     private OperatingHoursDTO operatingHours;
     
-    private boolean acceptsOnlinePayment = true;
-    private boolean acceptsCashOnDelivery = true;
-    
     private boolean isActive = true;
 }

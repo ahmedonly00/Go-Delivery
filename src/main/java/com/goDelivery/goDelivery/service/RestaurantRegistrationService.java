@@ -1,7 +1,6 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
-import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.dtos.restaurant.OperatingHoursDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantAdminRegistrationDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantAdminResponseDTO;
@@ -10,17 +9,12 @@ import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantSettingsDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantSetupProgressDTO;
 import com.goDelivery.goDelivery.exception.ResourceAlreadyExistsException;
-import com.goDelivery.goDelivery.model.MenuItem;
-import com.goDelivery.goDelivery.model.MenuCategory;
-import com.goDelivery.goDelivery.repository.MenuItemRepository;
-import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
 import com.goDelivery.goDelivery.model.OperatingHours;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
 import com.goDelivery.goDelivery.mapper.RestaurantUserMapper;
 import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.Enum.Roles;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
 import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.service.email.EmailService;
@@ -31,9 +25,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -46,103 +37,36 @@ public class RestaurantRegistrationService {
     private final RestaurantUserMapper userMapper;
     private final RestaurantMapper restaurantMapper;
     private final EmailService emailService;
-    private final MenuItemRepository menuItemRepository;
-    private final MenuCategoryRepository menuCategoryRepository;
+
+
     @Transactional
     public RestaurantAdminResponseDTO registerRestaurantAdmin(RestaurantAdminRegistrationDTO registrationDTO) {
         // Check if email already exists
         if (userRepository.existsByEmail(registrationDTO.getEmail())) {
             throw new ResourceAlreadyExistsException("Email already in use");
         }
-
         // Map DTO to entity
         RestaurantUsers admin = new RestaurantUsers();
         admin.setFullName(registrationDTO.getFullName());
         admin.setEmail(registrationDTO.getEmail().toLowerCase());
         admin.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
-        admin.setRole(Roles.RESTAURANT_ADMIN);
-        admin.setEmailVerified(false);
-        admin.setVerificationToken(UUID.randomUUID().toString());
-        admin.setVerificationTokenExpiry(LocalDateTime.now().plusHours(24));
+        // Set user as active and verified
+        admin.setActive(true);
+        admin.setEmailVerified(true);
 
         // Create a new restaurant with default values
         // Restaurant name will be set in the saveBasicInfo step
         Restaurant restaurant = new Restaurant();
         restaurant.setSetupStatus(RestaurantSetupStatus.ACCOUNT_CREATED);
-        restaurant = restaurantRepository.save(restaurant);
 
         // Associate the restaurant with the admin
         admin.setRestaurant(restaurant);
         admin = userRepository.save(admin);
 
-        // Send verification email
-        emailService.sendVerificationEmail(
-            admin.getEmail(),
-            admin.getFullName(),
-            admin.getVerificationToken()
-        );
-
         log.info("New restaurant admin registered: {}", admin.getEmail());
         return userMapper.toAdminResponseDTO(admin);
     }
 
-    @Transactional
-    public boolean verifyEmail(String token) {
-        RestaurantUsers user = userRepository.findByVerificationToken(token)
-            .orElseThrow(() -> new ResourceNotFoundException("Invalid verification token"));
-
-        if (user.getVerificationTokenExpiry().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("Verification token has expired");
-        }
-
-        user.setEmailVerified(true);
-        user.setVerificationToken(null);
-        user.setVerificationTokenExpiry(null);
-        user = userRepository.save(user);
-
-        // Get the associated restaurant
-        Restaurant restaurant = user.getRestaurant();
-        if (restaurant != null) {
-            restaurant.setSetupStatus(RestaurantSetupStatus.EMAIL_VERIFIED);
-            restaurant = restaurantRepository.save(restaurant);
-        }
-
-        // Send welcome email
-        emailService.sendWelcomeEmail(
-            user.getEmail(),
-            user.getFullName(),
-            restaurant != null ? restaurant.getRestaurantName() : "Your Restaurant"
-        );
-
-        log.info("Email verified for user: {}", user.getEmail());
-        return true;
-    }
-
-    @Transactional
-    public void resendVerificationEmail(String email) {
-        RestaurantUsers user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
-
-        if (user.isEmailVerified()) {
-            throw new IllegalStateException("Email is already verified");
-        }
-
-        // Generate new token
-        user.setVerificationToken(UUID.randomUUID().toString());
-        user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(24));
-        user = userRepository.save(user);
-
-        // Resend verification email
-        emailService.sendVerificationEmail(
-            user.getEmail(),
-            user.getFullName(),
-            user.getVerificationToken()
-        );
-
-        log.info("Verification email resent to: {}", user.getEmail());
-    }
-
-    @Transactional
     public RestaurantDTO saveBasicInfo(String email, RestaurantBasicInfoDTO basicInfoDTO) {
         RestaurantUsers user = userRepository.findByEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
@@ -153,45 +77,64 @@ public class RestaurantRegistrationService {
         restaurant.setCuisineType(basicInfoDTO.getCuisineType());
         restaurant.setPhoneNumber(basicInfoDTO.getPhoneNumber());
         restaurant.setLocation(basicInfoDTO.getLocation());
-        restaurant.setLogoUrl(basicInfoDTO.getLogoUrl());
         
-        // Save the restaurant first to get an ID
+        // Update setup status to BASIC_INFO_ADDED
+        restaurant.setSetupStatus(RestaurantSetupStatus.BASIC_INFO_ADDED);
+        
+        // Save the restaurant
         restaurant = restaurantRepository.save(restaurant);
         
-        // Create a default category for the restaurant
-        MenuCategory defaultCategory = MenuCategory.builder()
-                .categoryName("Main Menu")
-                .description("Main menu items")
-                .image("")
-                .sortOrder(1)
-                .isActive(true)
-                .createdAt(LocalDate.now())
-                .restaurant(restaurant)
-                .build();
-        defaultCategory = menuCategoryRepository.save(defaultCategory);
-        
-        // Save menu items
-        if (basicInfoDTO.getMenuItems() != null && !basicInfoDTO.getMenuItems().isEmpty()) {
-            for (MenuItemRequest menuItemRequest : basicInfoDTO.getMenuItems()) {
-                MenuItem menuItem = new MenuItem();
-                menuItem.setMenuItemName(menuItemRequest.getMenuItemName());
-                menuItem.setDescription(menuItemRequest.getDescription() != null ? menuItemRequest.getDescription() : "");
-                menuItem.setPrice(menuItemRequest.getPrice());
-                menuItem.setImage(menuItemRequest.getImage() != null ? menuItemRequest.getImage() : "");
-                menuItem.setIngredients(menuItemRequest.getIngredients() != null ? menuItemRequest.getIngredients() : "");
-                menuItem.setAvailable(menuItemRequest.isAvailable());
-                menuItem.setPreparationTime(menuItemRequest.getPreparationTime() != null ? menuItemRequest.getPreparationTime() : 15);
-                menuItem.setPreparationScore(0);
-                menuItem.setCreatedAt(LocalDate.now());
-                menuItem.setUpdatedAt(LocalDate.now());
-                menuItem.setRestaurant(restaurant);
-                menuItem.setCategory(defaultCategory);
-                
-                menuItemRepository.save(menuItem);
-            }
-        }
+        // Calculate setup progress
+        int progress = calculateSetupProgress(restaurant.getSetupStatus());
+        restaurant.setSetupProgress(progress);
         
         return restaurantMapper.toRestaurantDTO(restaurant);
+    }
+    
+    @Transactional
+    public RestaurantDTO completeSetup(String email) {
+        RestaurantUsers user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+            
+        Restaurant restaurant = user.getRestaurant();
+        
+        // Validate that all required setup steps are completed
+        if (restaurant.getSetupStatus().ordinal() < RestaurantSetupStatus.MENU_SETUP_COMPLETED.ordinal()) {
+            throw new IllegalStateException("Cannot complete setup. Please complete all required setup steps first.");
+        }
+        
+        // Update status to COMPLETED
+        restaurant.setSetupStatus(RestaurantSetupStatus.COMPLETED);
+        restaurant.setSetupProgress(100);
+        restaurant.setIsActive(true);
+        
+        // Save the updated restaurant
+        restaurant = restaurantRepository.save(restaurant);
+        
+        // Send completion email
+        emailService.sendSetupCompletionEmail(
+            user.getEmail(),
+            user.getFullName(),
+            restaurant.getRestaurantName()
+        );
+        
+        return restaurantMapper.toRestaurantDTO(restaurant);
+    }
+    
+    private int calculateSetupProgress(RestaurantSetupStatus status) {
+        return switch (status) {
+            case ACCOUNT_CREATED -> 10;
+            case EMAIL_VERIFIED -> 20;
+            case BASIC_INFO_ADDED -> 30;
+            case LOCATION_ADDED -> 50;
+            case OPERATING_HOURS_ADDED -> 70;
+            case SETTINGS_CONFIGURED -> 80;
+            case MENU_SETUP_STARTED -> 85;
+            case MENU_SETUP_COMPLETED -> 90;
+            case COMPLETED, ACTIVE -> 100;
+            case REJECTED, SUSPENDED -> 0;
+            default -> 0;
+        };
     }
 
 
@@ -223,16 +166,12 @@ public class RestaurantRegistrationService {
         operatingHours.setSundayOpen(operatingHoursDTO.getOpen());
         operatingHours.setSundayClose(operatingHoursDTO.getClose());
         
-        // Set the restaurant reference
+        // Set the restaurant reference on operating hours
         operatingHours.setRestaurant(restaurant);
         
-        // Update restaurant settings
+        // Set the operating hours on the restaurant
         restaurant.setOperatingHours(operatingHours);
-        restaurant.setMinimumOrderAmount(settingsDTO.getMinimumOrderAmount().floatValue());
-        restaurant.setDeliveryFee(settingsDTO.getDeliveryFee().floatValue());
-        restaurant.setAveragePreparationTime(settingsDTO.getAveragePreparationTime());
-        restaurant.setSetupStatus(RestaurantSetupStatus.SETTINGS_CONFIGURED);
-        
+                
         restaurant = restaurantRepository.save(restaurant);
         return restaurantMapper.toRestaurantDTO(restaurant);
     }
@@ -256,33 +195,10 @@ public class RestaurantRegistrationService {
             case MENU_SETUP_STARTED -> 95;
             case MENU_SETUP_COMPLETED, COMPLETED, ACTIVE -> 100;
             case REJECTED, SUSPENDED -> 0; // Reset progress for these states
+            default -> 0; // Default case for any future enum values
         };
         
         progressDTO.setOverallProgress(progress);
         return progressDTO;
-    }
-
-    @Transactional
-    public RestaurantDTO completeSetup(String email) {
-        RestaurantUsers user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
-
-        Restaurant restaurant = user.getRestaurant();
-        if (restaurant.getSetupStatus() != RestaurantSetupStatus.SETTINGS_CONFIGURED) {
-            throw new IllegalStateException("Cannot complete setup. Please complete all required steps first.");
-        }
-
-        restaurant.setSetupStatus(RestaurantSetupStatus.COMPLETED);
-        restaurant = restaurantRepository.save(restaurant);
-
-        // Send setup completion email
-        emailService.sendSetupCompletionEmail(
-            user.getEmail(),
-            user.getFullName(),
-            restaurant.getRestaurantName()
-        );
-
-        log.info("Restaurant setup completed: {}", restaurant.getRestaurantName());
-        return restaurantMapper.toRestaurantDTO(restaurant);
     }
 }

@@ -12,8 +12,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
+/**
+ * Represents a super admin user in the system with elevated privileges.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -51,9 +53,6 @@ public class SuperAdmin implements CustomUserDetails {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDate updatedAt;
-
-    @OneToMany(mappedBy = "reviewedBy", fetch = FetchType.LAZY)
-    private List<RestaurantApplication> reviewedApplications;
 
     @PrePersist
     protected void onCreate() {

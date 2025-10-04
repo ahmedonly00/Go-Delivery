@@ -11,6 +11,10 @@ import java.util.List;
 
 import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
 
+/**
+ * Represents a restaurant in the Go Delivery system.
+ * This is the main entity for restaurant management.
+ */
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -33,7 +37,7 @@ public class Restaurant {
     @Column(name = "cuisine_type", nullable = false)
     private String cuisineType;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "phone_number", nullable = false)
@@ -42,64 +46,47 @@ public class Restaurant {
     @Column(name = "logo_url")
     private String logoUrl;
 
+    @Column(name = "banner_url")
+    private String bannerUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "setup_status")
+    private RestaurantSetupStatus setupStatus;
+    
+    @Column(name = "setup_progress")
+    private Integer setupProgress;
+
     @Column(name = "rating")
-    private Float rating;
+    @Builder.Default
+    private Float rating = 0.0f;
 
     @Column(name = "total_reviews")
-    private Integer totalReviews;
+    @Builder.Default
+    private Integer totalReviews = 0;
 
     @Column(name = "total_orders")
     private Integer totalOrders;
-
+    
+    @Column(name = "delivery_fee")
+    private Double deliveryFee;
     @Column(name = "description")
     private String description;
 
     @Builder.Default
     @Column(name = "is_active")
-    private boolean isActive = true;
+    private Boolean isActive = true;
 
-    @Builder.Default
-    @Column(name = "setup_status")
-    @Enumerated(EnumType.STRING)
-    private RestaurantSetupStatus setupStatus = RestaurantSetupStatus.ACCOUNT_CREATED;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by_user_id")
-    private RestaurantUsers createdBy;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
-
-    @Column(name = "updated_at")
+    
+    @Column(name = "updated_at", nullable = false)
     private LocalDate updatedAt;
-
-    @Column(name = "average_preparation_time")
-    private Integer averagePreparationTime;
-
-    @Column(name = "delivery_fee")
-    private Float deliveryFee;
-
-    @Column(name = "minimum_order_amount")
-    private Float minimumOrderAmount;
-
-    @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    private OperatingHours operatingHours;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "application_id")
-    private RestaurantApplication application;
-
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Branches> branches;
-
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<RestaurantUsers> employees;
-
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MenuCategory> menuCategories;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MenuItem> menuItems;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MenuCategory> menuCategories;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Promotion> promotions;
@@ -112,6 +99,9 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderAnalytics> orderAnalytics;
+    
+    @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private OperatingHours operatingHours;
     
 
     @PrePersist

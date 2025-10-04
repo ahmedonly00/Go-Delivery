@@ -90,12 +90,8 @@ public class RestaurantUsers implements CustomUserDetails {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "application_id")
-    private RestaurantApplication application;
-
     @OneToMany(mappedBy = "restaurantUser", fetch = FetchType.LAZY)
-    private List<ReviewResponse>  reviewResponses;
+    private List<ReviewResponse> reviewResponses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

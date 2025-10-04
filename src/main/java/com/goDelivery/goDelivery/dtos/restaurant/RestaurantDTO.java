@@ -17,7 +17,6 @@ public class RestaurantDTO {
     private String email;
     private String phoneNumber;
     private String logoUrl;
-    private String bannerUrl;
     private Float rating;
     private Integer totalReviews;
     private Integer totalOrders;
