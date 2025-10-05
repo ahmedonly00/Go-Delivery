@@ -46,9 +46,6 @@ public class Restaurant {
     @Column(name = "logo_url")
     private String logoUrl;
 
-    @Column(name = "banner_url")
-    private String bannerUrl;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "setup_status")
     private RestaurantSetupStatus setupStatus;
@@ -68,9 +65,16 @@ public class Restaurant {
     private Integer totalOrders;
     
     @Column(name = "delivery_fee")
-    private Double deliveryFee;
+    private Float deliveryFee;
+
     @Column(name = "description")
     private String description;
+
+    @Column(name = "minimum_order_amount")
+    private Float minimumOrderAmount;
+
+    @Column(name = "average_preparation_time")
+    private Integer averagePreparationTime;
 
     @Builder.Default
     @Column(name = "is_active")

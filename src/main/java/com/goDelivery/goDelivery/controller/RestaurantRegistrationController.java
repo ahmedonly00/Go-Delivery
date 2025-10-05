@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,22 @@ public class RestaurantRegistrationController {
 
     private final RestaurantRegistrationService registrationService;
 
-    @PostMapping("/registerRestaurantAdmin")
-    public ResponseEntity<RestaurantAdminResponseDTO> registerRestaurant(
+    @PostMapping("/registerAdmin")
+    public ResponseEntity<RestaurantAdminResponseDTO> registerAdmin(
             @Valid @RequestBody RestaurantAdminRegistrationDTO registrationDTO) {
         return new ResponseEntity<>(
                 registrationService.registerRestaurantAdmin(registrationDTO),
+                HttpStatus.CREATED
+        );
+    }
+    
+    @PostMapping("/restaurant")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    public ResponseEntity<RestaurantDTO> createRestaurant(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody RestaurantDTO restaurantDTO) {
+        return new ResponseEntity<>(
+                registrationService.createRestaurant(userDetails.getUsername(), restaurantDTO),
                 HttpStatus.CREATED
         );
     }

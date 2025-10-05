@@ -45,31 +45,23 @@ public class RestaurantUsers implements CustomUserDetails {
     @Column(name = "permissions", nullable = false)
     private String permissions;
 
+    @Column(name = "email_verified")
+    private boolean emailVerified;
+
     @Builder.Default
     @Column(name = "is_active")
     private boolean isActive = true;
     
-    @Builder.Default
-    @Column(name = "email_verified")
-    private boolean emailVerified = false;
     
     @Builder.Default
     @Column(name = "setup_complete")
-    private boolean setupComplete = false;
+    private boolean setupComplete = false;  
     
-    @Column(name = "verification_token")
-    private String verificationToken;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
     
-    @Column(name = "verification_token_expiry")
-    private LocalDateTime verificationTokenExpiry;
-    
-    @Builder.Default
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-    
-    @Builder.Default
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;

@@ -37,10 +37,14 @@ public class RestaurantMapper {
                 .email(restaurant.getEmail())
                 .phoneNumber(restaurant.getPhoneNumber())
                 .logoUrl(restaurant.getLogoUrl())
+                .description(restaurant.getDescription())
                 .rating(restaurant.getRating())
                 .totalReviews(restaurant.getTotalReviews())
                 .totalOrders(restaurant.getTotalOrders())
-                .isActive(true)
+                .averagePreparationTime(restaurant.getAveragePreparationTime())
+                .deliveryFee(restaurant.getDeliveryFee())
+                .minimumOrderAmount(restaurant.getMinimumOrderAmount())
+                .isActive(restaurant.getIsActive())
                 .build();
     }
 
@@ -49,7 +53,7 @@ public class RestaurantMapper {
         if (restaurantDTO == null) {
             return null;
         }
-
+        
         return Restaurant.builder()
                 .restaurantId(restaurantDTO.getRestaurantId())
                 .restaurantName(restaurantDTO.getRestaurantName())
@@ -58,10 +62,16 @@ public class RestaurantMapper {
                 .email(restaurantDTO.getEmail())
                 .phoneNumber(restaurantDTO.getPhoneNumber())
                 .logoUrl(restaurantDTO.getLogoUrl())
-                .rating(restaurantDTO.getRating())
+                .description(restaurantDTO.getDescription())
+                .rating(restaurantDTO.getRating() != null ? restaurantDTO.getRating() : 0.0f)
                 .totalReviews(restaurantDTO.getTotalReviews() != null ? restaurantDTO.getTotalReviews() : 0)
                 .totalOrders(restaurantDTO.getTotalOrders() != null ? restaurantDTO.getTotalOrders() : 0)
-                .isActive(true)
+                .averagePreparationTime(restaurantDTO.getAveragePreparationTime() != null ? 
+                    restaurantDTO.getAveragePreparationTime() : 30) // Default to 30 minutes
+                .deliveryFee(restaurantDTO.getDeliveryFee() != null ? restaurantDTO.getDeliveryFee() : 0.0f)
+                .minimumOrderAmount(restaurantDTO.getMinimumOrderAmount() != null ? 
+                    restaurantDTO.getMinimumOrderAmount() : 0.0f)
+                .isActive(restaurantDTO.isActive())
                 .createdAt(LocalDate.now())
                 .updatedAt(LocalDate.now())
                 .build();

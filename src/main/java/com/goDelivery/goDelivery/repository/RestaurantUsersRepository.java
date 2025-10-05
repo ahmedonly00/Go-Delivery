@@ -12,5 +12,4 @@ public interface RestaurantUsersRepository extends JpaRepository<RestaurantUsers
     Optional<RestaurantUsers> findByEmail(String email);
     Optional<RestaurantUsers> findByFullName(String fullName);
     Optional<RestaurantUsers> findByUserId(Long userId);
-    Optional<RestaurantUsers> findByVerificationToken(String token);
 }
