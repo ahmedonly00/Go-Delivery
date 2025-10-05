@@ -70,10 +70,8 @@ public class SecurityConfig {
                         "/api/test/email/**",
                         "/api/customers/registerCustomer",
                         
-                        // Registration and verification endpoints
-                        "/api/restaurant/registration/registerAdmin",
-                        "/api/restaurant/registration/verify-email",
-                        "/api/restaurant/registration/resend-verification"
+                        // Registration Restaurant Admin endpoint
+                        "/api/restaurants/registerAdmin"
                     ).permitAll()
                     .requestMatchers(
                         "/api/restaurant-applications/all",

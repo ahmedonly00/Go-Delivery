@@ -11,10 +11,7 @@ import java.util.List;
 
 import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
 
-/**
- * Represents a restaurant in the Go Delivery system.
- * This is the main entity for restaurant management.
- */
+
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -49,9 +46,6 @@ public class Restaurant {
     @Enumerated(EnumType.STRING)
     @Column(name = "setup_status")
     private RestaurantSetupStatus setupStatus;
-    
-    @Column(name = "setup_progress")
-    private Integer setupProgress;
 
     @Column(name = "rating")
     @Builder.Default
@@ -100,6 +94,9 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews;
+    
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
+    private List<RestaurantUsers> restaurantUsers;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderAnalytics> orderAnalytics;

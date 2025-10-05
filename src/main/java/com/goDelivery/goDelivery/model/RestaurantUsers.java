@@ -79,7 +79,7 @@ public class RestaurantUsers implements CustomUserDetails {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false)
+    @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
     @OneToMany(mappedBy = "restaurantUser", fetch = FetchType.LAZY)
