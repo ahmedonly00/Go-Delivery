@@ -33,7 +33,7 @@ public class RestaurantService {
     }
     
     public RestaurantDTO updateRestaurant(Long restaurantId, RestaurantDTO restaurantDTO) {
-        Restaurant existingRestaurant = restaurantRepository.findById(restaurantId)
+        Restaurant existingRestaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
 
         // Update fields from DTO
@@ -56,7 +56,7 @@ public class RestaurantService {
     }
 
     public RestaurantDTO updateRestaurantLogo(Long restaurantId, String logoUrl) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
         restaurant.setLogoUrl(logoUrl);
         restaurant.setUpdatedAt(LocalDate.now());
@@ -122,13 +122,13 @@ public class RestaurantService {
 
    
     public RestaurantDTO getRestaurantById(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
         return restaurantMapper.toRestaurantDTO(restaurant);
     }
 
     public RestaurantDTO updateOperatingHours(Long restaurantId, UpdateOperatingHoursRequest request) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
         
         OperatingHours operatingHours = restaurant.getOperatingHours();
@@ -162,6 +162,7 @@ public class RestaurantService {
         
         return restaurantMapper.toRestaurantDTO(restaurant);
     }
+    
     
     public List<RestaurantDTO> getAllActiveRestaurants() {
         return restaurantRepository.findByIsActive(true).stream()
