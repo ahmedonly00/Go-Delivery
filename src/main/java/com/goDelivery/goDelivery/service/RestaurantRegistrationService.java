@@ -54,14 +54,20 @@ public class RestaurantRegistrationService {
         admin.setActive(true);
         admin.setEmailVerified(true);
 
-        // Create a new restaurant with default values
-        // Restaurant name will be set in the saveBasicInfo step
+        // Create and save the restaurant first
         Restaurant restaurant = new Restaurant();
         restaurant.setSetupStatus(RestaurantSetupStatus.ACCOUNT_CREATED);
+        restaurant = restaurantRepository.save(restaurant);
 
-        // Associate the restaurant with the admin
-        admin.setRestaurant(restaurant);
-        admin = userRepository.save(admin);
+        try {
+            // Now set the restaurant to the admin and save
+            admin.setRestaurant(restaurant);
+            admin = userRepository.save(admin);
+        } catch (Exception e) {
+            // If user save fails, delete the restaurant to avoid orphaned records
+            restaurantRepository.delete(restaurant);
+            throw e;
+        }
 
         log.info("New restaurant admin registered: {}", admin.getEmail());
         return userMapper.toAdminResponseDTO(admin);
