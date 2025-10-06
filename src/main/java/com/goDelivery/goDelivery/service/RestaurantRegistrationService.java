@@ -2,7 +2,6 @@ package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
 import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.dtos.restaurant.OperatingHoursDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantAdminRegistrationDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantAdminResponseDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
@@ -111,12 +110,10 @@ public class RestaurantRegistrationService {
         admin = userRepository.save(admin);
         log.info("New restaurant admin registered: {}", admin.getEmail());
         
-        // Send verification email (optional)
         try {
             emailService.sendVerificationEmail(admin.getEmail(), admin.getFullName(), "verification-token");
         } catch (Exception e) {
             log.error("Failed to send verification email: {}", e.getMessage());
-            // Don't fail the registration if email sending fails
         }
         
         return userMapper.toAdminResponseDTO(admin);

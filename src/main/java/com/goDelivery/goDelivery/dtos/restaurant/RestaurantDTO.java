@@ -1,9 +1,16 @@
 package com.goDelivery.goDelivery.dtos.restaurant;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,9 +35,11 @@ public class RestaurantDTO {
     private String cuisineType;
     
     @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
     private String email;
     
     @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Phone number should be valid")
     private String phoneNumber;
     
     @NotBlank(message = "Logo URL is required")
@@ -38,15 +47,19 @@ public class RestaurantDTO {
 
     @NotBlank(message = "Description is required")
     private String description;
-    
+    private String bannerUrl;
     @Builder.Default
-    private Float rating = 0.0f;
+    private Double rating = 0.0;
     
+    @Valid
     @Builder.Default
-    private Integer totalReviews = 0;
+    private List<MenuItemRequest> menuItems = new ArrayList<>();
     
     @Builder.Default
     private Integer totalOrders = 0;
+    
+    @Builder.Default
+    private Integer totalReviews = 0;
     
     @PositiveOrZero(message = "Average preparation time must be zero or positive")
     private Integer averagePreparationTime;

@@ -1,8 +1,6 @@
 package com.goDelivery.goDelivery.service;
 
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantSearchRequest;
-import com.goDelivery.goDelivery.dtos.restaurant.UpdateOperatingHoursRequest;
+import com.goDelivery.goDelivery.dtos.restaurant.*;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
 import com.goDelivery.goDelivery.model.OperatingHours;
@@ -137,30 +135,70 @@ public class RestaurantService {
             operatingHours.setRestaurant(restaurant);
         }
         
-        // Update operating hours
-        operatingHours.setMondayOpen(request.getMondayOpen());
-        operatingHours.setMondayClose(request.getMondayClose());
-        operatingHours.setTuesdayOpen(request.getTuesdayOpen());
-        operatingHours.setTuesdayClose(request.getTuesdayClose());
-        operatingHours.setWednesdayOpen(request.getWednesdayOpen());
-        operatingHours.setWednesdayClose(request.getWednesdayClose());
-        operatingHours.setThursdayOpen(request.getThursdayOpen());
-        operatingHours.setThursdayClose(request.getThursdayClose());
-        operatingHours.setFridayOpen(request.getFridayOpen());
-        operatingHours.setFridayClose(request.getFridayClose());
-        operatingHours.setSaturdayOpen(request.getSaturdayOpen());
-        operatingHours.setSaturdayClose(request.getSaturdayClose());
-        operatingHours.setSundayOpen(request.getSundayOpen());
-        operatingHours.setSundayClose(request.getSundayClose());
+        // Initialize all days as closed first
+        operatingHours.setMondayOpen(null);
+        operatingHours.setMondayClose(null);
+        operatingHours.setTuesdayOpen(null);
+        operatingHours.setTuesdayClose(null);
+        operatingHours.setWednesdayOpen(null);
+        operatingHours.setWednesdayClose(null);
+        operatingHours.setThursdayOpen(null);
+        operatingHours.setThursdayClose(null);
+        operatingHours.setFridayOpen(null);
+        operatingHours.setFridayClose(null);
+        operatingHours.setSaturdayOpen(null);
+        operatingHours.setSaturdayClose(null);
+        operatingHours.setSundayOpen(null);
+        operatingHours.setSundayClose(null);
         
+        // Update operating hours from request
+        if (request.getTimeSlots() != null) {
+            for (UpdateOperatingHoursRequest.TimeSlot timeSlot : request.getTimeSlots()) {
+                if (timeSlot.isOpen() && timeSlot.getDayOfWeek() != null) {
+                    String openTime = timeSlot.getOpenTime() != null ? timeSlot.getOpenTime().toString() : null;
+                    String closeTime = timeSlot.getCloseTime() != null ? timeSlot.getCloseTime().toString() : null;
+                    
+                    switch (timeSlot.getDayOfWeek()) {
+                        case MONDAY:
+                            operatingHours.setMondayOpen(openTime);
+                            operatingHours.setMondayClose(closeTime);
+                            break;
+                        case TUESDAY:
+                            operatingHours.setTuesdayOpen(openTime);
+                            operatingHours.setTuesdayClose(closeTime);
+                            break;
+                        case WEDNESDAY:
+                            operatingHours.setWednesdayOpen(openTime);
+                            operatingHours.setWednesdayClose(closeTime);
+                            break;
+                        case THURSDAY:
+                            operatingHours.setThursdayOpen(openTime);
+                            operatingHours.setThursdayClose(closeTime);
+                            break;
+                        case FRIDAY:
+                            operatingHours.setFridayOpen(openTime);
+                            operatingHours.setFridayClose(closeTime);
+                            break;
+                        case SATURDAY:
+                            operatingHours.setSaturdayOpen(openTime);
+                            operatingHours.setSaturdayClose(closeTime);
+                            break;
+                        case SUNDAY:
+                            operatingHours.setSundayOpen(openTime);
+                            operatingHours.setSundayClose(closeTime);
+                            break;
+                    }
+                }
+            }
+        }
         // Save the updated operating hours
-        operatingHoursRepository.save(operatingHours);
-        
-        // Update the restaurant's updatedAt timestamp
+        operatingHours = operatingHoursRepository.save(operatingHours);
+        restaurant.setOperatingHours(operatingHours);
         restaurant.setUpdatedAt(LocalDate.now());
-        restaurantRepository.save(restaurant);
+        restaurant = restaurantRepository.save(restaurant);
         
         return restaurantMapper.toRestaurantDTO(restaurant);
+        
     }
     
     

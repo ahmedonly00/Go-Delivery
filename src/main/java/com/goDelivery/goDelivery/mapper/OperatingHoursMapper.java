@@ -21,10 +21,6 @@ public class OperatingHoursMapper {
         return createOperatingHoursWithAllDays(dto.getOpen(), dto.getClose());
     }
 
-    /**
-     * Converts OperatingHours entity to OperatingHoursDTO.
-     * Uses the first non-null day's hours for the DTO.
-     */
     public OperatingHoursDTO toDto(OperatingHours entity) {
         if (entity == null) {
             return null;
