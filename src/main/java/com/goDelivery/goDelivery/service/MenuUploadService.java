@@ -78,19 +78,39 @@ menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryI
 
             // Save menu items to database
             List<MenuItem> savedItems = new ArrayList<>();
+            // Get the default category for this restaurant
+            MenuCategory category = menuCategoryRepository.findByRestaurantId(restaurantId)
+                .stream()
+                .findFirst()
+                .orElseGet(() -> createDefaultCategory(restaurant));
+            
+            LocalDate now = LocalDate.now();
+            
             for (MenuItemRequest itemRequest : menuItems) {
+                // Set default values for required fields
+                String description = itemRequest.getDescription() != null ? itemRequest.getDescription() : "";
+                String ingredients = itemRequest.getIngredients() != null ? itemRequest.getIngredients() : "";
+                String image = itemRequest.getImage() != null ? itemRequest.getImage() : "";
+                Float price = itemRequest.getPrice() != null ? itemRequest.getPrice() : 0.0f;
+                Integer prepTime = itemRequest.getPreparationTime() != null ? itemRequest.getPreparationTime() : 15;
+                boolean isAvailable = itemRequest.isAvailable();
+                
+                // Create menu item with all required fields
                 MenuItem menuItem = MenuItem.builder()
                         .menuItemName(itemRequest.getMenuItemName())
-                        .description(itemRequest.getDescription())
-                        .price(itemRequest.getPrice())
-                        .image(itemRequest.getImage())
-                        .ingredients(itemRequest.getIngredients())
-                        .preparationTime(itemRequest.getPreparationTime())
-                        .category(menuCategoryRepository.findById(itemRequest.getCategoryId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Category not found")))
+                        .description(description)
+                        .price(price)
+                        .image(image)
+                        .ingredients(ingredients)
+                        .preparationTime(prepTime)
+                        .preparationScore(5)  // Default score
+                        .createdAt(now)
+                        .updatedAt(now)
+                        .category(category)
                         .restaurant(restaurant)
-                        .isAvailable(itemRequest.isAvailable())
+                        .isAvailable(isAvailable)
                         .build();
+                        
                 savedItems.add(menuItemRepository.save(menuItem));
             }
 
