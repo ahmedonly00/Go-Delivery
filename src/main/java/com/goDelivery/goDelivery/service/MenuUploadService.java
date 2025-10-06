@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,6 +99,7 @@ menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryI
                 .sortOrder(1)
                 .isActive(true)
                 .restaurant(restaurant)
+                .createdAt(LocalDate.now())
                 .build();
         return menuCategoryRepository.save(category);
     }
