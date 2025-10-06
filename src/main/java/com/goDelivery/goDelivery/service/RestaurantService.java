@@ -99,7 +99,7 @@ public class RestaurantService {
         if (searchRequest.getSortBy() != null && !searchRequest.getSortBy().isEmpty()) {
             switch (searchRequest.getSortBy().toLowerCase()) {
                 case "rating":
-                    restaurants.sort((r1, r2) -> Float.compare(
+                    restaurants.sort((r1, r2) -> Double.compare(
                             r2.getRating() != null ? r2.getRating() : 0,
                             r1.getRating() != null ? r1.getRating() : 0
                     ));

@@ -49,7 +49,7 @@ public class Restaurant {
 
     @Column(name = "rating")
     @Builder.Default
-    private Float rating = 0.0f;
+    private Double rating = 0.0;
 
     @Column(name = "total_reviews")
     @Builder.Default
