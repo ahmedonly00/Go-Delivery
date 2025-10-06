@@ -5,7 +5,9 @@ import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.model.MenuCategory;
 import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.model.MenuItem;
 import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
+import com.goDelivery.goDelivery.repository.MenuItemRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,7 @@ public class MenuUploadService {
     private final FileStorageService fileStorageService;
     private final RestaurantRepository restaurantRepository;
     private final MenuCategoryRepository menuCategoryRepository;
+    private final MenuItemRepository menuItemRepository;
     private final Tesseract tesseract;
     
     @Value("${tess4j.data-path:./tessdata}")
@@ -73,12 +76,30 @@ menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryI
                     throw new UnsupportedOperationException("Unsupported file format: " + fileExtension);
             }
 
+            // Save menu items to database
+            List<MenuItem> savedItems = new ArrayList<>();
+            for (MenuItemRequest itemRequest : menuItems) {
+                MenuItem menuItem = MenuItem.builder()
+                        .menuItemName(itemRequest.getMenuItemName())
+                        .description(itemRequest.getDescription())
+                        .price(itemRequest.getPrice())
+                        .image(itemRequest.getImage())
+                        .ingredients(itemRequest.getIngredients())
+                        .preparationTime(itemRequest.getPreparationTime())
+                        .category(menuCategoryRepository.findById(itemRequest.getCategoryId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Category not found")))
+                        .restaurant(restaurant)
+                        .isAvailable(itemRequest.isAvailable())
+                        .build();
+                savedItems.add(menuItemRepository.save(menuItem));
+            }
+
             // Save the file
             String fileUrl = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/menu-uploads");
 
             return FileUploadResponse.builder()
                     .success(true)
-                    .message("File processed successfully")
+                    .message("File processed successfully. " + savedItems.size() + " items saved.")
                     .menuItems(menuItems)
                     .fileUrl(fileUrl)
                     .build();
