@@ -47,7 +47,7 @@ public class RestaurantDTO {
 
     @NotBlank(message = "Description is required")
     private String description;
-    private String bannerUrl;
+    
     @Builder.Default
     private Double rating = 0.0;
     
