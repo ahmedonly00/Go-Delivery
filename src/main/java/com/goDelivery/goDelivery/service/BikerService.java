@@ -47,12 +47,7 @@ public class BikerService {
         return availableBikers;
     }
     
-    /**
-     * Find the nearest available biker based on location
-     * @param restaurantLat Restaurant latitude
-     * @param restaurantLon Restaurant longitude
-     * @param maxDistanceKm Maximum distance in kilometers
-     */
+    
     @Transactional(readOnly = true)
     public Optional<Bikers> findNearestAvailableBiker(Float restaurantLat, Float restaurantLon, Double maxDistanceKm) {
         List<Bikers> availableBikers = findAvailableBikers();
@@ -240,11 +235,11 @@ public class BikerService {
                 request.getBikerId(), request.getOrderId(), request.getReason());
         
         // Validate biker exists
-        Bikers biker = bikersRepository.findById(request.getBikerId())
+        Bikers biker = bikersRepository.findByBikerId(request.getBikerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + request.getBikerId()));
         
         // Validate order exists
-        Order order = orderRepository.findById(request.getOrderId())
+        Order order = orderRepository.findByOrderId(request.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + request.getOrderId()));
         
         // If biker was assigned, unassign them
@@ -273,7 +268,7 @@ public class BikerService {
     @Transactional(readOnly = true)
     public List<Order> getAvailableOrdersForBiker(Long bikerId) {
         // Validate biker exists
-        Bikers biker = bikersRepository.findById(bikerId)
+        bikersRepository.findByBikerId(bikerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + bikerId));
         
         // Get orders that are CONFIRMED or READY and either unassigned or assigned to this biker
@@ -288,8 +283,10 @@ public class BikerService {
  
     @Transactional(readOnly = true)
     public List<Order> getBikerActiveOrders(Long bikerId) {
-        Bikers biker = bikersRepository.findById(bikerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + bikerId));
+        // Verify biker exists before proceeding
+        if (!bikersRepository.existsById(bikerId)) {
+            throw new ResourceNotFoundException("Biker not found with id: " + bikerId);
+        }
         
         return orderRepository.findAll().stream()
                 .filter(order -> order.getBikers() != null && 
@@ -305,7 +302,7 @@ public class BikerService {
         log.info("Biker {} confirming pickup for order {}", request.getBikerId(), request.getOrderId());
         
         // Validate biker exists and is active
-        Bikers biker = bikersRepository.findById(request.getBikerId())
+        Bikers biker = bikersRepository.findByBikerId(request.getBikerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + request.getBikerId()));
         
         if (!biker.isActive()) {
@@ -313,7 +310,7 @@ public class BikerService {
         }
         
         // Validate order exists
-        Order order = orderRepository.findById(request.getOrderId())
+        Order order = orderRepository.findByOrderId(request.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + request.getOrderId()));
         
         // Verify order is assigned to this biker
@@ -390,7 +387,7 @@ public class BikerService {
         log.info("Updating location for biker {}: lat={}, lon={}", 
                 request.getBikerId(), request.getLatitude(), request.getLongitude());
         
-        Bikers biker = bikersRepository.findById(request.getBikerId())
+        Bikers biker = bikersRepository.findByBikerId(request.getBikerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + request.getBikerId()));
         
         // Update biker's location
@@ -422,11 +419,11 @@ public class BikerService {
         log.info("Getting navigation for biker {} and order {}", request.getBikerId(), request.getOrderId());
         
         // Validate biker
-        Bikers biker = bikersRepository.findById(request.getBikerId())
+        Bikers biker = bikersRepository.findByBikerId(request.getBikerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + request.getBikerId()));
         
         // Validate order
-        Order order = orderRepository.findById(request.getOrderId())
+        Order order = orderRepository.findByOrderId(request.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + request.getOrderId()));
         
         // Verify order is assigned to this biker
@@ -517,7 +514,7 @@ public class BikerService {
     
     @Transactional(readOnly = true)
     public DeliveryTrackingResponse getDeliveryTracking(Long orderId) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
         
         DeliveryTrackingResponse response = new DeliveryTrackingResponse();
@@ -566,7 +563,7 @@ public class BikerService {
         log.info("Biker {} confirming delivery for order {}", request.getBikerId(), request.getOrderId());
         
         // Validate biker exists and is active
-        Bikers biker = bikersRepository.findById(request.getBikerId())
+        Bikers biker = bikersRepository.findByBikerId(request.getBikerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + request.getBikerId()));
         
         if (!biker.isActive()) {
@@ -574,7 +571,7 @@ public class BikerService {
         }
         
         // Validate order exists
-        Order order = orderRepository.findById(request.getOrderId())
+        Order order = orderRepository.findByOrderId(request.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + request.getOrderId()));
         
         // Verify order is assigned to this biker
@@ -670,11 +667,11 @@ public class BikerService {
         log.info("Getting customer interaction details for order {} and biker {}", orderId, bikerId);
         
         // Validate biker
-        Bikers biker = bikersRepository.findById(bikerId)
+        Bikers biker = bikersRepository.findByBikerId(bikerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + bikerId));
         
         // Validate order
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
         
         // Verify order is assigned to this biker

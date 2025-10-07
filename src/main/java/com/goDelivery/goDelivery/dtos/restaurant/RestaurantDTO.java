@@ -1,12 +1,6 @@
 package com.goDelivery.goDelivery.dtos.restaurant;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
-
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -47,7 +41,7 @@ public class RestaurantDTO {
 
     @NotBlank(message = "Description is required")
     private String description;
-    
+
     @Builder.Default
     private Double rating = 0.0;
     

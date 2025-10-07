@@ -2,9 +2,13 @@ package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dtos.cart.CartItemDTO;
 import com.goDelivery.goDelivery.dtos.cart.ShoppingCartDTO;
+import com.goDelivery.goDelivery.model.Customer;
+import com.goDelivery.goDelivery.repository.CustomerRepository;
 import com.goDelivery.goDelivery.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,37 +18,49 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
 
     private final CartService cartService;
+    private final CustomerRepository customerRepository;
 
-    @GetMapping("/getCart")
-    public ResponseEntity<ShoppingCartDTO> getCart(@RequestParam Long customerId) {
-        return ResponseEntity.ok(cartService.getCart(customerId));
+    @GetMapping(value = "/getCart")
+    public ResponseEntity<ShoppingCartDTO> getCart(
+            @AuthenticationPrincipal UserDetails userDetails) {
+                Customer customer = customerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));       
+        return ResponseEntity.ok(cartService.getCart(customer.getCustomerId()));
     }
 
-    @PostMapping("/addItem")
+    @PostMapping(value = "/addItem")
     public ResponseEntity<ShoppingCartDTO> addItemToCart(
-            @RequestParam Long customerId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody CartItemDTO cartItemDTO) {
-        return ResponseEntity.ok(cartService.addItemToCart(customerId, cartItemDTO));
+                Customer customer = customerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));       
+        return ResponseEntity.ok(cartService.addItemToCart(customer.getCustomerId(), cartItemDTO));
     }
 
-    @PutMapping("/updateItem/{itemId}")
+    @PutMapping(value = "/updateItem/{itemId}")
     public ResponseEntity<ShoppingCartDTO> updateCartItem(
-            @RequestParam Long customerId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long itemId,
             @RequestBody CartItemDTO cartItemDTO) {
-        return ResponseEntity.ok(cartService.updateCartItem(customerId, itemId, cartItemDTO));
+                Customer customer = customerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));       
+        return ResponseEntity.ok(cartService.updateCartItem(customer.getCustomerId(), itemId, cartItemDTO));
     }
 
-    @DeleteMapping("/removeItem/{itemId}")
+    @DeleteMapping(value = "/removeItem/{itemId}")
     public ResponseEntity<ShoppingCartDTO> removeItemFromCart(
-            @RequestParam Long customerId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long itemId) {
-        return ResponseEntity.ok(cartService.removeItemFromCart(customerId, itemId));
+                Customer customer = customerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));       
+        return ResponseEntity.ok(cartService.removeItemFromCart(customer.getCustomerId(), itemId));
     }
 
-    @DeleteMapping("/clearCart")
-    public ResponseEntity<Void> clearCart(@RequestParam Long customerId) {
-        cartService.clearCart(customerId);
+    @DeleteMapping(value = "/clearCart")
+    public ResponseEntity<Void> clearCart(@AuthenticationPrincipal UserDetails userDetails) {
+                Customer customer = customerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));       
+        cartService.clearCart(customer.getCustomerId());
         return ResponseEntity.noContent().build();
     }
 }

@@ -31,7 +31,7 @@ public class CashierService {
     public OrderResponse acceptOrder(Long orderId, Integer estimatedPrepTimeMinutes) {
         log.info("Accepting order ID: {} with estimated prep time: {} minutes", orderId, estimatedPrepTimeMinutes);
         
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
         
         if (order.getOrderStatus() != OrderStatus.PLACED) {
@@ -48,7 +48,7 @@ public class CashierService {
     @Transactional(readOnly = true)
     public OrderResponse getOrderTimeline(Long orderId) {
         log.info("Fetching timeline for order ID: {}", orderId);
-        return orderRepository.findById(orderId)
+        return orderRepository.findByOrderId(orderId)
                 .map(orderMapper::toOrderResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
     }
@@ -57,7 +57,7 @@ public class CashierService {
     public OrderResponse markOrderReadyForPickup(Long orderId) {
         log.info("Marking order ID: {} as ready for pickup", orderId);
         
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
         
         if (order.getOrderStatus() != OrderStatus.PREPARING) {
@@ -72,7 +72,7 @@ public class CashierService {
     public OrderResponse confirmOrderDispatch(Long orderId) {
         log.info("Confirming dispatch for order ID: {}", orderId);
         
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
         
         if (order.getOrderStatus() != OrderStatus.READY) {
@@ -98,7 +98,7 @@ public class CashierService {
     public OrderResponse updateOrderStatus(OrderStatusUpdate statusUpdate) {
         log.info("Updating status for order ID: {} to {}", statusUpdate.getOrderId(), statusUpdate.getStatus());
         
-        Order order = orderRepository.findById(statusUpdate.getOrderId())
+        Order order = orderRepository.findByOrderId(statusUpdate.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + statusUpdate.getOrderId()));
         
         // Update order status
@@ -138,22 +138,22 @@ public class CashierService {
     @Transactional(readOnly = true)
     public OrderResponse getOrderDetails(Long orderId) {
         log.info("Fetching details for order ID: {}", orderId);
-        return orderRepository.findById(orderId)
+        return orderRepository.findByOrderId(orderId)
                 .map(orderMapper::toOrderResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
     }
 
     @Transactional
-    public OrderResponse assignToDelivery(Long orderId, Long deliveryPersonId) {
-        log.info("Assigning order ID: {} to delivery person ID: {}", orderId, deliveryPersonId);
+    public OrderResponse assignToDelivery(Long orderId, Long bikerId) {
+        log.info("Assigning order ID: {} to delivery person ID: {}", orderId, bikerId);
         
         // Find the order
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
         
         // Find the delivery person (biker)
-        Bikers biker = bikersRepository.findById(deliveryPersonId)
-                .orElseThrow(() -> new ResourceNotFoundException("Delivery person not found with id: " + deliveryPersonId));
+        Bikers biker = bikersRepository.findByBikerId(bikerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery person not found with id: " + bikerId));
         
         // Update order with delivery person
         order.setBikers(biker);

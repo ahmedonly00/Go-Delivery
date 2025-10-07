@@ -1,8 +1,24 @@
 HELP.md
-*.md
+
+PICKUP_CONFIRMATION_GUIDE.md       
+BIKER_ACCEPTANCE_GUIDE.md                                   
+BIKER_FEATURES_SUMMARY.md                         
+BIKER_NOTIFICATION_SYSTEM.md                                       
+COMPLETE_TESTING_GUIDE.md                                  
+CUSTOMER_INTERACTION_GUIDE.md                     
+DELIVERY_CONFIRMATION_GUIDE.md     
+EMAIL_TROUBLESHOOTING_GUIDE.md
+NAVIGATION_DELIVERY_GUIDE.md
+SECURITY_ENDPOINT_REFERENCE.md 
+TESTING_QUICK_REFERENCE.md
+GMAIL_SETUP_CHECKLIST.md 
+POSTMAN_TESTING_GUIDE.md
+SECURITY_CONFIGURATION_SUMMARY.md
+QUICK_EMAIL_FIX.md
+POSTMAN_TESTING_GUIDE_OLD.md
 
 logs/
-uploads/
+uploads/ 
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
