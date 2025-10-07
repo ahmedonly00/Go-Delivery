@@ -63,6 +63,7 @@ public class SecurityConfig {
                         "/error",
                         "/favicon.ico"
                     ).permitAll()
+                        ..requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(
                         // Public endpoints
                         "/api/restaurant-applications/submit",
