@@ -38,7 +38,7 @@ public class RestaurantMapper {
                 .phoneNumber(restaurant.getPhoneNumber())
                 .logoUrl(restaurant.getLogoUrl())
                 .description(restaurant.getDescription())
-                .rating(restaurant.getRating().doubleValue())
+                .rating(restaurant.getRating())
                 .totalReviews(restaurant.getTotalReviews())
                 .totalOrders(restaurant.getTotalOrders())
                 .averagePreparationTime(restaurant.getAveragePreparationTime())

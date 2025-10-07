@@ -51,10 +51,6 @@ public class RestaurantDTO {
     @Builder.Default
     private Double rating = 0.0;
     
-    @Valid
-    @Builder.Default
-    private List<MenuItemRequest> menuItems = new ArrayList<>();
-    
     @Builder.Default
     private Integer totalOrders = 0;
     
