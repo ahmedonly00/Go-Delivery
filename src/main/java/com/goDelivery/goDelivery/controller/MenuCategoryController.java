@@ -27,7 +27,7 @@ public class MenuCategoryController {
     private final MenuCategoryService menuCategoryService;
 
     
-    @PostMapping("/restaurants/{restaurantId}/menu-categories")
+    @PostMapping("/{restaurantId}/menu-categories")
     public ResponseEntity<MenuCategoryDTO> createMenuCategory(@PathVariable Long restaurantId, @RequestBody MenuCategoryDTO menuCategoryDTO){
         return ResponseEntity.ok(menuCategoryService.createMenuCategory(menuCategoryDTO));
     }

@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,8 +61,8 @@ public class  UsersService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         
         // Set audit fields
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setCreatedAt(LocalDate.now());
+        user.setUpdatedAt(LocalDate.now());
         
         // Save user
         RestaurantUsers savedUser = usersRepository.save(user);
@@ -103,7 +103,7 @@ public class  UsersService {
         }
     
         // Use LocalDateTime for better precision
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDate.now());
         
         RestaurantUsers updatedUser = usersRepository.save(user);
     
@@ -149,7 +149,7 @@ public class  UsersService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         
         user.setRole(role);
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDate.now());
         RestaurantUsers updatedUser = usersRepository.save(user);
         
         return restaurantUserMapper.mapToResponse(updatedUser);
@@ -162,7 +162,7 @@ public class  UsersService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         
         user.setActive(false);
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDate.now());
         RestaurantUsers updatedUser = usersRepository.save(user);
         
         return restaurantUserMapper.mapToResponse(updatedUser);
@@ -175,7 +175,7 @@ public class  UsersService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         
         user.setActive(true);
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDate.now());
         RestaurantUsers updatedUser = usersRepository.save(user);
         
         return restaurantUserMapper.mapToResponse(updatedUser);

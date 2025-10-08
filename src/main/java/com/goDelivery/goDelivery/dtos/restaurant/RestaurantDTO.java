@@ -1,6 +1,11 @@
 package com.goDelivery.goDelivery.dtos.restaurant;
 
 import java.time.LocalDate;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @Builder
@@ -36,7 +40,7 @@ public class RestaurantDTO {
     @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Phone number should be valid")
     private String phoneNumber;
     
-    @NotBlank(message = "Logo URL is required")
+    @JsonIgnore
     private String logoUrl;
 
     @NotBlank(message = "Description is required")
@@ -47,6 +51,9 @@ public class RestaurantDTO {
     
     @Builder.Default
     private Integer totalOrders = 0;
+    
+    @JsonIgnore
+    private MultipartFile logoFile;
     
     @Builder.Default
     private Integer totalReviews = 0;

@@ -1,6 +1,5 @@
 package com.goDelivery.goDelivery.dtos.customer;
 
-import com.goDelivery.goDelivery.Enum.Gender;
 import com.goDelivery.goDelivery.Enum.Roles;
 
 import jakarta.persistence.EnumType;
@@ -11,8 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
@@ -20,10 +17,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerRegistrationRequest {
+
     @NotBlank(message = "Full name is required")
     @JsonProperty("fullNames")
     private String fullNames;
-    
+
+    @NotBlank(message = "Location is required")
+    @JsonProperty("location")
+    private String location;
+
+    @NotBlank(message = "Phone number is required")
+    @JsonProperty("phoneNumber")
+    private String phoneNumber;
+
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     @JsonProperty("email")
@@ -33,20 +39,10 @@ public class CustomerRegistrationRequest {
     @Size(min = 6, message = "Password must be at least 6 characters")
     @JsonProperty("password")
     private String password;
-    
-    @NotBlank(message = "Phone number is required")
-    @JsonProperty("phoneNumber")
-    private String phoneNumber;
-    
-    @NotNull(message = "Date of birth is required")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @JsonProperty("dateOfBirth")
-    private LocalDate dateOfBirth;
-    
-    @NotNull(message = "Gender is required")
-    @Enumerated(EnumType.STRING)
-    @JsonProperty("gender")
-    private Gender gender;
+
+    @NotBlank(message = "Confirm password is required")
+    @JsonProperty("confirmPassword")
+    private String confirmPassword;
     
     @NotNull(message = "Roles is required")
     @Enumerated(EnumType.STRING)

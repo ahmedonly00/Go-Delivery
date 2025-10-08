@@ -3,8 +3,11 @@ package com.goDelivery.goDelivery.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,9 +40,11 @@ public class CustomerController {
         
     }
 
-    @GetMapping("/profile/{customerId}")
-    public ResponseEntity<CustomerResponse> getCustomerProfile(Long customerId) {
-        CustomerResponse customerResponse = customerService.getCustomerProfile(customerId);
+    @GetMapping("/profile/{email}")
+    public ResponseEntity<CustomerResponse> getCustomerProfile(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String email) {
+        CustomerResponse customerResponse = customerService.getCustomerProfile(email);
         return ResponseEntity.ok(customerResponse);
     }
 
@@ -50,7 +55,9 @@ public class CustomerController {
     }
 
     @GetMapping("/getCustomerByEmail/{email}")
-    public ResponseEntity<CustomerResponse> getCustomerByEmail(String email) {
+    public ResponseEntity<CustomerResponse> getCustomerByEmail(String email,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
         CustomerResponse customerResponse = customerService.getCustomerByEmail(email);
         return ResponseEntity.ok(customerResponse);
     }

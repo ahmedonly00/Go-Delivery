@@ -12,6 +12,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -28,13 +30,14 @@ public class AnalyticsController {
 
     @GetMapping(value = "/getOrdersHistory")
     public ResponseEntity<Page<OrderResponse>> getOrderHistory(
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam Long restaurantId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @PageableDefault(size = 20) Pageable pageable) {
         
         Page<OrderResponse> orders = analyticsService.getOrderHistory(
-                restaurantId, 
+                restaurantId,
                 startDate, 
                 endDate, 
                 pageable
@@ -44,6 +47,7 @@ public class AnalyticsController {
 
     @GetMapping(value = "/getSalesReport")
     public ResponseEntity<SalesReportDTO> generateSalesReport(
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam Long restaurantId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -60,6 +64,7 @@ public class AnalyticsController {
 
     @GetMapping(value = "/getCustomerTrends")
     public ResponseEntity<List<CustomerTrendsDTO>> analyzeCustomerTrends(
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam Long restaurantId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {

@@ -42,11 +42,11 @@ public class CustomerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
         
         existingCustomer.setFullNames(customerRegistrationRequest.getFullNames());
+        existingCustomer.setLocation(customerRegistrationRequest.getLocation());
         existingCustomer.setEmail(customerRegistrationRequest.getEmail());
         existingCustomer.setPassword(passwordEncoder.encode(customerRegistrationRequest.getPassword()));
+        existingCustomer.setConfirmPassword(passwordEncoder.encode(customerRegistrationRequest.getConfirmPassword()));
         existingCustomer.setPhoneNumber(customerRegistrationRequest.getPhoneNumber());
-        existingCustomer.setDateOfBirth(customerRegistrationRequest.getDateOfBirth());
-        existingCustomer.setGender(customerRegistrationRequest.getGender());
         existingCustomer.setActive(true);
         existingCustomer.setLastLogin(LocalDate.now());
         existingCustomer.setCreatedAt(LocalDate.now());
@@ -71,9 +71,9 @@ public class CustomerService {
         return customerMapper.toResponse(customer);
     }
 
-    public CustomerResponse getCustomerProfile(Long customerId) {
-        Customer customer = customerRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+    public CustomerResponse getCustomerProfile(String email) {
+        Customer customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with email: " + email));
         return customerMapper.toResponse(customer);
     }
 

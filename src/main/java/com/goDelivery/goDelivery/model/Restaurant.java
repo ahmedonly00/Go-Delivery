@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
@@ -95,8 +96,9 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews;
     
+    @Builder.Default
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
-    private List<RestaurantUsers> restaurantUsers;
+    private List<RestaurantUsers> restaurantUsers = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderAnalytics> orderAnalytics;

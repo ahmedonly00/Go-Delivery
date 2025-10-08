@@ -48,6 +48,18 @@ public class MenuItemController {
         return menuItemService.getMenuItemById(menuItemId);
     }
 
+    @GetMapping(value = "/getMenuItemByName/{menuItemName}")
+    public MenuItemResponse getMenuItemByName(
+            @PathVariable Long restaurantId,
+            @PathVariable String menuItemName) {
+        return menuItemService.getMenuItemByName(menuItemName);
+    }
+
+    @GetMapping(value = "/getMenuItemByName/{menuItemId}")
+    public List<MenuItemResponse> getAllMenuItem() {
+        return menuItemService.getAllMenuItems();
+    }
+
     @PutMapping(value = "/updateMenuItem/{menuItemId}")
     public MenuItemResponse updateMenuItem(
             @PathVariable Long restaurantId,

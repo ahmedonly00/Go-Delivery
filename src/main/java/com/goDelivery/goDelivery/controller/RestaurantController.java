@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dtos.restaurant.*;
 import com.goDelivery.goDelivery.service.RestaurantService;
+import com.goDelivery.goDelivery.service.FileStorageService;
 import com.goDelivery.goDelivery.service.RestaurantRegistrationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/restaurants")
@@ -23,6 +25,7 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
     private final RestaurantRegistrationService registrationService;
+    private final FileStorageService fileStorageService;
 
 
     @PostMapping("/registerAdmin")
@@ -34,18 +37,31 @@ public class RestaurantController {
         );
     }
 
-    @PostMapping("/registerRestaurant")
+    @PostMapping(value = "/registerRestaurant", consumes = {"multipart/form-data"})
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
-    public ResponseEntity<RestaurantDTO> registerRestaurant(
+    public ResponseEntity<?> registerRestaurant(
             @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody RestaurantDTO restaurantDTO) {
-        RestaurantDTO createdRestaurant = registrationService.completeRestaurantRegistration(
-            userDetails.getUsername(), 
-            restaurantDTO
-        );
-        return new ResponseEntity<>(createdRestaurant, HttpStatus.CREATED);
+            @RequestPart("restaurant") @Valid RestaurantDTO restaurantDTO,
+            @RequestPart(value = "logoFile", required = false) MultipartFile logoFile) {
+        try {
+            if (logoFile != null && !logoFile.isEmpty()) {
+                // Store the logo file
+                String filePath = fileStorageService.storeFile(logoFile, "restaurants/temp/logo");
+                String fullUrl = "/api/files/" + filePath.replace("\\", "/");
+                restaurantDTO.setLogoUrl(fullUrl);
+            }
+            
+            RestaurantDTO createdRestaurant = registrationService.completeRestaurantRegistration(
+                userDetails.getUsername(), 
+                restaurantDTO
+            );
+            return new ResponseEntity<>(createdRestaurant, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("{\"error\": \"Failed to register restaurant: " + e.getMessage() + "\"}");
+        }
     }
-
+    
     @PutMapping(value = "/{restaurantId}/operating-hours")
     public ResponseEntity<RestaurantDTO> updateOperatingHours(
             @AuthenticationPrincipal UserDetails userDetails,

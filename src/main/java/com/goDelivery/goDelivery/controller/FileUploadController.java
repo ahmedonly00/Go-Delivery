@@ -26,12 +26,32 @@ public class FileUploadController {
 
     @PostMapping("/{restaurantId}/logo")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
-    public ResponseEntity<String> uploadLogo(
+    public ResponseEntity<?> uploadLogo(
             @PathVariable Long restaurantId,
             @RequestParam("file") MultipartFile file) {
-        String filePath = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/logo");
-        restaurantService.updateRestaurantLogo(restaurantId, filePath);
-        return ResponseEntity.ok().body("{\"filePath\": \"" + filePath + "\"}");
+        try {
+            // Validate file
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("{\"error\": \"Please select a file to upload\"}");
+            }
+            
+            // Check file type
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.badRequest().body("{\"error\": \"Only image files are allowed\"}");
+            }
+            
+            // Store the file
+            String filePath = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/logo");
+            
+            // Update restaurant logo URL
+            String fullUrl = "/api/files/" + filePath.replace("\\", "/");
+            restaurantService.updateRestaurantLogo(restaurantId, fullUrl);
+            
+            return ResponseEntity.ok().body("{\"filePath\": \"" + fullUrl + "\"}");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("{\"error\": \"Failed to upload file: " + e.getMessage() + "\"}");
+        }
     }
 
     @PostMapping("/{restaurantId}/promotions")

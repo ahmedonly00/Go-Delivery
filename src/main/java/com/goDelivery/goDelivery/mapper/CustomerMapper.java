@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.goDelivery.goDelivery.Enum.Gender;
 import com.goDelivery.goDelivery.dtos.customer.CustomerRegistrationRequest;
 import com.goDelivery.goDelivery.dtos.customer.CustomerResponse;
 import com.goDelivery.goDelivery.dtos.customer.CustomerUpdateRequest;
@@ -29,15 +28,17 @@ public class CustomerMapper {
 
         Customer customer = new Customer();
         customer.setFullNames(customerRegistrationRequest.getFullNames());
+        customer.setLocation(customerRegistrationRequest.getLocation());
         customer.setEmail(customerRegistrationRequest.getEmail());
-        customer.setPassword(passwordEncoder.encode(customerRegistrationRequest.getPassword()));
         customer.setPhoneNumber(customerRegistrationRequest.getPhoneNumber());
-        customer.setDateOfBirth(customerRegistrationRequest.getDateOfBirth());
-        customer.setGender(customerRegistrationRequest.getGender());
+        customer.setPassword(passwordEncoder.encode(customerRegistrationRequest.getPassword()));
+        customer.setConfirmPassword(passwordEncoder.encode(customerRegistrationRequest.getConfirmPassword()));
         customer.setRoles(customerRegistrationRequest.getRoles());
         customer.setEmailVerified(true);
         customer.setPhoneVerified(true);
         customer.setLastLogin(LocalDate.now());
+        customer.setCreatedAt(LocalDate.now());
+        customer.setUpdatedAt(LocalDate.now());
         return customer; 
         
     }
@@ -51,11 +52,11 @@ public class CustomerMapper {
         return CustomerResponse.builder()
                 .customerId(customer.getCustomerId())
                 .fullNames(customer.getFullNames())
+                .location(customer.getLocation())
+                .phoneNumber(customer.getPhoneNumber())
                 .email(customer.getEmail())
                 .password(passwordEncoder.encode(customer.getPassword()))
-                .phoneNumber(customer.getPhoneNumber())
-                .dateOfBirth(customer.getDateOfBirth())
-                .gender(customer.getGender())
+                .confirmPassword(passwordEncoder.encode(customer.getConfirmPassword()))
                 .roles(customer.getRoles())
                 .emailVerified(true)
                 .phoneVerified(true)
@@ -77,8 +78,7 @@ public class CustomerMapper {
         customer.setFullNames(customerUpdateRequest.getFullNames());
         customer.setEmail(customerUpdateRequest.getEmail());
         customer.setPhoneNumber(customerUpdateRequest.getPhoneNumber());
-        customer.setDateOfBirth(customerUpdateRequest.getDateOfBirth());
-        customer.setGender(Gender.valueOf(customerUpdateRequest.getGender().name()));
+        customer.setUpdatedAt(LocalDate.now());
 
         return customer;
 

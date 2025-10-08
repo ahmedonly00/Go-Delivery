@@ -4,19 +4,42 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Set;
+import java.util.HashSet;
 
 @Service
 public class FileStorageService {
 
     @Value("${file.upload-dir:uploads/}")
     private String uploadDir;
+    
+    @Value("${file.allowed-image-types:jpg,jpeg,png,gif}")
+    private String allowedImageTypes;
+    
+    private Set<String> allowedImageExtensions;
+    
+    @PostConstruct
+    public void init() {
+        // Initialize allowed image extensions
+        allowedImageExtensions = new HashSet<>(Arrays.asList(allowedImageTypes.split(",")));
+        
+        // Create upload directory if it doesn't exist
+        try {
+            Files.createDirectories(Paths.get(uploadDir).toAbsolutePath().normalize());
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not create upload directory", ex);
+        }
+    }
 
     public String storeFile(MultipartFile file, String subDirectory) {
         if (file == null || file.isEmpty()) {
@@ -24,8 +47,19 @@ public class FileStorageService {
         }
         
         try {
+            // Clean the subdirectory path to prevent directory traversal
+            String safeSubDirectory = subDirectory.replaceAll("[/\\]+", "/")
+                                                .replaceAll("^[./]+", "");
+            
             // Create the target directory if it doesn't exist
-            Path uploadPath = Paths.get(uploadDir + subDirectory).toAbsolutePath().normalize();
+            Path uploadPath = Paths.get(uploadDir, safeSubDirectory).toAbsolutePath().normalize();
+            
+            // Security check: make sure the upload path is still within the intended directory
+            Path basePath = Paths.get(uploadDir).toAbsolutePath().normalize();
+            if (!uploadPath.startsWith(basePath)) {
+                throw new RuntimeException("Invalid file storage location");
+            }
+            
             Files.createDirectories(uploadPath);
 
             // Generate a unique filename with null safety
@@ -35,19 +69,24 @@ public class FileStorageService {
                 
             String fileExtension = "";
             if (originalFileName.contains(".")) {
-                fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+                fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1).toLowerCase();
             } else {
                 // Default extension if none found
-                fileExtension = ".dat";
+                fileExtension = "dat";
             }
             
-            String fileName = UUID.randomUUID().toString() + fileExtension;
+            // Validate file extension for images
+            if (subDirectory.contains("logo") && !allowedImageExtensions.contains(fileExtension)) {
+                throw new RuntimeException("Invalid file type. Allowed types: " + allowedImageTypes);
+            }
+            
+            String fileName = UUID.randomUUID().toString() + "." + fileExtension;
 
             // Copy file to the target location
             Path targetLocation = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            return subDirectory + "/" + fileName;
+            return safeSubDirectory + "/" + fileName;
         } catch (IOException ex) {
             throw new RuntimeException("Could not store file " + file.getOriginalFilename() + ". Please try again!", ex);
         }

@@ -1,6 +1,5 @@
 package com.goDelivery.goDelivery.dtos.customer;
 
-import com.goDelivery.goDelivery.Enum.Gender;
 import com.goDelivery.goDelivery.Enum.Roles;
 
 import lombok.AllArgsConstructor;
@@ -17,11 +16,11 @@ import java.time.LocalDate;
 public class CustomerResponse {
     private Long customerId;
     private String fullNames;
+    private String location;
+    private String phoneNumber;
     private String email;
     private String password;
-    private String phoneNumber;
-    private LocalDate dateOfBirth;
-    private Gender gender;
+    private String confirmPassword;
     private Roles roles;
     private boolean emailVerified;
     private boolean phoneVerified;

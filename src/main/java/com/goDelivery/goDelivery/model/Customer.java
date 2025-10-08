@@ -1,6 +1,5 @@
 package com.goDelivery.goDelivery.model;
 
-import com.goDelivery.goDelivery.Enum.Gender;
 import com.goDelivery.goDelivery.Enum.Roles;
 
 import jakarta.persistence.*;
@@ -30,21 +29,20 @@ public class Customer implements CustomUserDetails {
     @Column(name = "full_names", nullable = false)
     private String fullNames;
 
-    @Column(name = "email")
+    @Column(name = "location", nullable = false)
+    private String location;
+
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
+
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "password",nullable = false)
     private String password;
 
-    @Column(name = "phone_number", nullable = false)
-    private String phoneNumber;
-
-    @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
-
-    @Column(name = "gender", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+    @Column(name = "confirm_password", nullable = false)
+    private String confirmPassword;
 
     @Column(name = "roles", nullable = false)
     @Enumerated(EnumType.STRING)

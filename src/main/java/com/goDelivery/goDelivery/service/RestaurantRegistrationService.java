@@ -19,7 +19,8 @@ import com.goDelivery.goDelivery.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,7 @@ public class RestaurantRegistrationService {
         restaurant.setRestaurantName(restaurantDTO.getRestaurantName());
         restaurant.setCuisineType(restaurantDTO.getCuisineType());
         restaurant.setLocation(restaurantDTO.getLocation());
+        restaurant.setDescription(restaurantDTO.getDescription());
         restaurant.setPhoneNumber(restaurantDTO.getPhoneNumber());
         restaurant.setEmail(restaurantDTO.getEmail());
         restaurant.setLogoUrl(restaurantDTO.getLogoUrl());
@@ -66,15 +68,22 @@ public class RestaurantRegistrationService {
             restaurant.setOperatingHours(operatingHours);
         }
         
-        // Set the admin reference in restaurant
-        restaurant.setRestaurantUsers(List.of(admin));
-        
+
+        // Save the restaurant first to generate an ID
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
         
         // Update admin's restaurant reference and mark setup as complete
         admin.setRestaurant(savedRestaurant);
         admin.setSetupComplete(true);
+
+        // Add admin to restaurant's users list
+        savedRestaurant.setRestaurantUsers(new ArrayList<>());
+        savedRestaurant.getRestaurantUsers().add(admin);
+
+        // Save the updated admin and restaurant
         userRepository.save(admin);
+        restaurantRepository.save(savedRestaurant);
+    
         
         // Convert to DTO and return
         return RestaurantDTO.builder()
@@ -102,7 +111,8 @@ public class RestaurantRegistrationService {
                 .password(passwordEncoder.encode(registrationDTO.getPassword()))
                 .phoneNumber(registrationDTO.getPhoneNumber())
                 .isActive(true)
-                .emailVerified(false) // Will be verified via email
+                .lastLogin(LocalDate.now())
+                .emailVerified(true) // Will be verified via email
                 .role(Roles.RESTAURANT_ADMIN) // Set the role
                 .permissions("RESTAURANT:READ,RESTAURANT:WRITE") // Basic permissions
                 .build();
