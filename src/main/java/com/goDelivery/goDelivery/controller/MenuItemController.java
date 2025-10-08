@@ -55,7 +55,7 @@ public class MenuItemController {
         return menuItemService.getMenuItemByName(menuItemName);
     }
 
-    @GetMapping(value = "/getMenuItemByName/{menuItemId}")
+    @GetMapping(value = "/getAllMenuItem")
     public List<MenuItemResponse> getAllMenuItem() {
         return menuItemService.getAllMenuItems();
     }
