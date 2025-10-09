@@ -1,7 +1,6 @@
 package com.goDelivery.goDelivery.auth;
 
 import com.goDelivery.goDelivery.dtos.auth.*;
-import com.goDelivery.goDelivery.dtos.auth.PasswordResetToken;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
 import com.goDelivery.goDelivery.repository.PasswordResetTokenRepository;
@@ -45,6 +44,15 @@ public class AuthenticationService {
         try {
             // Check if user exists first
             CustomUserDetails user = findUserByEmail(email);
+
+            // For customers, check if email is verified
+            if (user instanceof Customer) {
+                Customer customer = (Customer) user;
+                if (!customer.getIsVerified()) {
+                    throw new RuntimeException("Email not verified. Please verify your email first.");
+                }
+            }
+
             // Verify password
             if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
                 throw new BadCredentialsException("Invalid email or password");

@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface EmailVerificationService {
     
-   
     @Async
     @Transactional
     boolean notifyRestaurantSetupComplete(String email, String restaurantName);

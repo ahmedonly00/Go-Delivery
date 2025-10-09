@@ -10,7 +10,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+/**
+ * Implementation of {@link EmailVerificationService} for handling email verification
+ * and notification related operations.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

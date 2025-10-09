@@ -1,6 +1,8 @@
 package com.goDelivery.goDelivery.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,10 +19,11 @@ import com.goDelivery.goDelivery.dtos.customer.CustomerRegistrationRequest;
 import com.goDelivery.goDelivery.dtos.customer.CustomerResponse;
 import com.goDelivery.goDelivery.service.CustomerService;
 
-import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
@@ -28,16 +32,29 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @PostMapping("/registerCustomer")
-    public ResponseEntity<CustomerResponse> registerCustomer(@Valid @RequestBody CustomerRegistrationRequest customerRegistrationRequest) {
-        System.out.println("Received registration request: " + customerRegistrationRequest);
-        if (customerRegistrationRequest == null) {
-            System.out.println("Request body is null");
-            return ResponseEntity.badRequest().build();
-        }
-        CustomerResponse customerResponse = customerService.registerCustomer(customerRegistrationRequest);
-        return ResponseEntity.ok(customerResponse);
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, Object>> registerCustomer(
+            @Valid @RequestBody CustomerRegistrationRequest request) {
+        log.info("Received registration request for email: {}", request.getEmail());
         
+        try {
+            CustomerResponse customerResponse = customerService.registerCustomer(request);
+            log.info("Successfully registered user with email: {}", request.getEmail());
+            
+            Map<String, Object> successResponse = new HashMap<>();
+            successResponse.put("success", true);
+            successResponse.put("message", "Registration successful. Please check your email for the OTP to verify your account.");
+            successResponse.put("data", customerResponse);
+            successResponse.put("requiresVerification", true);
+            return ResponseEntity.ok(successResponse);
+            
+        } catch (Exception e) {
+            log.error("Error during registration for email: {}", request.getEmail(), e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
     }
 
     @GetMapping("/profile/{email}")

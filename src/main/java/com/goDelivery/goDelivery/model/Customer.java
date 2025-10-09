@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,20 +48,28 @@ public class Customer implements CustomUserDetails {
     @Column(name = "roles", nullable = false)
     @Enumerated(EnumType.STRING)
     private Roles roles;
+    
+    @Column(name = "is_active")
+    private Boolean isActive = false;
+    
+    @Column(name = "is_verified")
+    private Boolean isVerified = false;
+    
+    private String otp;
+    
+    @Column(name = "otp_expiry_time")
+    private LocalDateTime otpExpiryTime;
 
-    @Column(name = "email_verified", nullable = true)
-    private boolean emailVerified;
+    @Column(name = "email_verified")
+    private boolean emailVerified = false;
 
     @Column(name = "phone_verified", nullable = true)
-    private boolean phoneVerified;
-
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    private boolean phoneVerified = false;
 
     @Column(name = "last_login", nullable = true)
     private LocalDate lastLogin;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDate createdAt;
 
     @Column(name = "updated_at", nullable = false)
@@ -118,7 +127,38 @@ public class Customer implements CustomUserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isActive != null && isActive;
+    }
+    
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+    
+    public Boolean getIsVerified() {
+        return isVerified;
+    }
+    
+    public void setVerified(boolean isVerified) {
+        this.isVerified = isVerified;
+        if (isVerified) {
+            this.isActive = true;
+        }
+    }
+    
+    public String getOtp() {
+        return otp;
+    }
+    
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+    
+    public LocalDateTime getOtpExpiryTime() {
+        return otpExpiryTime;
+    }
+    
+    public void setOtpExpiryTime(LocalDateTime otpExpiryTime) {
+        this.otpExpiryTime = otpExpiryTime;
     }
 
     @Override

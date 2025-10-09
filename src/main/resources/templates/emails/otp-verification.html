@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .otp-code {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            letter-spacing: 3px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Email Verification</h2>
+    </div>
+    <div class="content">
+        <p>Hello <span th:text="${name}">User</span>,</p>
+        <p>Thank you for registering with GoDelivery. Please use the following OTP to verify your email address:</p>
+        
+        <div class="otp-code" th:text="${otp}">123456</div>
+        
+        <p>This OTP will expire in 5 minutes. Please do not share this code with anyone for security reasons.</p>
+        
+        <p>If you didn't request this, please ignore this email.</p>
+        
+        <p>Best regards,<br>The GoDelivery Team</p>
+    </div>
+    <div class="footer">
+        <p>© 2025 GoDelivery. All rights reserved.</p>
+    </div>
+</body>
+</html>

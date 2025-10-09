@@ -21,16 +21,74 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @RequiredArgsConstructor
 public class EmailService {
+
     
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
-    @Value("${app.base-url}")
-    private String baseUrl;
-
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    @Value("${app.frontend.url:http://localhost:3000}")
+    private String frontendUrl;
+
+    @Value("${app.base-url:http://localhost:8085}")
+    private String baseUrl;
+
+ 
+    @Async
+    public void sendSetupCompletionEmail(String toEmail, String name, String restaurantName) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject("Restaurant Setup Complete - " + restaurantName);
+            
+            // Create email content using Thymeleaf
+            Context context = new Context();
+            context.setVariable("name", name);
+            context.setVariable("restaurantName", restaurantName);
+            
+            String htmlContent = templateEngine.process("emails/setup-complete", context);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            log.info("Restaurant setup completion email sent to: {}", toEmail);
+        } catch (MessagingException e) {
+            log.error("Failed to send setup completion email to {}: {}", toEmail, e.getMessage(), e);
+            throw new RuntimeException("Failed to send setup completion email", e);
+        }
+    }
+
+    @Async
+    public void sendOtpEmail(String to, String name, String otp) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("GoDelivery <" + fromEmail + ">");
+            helper.setTo(to);
+            helper.setSubject("Verify Your Email - GoDelivery");
+
+            Context context = new Context();
+            context.setVariable("name", name);
+            context.setVariable("otp", otp);
+            context.setVariable("frontendUrl", frontendUrl);
+
+            String htmlContent = templateEngine.process("emails/otp-verification", context);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            log.info("OTP email sent to: {}", to);
+            
+        } catch (MessagingException e) {
+            log.error("Failed to send OTP email to {}: {}", to, e.getMessage());
+            throw new EmailSendingException("Failed to send OTP email", e);
+        }
+    }
+    
     @Async
     public CompletableFuture<Boolean> sendTestEmail(String to) {
         try {
@@ -39,7 +97,7 @@ public class EmailService {
             
             helper.setFrom(fromEmail);
             helper.setTo(to);
-            helper.setSubject("Test Email");
+            helper.setSubject("Test Email from Go Delivery");
             helper.setText("This is a test email from Go Delivery");
             
             mailSender.send(message);
@@ -58,7 +116,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom(fromEmail);
+            helper.setFrom("GoDelivery <" + fromEmail + ">");
             helper.setTo(toEmail);
             helper.setSubject("Verify your email address");
             
@@ -86,14 +144,14 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom(fromEmail);
+            helper.setFrom("GoDelivery <" + fromEmail + ">");
             helper.setTo(toEmail);
-            helper.setSubject("Welcome to Our Platform - Start Managing Your Restaurant");
+            helper.setSubject("Welcome to Go Delivery!");
             
             Context context = new Context();
             context.setVariable("name", name);
             context.setVariable("restaurantName", restaurantName);
-            context.setVariable("dashboardUrl", baseUrl + "/dashboard");
+            context.setVariable("dashboardUrl", frontendUrl + "/dashboard");
             
             String htmlContent = templateEngine.process("emails/welcome-email", context);
             helper.setText(htmlContent, true);
@@ -113,7 +171,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom(fromEmail);
+            helper.setFrom("GoDelivery <" + fromEmail + ">");
             helper.setTo(ownerEmail);
             helper.setSubject("Welcome to Go Delivery - Your Restaurant Account is Ready!");
             
@@ -121,7 +179,7 @@ public class EmailService {
             context.setVariable("name", ownerName);
             context.setVariable("restaurantName", restaurantName);
             context.setVariable("temporaryPassword", temporaryPassword);
-            context.setVariable("loginUrl", baseUrl + "/login");
+            context.setVariable("loginUrl", frontendUrl + "/login");
             
             String htmlContent = templateEngine.process("emails/restaurant-welcome-email", context);
             helper.setText(htmlContent, true);
@@ -136,70 +194,16 @@ public class EmailService {
     }
 
     @Async
-    public void sendApplicationRejectionEmail(String restaurantName, String ownerEmail, String rejectionReason) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            
-            helper.setFrom(fromEmail);
-            helper.setTo(ownerEmail);
-            helper.setSubject("Your Restaurant Application Status");
-            
-            Context context = new Context();
-            context.setVariable("restaurantName", restaurantName);
-            context.setVariable("rejectionReason", rejectionReason);
-            context.setVariable("contactUrl", baseUrl + "/contact");
-            
-            String htmlContent = templateEngine.process("emails/application-rejection-email", context);
-            helper.setText(htmlContent, true);
-            
-            mailSender.send(message);
-            log.info("Application rejection email sent to: {}", ownerEmail);
-            
-        } catch (MessagingException e) {
-            log.error("Failed to send application rejection email to {}: {}", ownerEmail, e.getMessage());
-            throw new EmailSendingException("Failed to send application rejection email", e);
-        }
-    }
-
-    @Async
-    public void sendSetupCompletionEmail(String toEmail, String name, String restaurantName) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            
-            helper.setFrom(fromEmail);
-            helper.setTo(toEmail);
-            helper.setSubject("Your Restaurant is Now Live!");
-            
-            Context context = new Context();
-            context.setVariable("name", name);
-            context.setVariable("restaurantName", restaurantName);
-            context.setVariable("dashboardUrl", baseUrl + "/dashboard");
-            
-            String htmlContent = templateEngine.process("emails/setup-complete-email", context);
-            helper.setText(htmlContent, true);
-            
-            mailSender.send(message);
-            log.info("Setup completion email sent to: {}", toEmail);
-            
-        } catch (MessagingException e) {
-            log.error("Failed to send setup completion email to {}: {}", toEmail, e.getMessage());
-            throw new EmailSendingException("Failed to send setup completion email", e);
-        }
-    }
-
-    @Async
     public void sendPasswordResetEmail(String toEmail, String name, String resetToken) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom(fromEmail);
+            helper.setFrom("GoDelivery <" + fromEmail + ">");
             helper.setTo(toEmail);
             helper.setSubject("Password Reset Request");
             
-            String resetUrl = baseUrl + "/reset-password?token=" + resetToken;
+            String resetUrl = frontendUrl + "/reset-password?token=" + resetToken;
             
             Context context = new Context();
             context.setVariable("name", name);
@@ -215,45 +219,5 @@ public class EmailService {
             log.error("Failed to send password reset email to {}: {}", toEmail, e.getMessage());
             throw new EmailSendingException("Failed to send password reset email", e);
         }
-    }
-
-    public boolean sendEmailWithRetry(String to, String subject, String content) {
-        final int maxRetries = 3;
-        int retryCount = 0;
-        
-        while (retryCount < maxRetries) {
-            try {
-                MimeMessage message = mailSender.createMimeMessage();
-                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-                
-                helper.setFrom(fromEmail);
-                helper.setTo(to);
-                helper.setSubject(subject);
-                helper.setText(content, true);
-                
-                mailSender.send(message);
-                log.info("Email sent to: {}", to);
-                return true;
-                
-            } catch (MessagingException e) {
-                retryCount++;
-                log.warn("Failed to send email to {} (attempt {}/{}): {}", to, retryCount, maxRetries, e.getMessage());
-                
-                if (retryCount >= maxRetries) {
-                    log.error("Max retries reached for sending email to {}: {}", to, e.getMessage());
-                    return false;
-                }
-                
-                // Exponential backoff
-                try {
-                    Thread.sleep(1000L * (long) Math.pow(2, retryCount - 1));
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    return false;
-                }
-            }
-        }
-        
-        return false;
     }
 }

@@ -78,8 +78,6 @@ public class SecurityConfig {
                         "/api/restaurant-applications/all",
                         "/api/restaurant-applications/status"
                     ).hasRole("SUPER_ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/api/restaurant-applications/*/review")
-                    .hasRole("SUPER_ADMIN")
                     // Customer endpoints - require CUSTOMER role
                     .requestMatchers(
                         "/api/customers/**",
@@ -91,7 +89,7 @@ public class SecurityConfig {
                     // Restaurant Admin endpoints - require RESTAURANT_ADMIN role
                     .requestMatchers(
                         "/api/users/**",
-                        "/api/menu-item/**",
+                        "/api/menu-items/**",
                         "/api/menu-category/**",
                         "/api/file-upload/**",
                         "/api/restaurants/**"

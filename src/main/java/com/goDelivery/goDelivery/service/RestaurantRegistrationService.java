@@ -103,6 +103,16 @@ public class RestaurantRegistrationService {
         if (userRepository.existsByEmail(registrationDTO.getEmail())) {
             throw new ResourceAlreadyExistsException("Email already in use");
         }
+
+        //Check if password is strong
+        if (!registrationDTO.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$")) {
+            throw new IllegalArgumentException("Password must contain at least one uppercase letter, one lowercase letter, and one number");
+        }
+
+        //Check if phone number is valid
+        if (!registrationDTO.getPhoneNumber().matches("^\\d{10,15}$")) {
+            throw new IllegalArgumentException("Invalid phone number format");
+        }
         
         // Create admin user without restaurant association
         RestaurantUsers admin = RestaurantUsers.builder()

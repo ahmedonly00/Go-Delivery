@@ -15,7 +15,10 @@ import com.goDelivery.goDelivery.model.Customer;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -23,12 +26,63 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final PasswordEncoder passwordEncoder;
+    private final OTPService otpService;
 
-    public CustomerResponse registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
-        Customer customer = customerMapper.toEntity(customerRegistrationRequest);
-        Customer savedCustomer = customerRepository.save(customer);
-        return customerMapper.toResponse(savedCustomer);
+    @SuppressWarnings("unused")
+    @Transactional
+    public CustomerResponse registerCustomer(CustomerRegistrationRequest request) {
+        log.info("Starting registration for email: {}", request.getEmail());
         
+        // Validate request
+        if (request == null) {
+            log.error("Registration request is null");
+            throw new IllegalArgumentException("Registration request cannot be null");
+        }
+        
+        // Check if email already exists
+        if (customerRepository.existsByEmail(request.getEmail())) {
+            log.warn("Registration failed: Email already exists - {}", request.getEmail());
+            throw new IllegalStateException("Email already registered");
+        }
+        
+        try {
+            // Map and save the customer
+            Customer customer = customerMapper.toEntity(request);
+            customer.setActive(false); // Set to false until email is verified
+            customer.setVerified(false);
+            customer.setEmailVerified(false);
+            customer.setPhoneVerified(false);
+            
+            // Encode password
+            String encodedPassword = passwordEncoder.encode(request.getPassword());
+            customer.setPassword(encodedPassword);
+            customer.setConfirmPassword(encodedPassword);
+            
+            // Set creation and update timestamps
+            LocalDate now = LocalDate.now();
+            customer.setCreatedAt(now);
+            customer.setUpdatedAt(now);
+            
+            // Save customer first to get the ID
+            Customer savedCustomer = customerRepository.save(customer);
+            log.info("Customer registered successfully with ID: {}", savedCustomer.getId());
+            
+            // Generate and send OTP in a separate try-catch to not fail registration if email fails
+            try {
+                otpService.generateAndSaveOTP(savedCustomer);
+                log.info("OTP sent to email: {}", savedCustomer.getEmail());
+            } catch (Exception e) {
+                log.error("Failed to send OTP email to: {}", savedCustomer.getEmail(), e);
+                // Don't fail the registration if email sending fails
+                // The user can request a new OTP later
+            }
+            
+            return customerMapper.toResponse(savedCustomer);
+            
+        } catch (Exception e) {
+            log.error("Error during registration for email: {}", request.getEmail(), e);
+            throw new RuntimeException("Failed to register customer: " + e.getMessage(), e);
+        }
     }
 
     public CustomerResponse getCustomerById(Long customerId) {
