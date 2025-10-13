@@ -84,7 +84,13 @@ public class SecurityConfig {
                         "/api/orders/createOrder",
                         "/api/orders/cancelOrder/*",
                         "/api/payments/process",
-                        "/api/payments/customer/*"
+                        "/api/payments/customer/*",
+                        "/api/restaurants/getAllActiveRestaurants",
+                        "/api/restaurants/getRestaurantById/{restaurantId}",
+                        "/api/menu-items/getAllMenuItem",
+                        "/api/menu-items/getMenuItemsByRestaurant/{restaurantId}",
+                        "/api/menu-items/getMenuItemById/{menuItemId}",
+                        "/api/menu-items/getMenuItemByName/{menuItemName}"
                     ).hasRole("CUSTOMER")
                     // Restaurant Admin endpoints - require RESTAURANT_ADMIN role
                     .requestMatchers(

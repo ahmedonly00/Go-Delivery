@@ -48,11 +48,12 @@ public class FileStorageService {
         
         try {
             // Clean the subdirectory path to prevent directory traversal
-            String safeSubDirectory = subDirectory.replaceAll("[/\\]+", "/")
-                                                .replaceAll("^[./]+", "");
+            String cleanSubDir = subDirectory.replaceAll("[/\\\\]+", "/")  // Replace multiple slashes with single forward slash
+                                          .replaceAll("^[./]+", "")       // Remove leading ./ or /
+                                          .replaceAll("[^a-zA-Z0-9/_.-]", "_"); // Replace invalid characters with underscore
             
             // Create the target directory if it doesn't exist
-            Path uploadPath = Paths.get(uploadDir, safeSubDirectory).toAbsolutePath().normalize();
+            Path uploadPath = Paths.get(uploadDir, cleanSubDir).toAbsolutePath().normalize();
             
             // Security check: make sure the upload path is still within the intended directory
             Path basePath = Paths.get(uploadDir).toAbsolutePath().normalize();
@@ -86,7 +87,7 @@ public class FileStorageService {
             Path targetLocation = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            return safeSubDirectory + "/" + fileName;
+            return cleanSubDir + "/" + fileName;
         } catch (IOException ex) {
             throw new RuntimeException("Could not store file " + file.getOriginalFilename() + ". Please try again!", ex);
         }

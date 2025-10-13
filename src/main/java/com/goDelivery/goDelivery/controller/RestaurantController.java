@@ -3,6 +3,8 @@ package com.goDelivery.goDelivery.controller;
 import com.goDelivery.goDelivery.dtos.restaurant.*;
 import com.goDelivery.goDelivery.service.RestaurantService;
 import com.goDelivery.goDelivery.service.FileStorageService;
+import java.util.HashMap;
+import java.util.Map;
 import com.goDelivery.goDelivery.service.RestaurantRegistrationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,8 +59,10 @@ public class RestaurantController {
             );
             return new ResponseEntity<>(createdRestaurant, HttpStatus.CREATED);
         } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to register restaurant: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("{\"error\": \"Failed to register restaurant: " + e.getMessage() + "\"}");
+                .body(errorResponse);
         }
     }
     
