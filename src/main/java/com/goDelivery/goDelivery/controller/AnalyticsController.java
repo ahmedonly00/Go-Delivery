@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/api/analytics")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;

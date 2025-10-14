@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/bikers")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class BikerController {
 
     private final BikerService bikerService;
