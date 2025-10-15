@@ -68,8 +68,8 @@ public class SecurityConfig {
                         // Public endpoints
                         "/api/restaurant-applications/submit",
                         "/api/super-admin/register",
-                        "/api/test/email/**",
-                        "/api/customers/registerCustomer",
+                        "/api/emails/**",
+                        "/api/customers/register",
                         
                         // Registration Restaurant Admin endpoint
                         "/api/restaurants/registerAdmin"
