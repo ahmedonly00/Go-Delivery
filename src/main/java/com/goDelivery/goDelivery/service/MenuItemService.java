@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.goDelivery.goDelivery.model.Restaurant;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +18,6 @@ import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.MenuItemMapper;
 import com.goDelivery.goDelivery.model.MenuCategory;
 import com.goDelivery.goDelivery.model.MenuItem;
-import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
 import com.goDelivery.goDelivery.repository.MenuItemRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
@@ -115,9 +118,32 @@ public class MenuItemService {
     
     @Transactional(readOnly = true)
     public List<MenuItemResponse> getAllMenuItems() {
-        return menuItemRepository.findAll().stream()
-            .map(menuItemMapper::toMenuItemResponse)
-            .collect(Collectors.toList());
+        try {
+            // Get the currently authenticated user
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            
+            // Find the restaurant associated with the current user
+            Restaurant restaurant = restaurantRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found for user: " + username));
+                
+            // Get menu items for the restaurant
+            List<MenuItem> menuItems = menuItemRepository.findByRestaurant_RestaurantId(restaurant.getRestaurantId());
+            
+            if (menuItems.isEmpty()) {
+                throw new ResourceNotFoundException("No menu items found for your restaurant. Please add some menu items to get started.");
+            }
+            
+            return menuItems.stream()
+                .map(menuItemMapper::toMenuItemResponse)
+                .collect(Collectors.toList());
+                
+        } catch (ResourceNotFoundException e) {
+            // Re-throw with a more specific message if it's our custom exception
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while fetching menu items. Please try again later.", e);
+        }
     }
     
     public MenuItemResponse getMenuItemByName(String itemName){
