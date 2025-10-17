@@ -86,11 +86,7 @@ public class SecurityConfig {
                         "/api/payments/process",
                         "/api/payments/customer/*",
                         "/api/restaurants/getAllActiveRestaurants",
-                        "/api/restaurants/getRestaurantById/{restaurantId}",
-                        "/api/menu-items/getAllMenuItem",
-                        "/api/menu-items/getMenuItemsByRestaurant/{restaurantId}",
-                        "/api/menu-items/getMenuItemById/{menuItemId}",
-                        "/api/menu-items/getMenuItemByName/{menuItemName}"
+                        "/api/restaurants/getRestaurantById/{restaurantId}"
                     ).hasRole("CUSTOMER")
                     // Restaurant Admin endpoints - require RESTAURANT_ADMIN role
                     .requestMatchers(
@@ -102,7 +98,11 @@ public class SecurityConfig {
                     ).hasRole("RESTAURANT_ADMIN")
                     // Shared endpoints - both CUSTOMER and RESTAURANT_ADMIN
                     .requestMatchers(
-                        "/api/orders/**"
+                        "/api/orders/**",
+                        "/api/menu-items/getAllMenuItem",
+                        "/api/menu-items/getMenuItemsByRestaurant/{restaurantId}",
+                        "/api/menu-items/getMenuItemById/{menuItemId}",
+                        "/api/menu-items/getMenuItemByName/{menuItemName}"
                     ).hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER")
                     // Public order tracking
                     .requestMatchers(

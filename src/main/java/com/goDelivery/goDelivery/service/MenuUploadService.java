@@ -30,6 +30,8 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -156,19 +158,35 @@ menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryI
                 PDFTextStripper stripper = new PDFTextStripper();
                 String text = stripper.getText(document);
                 
-                // Simple parsing logic - this can be enhanced based on your PDF structure
+                // Split text into lines and process each line
                 String[] lines = text.split("\\r?\\n");
+                
+                // Pattern to match various price formats:
+                // - $10.99
+                // - 10.99$
+                // - USD 10.99
+                // - 10.99 EGP
+                // - 10,99 (European format)
+                Pattern pricePattern = Pattern.compile("([$€£]?\\s*\\d+[.,]?\\d*\\.?\\d*\s*[$€£]?|\\d+\\.?\\d*\s*(?:USD|EGP|EUR|£|€))");
                 
                 for (String line : lines) {
                     line = line.trim();
-                    if (line.matches(".*\\d+\\s*\\$.*")) { // Simple check for price pattern
-                        String[] parts = line.split("\\s+\\$");
-                        if (parts.length >= 2) {
-                            String name = parts[0].trim();
-                            String priceStr = parts[1].split("\\s+")[0].replaceAll("[^\\d.]", "");
-                            
-                            try {
-                                float price = Float.parseFloat(priceStr);
+                    if (line.isEmpty()) continue;
+                    
+                    // Look for price in the line
+                    Matcher matcher = pricePattern.matcher(line);
+                    if (matcher.find()) {
+                        String priceMatch = matcher.group(1);
+                        // Extract the price value by removing all non-digit characters except decimal point
+                        String priceStr = priceMatch.replaceAll("[^\\d.,]", "")
+                                                 .replace(',', '.'); // Handle European decimal format
+                        
+                        // Extract the item name (everything before the price)
+                        String name = line.substring(0, matcher.start()).trim();
+                        
+                        try {
+                            float price = Float.parseFloat(priceStr);
+                            if (name.length() > 0 && price > 0) {
                                 items.add(MenuItemRequest.builder()
                                         .menuItemName(name)
                                         .price(price)
@@ -177,11 +195,18 @@ menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryI
                                         .categoryId(categoryId)
                                         .restaurantId(restaurantId)
                                         .build());
-                            } catch (NumberFormatException e) {
-                                log.warn("Could not parse: {}", line);
+                                log.info("Added menu item: {} - {}", name, price);
                             }
+                        } catch (NumberFormatException e) {
+                            log.warn("Could not parse price from '{}' in line: {}", priceMatch, line);
                         }
+                    } else {
+                        log.debug("No price found in line: {}", line);
                     }
+                }
+                
+                if (items.isEmpty()) {
+                    log.warn("No menu items were extracted from the PDF. Here's the extracted text for debugging:" + text);
                 }
             }
         }
