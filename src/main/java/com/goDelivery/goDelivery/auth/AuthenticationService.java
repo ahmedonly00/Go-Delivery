@@ -113,29 +113,41 @@ public class AuthenticationService {
             throw new UsernameNotFoundException("Email cannot be null");
         }
         
+        log.info("Searching for user with email: {}", email);
+        
         try {
             // Check Restaurant Users (includes ADMIN, CASHIER, BIKER, RESTAURANT_ADMIN roles)
+            log.debug("Checking restaurant_users table...");
             Optional<RestaurantUsers> restaurantUser = restaurantUsersRepository.findByEmail(email);
             if (restaurantUser.isPresent()) {
+                log.info("Found user in restaurant_users table");
                 return restaurantUser.get();
             }
 
             // Check Super Admin
+            log.debug("Checking super_admin table...");
             Optional<SuperAdmin> superAdmin = superAdminRepository.findByEmail(email);
             if (superAdmin.isPresent()) {
+                log.info("Found user in super_admin table");
                 return superAdmin.get();
             }
 
             // Check Customer
+            log.debug("Checking customer table...");
             Optional<Customer> customer = customerRepository.findByEmail(email);
             if (customer.isPresent()) {
+                log.info("Found user in customer table");
                 return customer.get();
             }
 
             // If no user found with the given email
+            log.warn("User not found in any table with email: {}", email);
             throw new UsernameNotFoundException("User not found with email: " + email);
             
+        } catch (UsernameNotFoundException e) {
+            throw e;
         } catch (Exception e) {
+            log.error("Error finding user with email: {}", email, e);
             throw new UsernameNotFoundException("Error finding user with email: " + email, e);
         }
     }

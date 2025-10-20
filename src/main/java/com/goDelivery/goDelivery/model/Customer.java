@@ -50,10 +50,10 @@ public class Customer implements CustomUserDetails {
     private Roles roles;
     
     @Column(name = "is_active")
-    private Boolean isActive = false;
+    private Boolean isActive = true;
     
     @Column(name = "is_verified")
-    private Boolean isVerified = false;
+    private Boolean isVerified = true;
     
     private String otp;
     
@@ -61,10 +61,10 @@ public class Customer implements CustomUserDetails {
     private LocalDateTime otpExpiryTime;
 
     @Column(name = "email_verified")
-    private boolean emailVerified = false;
+    private boolean emailVerified = true;
 
     @Column(name = "phone_verified", nullable = true)
-    private boolean phoneVerified = false;
+    private boolean phoneVerified = true;
 
     @Column(name = "last_login", nullable = true)
     private LocalDate lastLogin;
