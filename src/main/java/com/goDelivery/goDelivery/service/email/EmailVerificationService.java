@@ -7,5 +7,15 @@ public interface EmailVerificationService {
     
     @Async
     @Transactional
-    boolean notifyRestaurantSetupComplete(String email, String restaurantName);
+    void notifyRestaurantSetupComplete(String email, String restaurantName);
+    
+    @Async
+    @Transactional
+    void sendVerificationEmail(String email, String restaurantName, Long restaurantId);
+    
+    @Transactional
+    boolean verifyRestaurantEmail(String verificationToken, String email);
+    
+    @Transactional
+    com.goDelivery.goDelivery.model.Restaurant getRestaurantByEmail(String email);
 }

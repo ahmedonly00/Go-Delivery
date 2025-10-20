@@ -31,6 +31,10 @@ public class  UsersService {
 
 
     public RestaurantUserResponse createUser(RestaurantUserRequest request, String adminEmail) {
+        // Get admin user for validation
+        RestaurantUsers admin = usersRepository.findByEmail(adminEmail)
+                .orElseThrow(() -> new UnauthorizedException("Admin not found"));
+        
         // Validate admin permissions and restaurant access
         validateAdminRestaurantAccess(adminEmail, request.getRestaurantId());
         
@@ -48,14 +52,25 @@ public class  UsersService {
         if (request.getRole() == null) {
             request.setRole(Roles.CASHIER);
         }
+        
+        // Validate role permissions - RESTAURANT_ADMIN can only create CASHIER and BIKER
+        if (admin.getRole() == Roles.RESTAURANT_ADMIN) {
+            if (request.getRole() != Roles.CASHIER && request.getRole() != Roles.BIKER) {
+                throw new UnauthorizedException("Restaurant admins can only create CASHIER and BIKER users");
+            }
+        }
        
-        // Set default permissions if not provided
+        // Set default permissions based on role if not provided
         if (request.getPermissions() == null || request.getPermissions().isBlank()) {
-            request.setPermissions("READ_ORDERS,UPDATE_ORDERS");
+            request.setPermissions(getDefaultPermissionsForRole(request.getRole()));
         }
        
         // Map to entity
         RestaurantUsers user = restaurantUserMapper.mapToEntity(request);
+        
+        // Set restaurant relationship
+        user.setRestaurant(restaurantRepository.findById(request.getRestaurantId())
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + request.getRestaurantId())));
         
         // Encode password
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -63,6 +78,10 @@ public class  UsersService {
         // Set audit fields
         user.setCreatedAt(LocalDate.now());
         user.setUpdatedAt(LocalDate.now());
+        
+        // Mark as active and email verified (since created by admin)
+        user.setActive(true);
+        user.setEmailVerified(true);
         
         // Save user
         RestaurantUsers savedUser = usersRepository.save(user);
@@ -72,11 +91,22 @@ public class  UsersService {
 
 
     public RestaurantUserResponse updateUser(Long userId, RestaurantUserRequest request, String adminEmail) {
-        // Optional: Add authorization check
         validateAdminPermissions(adminEmail);
+        
+        // Get admin user for validation
+        RestaurantUsers admin = usersRepository.findByEmail(adminEmail)
+                .orElseThrow(() -> new UnauthorizedException("Admin not found"));
         
         RestaurantUsers user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        
+        // Ensure RESTAURANT_ADMIN can only modify users from their own restaurant
+        if (admin.getRole() == Roles.RESTAURANT_ADMIN) {
+            if (user.getRestaurant() == null || 
+                !user.getRestaurant().getRestaurantId().equals(admin.getRestaurant().getRestaurantId())) {
+                throw new UnauthorizedException("Cannot modify users from different restaurant");
+            }
+        }
     
         // Update fields only if provided (null-safe updates)
         if (request.getFullName() != null && !request.getFullName().trim().isEmpty()) {
@@ -113,8 +143,22 @@ public class  UsersService {
 
     public void deleteUser(Long userId, String adminEmail) {
         validateAdminPermissions(adminEmail);
+        
+        // Get admin user for validation
+        RestaurantUsers admin = usersRepository.findByEmail(adminEmail)
+                .orElseThrow(() -> new UnauthorizedException("Admin not found"));
+        
         RestaurantUsers user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        
+        // Ensure RESTAURANT_ADMIN can only delete users from their own restaurant
+        if (admin.getRole() == Roles.RESTAURANT_ADMIN) {
+            if (user.getRestaurant() == null || 
+                !user.getRestaurant().getRestaurantId().equals(admin.getRestaurant().getRestaurantId())) {
+                throw new UnauthorizedException("Cannot delete users from different restaurant");
+            }
+        }
+        
         usersRepository.delete(user);
     }
 
@@ -145,8 +189,28 @@ public class  UsersService {
 
     public RestaurantUserResponse updateUserRole(Long userId, Roles role, String adminEmail) {
         validateAdminPermissions(adminEmail);
+        
+        // Get admin user for role validation
+        RestaurantUsers admin = usersRepository.findByEmail(adminEmail)
+                .orElseThrow(() -> new UnauthorizedException("Admin not found"));
+        
+        // Validate role permissions - RESTAURANT_ADMIN can only assign CASHIER and BIKER roles
+        if (admin.getRole() == Roles.RESTAURANT_ADMIN) {
+            if (role != Roles.CASHIER && role != Roles.BIKER) {
+                throw new UnauthorizedException("Restaurant admins can only assign CASHIER and BIKER roles");
+            }
+        }
+        
         RestaurantUsers user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        
+        // Ensure RESTAURANT_ADMIN can only modify users from their own restaurant
+        if (admin.getRole() == Roles.RESTAURANT_ADMIN) {
+            if (user.getRestaurant() == null || 
+                !user.getRestaurant().getRestaurantId().equals(admin.getRestaurant().getRestaurantId())) {
+                throw new UnauthorizedException("Cannot modify users from different restaurant");
+            }
+        }
         
         user.setRole(role);
         user.setUpdatedAt(LocalDate.now());
@@ -158,8 +222,21 @@ public class  UsersService {
 
     public RestaurantUserResponse deactivateUser(Long userId, String adminEmail) {
         validateAdminPermissions(adminEmail);
+        
+        // Get admin user for validation
+        RestaurantUsers admin = usersRepository.findByEmail(adminEmail)
+                .orElseThrow(() -> new UnauthorizedException("Admin not found"));
+        
         RestaurantUsers user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        
+        // Ensure RESTAURANT_ADMIN can only deactivate users from their own restaurant
+        if (admin.getRole() == Roles.RESTAURANT_ADMIN) {
+            if (user.getRestaurant() == null || 
+                !user.getRestaurant().getRestaurantId().equals(admin.getRestaurant().getRestaurantId())) {
+                throw new UnauthorizedException("Cannot deactivate users from different restaurant");
+            }
+        }
         
         user.setActive(false);
         user.setUpdatedAt(LocalDate.now());
@@ -171,8 +248,21 @@ public class  UsersService {
 
     public RestaurantUserResponse activateUser(Long userId, String adminEmail) {
         validateAdminPermissions(adminEmail);
+        
+        // Get admin user for validation
+        RestaurantUsers admin = usersRepository.findByEmail(adminEmail)
+                .orElseThrow(() -> new UnauthorizedException("Admin not found"));
+        
         RestaurantUsers user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        
+        // Ensure RESTAURANT_ADMIN can only activate users from their own restaurant
+        if (admin.getRole() == Roles.RESTAURANT_ADMIN) {
+            if (user.getRestaurant() == null || 
+                !user.getRestaurant().getRestaurantId().equals(admin.getRestaurant().getRestaurantId())) {
+                throw new UnauthorizedException("Cannot activate users from different restaurant");
+            }
+        }
         
         user.setActive(true);
         user.setUpdatedAt(LocalDate.now());
@@ -187,12 +277,15 @@ public class  UsersService {
                 .orElseThrow(() -> new UnauthorizedException("Admin not found"));
         
         // Check if admin has permission to create users
-        if (admin.getRole() != Roles.ADMIN && admin.getRole() != Roles.SUPER_ADMIN) {
+        if (admin.getRole() != Roles.RESTAURANT_ADMIN && 
+            admin.getRole() != Roles.ADMIN && 
+            admin.getRole() != Roles.SUPER_ADMIN) {
             throw new UnauthorizedException("Insufficient permissions to create users");
         }
         
         // Check if admin belongs to the same restaurant (unless SUPER_ADMIN)
-        if (admin.getRole() != Roles.SUPER_ADMIN && !admin.getRestaurant().getRestaurantId().equals(restaurantId)) {
+        if (admin.getRole() != Roles.SUPER_ADMIN && 
+            (admin.getRestaurant() == null || !admin.getRestaurant().getRestaurantId().equals(restaurantId))) {
             throw new UnauthorizedException("Cannot create users for different restaurant");
         }
         
@@ -207,8 +300,25 @@ public class  UsersService {
         RestaurantUsers admin = usersRepository.findByEmail(adminEmail)
                 .orElseThrow(() -> new UnauthorizedException("Admin not found"));
     
-        if (!admin.getRole().equals(Roles.ADMIN) && !admin.getRole().equals(Roles.SUPER_ADMIN)) {
-            throw new UnauthorizedException("Insufficient permissions to update users");
+        if (!admin.getRole().equals(Roles.RESTAURANT_ADMIN) && 
+            !admin.getRole().equals(Roles.ADMIN) && 
+            !admin.getRole().equals(Roles.SUPER_ADMIN)) {
+            throw new UnauthorizedException("Insufficient permissions to manage users");
+        }
+    }
+    
+    private String getDefaultPermissionsForRole(Roles role) {
+        switch (role) {
+            case CASHIER:
+                return "READ_ORDERS,UPDATE_ORDERS,PROCESS_PAYMENTS";
+            case BIKER:
+                return "READ_DELIVERIES,UPDATE_DELIVERIES";
+            case RESTAURANT_ADMIN:
+                return "FULL_ACCESS";
+            case SUPER_ADMIN:
+                return "SUPER_ACCESS";
+            default:
+                return "READ_ONLY";
         }
     }
 

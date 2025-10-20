@@ -72,8 +72,8 @@ public class AuthenticationService {
                     .orElseThrow(() -> new RuntimeException("No roles found for user"))
                     .getAuthority();
 
-                // Return response with full details
-                return new LoginResponse(
+                // Build response with restaurant details if user is a restaurant user
+                LoginResponse response = new LoginResponse(
                     jwtToken,
                     "Bearer",
                     user.getId(),
@@ -81,6 +81,17 @@ public class AuthenticationService {
                     role,
                     user.getFullName()
                 );
+                
+                // Add restaurant details for restaurant users (CASHIER, BIKER, RESTAURANT_ADMIN, etc.)
+                if (user instanceof RestaurantUsers) {
+                    RestaurantUsers restaurantUser = (RestaurantUsers) user;
+                    if (restaurantUser.getRestaurant() != null) {
+                        response.setRestaurantId(restaurantUser.getRestaurant().getRestaurantId());
+                        response.setRestaurantName(restaurantUser.getRestaurant().getRestaurantName());
+                    }
+                }
+                
+                return response;
 
             } catch (Exception e) {
                 throw new RuntimeException("Authentication processing failed", e);

@@ -9,6 +9,7 @@ import com.goDelivery.goDelivery.model.MenuItem;
 import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
 import com.goDelivery.goDelivery.repository.MenuItemRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.service.email.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.Tesseract;
@@ -42,6 +43,7 @@ public class MenuUploadService {
     private final MenuCategoryRepository menuCategoryRepository;
     private final MenuItemRepository menuItemRepository;
     private final Tesseract tesseract;
+    private final EmailVerificationService emailVerificationService;
     
     @Value("${tess4j.data-path:./tessdata}")
     private String tessDataPath;
@@ -67,7 +69,7 @@ public class MenuUploadService {
                     break;
                 case "xlsx":
                 case "xls":
-menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryId(), restaurantId);
+            menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryId(), restaurantId);
                     break;
                 case "jpg":
                 case "jpeg":
@@ -118,10 +120,23 @@ menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryI
 
             // Save the file
             String fileUrl = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/menu-uploads");
+            
+            // Send email verification after successful menu upload
+            try {
+                emailVerificationService.sendVerificationEmail(
+                    restaurant.getEmail(),
+                    restaurant.getRestaurantName(),
+                    restaurantId
+                );
+                log.info("Email verification sent to restaurant admin: {}", restaurant.getEmail());
+            } catch (Exception e) {
+                log.error("Failed to send verification email: {}", e.getMessage());
+                // Don't fail the entire operation if email sending fails
+            }
 
             return FileUploadResponse.builder()
                     .success(true)
-                    .message("File processed successfully. " + savedItems.size() + " items saved.")
+                    .message("File processed successfully. " + savedItems.size() + " items saved. Please check your email to verify and complete setup.")
                     .menuItems(menuItems)
                     .fileUrl(fileUrl)
                     .build();

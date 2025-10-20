@@ -120,7 +120,8 @@ public class EmailService {
             helper.setTo(toEmail);
             helper.setSubject("Verify your email address");
             
-            String verificationUrl = baseUrl + "/api/auth/verify-email?token=" + verificationToken;
+            // Redirect to frontend verification page with token
+            String verificationUrl = frontendUrl + "/verify-email?token=" + verificationToken;
             
             Context context = new Context();
             context.setVariable("name", name);

@@ -14,4 +14,16 @@ public class LoginResponse {
     private String email;
     private String role;
     private String fullName;
+    private Long restaurantId;
+    private String restaurantName;
+    
+    // Constructor without restaurant details (for backward compatibility)
+    public LoginResponse(String token, String tokenType, Long id, String email, String role, String fullName) {
+        this.token = token;
+        this.tokenType = tokenType;
+        this.id = id;
+        this.email = email;
+        this.role = role;
+        this.fullName = fullName;
+    }
 }

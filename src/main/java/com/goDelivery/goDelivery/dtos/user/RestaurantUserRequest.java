@@ -21,10 +21,10 @@ public class RestaurantUserRequest {
     @Pattern(regexp = "^[0-9]{10,15}$", message = "Phone number should be valid")
     private String phoneNumber;
     
-    @NotNull(message = "Role is required")
+    // Role is optional - defaults to CASHIER if not provided
     private Roles role;
     
-    @NotBlank(message = "Permissions are required")
+    // Permissions are optional - defaults based on role
     private String permissions;
     
     @NotNull(message = "Restaurant ID is required")

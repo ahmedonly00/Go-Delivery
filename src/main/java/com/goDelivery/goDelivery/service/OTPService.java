@@ -24,11 +24,6 @@ public class OTPService {
     private final CustomerRepository customerRepository;
     private final EmailService emailService;
     
-    /**
-     * Generate a random OTP, save it to the customer's account, and send it via email
-     * @param customer The customer to generate OTP for
-     * @return The generated OTP
-     */
     @Transactional
     public String generateAndSaveOTP(Customer customer) {
         String otp = generateOTP();
@@ -42,9 +37,6 @@ public class OTPService {
         return otp;
     }
     
-    /**
-     * Send OTP email asynchronously
-     */
     @Async
     protected void sendOtpEmail(String email, String name, String otp) {
         try {
@@ -52,17 +44,9 @@ public class OTPService {
             emailService.sendOtpEmail(email, name, otp);
         } catch (Exception e) {
             log.error("Failed to send OTP email to: {}", email, e);
-            // We don't throw the exception here to not break the main flow
-            // The user can still verify with the OTP if they receive it through other means
         }
     }
     
-    /**
-     * Verify the OTP for a customer
-     * @param email The customer's email
-     * @param otp The OTP to verify
-     * @return true if OTP is valid, false otherwise
-     */
     public boolean verifyOTP(String email, String otp) {
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
@@ -84,11 +68,6 @@ public class OTPService {
         return isOtpValid;
     }
     
-    /**
-     * Check if a customer's email is verified
-     * @param email The customer's email
-     * @return true if verified, false otherwise
-     */
     public boolean isEmailVerified(String email) {
         return customerRepository.findByEmail(email)
                 .map(Customer::getIsVerified)

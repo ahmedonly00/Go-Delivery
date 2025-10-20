@@ -1,7 +1,13 @@
 package com.goDelivery.goDelivery.controller;
 
+import com.goDelivery.goDelivery.dtos.auth.EmailVerificationRequest;
+import com.goDelivery.goDelivery.dtos.auth.EmailVerificationResponse;
+import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.service.email.EmailService;
+import com.goDelivery.goDelivery.service.email.EmailVerificationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +21,10 @@ import java.util.concurrent.CompletableFuture;
 public class EmailController {
 
     private final EmailService emailService;
+    private final EmailVerificationService emailVerificationService;
+    
+    @Value("${app.frontend.url:http://localhost:3000}")
+    private String frontendUrl;
 
     @PostMapping("/test")
     public CompletableFuture<ResponseEntity<Map<String, Object>>> sendTestEmail(@RequestBody Map<String, String> request) {
@@ -151,6 +161,42 @@ public class EmailController {
             return ResponseEntity.internalServerError().body(
                 Map.of("success", false, "error", e.getMessage())
             );
+        }
+    }
+    
+    @PostMapping("/verify")
+    public ResponseEntity<EmailVerificationResponse> verifyEmail(
+            @Valid @RequestBody EmailVerificationRequest request) {
+        try {
+            boolean verified = emailVerificationService.verifyRestaurantEmail(
+                    request.getToken(), 
+                    request.getEmail()
+            );
+            
+            if (verified) {
+                // Get restaurant details for redirect
+                Restaurant restaurant = emailVerificationService.getRestaurantByEmail(request.getEmail());
+                
+                String dashboardUrl = frontendUrl + "/restaurant/dashboard";
+                
+                return ResponseEntity.ok(EmailVerificationResponse.builder()
+                        .success(true)
+                        .message("Email verified successfully! Redirecting to your dashboard...")
+                        .redirectUrl(dashboardUrl)
+                        .restaurantId(restaurant != null ? restaurant.getRestaurantId() : null)
+                        .restaurantName(restaurant != null ? restaurant.getRestaurantName() : null)
+                        .build());
+            } else {
+                return ResponseEntity.badRequest().body(EmailVerificationResponse.builder()
+                        .success(false)
+                        .message("Invalid or expired verification token, or email mismatch")
+                        .build());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(EmailVerificationResponse.builder()
+                    .success(false)
+                    .message("Verification failed: " + e.getMessage())
+                    .build());
         }
     }
 }
