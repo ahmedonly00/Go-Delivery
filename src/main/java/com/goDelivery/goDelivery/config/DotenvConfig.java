@@ -9,10 +9,7 @@ import org.springframework.core.env.MapPropertySource;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Configuration class to load environment variables from .env file
- * This runs before Spring Boot loads application.properties
- */
+
 public class DotenvConfig implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     @Override

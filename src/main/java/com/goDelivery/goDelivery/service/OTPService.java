@@ -6,7 +6,6 @@ import com.goDelivery.goDelivery.service.email.EmailService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,20 +30,17 @@ public class OTPService {
         customer.setOtpExpiryTime(LocalDateTime.now().plusMinutes(OTP_VALID_DURATION_MINUTES));
         customerRepository.save(customer);
         
-        // Send OTP via email asynchronously
-        sendOtpEmail(customer.getEmail(), customer.getFullNames(), otp);
+        // Send OTP via email asynchronously (EmailService.sendOtpEmail is already @Async)
+        try {
+            log.info("Attempting to send OTP email to: {}", customer.getEmail());
+            emailService.sendOtpEmail(customer.getEmail(), customer.getFullNames(), otp);
+            log.info("OTP email request submitted for: {}", customer.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to submit OTP email request for: {}", customer.getEmail(), e);
+            // Don't fail the registration if email fails
+        }
         
         return otp;
-    }
-    
-    @Async
-    protected void sendOtpEmail(String email, String name, String otp) {
-        try {
-            log.info("Sending OTP email to: {}", email);
-            emailService.sendOtpEmail(email, name, otp);
-        } catch (Exception e) {
-            log.error("Failed to send OTP email to: {}", email, e);
-        }
     }
     
     public boolean verifyOTP(String email, String otp) {
@@ -61,7 +57,9 @@ public class OTPService {
         if (isOtpValid) {
             customer.setOtp(null);
             customer.setOtpExpiryTime(null);
-            customer.setIsVerified(true);
+            customer.setVerified(true);
+            customer.setEmailVerified(true);
+            customer.setActive(true); // Activate account after email verification
             customerRepository.save(customer);
         }
         

@@ -65,6 +65,9 @@ public class EmailService {
     @Async
     public void sendOtpEmail(String to, String name, String otp) {
         try {
+            log.info("Starting OTP email preparation for: {}", to);
+            log.debug("Using fromEmail: {}, SMTP host configured", fromEmail);
+            
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -77,15 +80,20 @@ public class EmailService {
             context.setVariable("otp", otp);
             context.setVariable("frontendUrl", frontendUrl);
 
+            log.debug("Processing email template: emails/otp-verification");
             String htmlContent = templateEngine.process("emails/otp-verification", context);
             helper.setText(htmlContent, true);
             
+            log.info("Sending OTP email to: {}", to);
             mailSender.send(message);
-            log.info("OTP email sent to: {}", to);
+            log.info("✅ OTP email successfully sent to: {}", to);
             
         } catch (MessagingException e) {
-            log.error("Failed to send OTP email to {}: {}", to, e.getMessage());
-            throw new EmailSendingException("Failed to send OTP email", e);
+            log.error("❌ MessagingException while sending OTP email to {}: {}", to, e.getMessage(), e);
+            throw new EmailSendingException("Failed to send OTP email: " + e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("❌ Unexpected error while sending OTP email to {}: {}", to, e.getMessage(), e);
+            throw new EmailSendingException("Failed to send OTP email: " + e.getMessage(), e);
         }
     }
     

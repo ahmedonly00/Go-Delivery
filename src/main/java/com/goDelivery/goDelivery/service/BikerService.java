@@ -75,10 +75,7 @@ public class BikerService {
                 });
     }
     
-    /**
-     * Calculate distance between two points using Haversine formula
-     * @return distance in kilometers
-     */
+    
     private double calculateDistance(Float lat1, Float lon1, Float lat2, Float lon2) {
         final int EARTH_RADIUS_KM = 6371;
         
@@ -94,9 +91,7 @@ public class BikerService {
         return EARTH_RADIUS_KM * c;
     }
     
-    /**
-     * Broadcast new order notification to all available bikers
-     */
+    
     public void broadcastOrderToAvailableBikers(Order order) {
         List<Bikers> availableBikers = findAvailableBikers();
         
@@ -132,9 +127,7 @@ public class BikerService {
         }
     }
     
-    /**
-     * Assign a biker to an order and notify them
-     */
+    
     @Transactional
     public void assignBikerToOrder(Bikers biker, Order order) {
         String restaurantName = order.getRestaurant() != null ? 
@@ -162,9 +155,7 @@ public class BikerService {
                 biker.getBikerId(), order.getOrderNumber());
     }
     
-    /**
-     * Accept delivery assignment by biker
-     */
+   
     @Transactional
     public DeliveryAcceptanceResponse acceptDelivery(DeliveryAcceptanceRequest request) {
         log.info("Biker {} accepting delivery for order {}", request.getBikerId(), request.getOrderId());
@@ -226,9 +217,7 @@ public class BikerService {
                 .build();
     }
     
-    /**
-     * Reject delivery assignment by biker
-     */
+    
     @Transactional
     public void rejectDelivery(DeliveryRejectionRequest request) {
         log.info("Biker {} rejecting delivery for order {} - Reason: {}", 
@@ -261,10 +250,7 @@ public class BikerService {
         log.info("Biker {} rejected order {}. Order broadcast to other bikers.", 
                 biker.getBikerId(), order.getOrderNumber());
     }
-    
-    /**
-     * Get list of available orders for a biker
-     */
+   
     @Transactional(readOnly = true)
     public List<Order> getAvailableOrdersForBiker(Long bikerId) {
         // Validate biker exists
