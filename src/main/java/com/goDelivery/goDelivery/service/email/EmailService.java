@@ -14,6 +14,7 @@ import org.thymeleaf.context.Context;
 
 import com.goDelivery.goDelivery.exception.EmailSendingException;
 
+import jakarta.annotation.PostConstruct;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -35,6 +36,23 @@ public class EmailService {
     @Value("${app.base-url:http://localhost:8085}")
     private String baseUrl;
 
+    @PostConstruct
+    public void init() {
+        log.info("=".repeat(60));
+        log.info("📧 EMAIL CONFIGURATION LOADED");
+        log.info("=".repeat(60));
+        log.info("From Email: {}", fromEmail != null && !fromEmail.isEmpty() ? fromEmail : "❌ NOT CONFIGURED");
+        log.info("SMTP Host: smtp.gmail.com");
+        log.info("SMTP Port: 587");
+        log.info("Frontend URL: {}", frontendUrl);
+        log.info("Base URL: {}", baseUrl);
+        log.info("=".repeat(60));
+        
+        if (fromEmail == null || fromEmail.isEmpty() || fromEmail.equals("your-email@gmail.com")) {
+            log.error("⚠️  WARNING: Email is not properly configured!");
+            log.error("⚠️  Please update MAIL_USERNAME in your .env file");
+        }
+    }
  
     @Async
     public void sendSetupCompletionEmail(String toEmail, String name, String restaurantName) {
@@ -51,7 +69,7 @@ public class EmailService {
             context.setVariable("name", name);
             context.setVariable("restaurantName", restaurantName);
             
-            String htmlContent = templateEngine.process("emails/setup-complete", context);
+            String htmlContent = templateEngine.process("setup-complete", context);
             helper.setText(htmlContent, true);
             
             mailSender.send(message);
@@ -80,8 +98,8 @@ public class EmailService {
             context.setVariable("otp", otp);
             context.setVariable("frontendUrl", frontendUrl);
 
-            log.debug("Processing email template: emails/otp-verification");
-            String htmlContent = templateEngine.process("emails/otp-verification", context);
+            log.debug("Processing email template: otp-verification");
+            String htmlContent = templateEngine.process("otp-verification", context);
             helper.setText(htmlContent, true);
             
             log.info("Sending OTP email to: {}", to);
@@ -135,7 +153,7 @@ public class EmailService {
             context.setVariable("name", name);
             context.setVariable("verificationUrl", verificationUrl);
             
-            String htmlContent = templateEngine.process("emails/verification-email", context);
+            String htmlContent = templateEngine.process("verification-email", context);
             helper.setText(htmlContent, true);
             
             mailSender.send(message);
@@ -162,7 +180,7 @@ public class EmailService {
             context.setVariable("restaurantName", restaurantName);
             context.setVariable("dashboardUrl", frontendUrl + "/dashboard");
             
-            String htmlContent = templateEngine.process("emails/welcome-email", context);
+            String htmlContent = templateEngine.process("welcome-email", context);
             helper.setText(htmlContent, true);
             
             mailSender.send(message);
@@ -190,7 +208,7 @@ public class EmailService {
             context.setVariable("temporaryPassword", temporaryPassword);
             context.setVariable("loginUrl", frontendUrl + "/login");
             
-            String htmlContent = templateEngine.process("emails/restaurant-welcome-email", context);
+            String htmlContent = templateEngine.process("restaurant-welcome-email", context);
             helper.setText(htmlContent, true);
             
             mailSender.send(message);
@@ -218,7 +236,7 @@ public class EmailService {
             context.setVariable("name", name);
             context.setVariable("resetUrl", resetUrl);
             
-            String htmlContent = templateEngine.process("emails/password-reset-email", context);
+            String htmlContent = templateEngine.process("password-reset-email", context);
             helper.setText(htmlContent, true);
             
             mailSender.send(message);

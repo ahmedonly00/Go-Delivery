@@ -67,17 +67,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(
                         // Public endpoints
-                        "/api/restaurant-applications/submit",
                         "/api/super-admin/register",
                         "/api/emails/**",
                         "/api/customers/register",
-                        
-                        // Registration Restaurant Admin endpoint
                         "/api/restaurants/registerAdmin"
                     ).permitAll()
                     .requestMatchers(
-                        "/api/restaurant-applications/all",
-                        "/api/restaurant-applications/status"
+                        "/api/restaurants/getAllActiveRestaurants",
+                        "/api/restaurants/getRestaurantById/{restaurantId}"
+
                     ).hasRole("SUPER_ADMIN")
                     // Customer endpoints - require CUSTOMER role
                     .requestMatchers(
@@ -86,22 +84,26 @@ public class SecurityConfig {
                         "/api/orders/cancelOrder/*",
                         "/api/payments/process",
                         "/api/payments/customer/*",
-                        "/api/restaurants/getAllActiveRestaurants",
-                        "/api/restaurants/getRestaurantById/{restaurantId}"
+                        "/api/restaurants/getAllActiveRestaurants"
+
                     ).hasRole("CUSTOMER")
                     // Restaurant Admin endpoints - require RESTAURANT_ADMIN role
                     .requestMatchers(
                         "/api/users/**",
-                        "/api/menu-items/**",
+                        "/api/menu-items/createMenuItem/**",
+                        "/api/menu-items/updateMenuItem/**",
+                        "/api/menu-items/deleteMenuItem/**",
+                        "/api/menu-items/updateMenuItemAvailability/**",
                         "/api/menu-category/**",
                         "/api/file-upload/**",
-                        "/api/restaurants/**"
+                        "/api/restaurants/registerRestaurant/**",
+                        "/api/restaurants/updateRestaurant/**",
+                        "/api/restaurants/deleteRestaurant/**"
                     ).hasRole("RESTAURANT_ADMIN")
                     // Shared endpoints - both CUSTOMER and RESTAURANT_ADMIN
                     .requestMatchers(
                         "/api/orders/**",
                         "/api/menu-items/getAllMenuItem",
-                        "/api/menu-items/getMenuItemsByRestaurant/{restaurantId}",
                         "/api/menu-items/getMenuItemById/{menuItemId}",
                         "/api/menu-items/getMenuItemByName/{menuItemName}"
                     ).hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER")

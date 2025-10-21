@@ -1087,3 +1087,450 @@ Caused by: java.io.FileNotFoundException: ClassLoader resource "templates/emails
 2025-10-21 15:03:03 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking customer table...
 2025-10-21 15:03:03 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationService - Found user in customer table
 2025-10-21 15:03:04 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationController - Login successful for user: ahmedndayizeye46@gmail.com
+2025-10-21 15:19:25 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@639a97d9 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 15:19:35 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@18fcef76 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 15:20:04 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@505c5930 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 15:20:14 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@ff90312 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 15:20:24 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@237d2726 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 15:20:26 [HikariPool-1:connection-adder] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Pool is empty, failed to create/setup connection (6d016cb5-e5dc-43ef-9900-dc7dcaa1c697)
+org.postgresql.util.PSQLException: The connection attempt failed.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:385)
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:57)
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:277)
+	at org.postgresql.Driver.makeConnection(Driver.java:448)
+	at org.postgresql.Driver.connect(Driver.java:298)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:144)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:370)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:207)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:488)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:752)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:731)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.net.NoRouteToHostException: No route to host: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at org.postgresql.core.PGStream.createSocket(PGStream.java:261)
+	at org.postgresql.core.PGStream.<init>(PGStream.java:122)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:146)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:289)
+	... 14 common frames omitted
+2025-10-21 15:21:31 [HikariPool-1:connection-adder] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Pool is empty, failed to create/setup connection (649ffd19-010c-4cd4-a622-1502394ec282)
+org.postgresql.util.PSQLException: The connection attempt failed.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:385)
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:57)
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:277)
+	at org.postgresql.Driver.makeConnection(Driver.java:448)
+	at org.postgresql.Driver.connect(Driver.java:298)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:144)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:370)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:207)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:488)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:752)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:731)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.net.NoRouteToHostException: No route to host: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at org.postgresql.core.PGStream.createSocket(PGStream.java:261)
+	at org.postgresql.core.PGStream.<init>(PGStream.java:122)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:146)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:289)
+	... 14 common frames omitted
+2025-10-21 15:22:36 [HikariPool-1:connection-adder] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Pool is empty, failed to create/setup connection (5896d07f-22bd-434b-aa67-3c9ae05d4546)
+org.postgresql.util.PSQLException: The connection attempt failed.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:385)
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:57)
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:277)
+	at org.postgresql.Driver.makeConnection(Driver.java:448)
+	at org.postgresql.Driver.connect(Driver.java:298)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:144)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:370)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:207)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:488)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:752)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:731)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.net.NoRouteToHostException: No route to host: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at org.postgresql.core.PGStream.createSocket(PGStream.java:261)
+	at org.postgresql.core.PGStream.<init>(PGStream.java:122)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:146)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:289)
+	... 14 common frames omitted
+2025-10-21 15:23:41 [HikariPool-1:connection-adder] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Pool is empty, failed to create/setup connection (6a96f1a0-7cb4-4cd5-baa1-817ad28ce883)
+org.postgresql.util.PSQLException: The connection attempt failed.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:385)
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:57)
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:277)
+	at org.postgresql.Driver.makeConnection(Driver.java:448)
+	at org.postgresql.Driver.connect(Driver.java:298)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:144)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:370)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:207)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:488)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:752)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:731)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.net.NoRouteToHostException: No route to host: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at org.postgresql.core.PGStream.createSocket(PGStream.java:261)
+	at org.postgresql.core.PGStream.<init>(PGStream.java:122)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:146)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:289)
+	... 14 common frames omitted
+2025-10-21 15:34:43 [http-nio-8085-exec-3] INFO  c.g.g.auth.AuthenticationController - Received login request for email: ahmedndayizeye46@gmail.com
+2025-10-21 15:34:43 [http-nio-8085-exec-3] INFO  c.g.g.auth.AuthenticationService - Searching for user with email: ahmedndayizeye46@gmail.com
+2025-10-21 15:34:43 [http-nio-8085-exec-3] DEBUG c.g.g.auth.AuthenticationService - Checking restaurant_users table...
+2025-10-21 15:34:44 [http-nio-8085-exec-3] DEBUG c.g.g.auth.AuthenticationService - Checking super_admin table...
+2025-10-21 15:34:44 [http-nio-8085-exec-3] DEBUG c.g.g.auth.AuthenticationService - Checking customer table...
+2025-10-21 15:34:45 [http-nio-8085-exec-3] INFO  c.g.g.auth.AuthenticationService - Found user in customer table
+2025-10-21 15:34:45 [http-nio-8085-exec-3] INFO  c.g.g.auth.AuthenticationController - Login successful for user: ahmedndayizeye46@gmail.com
+2025-10-21 15:40:58 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Starting GoDeliveryApplication using Java 21.0.6 with PID 35296 (D:\Desktop\Go Delivery Project\goDelivery\target\classes started by ahmed in D:\Desktop\Go Delivery Project\goDelivery)
+2025-10-21 15:40:58 [main] DEBUG c.g.goDelivery.GoDeliveryApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2025-10-21 15:40:58 [main] INFO  c.g.goDelivery.GoDeliveryApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-21 15:41:00 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-21 15:41:01 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 180 ms. Found 20 JPA repository interfaces.
+2025-10-21 15:41:02 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2025-10-21 15:41:02 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-21 15:41:02 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-10-21 15:41:02 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-21 15:41:02 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3693 ms
+2025-10-21 15:41:02 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-21 15:41:03 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2025-10-21 15:41:03 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-21 15:41:03 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-21 15:41:03 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-21 15:41:05 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@201a8ea7
+2025-10-21 15:41:05 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-21 15:41:06 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-21 15:41:06 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.10
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-21 15:41:09 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-21 15:41:32 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-21 15:41:33 [main] DEBUG c.g.g.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-10-21 15:41:33 [main] DEBUG c.g.g.c.EmailVerificationFilter - Filter 'emailVerificationFilter' configured for use
+2025-10-21 15:41:34 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-21 15:41:36 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-10-21 15:41:36 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-21 15:41:37 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2025-10-21 15:41:37 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Started GoDeliveryApplication in 39.39 seconds (process running for 40.244)
+2025-10-21 15:42:00 [http-nio-8085-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-21 15:42:00 [http-nio-8085-exec-1] INFO  c.g.g.auth.AuthenticationController - Received login request for email: ahmedndayizeye46@gmail.com
+2025-10-21 15:42:00 [http-nio-8085-exec-1] INFO  c.g.g.auth.AuthenticationService - Searching for user with email: ahmedndayizeye46@gmail.com
+2025-10-21 15:42:00 [http-nio-8085-exec-1] DEBUG c.g.g.auth.AuthenticationService - Checking restaurant_users table...
+2025-10-21 15:42:00 [http-nio-8085-exec-1] DEBUG c.g.g.auth.AuthenticationService - Checking super_admin table...
+2025-10-21 15:42:01 [http-nio-8085-exec-1] DEBUG c.g.g.auth.AuthenticationService - Checking customer table...
+2025-10-21 15:42:01 [http-nio-8085-exec-1] INFO  c.g.g.auth.AuthenticationService - Found user in customer table
+2025-10-21 15:42:01 [http-nio-8085-exec-1] INFO  c.g.g.auth.AuthenticationController - Login successful for user: ahmedndayizeye46@gmail.com
+2025-10-21 16:05:58 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@75a97327 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 16:17:57 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Starting GoDeliveryApplication using Java 21.0.6 with PID 28728 (D:\Desktop\Go Delivery Project\goDelivery\target\classes started by ahmed in D:\Desktop\Go Delivery Project\goDelivery)
+2025-10-21 16:17:57 [main] DEBUG c.g.goDelivery.GoDeliveryApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2025-10-21 16:17:57 [main] INFO  c.g.goDelivery.GoDeliveryApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-21 16:18:00 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-21 16:18:00 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 261 ms. Found 20 JPA repository interfaces.
+2025-10-21 16:18:01 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2025-10-21 16:18:01 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-21 16:18:01 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-10-21 16:18:02 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-21 16:18:02 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4074 ms
+2025-10-21 16:18:02 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-21 16:18:02 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2025-10-21 16:18:02 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-21 16:18:03 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-21 16:18:03 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-21 16:18:05 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@13662609
+2025-10-21 16:18:05 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-21 16:18:05 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-21 16:18:06 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.10
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-21 16:18:09 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-21 16:18:32 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-21 16:18:32 [main] DEBUG c.g.g.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-10-21 16:18:32 [main] DEBUG c.g.g.c.EmailVerificationFilter - Filter 'emailVerificationFilter' configured for use
+2025-10-21 16:18:34 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-21 16:18:36 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-10-21 16:18:36 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-21 16:18:37 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2025-10-21 16:18:37 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Started GoDeliveryApplication in 40.841 seconds (process running for 41.919)
+2025-10-21 16:18:58 [http-nio-8085-exec-7] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-21 16:18:58 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationController - Received login request for email: ahmedndayizeye46@gmail.com
+2025-10-21 16:18:58 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationService - Searching for user with email: ahmedndayizeye46@gmail.com
+2025-10-21 16:18:58 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking restaurant_users table...
+2025-10-21 16:18:59 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking super_admin table...
+2025-10-21 16:18:59 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking customer table...
+2025-10-21 16:18:59 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationService - Found user in customer table
+2025-10-21 16:18:59 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationController - Login successful for user: ahmedndayizeye46@gmail.com
+2025-10-21 16:28:44 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Starting GoDeliveryApplication using Java 21.0.6 with PID 31556 (D:\Desktop\Go Delivery Project\goDelivery\target\classes started by ahmed in D:\Desktop\Go Delivery Project\goDelivery)
+2025-10-21 16:28:44 [main] DEBUG c.g.goDelivery.GoDeliveryApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2025-10-21 16:28:44 [main] INFO  c.g.goDelivery.GoDeliveryApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-21 16:28:47 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-21 16:28:47 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 250 ms. Found 20 JPA repository interfaces.
+2025-10-21 16:28:48 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2025-10-21 16:28:48 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-21 16:28:48 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-10-21 16:28:49 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-21 16:28:49 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4215 ms
+2025-10-21 16:28:49 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-21 16:28:49 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2025-10-21 16:28:49 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-21 16:28:50 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-21 16:28:50 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-21 16:28:53 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@a240452
+2025-10-21 16:28:53 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-21 16:28:53 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-21 16:28:54 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.10
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-21 16:28:57 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-21 16:29:34 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-21 16:29:35 [main] DEBUG c.g.g.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-10-21 16:29:35 [main] DEBUG c.g.g.c.EmailVerificationFilter - Filter 'emailVerificationFilter' configured for use
+2025-10-21 16:29:37 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-21 16:29:39 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-10-21 16:29:39 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-21 16:29:40 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2025-10-21 16:29:40 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Started GoDeliveryApplication in 56.731 seconds (process running for 57.928)
+2025-10-21 16:35:42 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@459e71c5 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 16:35:52 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@a240452 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 16:36:02 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@235080bb (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 16:36:12 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@3cc03fa2 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 16:36:34 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@2ab7e8f9 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 16:49:19 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Starting GoDeliveryApplication using Java 21.0.6 with PID 11940 (D:\Desktop\Go Delivery Project\goDelivery\target\classes started by ahmed in D:\Desktop\Go Delivery Project\goDelivery)
+2025-10-21 16:49:19 [main] DEBUG c.g.goDelivery.GoDeliveryApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2025-10-21 16:49:19 [main] INFO  c.g.goDelivery.GoDeliveryApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-21 16:49:22 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-21 16:49:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 411 ms. Found 20 JPA repository interfaces.
+2025-10-21 16:49:24 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2025-10-21 16:49:24 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-21 16:49:24 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-10-21 16:49:24 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-21 16:49:24 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4986 ms
+2025-10-21 16:49:25 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-21 16:49:25 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2025-10-21 16:49:25 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-21 16:49:26 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-21 16:49:26 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-21 16:49:31 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4c000cc4
+2025-10-21 16:49:31 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-21 16:49:34 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-21 16:49:35 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.10
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-21 16:49:38 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-21 16:50:13 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-21 16:50:14 [main] DEBUG c.g.g.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-10-21 16:50:14 [main] DEBUG c.g.g.c.EmailVerificationFilter - Filter 'emailVerificationFilter' configured for use
+2025-10-21 16:50:16 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-21 16:50:18 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 16:50:18 [main] INFO  c.g.g.service.email.EmailService - 📧 EMAIL CONFIGURATION LOADED
+2025-10-21 16:50:18 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 16:50:18 [main] INFO  c.g.g.service.email.EmailService - From Email: ahmedndayizeye45@gmail.com
+2025-10-21 16:50:18 [main] INFO  c.g.g.service.email.EmailService - SMTP Host: smtp.gmail.com
+2025-10-21 16:50:18 [main] INFO  c.g.g.service.email.EmailService - SMTP Port: 587
+2025-10-21 16:50:18 [main] INFO  c.g.g.service.email.EmailService - Frontend URL: http://localhost:3000
+2025-10-21 16:50:18 [main] INFO  c.g.g.service.email.EmailService - Base URL: http://localhost:8085
+2025-10-21 16:50:18 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 16:50:18 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-10-21 16:50:18 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-21 16:50:20 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2025-10-21 16:50:20 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Started GoDeliveryApplication in 61.173 seconds (process running for 62.396)
+2025-10-21 16:51:47 [http-nio-8085-exec-2] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-21 16:51:47 [http-nio-8085-exec-2] INFO  c.g.g.controller.CustomerController - Received registration request for email: ahmedndayizeye46@gmail.com
+2025-10-21 16:51:47 [http-nio-8085-exec-2] INFO  c.g.g.service.CustomerService - Starting registration for email: ahmedndayizeye46@gmail.com
+2025-10-21 16:51:48 [http-nio-8085-exec-2] INFO  c.g.g.service.CustomerService - Customer registered successfully with ID: 202
+2025-10-21 16:51:48 [http-nio-8085-exec-2] INFO  c.g.goDelivery.service.OTPService - Attempting to send OTP email to: ahmedndayizeye46@gmail.com
+2025-10-21 16:51:48 [http-nio-8085-exec-2] INFO  c.g.goDelivery.service.OTPService - OTP email request submitted for: ahmedndayizeye46@gmail.com
+2025-10-21 16:51:48 [http-nio-8085-exec-2] INFO  c.g.g.service.CustomerService - OTP sent to email: ahmedndayizeye46@gmail.com
+2025-10-21 16:51:48 [AsyncThread-1] INFO  c.g.g.service.email.EmailService - Starting OTP email preparation for: ahmedndayizeye46@gmail.com
+2025-10-21 16:51:48 [AsyncThread-1] DEBUG c.g.g.service.email.EmailService - Using fromEmail: ahmedndayizeye45@gmail.com, SMTP host configured
+2025-10-21 16:51:48 [AsyncThread-1] DEBUG c.g.g.service.email.EmailService - Processing email template: emails/otp-verification
+2025-10-21 16:51:49 [AsyncThread-1] ERROR org.thymeleaf.TemplateEngine - [THYMELEAF][AsyncThread-1] Exception processing template "emails/otp-verification": An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+org.thymeleaf.exceptions.TemplateInputException: An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:235)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parseStandalone(AbstractMarkupTemplateParser.java:100)
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:666)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1103)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1064)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1053)
+	at com.goDelivery.goDelivery.service.email.EmailService.sendOtpEmail(EmailService.java:102)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.interceptor.AsyncExecutionInterceptor.lambda$invoke$0(AsyncExecutionInterceptor.java:114)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.io.FileNotFoundException: ClassLoader resource "templates/emails/emails/otp-verification.html" could not be resolved
+	at org.thymeleaf.templateresource.ClassLoaderTemplateResource.reader(ClassLoaderTemplateResource.java:130)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:223)
+	... 16 common frames omitted
+2025-10-21 16:51:49 [AsyncThread-1] ERROR c.g.g.service.email.EmailService - ❌ Unexpected error while sending OTP email to ahmedndayizeye46@gmail.com: An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+org.thymeleaf.exceptions.TemplateInputException: An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:235)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parseStandalone(AbstractMarkupTemplateParser.java:100)
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:666)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1103)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1064)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1053)
+	at com.goDelivery.goDelivery.service.email.EmailService.sendOtpEmail(EmailService.java:102)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.interceptor.AsyncExecutionInterceptor.lambda$invoke$0(AsyncExecutionInterceptor.java:114)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.io.FileNotFoundException: ClassLoader resource "templates/emails/emails/otp-verification.html" could not be resolved
+	at org.thymeleaf.templateresource.ClassLoaderTemplateResource.reader(ClassLoaderTemplateResource.java:130)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:223)
+	... 16 common frames omitted
+2025-10-21 16:51:49 [AsyncThread-1] ERROR o.s.a.i.SimpleAsyncUncaughtExceptionHandler - Unexpected exception occurred invoking async method: public void com.goDelivery.goDelivery.service.email.EmailService.sendOtpEmail(java.lang.String,java.lang.String,java.lang.String)
+com.goDelivery.goDelivery.exception.EmailSendingException: Failed to send OTP email: An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+	at com.goDelivery.goDelivery.service.email.EmailService.sendOtpEmail(EmailService.java:114)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.interceptor.AsyncExecutionInterceptor.lambda$invoke$0(AsyncExecutionInterceptor.java:114)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.thymeleaf.exceptions.TemplateInputException: An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:235)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parseStandalone(AbstractMarkupTemplateParser.java:100)
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:666)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1103)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1064)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1053)
+	at com.goDelivery.goDelivery.service.email.EmailService.sendOtpEmail(EmailService.java:102)
+	... 10 common frames omitted
+Caused by: java.io.FileNotFoundException: ClassLoader resource "templates/emails/emails/otp-verification.html" could not be resolved
+	at org.thymeleaf.templateresource.ClassLoaderTemplateResource.reader(ClassLoaderTemplateResource.java:130)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:223)
+	... 16 common frames omitted
+2025-10-21 16:51:49 [http-nio-8085-exec-2] INFO  c.g.g.controller.CustomerController - Successfully registered user with email: ahmedndayizeye46@gmail.com
+2025-10-21 17:15:28 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Starting GoDeliveryApplication using Java 21.0.6 with PID 14260 (D:\Desktop\Go Delivery Project\goDelivery\target\classes started by ahmed in D:\Desktop\Go Delivery Project\goDelivery)
+2025-10-21 17:15:28 [main] DEBUG c.g.goDelivery.GoDeliveryApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2025-10-21 17:15:28 [main] INFO  c.g.goDelivery.GoDeliveryApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-21 17:15:41 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-21 17:15:42 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 192 ms. Found 20 JPA repository interfaces.
+2025-10-21 17:15:43 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2025-10-21 17:15:43 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-21 17:15:43 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-10-21 17:15:44 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-21 17:15:44 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 15797 ms
+2025-10-21 17:15:44 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-21 17:15:45 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2025-10-21 17:15:45 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-21 17:15:45 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-21 17:15:45 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-21 17:15:48 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@a240452
+2025-10-21 17:15:48 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-21 17:15:48 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-21 17:15:48 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.10
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-21 17:15:51 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-21 17:16:14 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-21 17:16:15 [main] DEBUG c.g.g.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-10-21 17:16:15 [main] DEBUG c.g.g.c.EmailVerificationFilter - Filter 'emailVerificationFilter' configured for use
+2025-10-21 17:16:16 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-21 17:16:17 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 17:16:17 [main] INFO  c.g.g.service.email.EmailService - 📧 EMAIL CONFIGURATION LOADED
+2025-10-21 17:16:17 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 17:16:17 [main] INFO  c.g.g.service.email.EmailService - From Email: ahmedndayizeye45@gmail.com
+2025-10-21 17:16:17 [main] INFO  c.g.g.service.email.EmailService - SMTP Host: smtp.gmail.com
+2025-10-21 17:16:17 [main] INFO  c.g.g.service.email.EmailService - SMTP Port: 587
+2025-10-21 17:16:17 [main] INFO  c.g.g.service.email.EmailService - Frontend URL: http://localhost:3000
+2025-10-21 17:16:17 [main] INFO  c.g.g.service.email.EmailService - Base URL: http://localhost:8085
+2025-10-21 17:16:17 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 17:16:17 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-10-21 17:16:18 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-21 17:16:19 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2025-10-21 17:16:19 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Started GoDeliveryApplication in 51.943 seconds (process running for 54.149)
+2025-10-21 17:18:42 [http-nio-8085-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-21 17:18:42 [http-nio-8085-exec-1] INFO  c.g.g.controller.CustomerController - Received registration request for email: ahmedndayizeye46@gmail.com
+2025-10-21 17:18:42 [http-nio-8085-exec-1] INFO  c.g.g.service.CustomerService - Starting registration for email: ahmedndayizeye46@gmail.com
+2025-10-21 17:18:43 [http-nio-8085-exec-1] INFO  c.g.g.service.CustomerService - Customer registered successfully with ID: 252
+2025-10-21 17:18:43 [http-nio-8085-exec-1] INFO  c.g.goDelivery.service.OTPService - Attempting to send OTP email to: ahmedndayizeye46@gmail.com
+2025-10-21 17:18:43 [http-nio-8085-exec-1] INFO  c.g.goDelivery.service.OTPService - OTP email request submitted for: ahmedndayizeye46@gmail.com
+2025-10-21 17:18:43 [http-nio-8085-exec-1] INFO  c.g.g.service.CustomerService - OTP sent to email: ahmedndayizeye46@gmail.com
+2025-10-21 17:18:43 [AsyncThread-1] INFO  c.g.g.service.email.EmailService - Starting OTP email preparation for: ahmedndayizeye46@gmail.com
+2025-10-21 17:18:43 [AsyncThread-1] DEBUG c.g.g.service.email.EmailService - Using fromEmail: ahmedndayizeye45@gmail.com, SMTP host configured
+2025-10-21 17:18:43 [AsyncThread-1] DEBUG c.g.g.service.email.EmailService - Processing email template: otp-verification
+2025-10-21 17:18:43 [AsyncThread-1] INFO  c.g.g.service.email.EmailService - Sending OTP email to: ahmedndayizeye46@gmail.com
+2025-10-21 17:18:44 [http-nio-8085-exec-1] INFO  c.g.g.controller.CustomerController - Successfully registered user with email: ahmedndayizeye46@gmail.com
+2025-10-21 17:18:57 [AsyncThread-1] INFO  c.g.g.service.email.EmailService - ✅ OTP email successfully sent to: ahmedndayizeye46@gmail.com
+2025-10-21 17:19:59 [http-nio-8085-exec-3] INFO  c.g.g.controller.OTPController - OTP verified successfully for customer: ahmedndayizeye46@gmail.com
+2025-10-21 17:20:15 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationController - Received login request for email: ahmedndayizeye46@gmail.com
+2025-10-21 17:20:15 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationService - Searching for user with email: ahmedndayizeye46@gmail.com
+2025-10-21 17:20:15 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking restaurant_users table...
+2025-10-21 17:20:15 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking super_admin table...
+2025-10-21 17:20:15 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking customer table...
+2025-10-21 17:20:16 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationService - Found user in customer table
+2025-10-21 17:20:16 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationController - Login successful for user: ahmedndayizeye46@gmail.com
