@@ -1534,3 +1534,91 @@ Caused by: java.io.FileNotFoundException: ClassLoader resource "templates/emails
 2025-10-21 17:20:15 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking customer table...
 2025-10-21 17:20:16 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationService - Found user in customer table
 2025-10-21 17:20:16 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationController - Login successful for user: ahmedndayizeye46@gmail.com
+2025-10-21 18:51:45 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Starting GoDeliveryApplication using Java 21.0.6 with PID 33808 (D:\Desktop\Go Delivery Project\goDelivery\target\classes started by ahmed in D:\Desktop\Go Delivery Project\goDelivery)
+2025-10-21 18:51:45 [main] DEBUG c.g.goDelivery.GoDeliveryApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2025-10-21 18:51:45 [main] INFO  c.g.goDelivery.GoDeliveryApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-21 18:51:52 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-21 18:51:52 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 238 ms. Found 20 JPA repository interfaces.
+2025-10-21 18:51:54 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2025-10-21 18:51:54 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-21 18:51:54 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-10-21 18:51:54 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-21 18:51:54 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 8591 ms
+2025-10-21 18:51:54 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-21 18:51:55 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2025-10-21 18:51:55 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-21 18:51:55 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-21 18:51:55 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-21 18:51:58 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@a240452
+2025-10-21 18:51:58 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-21 18:51:58 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-21 18:51:58 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.10
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-21 18:52:01 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-21 18:52:24 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-21 18:52:25 [main] DEBUG c.g.g.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-10-21 18:52:25 [main] DEBUG c.g.g.c.EmailVerificationFilter - Filter 'emailVerificationFilter' configured for use
+2025-10-21 18:52:26 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-21 18:52:27 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 18:52:27 [main] INFO  c.g.g.service.email.EmailService - 📧 EMAIL CONFIGURATION LOADED
+2025-10-21 18:52:27 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 18:52:27 [main] INFO  c.g.g.service.email.EmailService - From Email: ahmedndayizeye45@gmail.com
+2025-10-21 18:52:27 [main] INFO  c.g.g.service.email.EmailService - SMTP Host: smtp.gmail.com
+2025-10-21 18:52:27 [main] INFO  c.g.g.service.email.EmailService - SMTP Port: 587
+2025-10-21 18:52:27 [main] INFO  c.g.g.service.email.EmailService - Frontend URL: http://localhost:3000
+2025-10-21 18:52:27 [main] INFO  c.g.g.service.email.EmailService - Base URL: http://localhost:8085
+2025-10-21 18:52:27 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 18:52:28 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-10-21 18:52:28 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-21 18:52:29 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2025-10-21 18:52:29 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Started GoDeliveryApplication in 44.474 seconds (process running for 45.496)
+2025-10-21 19:11:23 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Starting GoDeliveryApplication using Java 21.0.6 with PID 34112 (D:\Desktop\Go Delivery Project\goDelivery\target\classes started by ahmed in D:\Desktop\Go Delivery Project\goDelivery)
+2025-10-21 19:11:23 [main] DEBUG c.g.goDelivery.GoDeliveryApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2025-10-21 19:11:23 [main] INFO  c.g.goDelivery.GoDeliveryApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-21 19:11:25 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-21 19:11:26 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 286 ms. Found 20 JPA repository interfaces.
+2025-10-21 19:11:27 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2025-10-21 19:11:27 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-21 19:11:27 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-10-21 19:11:27 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-21 19:11:27 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4174 ms
+2025-10-21 19:11:28 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-21 19:11:28 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2025-10-21 19:11:28 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-21 19:11:28 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-21 19:11:28 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-21 19:11:31 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5358c8fa
+2025-10-21 19:11:31 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-21 19:11:31 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-21 19:11:32 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.10
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-21 19:11:35 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-21 19:12:01 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-21 19:12:01 [main] DEBUG c.g.g.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-10-21 19:12:01 [main] DEBUG c.g.g.c.EmailVerificationFilter - Filter 'emailVerificationFilter' configured for use
+2025-10-21 19:12:03 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-21 19:12:04 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 19:12:04 [main] INFO  c.g.g.service.email.EmailService - 📧 EMAIL CONFIGURATION LOADED
+2025-10-21 19:12:04 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 19:12:04 [main] INFO  c.g.g.service.email.EmailService - From Email: ahmedndayizeye45@gmail.com
+2025-10-21 19:12:04 [main] INFO  c.g.g.service.email.EmailService - SMTP Host: smtp.gmail.com
+2025-10-21 19:12:04 [main] INFO  c.g.g.service.email.EmailService - SMTP Port: 587
+2025-10-21 19:12:04 [main] INFO  c.g.g.service.email.EmailService - Frontend URL: http://localhost:3000
+2025-10-21 19:12:04 [main] INFO  c.g.g.service.email.EmailService - Base URL: http://localhost:8085
+2025-10-21 19:12:04 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2025-10-21 19:12:05 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-10-21 19:12:05 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-21 19:12:06 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2025-10-21 19:12:06 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Started GoDeliveryApplication in 43.956 seconds (process running for 44.887)
