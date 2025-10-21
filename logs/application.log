@@ -995,3 +995,95 @@ Caused by: java.io.FileNotFoundException: ClassLoader resource "templates/emails
 2025-10-21 14:39:51 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
 2025-10-21 14:39:52 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
 2025-10-21 14:39:52 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Started GoDeliveryApplication in 40.54 seconds (process running for 41.348)
+2025-10-21 14:52:23 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@620572db (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-10-21 15:00:34 [http-nio-8085-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-21 15:00:34 [http-nio-8085-exec-1] INFO  c.g.g.controller.CustomerController - Received registration request for email: ahmedndayizeye46@gmail.com
+2025-10-21 15:00:35 [http-nio-8085-exec-1] INFO  c.g.g.service.CustomerService - Starting registration for email: ahmedndayizeye46@gmail.com
+2025-10-21 15:00:35 [http-nio-8085-exec-1] INFO  c.g.g.service.CustomerService - Customer registered successfully with ID: 152
+2025-10-21 15:00:35 [http-nio-8085-exec-1] INFO  c.g.goDelivery.service.OTPService - Attempting to send OTP email to: ahmedndayizeye46@gmail.com
+2025-10-21 15:00:35 [http-nio-8085-exec-1] INFO  c.g.goDelivery.service.OTPService - OTP email request submitted for: ahmedndayizeye46@gmail.com
+2025-10-21 15:00:35 [http-nio-8085-exec-1] INFO  c.g.g.service.CustomerService - OTP sent to email: ahmedndayizeye46@gmail.com
+2025-10-21 15:00:35 [AsyncThread-1] INFO  c.g.g.service.email.EmailService - Starting OTP email preparation for: ahmedndayizeye46@gmail.com
+2025-10-21 15:00:35 [AsyncThread-1] DEBUG c.g.g.service.email.EmailService - Using fromEmail: ahmedndayizeye45@gmail.com, SMTP host configured
+2025-10-21 15:00:35 [AsyncThread-1] DEBUG c.g.g.service.email.EmailService - Processing email template: emails/otp-verification
+2025-10-21 15:00:36 [AsyncThread-1] ERROR org.thymeleaf.TemplateEngine - [THYMELEAF][AsyncThread-1] Exception processing template "emails/otp-verification": An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+org.thymeleaf.exceptions.TemplateInputException: An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:235)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parseStandalone(AbstractMarkupTemplateParser.java:100)
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:666)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1103)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1064)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1053)
+	at com.goDelivery.goDelivery.service.email.EmailService.sendOtpEmail(EmailService.java:84)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.interceptor.AsyncExecutionInterceptor.lambda$invoke$0(AsyncExecutionInterceptor.java:114)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.io.FileNotFoundException: ClassLoader resource "templates/emails/emails/otp-verification.html" could not be resolved
+	at org.thymeleaf.templateresource.ClassLoaderTemplateResource.reader(ClassLoaderTemplateResource.java:130)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:223)
+	... 16 common frames omitted
+2025-10-21 15:00:36 [AsyncThread-1] ERROR c.g.g.service.email.EmailService - ❌ Unexpected error while sending OTP email to ahmedndayizeye46@gmail.com: An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+org.thymeleaf.exceptions.TemplateInputException: An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:235)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parseStandalone(AbstractMarkupTemplateParser.java:100)
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:666)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1103)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1064)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1053)
+	at com.goDelivery.goDelivery.service.email.EmailService.sendOtpEmail(EmailService.java:84)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.interceptor.AsyncExecutionInterceptor.lambda$invoke$0(AsyncExecutionInterceptor.java:114)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.io.FileNotFoundException: ClassLoader resource "templates/emails/emails/otp-verification.html" could not be resolved
+	at org.thymeleaf.templateresource.ClassLoaderTemplateResource.reader(ClassLoaderTemplateResource.java:130)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:223)
+	... 16 common frames omitted
+2025-10-21 15:00:36 [AsyncThread-1] ERROR o.s.a.i.SimpleAsyncUncaughtExceptionHandler - Unexpected exception occurred invoking async method: public void com.goDelivery.goDelivery.service.email.EmailService.sendOtpEmail(java.lang.String,java.lang.String,java.lang.String)
+com.goDelivery.goDelivery.exception.EmailSendingException: Failed to send OTP email: An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+	at com.goDelivery.goDelivery.service.email.EmailService.sendOtpEmail(EmailService.java:96)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.interceptor.AsyncExecutionInterceptor.lambda$invoke$0(AsyncExecutionInterceptor.java:114)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.thymeleaf.exceptions.TemplateInputException: An error happened during template parsing (template: "templates/emails/emails/otp-verification.html")
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:235)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parseStandalone(AbstractMarkupTemplateParser.java:100)
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:666)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1103)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1064)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1053)
+	at com.goDelivery.goDelivery.service.email.EmailService.sendOtpEmail(EmailService.java:84)
+	... 10 common frames omitted
+Caused by: java.io.FileNotFoundException: ClassLoader resource "templates/emails/emails/otp-verification.html" could not be resolved
+	at org.thymeleaf.templateresource.ClassLoaderTemplateResource.reader(ClassLoaderTemplateResource.java:130)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:223)
+	... 16 common frames omitted
+2025-10-21 15:00:36 [http-nio-8085-exec-1] INFO  c.g.g.controller.CustomerController - Successfully registered user with email: ahmedndayizeye46@gmail.com
+2025-10-21 15:02:52 [http-nio-8085-exec-5] INFO  c.g.g.controller.OTPController - OTP verified successfully for customer: ahmedndayizeye46@gmail.com
+2025-10-21 15:03:03 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationController - Received login request for email: ahmedndayizeye46@gmail.com
+2025-10-21 15:03:03 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationService - Searching for user with email: ahmedndayizeye46@gmail.com
+2025-10-21 15:03:03 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking restaurant_users table...
+2025-10-21 15:03:03 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking super_admin table...
+2025-10-21 15:03:03 [http-nio-8085-exec-7] DEBUG c.g.g.auth.AuthenticationService - Checking customer table...
+2025-10-21 15:03:03 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationService - Found user in customer table
+2025-10-21 15:03:04 [http-nio-8085-exec-7] INFO  c.g.g.auth.AuthenticationController - Login successful for user: ahmedndayizeye46@gmail.com
