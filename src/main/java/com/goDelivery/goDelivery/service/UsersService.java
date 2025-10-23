@@ -278,7 +278,6 @@ public class  UsersService {
         
         // Check if admin has permission to create users
         if (admin.getRole() != Roles.RESTAURANT_ADMIN && 
-            admin.getRole() != Roles.ADMIN && 
             admin.getRole() != Roles.SUPER_ADMIN) {
             throw new UnauthorizedException("Insufficient permissions to create users");
         }
@@ -301,7 +300,6 @@ public class  UsersService {
                 .orElseThrow(() -> new UnauthorizedException("Admin not found"));
     
         if (!admin.getRole().equals(Roles.RESTAURANT_ADMIN) && 
-            !admin.getRole().equals(Roles.ADMIN) && 
             !admin.getRole().equals(Roles.SUPER_ADMIN)) {
             throw new UnauthorizedException("Insufficient permissions to manage users");
         }

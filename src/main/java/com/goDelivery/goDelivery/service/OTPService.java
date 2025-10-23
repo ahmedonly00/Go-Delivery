@@ -44,6 +44,14 @@ public class OTPService {
     }
     
     public boolean verifyOTP(String email, String otp) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+        
+        if (otp == null || otp.trim().isEmpty()) {
+            throw new IllegalArgumentException("OTP cannot be null or empty");
+        }
+        
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
                 
