@@ -1,7 +1,9 @@
 package com.goDelivery.goDelivery.configSecurity;
 
+import com.goDelivery.goDelivery.model.Customer;
 import com.goDelivery.goDelivery.model.RestaurantUsers;
 import com.goDelivery.goDelivery.model.SuperAdmin;
+import com.goDelivery.goDelivery.repository.CustomerRepository;
 import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.repository.SuperAdminRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class CustomUserDetailsService implements UserDetailsService {
     private final RestaurantUsersRepository restaurantUsersRepository;
     private final SuperAdminRepository superAdminRepository;
+    private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
     
     @Override
@@ -43,6 +46,14 @@ public class CustomUserDetailsService implements UserDetailsService {
             SuperAdmin admin = superAdmin.get();
             System.out.println("Found super admin: " + admin.getEmail() + ", Role: " + admin.getRole());
             return createUserDetails(admin.getEmail(), admin.getPassword(), admin.getRole(), true, "SuperAdmin");
+        }
+        
+        // If not found, try to find in Customer
+        Optional<Customer> customer = customerRepository.findByEmail(username);
+        if (customer.isPresent()) {
+            Customer cust = customer.get();
+            System.out.println("Found customer: " + cust.getEmail() + ", Active: " + cust.getIsActive());
+            return createUserDetails(cust.getEmail(), cust.getPassword(), cust.getRoles(), cust.getIsActive(), "Customer");
         }
         
         System.err.println("User not found with email: " + username);
@@ -101,6 +112,12 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .ifPresent(admin -> {
                     admin.setPassword(encodedPassword);
                     superAdminRepository.save(admin);
+                });
+        
+        customerRepository.findByEmail(user.getUsername())
+                .ifPresent(customer -> {
+                    customer.setPassword(encodedPassword);
+                    customerRepository.save(customer);
                 });
     }
 }

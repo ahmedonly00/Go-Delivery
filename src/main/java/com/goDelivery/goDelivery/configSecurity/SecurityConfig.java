@@ -70,21 +70,24 @@ public class SecurityConfig {
                         "/api/super-admin/register",
                         "/api/emails/**",
                         "/api/customers/register",
-                        "/api/restaurants/registerAdmin"
-                    ).permitAll()
-                    .requestMatchers(
+                        "/api/restaurants/registerAdmin",
                         "/api/restaurants/getAllActiveRestaurants",
-                        "/api/restaurants/getRestaurantById/{restaurantId}"
-
-                    ).hasRole("SUPER_ADMIN")
+                        "/api/restaurants/getRestaurantById/**",
+                        "/api/menu-items/getAllMenuItem",
+                        "/api/menu-items/getMenuItemById/**",
+                        "/api/menu-items/getMenuItemByName/**",
+                        "/api/menu-items/getMenuItemsByRestaurant/**"
+                    ).permitAll()
                     // Customer endpoints - require CUSTOMER role
                     .requestMatchers(
                         "/api/customers/**",
+                        "/api/cart/**",
                         "/api/orders/createOrder",
-                        "/api/orders/cancelOrder/*",
+                        "/api/orders/getOrdersByCustomer/**",
+                        "/api/orders/getOrderById/**",
+                        "/api/orders/cancelOrder/**",
                         "/api/payments/process",
-                        "/api/payments/customer/*",
-                        "/api/restaurants/getAllActiveRestaurants"
+                        "/api/payments/customer/**"
 
                     ).hasRole("CUSTOMER")
                     // Restaurant Admin endpoints - require RESTAURANT_ADMIN role
@@ -102,10 +105,7 @@ public class SecurityConfig {
                     ).hasRole("RESTAURANT_ADMIN")
                     // Shared endpoints - both CUSTOMER and RESTAURANT_ADMIN
                     .requestMatchers(
-                        "/api/orders/**",
-                        "/api/menu-items/getAllMenuItem",
-                        "/api/menu-items/getMenuItemById/{menuItemId}",
-                        "/api/menu-items/getMenuItemByName/{menuItemName}"
+                        "/api/orders/**"
                     ).hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER")
                     // Public order tracking
                     .requestMatchers(
@@ -150,10 +150,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*", "http://localhost:3000"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

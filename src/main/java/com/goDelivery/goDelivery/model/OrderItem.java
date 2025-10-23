@@ -30,7 +30,7 @@ public class OrderItem {
     @Column(name = "total_price", nullable = false)
     private Float totalPrice;
 
-    @Column(name = "special_requests", nullable = false)
+    @Column(name = "special_requests")
     private String specialRequests;
 
     @Column(name = "created_at", nullable = false)

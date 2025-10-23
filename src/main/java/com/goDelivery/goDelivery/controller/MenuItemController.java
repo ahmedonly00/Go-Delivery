@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
@@ -62,6 +64,7 @@ public class MenuItemController {
 
     @PutMapping(value = "/updateMenuItem/{menuItemId}")
     public MenuItemResponse updateMenuItem(
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long restaurantId,
             @PathVariable Long menuItemId,
             @Valid @RequestBody UpdateMenuItemRequest request) {
@@ -71,6 +74,7 @@ public class MenuItemController {
     @DeleteMapping(value = "/deleteMenuItem/{menuItemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMenuItem(
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long restaurantId,
             @PathVariable Long menuItemId) {
         menuItemService.deleteMenuItem(menuItemId);
@@ -78,6 +82,7 @@ public class MenuItemController {
 
     @PatchMapping(value = "/updateMenuItemAvailability/{menuItemId}")
     public MenuItemResponse updateMenuItemAvailability(
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long restaurantId,
             @PathVariable Long menuItemId,
             @RequestParam boolean available) {

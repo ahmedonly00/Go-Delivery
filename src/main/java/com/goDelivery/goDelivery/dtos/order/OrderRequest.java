@@ -20,9 +20,6 @@ public class OrderRequest {
     @NotNull(message = "Restaurant ID is required")
     private Long restaurantId;
     
-    @NotNull(message = "Branch ID is required")
-    private Long branchId;
-    
     @NotNull(message = "Customer ID is required")
     private Long customerId;
     
@@ -66,8 +63,6 @@ public class OrderRequest {
     private LocalDate estimatedDelivery;
     
     private String cancellationReason;
-
-    private String orderNumber;
 
     private LocalDate orderPlacedAt;
     

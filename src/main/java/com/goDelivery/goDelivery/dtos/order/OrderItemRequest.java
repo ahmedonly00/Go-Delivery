@@ -25,7 +25,7 @@ public class OrderItemRequest {
     @Positive(message = "Unit price must be positive")
     private Float unitPrice;
     
-    private String specialRequests;
+    private String specialInstructions;
     
     // Simple list of variant IDs instead of nested DTOs
     private List<Long> variantIds;

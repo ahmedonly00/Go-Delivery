@@ -25,7 +25,7 @@ public class Order {
     @Column(name = "order_id", nullable = false)
     private Long orderId;
 
-    @Column(name = "order_number", nullable = false)
+    @Column(name = "order_number")
     private String orderNumber;
 
     @Column(name = "delivery_address", nullable = false)
@@ -48,13 +48,13 @@ public class Order {
     @Column(name = "discount_amount", nullable = false)
     private Float discountAmount;
 
-    @Column(name = "accepted_at")
+    @Column(name = "accepted_at", nullable = true)
     private LocalDate acceptedAt;
 
-    @Column(name = "estimated_prep_time_minutes")
+    @Column(name = "estimated_prep_time_minutes", nullable = true)
     private Integer estimatedPrepTimeMinutes;
 
-    @Column(name = "actual_prep_completed_at")
+    @Column(name = "actual_prep_completed_at", nullable = true)
     private LocalDate actualPrepCompletedAt;
 
     @Column(name = "final_amount", nullable = false)
@@ -64,7 +64,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private PaymentMenthod paymentMethod;
 
-    @Column(name = "special_instructions", nullable = false)
+    @Column(name = "special_instructions", nullable = true)
     private String specialInstructions;
 
     @Column(name = "estimated_delivery_time", nullable = false)
@@ -73,22 +73,22 @@ public class Order {
     @Column(name = "order_placed_at", nullable = false)
     private LocalDate orderPlacedAt;
 
-    @Column(name = "order_confirmed_at", nullable = false)
+    @Column(name = "order_confirmed_at", nullable = true)
     private LocalDate orderConfirmedAt;
 
-    @Column(name = "food_ready_at", nullable = false)
+    @Column(name = "food_ready_at", nullable = true)
     private LocalDate foodReadyAt;
 
-    @Column(name = "picked_up_at", nullable = false)
+    @Column(name = "picked_up_at", nullable = true)
     private LocalDate pickedUpAt;
 
-    @Column(name = "delivered_at", nullable = false)
+    @Column(name = "delivered_at", nullable = true)
     private LocalDate deliveredAt;
 
-    @Column(name = "cancelled_at", nullable = false)
+    @Column(name = "cancelled_at", nullable = true)
     private LocalDate cancelledAt;
 
-    @Column(name = "cancellation_reason", nullable = false)
+    @Column(name = "cancellation_reason", nullable = true)
     private String cancellationReason;
 
     @ManyToOne(fetch = FetchType.LAZY)

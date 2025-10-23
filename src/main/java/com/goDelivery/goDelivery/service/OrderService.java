@@ -63,6 +63,10 @@ public class OrderService {
 
         // Save order to get the ID
         Order savedOrder = orderRepository.save(order);
+        
+        // Generate and set order number
+        String orderNumber = generateOrderNumber(savedOrder.getOrderId());
+        savedOrder.setOrderNumber(orderNumber);
 
         // Create order items
         List<OrderItem> orderItems = orderRequest.getOrderItems().stream()
@@ -282,5 +286,17 @@ public class OrderService {
         
         // Return random minutes for demo purposes
         return (int) (Math.random() * 30) + 5; // 5-35 minutes remaining
+    }
+    
+    /**
+     * Generate a unique order number based on order ID and current date
+     * Format: ORD-YYYYMMDD-XXXXX
+     * Example: ORD-20251022-00001
+     */
+    private String generateOrderNumber(Long orderId) {
+        LocalDate now = LocalDate.now();
+        String datePart = String.format("%04d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+        String orderIdPart = String.format("%05d", orderId);
+        return "ORD-" + datePart + "-" + orderIdPart;
     }
 }

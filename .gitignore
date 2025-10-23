@@ -1,5 +1,10 @@
 HELP.md
 
+# Documentation and temporary files (root level only)
+/*.md
+/*.txt
+/*.json
+
 # Environment variables
 .env
 .env.local
