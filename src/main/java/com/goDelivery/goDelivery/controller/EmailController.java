@@ -22,6 +22,7 @@ public class EmailController {
 
     private final EmailService emailService;
     private final EmailVerificationService emailVerificationService;
+    private final com.goDelivery.goDelivery.service.RestaurantOTPService restaurantOTPService;
     
     @Value("${app.frontend.url:http://localhost:3000}")
     private String frontendUrl;
@@ -168,8 +169,9 @@ public class EmailController {
     public ResponseEntity<EmailVerificationResponse> verifyEmail(
             @Valid @RequestBody EmailVerificationRequest request) {
         try {
+            // Now using OTP instead of token
             boolean verified = emailVerificationService.verifyRestaurantEmail(
-                    request.getToken(), 
+                    request.getToken(), // This field now contains the OTP
                     request.getEmail()
             );
             
@@ -189,7 +191,7 @@ public class EmailController {
             } else {
                 return ResponseEntity.badRequest().body(EmailVerificationResponse.builder()
                         .success(false)
-                        .message("Invalid or expired verification token, or email mismatch")
+                        .message("Invalid or expired OTP")
                         .build());
             }
         } catch (Exception e) {
@@ -197,6 +199,25 @@ public class EmailController {
                     .success(false)
                     .message("Verification failed: " + e.getMessage())
                     .build());
+        }
+    }
+    
+    @PostMapping("/resend-otp/restaurant")
+    public ResponseEntity<?> resendRestaurantOTP(@RequestParam String email) {
+        try {
+            restaurantOTPService.resendOTP(email);
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "OTP resent successfully to " + email
+            ));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(
+                Map.of("success", false, "error", e.getMessage())
+            );
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                Map.of("success", false, "error", "Failed to resend OTP: " + e.getMessage())
+            );
         }
     }
 }

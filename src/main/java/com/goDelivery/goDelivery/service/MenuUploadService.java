@@ -121,22 +121,22 @@ public class MenuUploadService {
             // Save the file
             String fileUrl = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/menu-uploads");
             
-            // Send email verification after successful menu upload
+            // Send OTP verification after successful menu upload
             try {
                 emailVerificationService.sendVerificationEmail(
                     restaurant.getEmail(),
                     restaurant.getRestaurantName(),
                     restaurantId
                 );
-                log.info("Email verification sent to restaurant admin: {}", restaurant.getEmail());
+                log.info("OTP verification email sent to restaurant admin: {}", restaurant.getEmail());
             } catch (Exception e) {
-                log.error("Failed to send verification email: {}", e.getMessage());
+                log.error("Failed to send OTP verification email: {}", e.getMessage());
                 // Don't fail the entire operation if email sending fails
             }
 
             return FileUploadResponse.builder()
                     .success(true)
-                    .message("File processed successfully. " + savedItems.size() + " items saved. Please check your email to verify and complete setup.")
+                    .message("File processed successfully. " + savedItems.size() + " items saved. Please check your email for OTP to verify and complete setup.")
                     .menuItems(menuItems)
                     .fileUrl(fileUrl)
                     .build();

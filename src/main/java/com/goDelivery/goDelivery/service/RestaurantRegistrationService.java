@@ -122,7 +122,7 @@ public class RestaurantRegistrationService {
                 .phoneNumber(registrationDTO.getPhoneNumber())
                 .isActive(true)
                 .lastLogin(LocalDate.now())
-                .emailVerified(true) // Will be verified via email
+                .emailVerified(false) // Will be verified via OTP
                 .role(Roles.RESTAURANT_ADMIN) // Set the role
                 .permissions("RESTAURANT:READ,RESTAURANT:WRITE") // Basic permissions
                 .build();
@@ -130,10 +130,12 @@ public class RestaurantRegistrationService {
         admin = userRepository.save(admin);
         log.info("New restaurant admin registered: {}", admin.getEmail());
         
+        // Send welcome email (OTP will be sent after menu upload)
         try {
-            emailService.sendVerificationEmail(admin.getEmail(), admin.getFullName(), "verification-token");
+            emailService.sendWelcomeEmail(admin.getEmail(), admin.getFullName(), "");
+            log.info("Welcome email sent to new restaurant admin: {}", admin.getEmail());
         } catch (Exception e) {
-            log.error("Failed to send verification email: {}", e.getMessage());
+            log.error("Failed to send welcome email: {}", e.getMessage());
         }
         
         return userMapper.toAdminResponseDTO(admin);

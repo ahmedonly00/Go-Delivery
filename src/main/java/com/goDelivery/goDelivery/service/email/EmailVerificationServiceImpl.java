@@ -1,18 +1,15 @@
 package com.goDelivery.goDelivery.service.email;
 
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.EmailVerificationToken;
 import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.repository.EmailVerificationTokenRepository;
 import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.service.RestaurantOTPService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 
 @Slf4j
@@ -22,7 +19,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     
     private final RestaurantUsersRepository userRepository;
     private final EmailService emailService;
-    private final EmailVerificationTokenRepository verificationTokenRepository;
+    private final RestaurantOTPService restaurantOTPService;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -64,68 +61,31 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
             RestaurantUsers user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
             
-            // Generate unique verification token
-            String token = UUID.randomUUID().toString();
+            // Generate and send OTP instead of token
+            restaurantOTPService.generateAndSaveOTP(user);
             
-            // Delete any existing tokens for this user
-            verificationTokenRepository.findByUserEmail(email)
-                    .ifPresent(existingToken -> verificationTokenRepository.delete(existingToken));
-            
-            // Create and save new verification token
-            EmailVerificationToken verificationToken = EmailVerificationToken.builder()
-                    .token(token)
-                    .userEmail(email)
-                    .restaurantId(restaurantId)
-                    .build();
-            verificationTokenRepository.save(verificationToken);
-            
-            // Send verification email
-            emailService.sendVerificationEmail(email, user.getFullName(), token);
-            
-            log.info("Verification email sent to: {} for restaurant: {}", email, restaurantName);
+            log.info("OTP verification email sent to: {} for restaurant: {}", email, restaurantName);
         } catch (Exception e) {
-            log.error("Failed to send verification email to {}: {}", email, e.getMessage(), e);
+            log.error("Failed to send OTP verification email to {}: {}", email, e.getMessage(), e);
         }
     }
     
     @Override
     @Transactional
-    public boolean verifyRestaurantEmail(String token, String email) {
+    public boolean verifyRestaurantEmail(String otp, String email) {
         try {
-            EmailVerificationToken verificationToken = verificationTokenRepository.findByToken(token)
-                    .orElseThrow(() -> new ResourceNotFoundException("Invalid verification token"));
+            // Use OTP service to verify
+            boolean verified = restaurantOTPService.verifyOTP(email, otp);
             
-            // Check if token is valid
-            if (!verificationToken.isValid()) {
-                log.warn("Verification token is expired or already used: {}", token);
-                return false;
+            if (verified) {
+                log.info("Email verified successfully for restaurant admin: {}", email);
+            } else {
+                log.warn("Invalid or expired OTP for restaurant admin: {}", email);
             }
             
-            // Validate that the provided email matches the token's email
-            if (!verificationToken.getUserEmail().equalsIgnoreCase(email)) {
-                log.warn("Email mismatch for token verification. Expected: {}, Provided: {}", 
-                        verificationToken.getUserEmail(), email);
-                return false;
-            }
-            
-            // Find and update user
-            RestaurantUsers user = userRepository.findByEmail(verificationToken.getUserEmail())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + verificationToken.getUserEmail()));
-            
-            // Mark user as verified and setup complete
-            user.setEmailVerified(true);
-            user.setSetupComplete(true);
-            user.setActive(true);
-            userRepository.save(user);
-            
-            // Mark token as used
-            verificationToken.setUsed(true);
-            verificationTokenRepository.save(verificationToken);
-            
-            log.info("Email verified successfully for user: {}", user.getEmail());
-            return true;
+            return verified;
         } catch (Exception e) {
-            log.error("Failed to verify email with token {}: {}", token, e.getMessage(), e);
+            log.error("Failed to verify email with OTP for {}: {}", email, e.getMessage(), e);
             return false;
         }
     }

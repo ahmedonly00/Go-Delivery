@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -65,6 +66,12 @@ public class RestaurantUsers implements CustomUserDetails {
 
     @Column(name = "last_login")
     private LocalDate lastLogin;
+    
+    @Column(name = "otp")
+    private String otp;
+    
+    @Column(name = "otp_expiry_time")
+    private LocalDateTime otpExpiryTime;
 
     @PrePersist
     protected void onCreate() {
