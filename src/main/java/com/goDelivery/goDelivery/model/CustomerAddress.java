@@ -22,14 +22,17 @@ public class CustomerAddress {
     @Column(name = "address_id", nullable = false)
     private Long customerAddressId;
 
-    @Column(name = "address_line", nullable = false)
-    private String customerAddressLine;
+    @Column(name = "street", nullable = false)
+    private String street;
 
-    @Column(name = "city", nullable = false)
-    private String customerCity;
+    @Column(name = "area_name", nullable = false)
+    private String areaName;
 
-    @Column(name = "postal_code", nullable = false)
-    private String postalCode;
+    @Column(name = "house_number", nullable = false)
+    private String houseNumber;
+
+    @Column(name = "local_contact_number", nullable = false)
+    private String localContactNumber;
 
     @Column(name = "latitude", nullable = false)
     private Float latitude;
@@ -38,7 +41,14 @@ public class CustomerAddress {
     private Float longitude;
 
     @Column(name = "address_type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private AddressType addressType;
+
+    @Column(name = "usage_option", nullable = false)
+    private String usageOption;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @Column(name = "is_default", nullable = false)
     private boolean isDefault;
@@ -52,6 +62,10 @@ public class CustomerAddress {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;
 
     @PrePersist
     protected void onCreate() {
