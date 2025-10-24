@@ -30,7 +30,7 @@ public class MenuCategory {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "image", nullable = false)
+    @Column(name = "image", length = 500 ,nullable = false)
     private String image;
 
     @Column(name = "sort_order", nullable = false)

@@ -33,7 +33,7 @@ public class MenuItem {
     @Column(name = "price", nullable = false)
     private Float price;
 
-    @Column(name = "image", nullable = false)
+    @Column(name = "image", length = 500 ,nullable = false)
     private String image;
 
     @Column(name = "ingredients", nullable = false)

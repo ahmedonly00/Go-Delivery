@@ -24,7 +24,7 @@ public class LocationController {
 
     private final LocationService locationService;
 
-    @GetMapping("/countries")
+    @GetMapping("/getAllCountries")
     public ResponseEntity<Map<String, Object>> getAllCountries() {
         try {
             List<CountryResponse> countries = locationService.getAllCountries();
@@ -70,7 +70,7 @@ public class LocationController {
         }
     }
 
-    @PostMapping(value = "/addresses", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/createAddresses", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> createAddress(
             @RequestParam("customerId") Long customerId,
             @RequestParam("cityId") Long cityId,
@@ -124,7 +124,7 @@ public class LocationController {
         }
     }
 
-    @GetMapping("/addresses")
+    @GetMapping("/getCustomerAddresses")
     public ResponseEntity<Map<String, Object>> getCustomerAddresses(@RequestParam Long customerId) {
         try {
             List<AddressResponse> addresses = locationService.getCustomerAddresses(customerId);
@@ -176,7 +176,7 @@ public class LocationController {
         }
     }
 
-    @DeleteMapping("/addresses/{addressId}")
+    @DeleteMapping("/deleteAddress/{addressId}")
     public ResponseEntity<Map<String, Object>> deleteAddress(@PathVariable Long addressId) {
         try {
             locationService.deleteAddress(addressId);
