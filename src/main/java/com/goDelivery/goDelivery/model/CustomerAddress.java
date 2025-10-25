@@ -71,6 +71,7 @@ public class CustomerAddress {
     protected void onCreate() {
         LocalDate now = LocalDate.now();
         createdAt = now;
+        updatedAt = now;
     }
 
     @PreUpdate
