@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
+import com.goDelivery.goDelivery.dtos.menucategory.CreateCategoryFromTemplateRequest;
+import com.goDelivery.goDelivery.dtos.menucategory.MenuCategoryTemplateResponse;
 import com.goDelivery.goDelivery.service.MenuCategoryService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -53,8 +55,18 @@ public class MenuCategoryController {
         return ResponseEntity.ok(menuCategoryService.getAllMenuCategories());
     }
 
-    @GetMapping("/{categoryName}")
+    @GetMapping("/name/{categoryName}")
     public ResponseEntity<MenuCategoryDTO> getMenuCategoryByName(@PathVariable String categoryName){
         return ResponseEntity.ok(menuCategoryService.getMenuCategoryByName(categoryName));
+    }
+
+    @GetMapping("/templates")
+    public ResponseEntity<List<MenuCategoryTemplateResponse>> getAllTemplates() {
+        return ResponseEntity.ok(menuCategoryService.getAllTemplates());
+    }
+
+    @PostMapping("/create-from-template")
+    public ResponseEntity<MenuCategoryDTO> createCategoryFromTemplate(@RequestBody CreateCategoryFromTemplateRequest request) {
+        return ResponseEntity.ok(menuCategoryService.createCategoryFromTemplate(request));
     }
 }

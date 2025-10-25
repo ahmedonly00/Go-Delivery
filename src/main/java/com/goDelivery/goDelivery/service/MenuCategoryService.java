@@ -6,9 +6,15 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
+import com.goDelivery.goDelivery.dtos.menucategory.CreateCategoryFromTemplateRequest;
+import com.goDelivery.goDelivery.dtos.menucategory.MenuCategoryTemplateResponse;
 import com.goDelivery.goDelivery.mapper.MenuCategoryMapper;
 import com.goDelivery.goDelivery.model.MenuCategory;
+import com.goDelivery.goDelivery.model.MenuCategoryTemplate;
+import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
+import com.goDelivery.goDelivery.repository.MenuCategoryTemplateRepository;
+import com.goDelivery.goDelivery.repository.RestaurantRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class MenuCategoryService {
 
     private final MenuCategoryRepository menuCategoryRepository;
-
+    private final MenuCategoryTemplateRepository templateRepository;
+    private final RestaurantRepository restaurantRepository;
     private final MenuCategoryMapper menuCategoryMapper;
 
 
@@ -62,5 +69,48 @@ public class MenuCategoryService {
         return menuCategoryMapper.toMenuCategoryDTO(menuCategory);
     }
 
-    
+    // Get all available category templates
+    public List<MenuCategoryTemplateResponse> getAllTemplates() {
+        List<MenuCategoryTemplate> templates = templateRepository.findByIsActiveTrue();
+        return templates.stream()
+                .map(this::toTemplateResponse)
+                .toList();
+    }
+
+    // Create a menu category from a template
+    public MenuCategoryDTO createCategoryFromTemplate(CreateCategoryFromTemplateRequest request) {
+        // Find template
+        MenuCategoryTemplate template = templateRepository.findById(request.getTemplateId())
+                .orElseThrow(() -> new RuntimeException("Template not found with ID: " + request.getTemplateId()));
+
+        // Find restaurant
+        Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
+                .orElseThrow(() -> new RuntimeException("Restaurant not found with ID: " + request.getRestaurantId()));
+
+        // Create menu category from template
+        MenuCategory menuCategory = MenuCategory.builder()
+                .categoryName(template.getCategoryName())
+                .description(template.getDescription())
+                .image(request.getCustomImage() != null ? request.getCustomImage() : template.getDefaultImageUrl())
+                .sortOrder(template.getSortOrder())
+                .isActive(true)
+                .createdAt(LocalDate.now())
+                .restaurant(restaurant)
+                .build();
+
+        MenuCategory savedCategory = menuCategoryRepository.save(menuCategory);
+        return menuCategoryMapper.toMenuCategoryDTO(savedCategory);
+    }
+
+    // Helper method to convert template to response DTO
+    private MenuCategoryTemplateResponse toTemplateResponse(MenuCategoryTemplate template) {
+        return MenuCategoryTemplateResponse.builder()
+                .templateId(template.getTemplateId())
+                .categoryName(template.getCategoryName())
+                .description(template.getDescription())
+                .defaultImageUrl(template.getDefaultImageUrl())
+                .sortOrder(template.getSortOrder())
+                .isActive(template.isActive())
+                .build();
+    }
 }
