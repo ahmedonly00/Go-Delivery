@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to MozFood - Your Restaurant Account is Ready!</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { max-width: 200px; margin-bottom: 20px; }
+        .content { background-color: #f9f9f9; padding: 25px; border-radius: 5px; }
+        .button {
+            display: inline-block; 
+            padding: 12px 24px; 
+            background-color: #4CAF50; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .credentials-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .credentials-box strong {
+            color: #856404;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 20px 0;
+            border-radius: 3px;
+        }
+        .footer { margin-top: 30px; font-size: 12px; color: #777; text-align: center; }
+        .steps { margin: 20px 0; padding-left: 20px; }
+        .steps li { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome to MozFood!</h1>
+        <p>Your Restaurant Account is Ready</p>
+    </div>
+    
+    <div class="content">
+        <p>Hello <span th:text="${name}">Restaurant Owner</span>,</p>
+        
+        <p>Great news! Your restaurant <strong th:text="${restaurantName}">Restaurant Name</strong> has been successfully registered on MozFood platform.</p>
+        
+        <h3>Your Login Credentials:</h3>
+        <div class="credentials-box">
+            <p><strong>Temporary Password:</strong> <code th:text="${temporaryPassword}">temp-password</code></p>
+        </div>
+        
+        <p>Use your registered email address to login along with the temporary password above.</p>
+        
+        <div class="warning">
+            <strong>⚠️ Important Security Notice:</strong><br>
+            Please change your password immediately after your first login for security purposes.
+        </div>
+        
+        <h3>Next Steps:</h3>
+        <ol class="steps">
+            <li><strong>Login to Your Account</strong> - Use the credentials above to access your dashboard</li>
+            <li><strong>Change Your Password</strong> - Set a strong, secure password</li>
+            <li><strong>Complete Your Profile</strong> - Add restaurant details, contact information, and operating hours</li>
+            <li><strong>Set Up Your Menu</strong> - Add menu items, prices, and descriptions</li>
+            <li><strong>Configure Delivery Settings</strong> - Set delivery areas and fees</li>
+            <li><strong>Go Live!</strong> - Start receiving orders from customers</li>
+        </ol>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a th:href="${loginUrl}" class="button">Login to Your Dashboard</a>
+        </div>
+        
+        <p>If you have any questions or need assistance, our support team is here to help at <a href="mailto:support@mozfood.com">support@mozfood.com</a> or call us at +250 (782) 242-930.</p>
+        
+        <p>We're excited to have <strong th:text="${restaurantName}">your restaurant</strong> on board!</p>
+        
+        <p>Best regards,<br>The MozFood Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 MozFood. All rights reserved.</p>
+        <p>You're receiving this email because a restaurant account was created for you on MozFood.</p>
+        <p><a href="https://mozfood.com/privacy">Privacy Policy</a> | <a href="https://mozfood.com/terms">Terms of Service</a></p>
+    </div>
+</body>
+</html>

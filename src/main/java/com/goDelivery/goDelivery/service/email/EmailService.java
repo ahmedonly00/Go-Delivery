@@ -206,7 +206,7 @@ public class EmailService {
             context.setVariable("name", ownerName);
             context.setVariable("restaurantName", restaurantName);
             context.setVariable("temporaryPassword", temporaryPassword);
-            context.setVariable("loginUrl", frontendUrl + "/login");
+            context.setVariable("loginUrl", frontendUrl + "/Login");
             
             String htmlContent = templateEngine.process("restaurant-welcome-email", context);
             helper.setText(htmlContent, true);
