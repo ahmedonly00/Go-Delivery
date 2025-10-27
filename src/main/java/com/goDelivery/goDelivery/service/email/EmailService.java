@@ -60,7 +60,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom(fromEmail);
+            helper.setFrom("MozFood <" + fromEmail + ">");
             helper.setTo(toEmail);
             helper.setSubject("Restaurant Setup Complete - " + restaurantName);
             
@@ -89,9 +89,9 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("GoDelivery <" + fromEmail + ">");
+            helper.setFrom("MozFood <" + fromEmail + ">");
             helper.setTo(to);
-            helper.setSubject("Verify Your Email - GoDelivery");
+            helper.setSubject("Verify Your Email - MozFood");
 
             Context context = new Context();
             context.setVariable("name", name);
@@ -121,10 +121,10 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom(fromEmail);
+            helper.setFrom("MozFood <" + fromEmail + ">");
             helper.setTo(to);
-            helper.setSubject("Test Email from Go Delivery");
-            helper.setText("This is a test email from Go Delivery");
+            helper.setSubject("Test Email from MozFood");
+            helper.setText("This is a test email from MozFood");
             
             mailSender.send(message);
             log.info("Test email sent to: {}", to);
@@ -142,7 +142,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom("GoDelivery <" + fromEmail + ">");
+            helper.setFrom("MozFood <" + fromEmail + ">");
             helper.setTo(toEmail);
             helper.setSubject("Verify your email address");
             
@@ -171,14 +171,14 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom("GoDelivery <" + fromEmail + ">");
+            helper.setFrom("MozFood <" + fromEmail + ">");
             helper.setTo(toEmail);
-            helper.setSubject("Welcome to Go Delivery!");
+            helper.setSubject("Welcome to MozFood!");
             
             Context context = new Context();
             context.setVariable("name", name);
             context.setVariable("restaurantName", restaurantName);
-            context.setVariable("dashboardUrl", frontendUrl + "/dashboard");
+            context.setVariable("dashboardUrl", frontendUrl + "/Login");
             
             String htmlContent = templateEngine.process("welcome-email", context);
             helper.setText(htmlContent, true);
@@ -198,9 +198,9 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom("GoDelivery <" + fromEmail + ">");
+            helper.setFrom("MozFood <" + fromEmail + ">");
             helper.setTo(ownerEmail);
-            helper.setSubject("Welcome to Go Delivery - Your Restaurant Account is Ready!");
+            helper.setSubject("Welcome to MozFood - Your Restaurant Account is Ready!");
             
             Context context = new Context();
             context.setVariable("name", ownerName);
@@ -226,7 +226,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom("GoDelivery <" + fromEmail + ">");
+            helper.setFrom("MozFood <" + fromEmail + ">");
             helper.setTo(toEmail);
             helper.setSubject("Password Reset Request");
             
