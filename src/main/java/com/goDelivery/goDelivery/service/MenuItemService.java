@@ -162,9 +162,6 @@ public class MenuItemService {
         return menuItemRepository.findByRestaurant_RestaurantIdAndIsAvailableTrue(restaurantId);
     }
     
-    /**
-     * Maps a MenuItem entity to MenuItemResponse
-     */
     public MenuItemResponse mapToResponse(MenuItem menuItem) {
         if (menuItem == null) {
             return null;
@@ -178,6 +175,17 @@ public class MenuItemService {
             .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + menuItemId));
             
         menuItem.setAvailable(isAvailable);
+        menuItem.setUpdatedAt(LocalDate.now());
+        
+        return menuItemMapper.toMenuItemResponse(menuItemRepository.save(menuItem));
+    }
+
+    @Transactional
+    public MenuItemResponse updateMenuItemImage(Long menuItemId, String imageUrl) {
+        MenuItem menuItem = menuItemRepository.findById(menuItemId)
+            .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + menuItemId));
+            
+        menuItem.setImage(imageUrl);
         menuItem.setUpdatedAt(LocalDate.now());
         
         return menuItemMapper.toMenuItemResponse(menuItemRepository.save(menuItem));

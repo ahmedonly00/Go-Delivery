@@ -78,13 +78,25 @@ public class MenuItemController {
         return menuItemService.getAllMenuItems();
     }
 
-    @PutMapping(value = "/updateMenuItem/{menuItemId}")
+    @PutMapping(value = "/updateMenuItem/{menuItemId}", consumes = {"multipart/form-data"})
     public MenuItemResponse updateMenuItem(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long restaurantId,
             @PathVariable Long menuItemId,
-            @Valid @RequestBody UpdateMenuItemRequest request) {
-        return menuItemService.updateMenuItem(menuItemId, request);
+            @RequestPart("menuItem") @Valid UpdateMenuItemRequest request,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
+        try {
+            // Handle image upload if provided
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String filePath = fileStorageService.storeFile(imageFile, "menu-items/" + restaurantId + "/images");
+                String fullUrl = "/api/files/" + filePath.replace("\\", "/");
+                request.setImage(fullUrl);
+            }
+            
+            return menuItemService.updateMenuItem(menuItemId, request);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update menu item: " + e.getMessage(), e);
+        }
     }
 
     @DeleteMapping(value = "/deleteMenuItem/{menuItemId}")
@@ -103,5 +115,22 @@ public class MenuItemController {
             @PathVariable Long menuItemId,
             @RequestParam boolean available) {
         return menuItemService.updateMenuItemAvailability(menuItemId, available);
+    }
+
+    @PostMapping(value = "/{restaurantId}/updateMenuItemImage/{menuItemId}")
+    public MenuItemResponse updateMenuItemImage(
+            @PathVariable Long restaurantId,
+            @PathVariable Long menuItemId,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            // Store the file
+            String filePath = fileStorageService.storeFile(file, "menu-items/" + restaurantId + "/images");
+            String fullUrl = "/api/files/" + filePath.replace("\\", "/");
+            
+            // Update menu item image
+            return menuItemService.updateMenuItemImage(menuItemId, fullUrl);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload menu item image: " + e.getMessage(), e);
+        }
     }
 }
