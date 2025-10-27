@@ -12,6 +12,8 @@ import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.dtos.menu.UpdateMenuItemRequest;
 import com.goDelivery.goDelivery.service.MenuItemService;
+import com.goDelivery.goDelivery.service.FileStorageService;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +25,29 @@ import lombok.RequiredArgsConstructor;
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
+    private final FileStorageService fileStorageService;
 
-    @PostMapping(value = "/createMenuItem/{restaurantId}")
+    @PostMapping(value = "/createMenuItem/{restaurantId}", consumes = {"multipart/form-data"})
     @ResponseStatus(HttpStatus.CREATED)
     public MenuItemResponse createMenuItem(
             @PathVariable Long restaurantId,
-            @Valid @RequestBody MenuItemRequest request) {
-        // Set the restaurant ID from path variable
-        request.setRestaurantId(restaurantId);
-        return menuItemService.createMenuItem(request);
+            @RequestPart("menuItem") @Valid MenuItemRequest request,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
+        try {
+            // Set the restaurant ID from path variable
+            request.setRestaurantId(restaurantId);
+            
+            // Handle image upload if provided
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String filePath = fileStorageService.storeFile(imageFile, "menu-items/temp/images");
+                String fullUrl = "/api/files/" + filePath.replace("\\", "/");
+                request.setImage(fullUrl);
+            }
+            
+            return menuItemService.createMenuItem(request);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create menu item: " + e.getMessage(), e);
+        }
     }
 
     @GetMapping(value = "/getMenuItemsByRestaurant/{restaurantId}")

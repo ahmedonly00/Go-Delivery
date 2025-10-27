@@ -20,10 +20,10 @@ public class SuperAdminInitializer {
     private final SuperAdminRepository superAdminRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${app.superadmin.email:ndayizeye.ahmedy@gmail.com}")
+    @Value("${app.superadmin.email}")
     private String defaultAdminEmail;
 
-    @Value("${app.superadmin.password:Admin@123}")
+    @Value("${app.superadmin.password}")
     private String defaultAdminPassword;
 
     @PostConstruct

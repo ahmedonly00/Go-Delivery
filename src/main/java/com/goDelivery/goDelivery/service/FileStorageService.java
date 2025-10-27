@@ -48,9 +48,9 @@ public class FileStorageService {
         
         try {
             // Clean the subdirectory path to prevent directory traversal
-            String cleanSubDir = subDirectory.replaceAll("[/\\\\]+", "/")  // Replace multiple slashes with single forward slash
-                                          .replaceAll("^[./]+", "")       // Remove leading ./ or /
-                                          .replaceAll("[^a-zA-Z0-9/_.-]", "_"); // Replace invalid characters with underscore
+            String cleanSubDir = subDirectory.replaceAll("[/\\\\]+", "/")
+                                          .replaceAll("^[./]+", "")  
+                                          .replaceAll("[^a-zA-Z0-9/_.-]", "_");
             
             // Create the target directory if it doesn't exist
             Path uploadPath = Paths.get(uploadDir, cleanSubDir).toAbsolutePath().normalize();

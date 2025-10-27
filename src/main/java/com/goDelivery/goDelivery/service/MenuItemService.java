@@ -52,7 +52,7 @@ public class MenuItemService {
             .ingredients(request.getIngredients())
             .isAvailable(request.isAvailable())
             .preparationTime(request.getPreparationTime())
-            .preparationScore(0) // Default score
+            .preparationScore(0)
             .restaurant(restaurant)
             .category(category)
             .createdAt(LocalDate.now())
