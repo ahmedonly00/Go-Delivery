@@ -84,6 +84,19 @@ public class RestaurantRegistrationService {
         userRepository.save(admin);
         restaurantRepository.save(savedRestaurant);
     
+        // Send "under review" email instead of OTP
+        // COMMENTED OUT: OTP email will not be sent after restaurant setup
+        // Instead, send notification that restaurant is under review by MozFood team
+        try {
+            emailService.sendRestaurantUnderReviewEmail(
+                admin.getEmail(), 
+                admin.getFullName(), 
+                savedRestaurant.getRestaurantName()
+            );
+            log.info("Under review email sent to restaurant admin: {}", admin.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send under review email: {}", e.getMessage());
+        }
         
         // Convert to DTO and return
         return RestaurantDTO.builder()
@@ -130,13 +143,14 @@ public class RestaurantRegistrationService {
         admin = userRepository.save(admin);
         log.info("New restaurant admin registered: {}", admin.getEmail());
         
-        // Send welcome email (OTP will be sent after menu upload)
-        try {
-            emailService.sendWelcomeEmail(admin.getEmail(), admin.getFullName(), "");
-            log.info("Welcome email sent to new restaurant admin: {}", admin.getEmail());
-        } catch (Exception e) {
-            log.error("Failed to send welcome email: {}", e.getMessage());
-        }
+        // COMMENTED OUT: Welcome email will not be sent during registration
+        // Instead, "under review" email will be sent after restaurant setup completion
+        // try {
+        //     emailService.sendWelcomeEmail(admin.getEmail(), admin.getFullName(), "");
+        //     log.info("Welcome email sent to new restaurant admin: {}", admin.getEmail());
+        // } catch (Exception e) {
+        //     log.error("Failed to send welcome email: {}", e.getMessage());
+        // }
         
         return userMapper.toAdminResponseDTO(admin);
     }

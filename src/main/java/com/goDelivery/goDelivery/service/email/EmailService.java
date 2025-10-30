@@ -247,4 +247,86 @@ public class EmailService {
             throw new EmailSendingException("Failed to send password reset email", e);
         }
     }
+
+    @Async
+    public void sendRestaurantApprovalEmail(String toEmail, String ownerName, String restaurantName) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom("MozFood <" + fromEmail + ">");
+            helper.setTo(toEmail);
+            helper.setSubject("🎉 Your Restaurant Has Been Approved!");
+            
+            Context context = new Context();
+            context.setVariable("ownerName", ownerName);
+            context.setVariable("restaurantName", restaurantName);
+            context.setVariable("dashboardUrl", frontendUrl + "/restaurant-dashboard");
+            
+            String htmlContent = templateEngine.process("restaurant-approval-email", context);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            log.info("Restaurant approval email sent to: {}", toEmail);
+            
+        } catch (MessagingException e) {
+            log.error("Failed to send restaurant approval email to {}: {}", toEmail, e.getMessage());
+            throw new EmailSendingException("Failed to send restaurant approval email", e);
+        }
+    }
+
+    @Async
+    public void sendRestaurantRejectionEmail(String toEmail, String ownerName, String restaurantName, String rejectionReason) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom("MozFood <" + fromEmail + ">");
+            helper.setTo(toEmail);
+            helper.setSubject("Restaurant Application Update - " + restaurantName);
+            
+            Context context = new Context();
+            context.setVariable("ownerName", ownerName);
+            context.setVariable("restaurantName", restaurantName);
+            context.setVariable("rejectionReason", rejectionReason);
+            context.setVariable("supportEmail", fromEmail);
+            
+            String htmlContent = templateEngine.process("restaurant-rejection-email", context);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            log.info("Restaurant rejection email sent to: {}", toEmail);
+            
+        } catch (MessagingException e) {
+            log.error("Failed to send restaurant rejection email to {}: {}", toEmail, e.getMessage());
+            throw new EmailSendingException("Failed to send restaurant rejection email", e);
+        }
+    }
+
+    @Async
+    public void sendRestaurantUnderReviewEmail(String toEmail, String ownerName, String restaurantName) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom("MozFood <" + fromEmail + ">");
+            helper.setTo(toEmail);
+            helper.setSubject("Your Restaurant is Under Review - " + restaurantName);
+            
+            Context context = new Context();
+            context.setVariable("ownerName", ownerName);
+            context.setVariable("restaurantName", restaurantName);
+            context.setVariable("supportEmail", fromEmail);
+            
+            String htmlContent = templateEngine.process("restaurant-under-review-email", context);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            log.info("Restaurant under review email sent to: {}", toEmail);
+            
+        } catch (MessagingException e) {
+            log.error("Failed to send restaurant under review email to {}: {}", toEmail, e.getMessage());
+            throw new EmailSendingException("Failed to send restaurant under review email", e);
+        }
+    }
 }

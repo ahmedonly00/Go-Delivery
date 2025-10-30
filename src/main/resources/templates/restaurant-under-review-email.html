@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Under Review</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content h2 {
+            color: #3b82f6;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .content p {
+            margin: 15px 0;
+            color: #555;
+            font-size: 16px;
+        }
+        .highlight-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        .highlight-box h3 {
+            margin-top: 0;
+            color: #1e40af;
+            font-size: 18px;
+        }
+        .highlight-box p {
+            margin: 10px 0;
+            color: #1e40af;
+        }
+        .timeline {
+            margin: 30px 0;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: start;
+            margin: 20px 0;
+            padding-left: 10px;
+        }
+        .timeline-icon {
+            background-color: #3b82f6;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+        .timeline-content h4 {
+            margin: 0 0 5px 0;
+            color: #1e40af;
+            font-size: 16px;
+        }
+        .timeline-content p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .info-card {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .info-card p {
+            margin: 5px 0;
+            color: #92400e;
+            font-size: 15px;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 30px 0;
+        }
+        .checkmark {
+            color: #10b981;
+            font-size: 20px;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">📋</div>
+            <h1>Application Submitted Successfully!</h1>
+        </div>
+        
+        <div class="content">
+            <h2>Thank You for Submitting Your Application</h2>
+            
+            <p>Dear <strong th:text="${ownerName}">Restaurant Owner</strong>,</p>
+            
+            <p>We have successfully received your restaurant application for <strong th:text="${restaurantName}">Your Restaurant</strong>. Thank you for choosing MozFood as your delivery partner!</p>
+            
+            <div class="highlight-box">
+                <h3>🔍 Your Application is Under Review</h3>
+                <p><strong>Our team is currently reviewing your submitted documents and restaurant information.</strong></p>
+                <p>This process typically takes up to <strong>24 hours</strong>.</p>
+            </div>
+            
+            <div class="timeline">
+                <h3 style="color: #3b82f6; margin-bottom: 20px;">What Happens Next?</h3>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon">✓</div>
+                    <div class="timeline-content">
+                        <h4>Application Submitted</h4>
+                        <p>Your restaurant details and documents have been received</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon">⏳</div>
+                    <div class="timeline-content">
+                        <h4>Document Review (Current Stage)</h4>
+                        <p>Our team is verifying your business documents and information</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon">📧</div>
+                    <div class="timeline-content">
+                        <h4>Decision Notification</h4>
+                        <p>You'll receive an email with our decision within 24 hours</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon">🎉</div>
+                    <div class="timeline-content">
+                        <h4>Go Live (If Approved)</h4>
+                        <p>Your restaurant will be visible to customers on MozFood</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <p><strong>⏰ Expected Response Time: Within 24 Hours</strong></p>
+                <p>We'll send you an email notification as soon as the review is complete.</p>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <h3 style="color: #3b82f6;">What We're Reviewing:</h3>
+            <p style="margin-bottom: 10px;">Our team is carefully checking:</p>
+            <ul style="color: #555; line-height: 1.8;">
+                <li><span class="checkmark">✓</span> Commercial Registration Certificate</li>
+                <li><span class="checkmark">✓</span> Tax Identification Number (NUIT)</li>
+                <li><span class="checkmark">✓</span> Business Operating License</li>
+                <li><span class="checkmark">✓</span> Restaurant Information & Menu</li>
+            </ul>
+            
+            <div class="divider"></div>
+            
+            <p style="color: #6b7280; font-size: 14px;">
+                <strong>Need Help?</strong><br>
+                If you have any questions about your application or the review process, please don't hesitate to contact our support team at 
+                <a th:href="'mailto:' + ${supportEmail}" th:text="${supportEmail}" style="color: #3b82f6;">support@mozfood.com</a>
+            </p>
+            
+            <p style="color: #6b7280; font-size: 14px; margin-top: 20px;">
+                We appreciate your patience and look forward to partnering with you!
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>MozFood</strong></p>
+            <p>Connecting great food with hungry customers</p>
+            <p style="margin-top: 15px;">© 2025 MozFood. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

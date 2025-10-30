@@ -1,13 +1,18 @@
 package com.goDelivery.goDelivery.service;
 
+import com.goDelivery.goDelivery.Enum.Roles;
 import com.goDelivery.goDelivery.dtos.restaurant.*;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
 import com.goDelivery.goDelivery.model.OperatingHours;
 import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.model.RestaurantUsers;
 import com.goDelivery.goDelivery.repository.OperatingHoursRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +21,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RestaurantService {
@@ -23,6 +29,8 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final OperatingHoursRepository operatingHoursRepository;
     private final RestaurantMapper restaurantMapper;
+    private final EmailService emailService;
+    private final RestaurantUsersRepository restaurantUsersRepository;
 
     public RestaurantDTO registerRestaurant(RestaurantDTO restaurantDTO) {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
@@ -211,6 +219,144 @@ public class RestaurantService {
     
     public List<RestaurantDTO> getRestaurantsByCuisine(String cuisineType) {
         return restaurantRepository.findByCuisineTypeAndIsActive(cuisineType, true).stream()
+                .map(restaurantMapper::toRestaurantDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Business Document Update Methods
+    public void updateCommercialRegistrationCertificate(Long restaurantId, String certificateUrl) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        restaurant.setCommercialRegistrationCertificateUrl(certificateUrl);
+        restaurant.setUpdatedAt(LocalDate.now());
+        restaurantRepository.save(restaurant);
+    }
+
+    public void updateTaxIdentificationNumber(Long restaurantId, String taxIdentificationNumber) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        restaurant.setTaxIdentificationNumber(taxIdentificationNumber);
+        restaurant.setUpdatedAt(LocalDate.now());
+        restaurantRepository.save(restaurant);
+    }
+
+    public void updateTaxIdentificationDocument(Long restaurantId, String documentUrl) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        restaurant.setTaxIdentificationDocumentUrl(documentUrl);
+        restaurant.setUpdatedAt(LocalDate.now());
+        restaurantRepository.save(restaurant);
+    }
+
+    public void updateBusinessOperatingLicense(Long restaurantId, String licenseUrl) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        restaurant.setBusinessOperatingLicenseUrl(licenseUrl);
+        restaurant.setUpdatedAt(LocalDate.now());
+        restaurantRepository.save(restaurant);
+    }
+
+    // Restaurant Approval Methods
+    public List<RestaurantDTO> getPendingRestaurants() {
+        return restaurantRepository.findPendingRestaurants().stream()
+                .map(restaurantMapper::toRestaurantDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO> getPendingRestaurantsForReview() {
+        return restaurantMapper.toRestaurantReviewDTOList(restaurantRepository.findPendingRestaurants());
+    }
+
+    public com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO getRestaurantForReview(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        return restaurantMapper.toRestaurantReviewDTO(restaurant);
+    }
+
+    public List<RestaurantDTO> getRestaurantsByApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus status) {
+        return restaurantRepository.findByApprovalStatus(status).stream()
+                .map(restaurantMapper::toRestaurantDTO)
+                .collect(Collectors.toList());
+    }
+
+    public RestaurantDTO approveRestaurant(Long restaurantId, String reviewerEmail) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        
+        restaurant.setIsApproved(true);
+        restaurant.setApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus.APPROVED);
+        restaurant.setReviewedBy(reviewerEmail);
+        restaurant.setReviewedAt(LocalDate.now());
+        restaurant.setRejectionReason(null);
+        restaurant.setUpdatedAt(LocalDate.now());
+        
+        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+        
+        // Send approval email to restaurant admin
+        try {
+            RestaurantUsers restaurantAdmin = restaurantUsersRepository
+                .findByRestaurantIdAndRole(restaurantId, Roles.RESTAURANT_ADMIN)
+                .orElse(null);
+            
+            if (restaurantAdmin != null) {
+                emailService.sendRestaurantApprovalEmail(
+                    restaurantAdmin.getEmail(),
+                    restaurantAdmin.getFullName(),
+                    restaurant.getRestaurantName()
+                );
+                log.info("Approval email sent to restaurant admin: {}", restaurantAdmin.getEmail());
+            } else {
+                log.warn("No restaurant admin found for restaurant ID: {}", restaurantId);
+            }
+        } catch (Exception e) {
+            log.error("Failed to send approval email for restaurant ID {}: {}", restaurantId, e.getMessage());
+            // Don't fail the approval if email fails
+        }
+        
+        return restaurantMapper.toRestaurantDTO(savedRestaurant);
+    }
+
+    public RestaurantDTO rejectRestaurant(Long restaurantId, String rejectionReason, String reviewerEmail) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        
+        restaurant.setIsApproved(false);
+        restaurant.setApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus.REJECTED);
+        restaurant.setRejectionReason(rejectionReason);
+        restaurant.setReviewedBy(reviewerEmail);
+        restaurant.setReviewedAt(LocalDate.now());
+        restaurant.setIsActive(false); // Deactivate rejected restaurants
+        restaurant.setUpdatedAt(LocalDate.now());
+        
+        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+        
+        // Send rejection email to restaurant admin
+        try {
+            RestaurantUsers restaurantAdmin = restaurantUsersRepository
+                .findByRestaurantIdAndRole(restaurantId, Roles.RESTAURANT_ADMIN)
+                .orElse(null);
+            
+            if (restaurantAdmin != null) {
+                emailService.sendRestaurantRejectionEmail(
+                    restaurantAdmin.getEmail(),
+                    restaurantAdmin.getFullName(),
+                    restaurant.getRestaurantName(),
+                    rejectionReason
+                );
+                log.info("Rejection email sent to restaurant admin: {}", restaurantAdmin.getEmail());
+            } else {
+                log.warn("No restaurant admin found for restaurant ID: {}", restaurantId);
+            }
+        } catch (Exception e) {
+            log.error("Failed to send rejection email for restaurant ID {}: {}", restaurantId, e.getMessage());
+            // Don't fail the rejection if email fails
+        }
+        
+        return restaurantMapper.toRestaurantDTO(savedRestaurant);
+    }
+
+    public List<RestaurantDTO> getApprovedRestaurants() {
+        return restaurantRepository.findByIsApprovedTrueAndIsActiveTrue().stream()
                 .map(restaurantMapper::toRestaurantDTO)
                 .collect(Collectors.toList());
     }

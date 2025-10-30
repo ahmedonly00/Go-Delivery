@@ -26,12 +26,19 @@ public class FileStorageService {
     @Value("${file.allowed-image-types:jpg,jpeg,png,gif}")
     private String allowedImageTypes;
     
+    @Value("${file.allowed-document-types:pdf}")
+    private String allowedDocumentTypes;
+    
     private Set<String> allowedImageExtensions;
+    private Set<String> allowedDocumentExtensions;
     
     @PostConstruct
     public void init() {
         // Initialize allowed image extensions
         allowedImageExtensions = new HashSet<>(Arrays.asList(allowedImageTypes.split(",")));
+        
+        // Initialize allowed document extensions
+        allowedDocumentExtensions = new HashSet<>(Arrays.asList(allowedDocumentTypes.split(",")));
         
         // Create upload directory if it doesn't exist
         try {
@@ -76,9 +83,15 @@ public class FileStorageService {
                 fileExtension = "dat";
             }
             
-            // Validate file extension for images
-            if (subDirectory.contains("logo") && !allowedImageExtensions.contains(fileExtension)) {
-                throw new RuntimeException("Invalid file type. Allowed types: " + allowedImageTypes);
+            // Validate file extension based on subdirectory
+            if (subDirectory.contains("logo") || subDirectory.contains("images") || subDirectory.contains("menu-items")) {
+                if (!allowedImageExtensions.contains(fileExtension)) {
+                    throw new RuntimeException("Invalid image file type. Allowed types: " + allowedImageTypes);
+                }
+            } else if (subDirectory.contains("documents")) {
+                if (!allowedDocumentExtensions.contains(fileExtension)) {
+                    throw new RuntimeException("Invalid document file type. Allowed types: " + allowedDocumentTypes);
+                }
             }
             
             String fileName = UUID.randomUUID().toString() + "." + fileExtension;

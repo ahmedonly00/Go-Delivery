@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery.mapper;
 
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO;
 import com.goDelivery.goDelivery.model.Branches;
 import com.goDelivery.goDelivery.model.Restaurant;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,15 @@ public class RestaurantMapper {
                 .averagePreparationTime(restaurant.getAveragePreparationTime())
                 .deliveryFee(restaurant.getDeliveryFee())
                 .minimumOrderAmount(restaurant.getMinimumOrderAmount())
+                .commercialRegistrationCertificateUrl(restaurant.getCommercialRegistrationCertificateUrl())
+                .taxIdentificationNumber(restaurant.getTaxIdentificationNumber())
+                .taxIdentificationDocumentUrl(restaurant.getTaxIdentificationDocumentUrl())
+                .businessOperatingLicenseUrl(restaurant.getBusinessOperatingLicenseUrl())
+                .isApproved(restaurant.getIsApproved())
+                .approvalStatus(restaurant.getApprovalStatus())
+                .rejectionReason(restaurant.getRejectionReason())
+                .reviewedBy(restaurant.getReviewedBy())
+                .reviewedAt(restaurant.getReviewedAt())
                 .isActive(restaurant.getIsActive())
                 .build();
     }
@@ -71,6 +81,15 @@ public class RestaurantMapper {
                 .deliveryFee(restaurantDTO.getDeliveryFee() != null ? restaurantDTO.getDeliveryFee() : 0.0f)
                 .minimumOrderAmount(restaurantDTO.getMinimumOrderAmount() != null ? 
                     restaurantDTO.getMinimumOrderAmount() : 0.0f)
+                .commercialRegistrationCertificateUrl(restaurantDTO.getCommercialRegistrationCertificateUrl())
+                .taxIdentificationNumber(restaurantDTO.getTaxIdentificationNumber())
+                .taxIdentificationDocumentUrl(restaurantDTO.getTaxIdentificationDocumentUrl())
+                .businessOperatingLicenseUrl(restaurantDTO.getBusinessOperatingLicenseUrl())
+                .isApproved(restaurantDTO.getIsApproved() != null ? restaurantDTO.getIsApproved() : false)
+                .approvalStatus(restaurantDTO.getApprovalStatus() != null ? restaurantDTO.getApprovalStatus() : com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING)
+                .rejectionReason(restaurantDTO.getRejectionReason())
+                .reviewedBy(restaurantDTO.getReviewedBy())
+                .reviewedAt(restaurantDTO.getReviewedAt())
                 .isActive(restaurantDTO.isActive())
                 .createdAt(LocalDate.now())
                 .updatedAt(LocalDate.now())
@@ -126,5 +145,46 @@ public class RestaurantMapper {
                 .createdAt(branchDTO.getCreatedAt() != null ? branchDTO.getCreatedAt() : LocalDate.now())
                 .updatedAt(branchDTO.getUpdatedAt() != null ? branchDTO.getUpdatedAt() : LocalDate.now())
                 .build();
+    }
+
+    // Convert Restaurant to RestaurantReviewDTO (for Super Admin review)
+    public RestaurantReviewDTO toRestaurantReviewDTO(Restaurant restaurant) {
+        if (restaurant == null) {
+            return null;
+        }
+
+        return RestaurantReviewDTO.builder()
+                .restaurantId(restaurant.getRestaurantId())
+                .restaurantName(restaurant.getRestaurantName())
+                .location(restaurant.getLocation())
+                .cuisineType(restaurant.getCuisineType())
+                .email(restaurant.getEmail())
+                .phoneNumber(restaurant.getPhoneNumber())
+                .logoUrl(restaurant.getLogoUrl())
+                .description(restaurant.getDescription())
+                .deliveryFee(restaurant.getDeliveryFee())
+                .minimumOrderAmount(restaurant.getMinimumOrderAmount())
+                .averagePreparationTime(restaurant.getAveragePreparationTime())
+                .commercialRegistrationCertificateUrl(restaurant.getCommercialRegistrationCertificateUrl())
+                .taxIdentificationNumber(restaurant.getTaxIdentificationNumber())
+                .taxIdentificationDocumentUrl(restaurant.getTaxIdentificationDocumentUrl())
+                .businessOperatingLicenseUrl(restaurant.getBusinessOperatingLicenseUrl())
+                .isApproved(restaurant.getIsApproved())
+                .approvalStatus(restaurant.getApprovalStatus())
+                .rejectionReason(restaurant.getRejectionReason())
+                .reviewedBy(restaurant.getReviewedBy())
+                .reviewedAt(restaurant.getReviewedAt())
+                .createdAt(restaurant.getCreatedAt())
+                .updatedAt(restaurant.getUpdatedAt())
+                .build();
+    }
+
+    public List<RestaurantReviewDTO> toRestaurantReviewDTOList(List<Restaurant> restaurants) {
+        if (restaurants == null) {
+            return null;
+        }
+        return restaurants.stream()
+                .map(this::toRestaurantReviewDTO)
+                .collect(Collectors.toList());
     }
 }

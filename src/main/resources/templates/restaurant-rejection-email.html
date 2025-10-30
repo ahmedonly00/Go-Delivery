@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Application Update</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content h2 {
+            color: #dc2626;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .content p {
+            margin: 15px 0;
+            color: #555;
+            font-size: 16px;
+        }
+        .reason-box {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        .reason-box h3 {
+            margin-top: 0;
+            color: #991b1b;
+            font-size: 18px;
+        }
+        .reason-box p {
+            margin: 10px 0;
+            color: #7f1d1d;
+            font-size: 15px;
+        }
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        .info-box p {
+            margin: 5px 0;
+            color: #1e40af;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .next-steps {
+            margin: 30px 0;
+        }
+        .step-item {
+            display: flex;
+            align-items: start;
+            margin: 15px 0;
+        }
+        .step-number {
+            background-color: #3b82f6;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">📋</div>
+            <h1>Application Update</h1>
+        </div>
+        
+        <div class="content">
+            <h2>Restaurant Application Review</h2>
+            
+            <p>Dear <strong th:text="${ownerName}">Restaurant Owner</strong>,</p>
+            
+            <p>Thank you for your interest in joining MozFood. We have carefully reviewed your application for <strong th:text="${restaurantName}">Your Restaurant</strong>.</p>
+            
+            <p>Unfortunately, we are unable to approve your restaurant at this time. Our review team has identified some areas that need attention before we can proceed.</p>
+            
+            <div class="reason-box">
+                <h3>Reason for Review Decision:</h3>
+                <p th:text="${rejectionReason}">The submitted documents do not meet our requirements.</p>
+            </div>
+            
+            <div class="info-box">
+                <p><strong>📌 This is not a permanent decision</strong></p>
+                <p>You can address the issues mentioned above and resubmit your application. We're here to help you succeed!</p>
+            </div>
+            
+            <div class="next-steps">
+                <h3 style="color: #3b82f6; margin-bottom: 20px;">What You Can Do:</h3>
+                
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Review the Feedback</strong>
+                        <p style="margin: 5px 0; color: #6b7280;">Carefully read the reason provided above</p>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Address the Issues</strong>
+                        <p style="margin: 5px 0; color: #6b7280;">Update your documents or information as needed</p>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Contact Support</strong>
+                        <p style="margin: 5px 0; color: #6b7280;">If you need clarification, reach out to our team</p>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong>Resubmit Your Application</strong>
+                        <p style="margin: 5px 0; color: #6b7280;">Once ready, submit your updated application</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a th:href="'mailto:' + ${supportEmail}" class="cta-button">Contact Support</a>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <p style="color: #6b7280; font-size: 14px;">
+                <strong>Need Assistance?</strong><br>
+                Our support team is ready to help you understand the requirements and guide you through the process. 
+                Please don't hesitate to reach out at <a th:href="'mailto:' + ${supportEmail}" th:text="${supportEmail}" style="color: #3b82f6;">support@mozfood.com</a>
+            </p>
+            
+            <p style="color: #6b7280; font-size: 14px; margin-top: 20px;">
+                We appreciate your interest in partnering with MozFood and look forward to working with you once the requirements are met.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>MozFood</strong></p>
+            <p>Connecting great food with hungry customers</p>
+            <p style="margin-top: 15px;">© 2025 MozFood. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

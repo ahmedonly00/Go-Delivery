@@ -69,6 +69,27 @@ public class RestaurantDTO {
     @PositiveOrZero(message = "Minimum order amount must be zero or positive")
     private Float minimumOrderAmount;
 
+    // Business Documents
+    private String commercialRegistrationCertificateUrl;
+    
+    private String taxIdentificationNumber; // NUIT as text input
+    
+    private String taxIdentificationDocumentUrl; // NUIT PDF document
+    
+    private String businessOperatingLicenseUrl;
+
+    // Approval fields
+    @Builder.Default
+    private Boolean isApproved = false;
+    
+    private com.goDelivery.goDelivery.Enum.ApprovalStatus approvalStatus;
+    
+    private String rejectionReason;
+    
+    private String reviewedBy;
+    
+    private LocalDate reviewedAt;
+
     private OperatingHoursDTO operatingHours;
     
     @Builder.Default

@@ -33,4 +33,14 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("SELECT r FROM Restaurant r WHERE r.rating >= :minRating")
     List<Restaurant> findRestaurantsWithMinRating(@Param("minRating") float minRating);
     
+    // Approval-related queries
+    List<Restaurant> findByApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus approvalStatus);
+    
+    List<Restaurant> findByIsApprovedTrue();
+    
+    List<Restaurant> findByIsApprovedTrueAndIsActiveTrue();
+    
+    @Query("SELECT r FROM Restaurant r WHERE r.approvalStatus = com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING ORDER BY r.createdAt ASC")
+    List<Restaurant> findPendingRestaurants();
+    
 }

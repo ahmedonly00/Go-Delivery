@@ -68,6 +68,38 @@ public class Restaurant {
     @Column(name = "minimum_order_amount")
     private Float minimumOrderAmount;
 
+    // Business Documents
+    @Column(name = "commercial_registration_certificate_url")
+    private String commercialRegistrationCertificateUrl;
+
+    @Column(name = "tax_identification_number")
+    private String taxIdentificationNumber; // NUIT as text input
+
+    @Column(name = "tax_identification_document_url")
+    private String taxIdentificationDocumentUrl; // NUIT PDF document
+
+    @Column(name = "business_operating_license_url")
+    private String businessOperatingLicenseUrl;
+
+    // Approval fields
+    @Column(name = "is_approved")
+    @Builder.Default
+    private Boolean isApproved = false;
+
+    @Column(name = "approval_status")
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private com.goDelivery.goDelivery.Enum.ApprovalStatus approvalStatus = com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING;
+
+    @Column(name = "rejection_reason")
+    private String rejectionReason;
+
+    @Column(name = "reviewed_by")
+    private String reviewedBy; // Super admin email who reviewed
+
+    @Column(name = "reviewed_at")
+    private LocalDate reviewedAt;
+
     @Column(name = "average_preparation_time")
     private Integer averagePreparationTime;
 
