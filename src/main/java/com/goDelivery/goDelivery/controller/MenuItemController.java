@@ -34,6 +34,11 @@ public class MenuItemController {
             @RequestPart("menuItem") @Valid MenuItemRequest request,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
         try {
+            // Debug logging
+            System.out.println("Received request - Restaurant ID: " + restaurantId);
+            System.out.println("Category ID from request: " + request.getCategoryId());
+            System.out.println("Menu Item Name: " + request.getMenuItemName());
+            
             // Set the restaurant ID from path variable
             request.setRestaurantId(restaurantId);
             
@@ -46,6 +51,8 @@ public class MenuItemController {
             
             return menuItemService.createMenuItem(request);
         } catch (Exception e) {
+            System.err.println("Error creating menu item: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Failed to create menu item: " + e.getMessage(), e);
         }
     }

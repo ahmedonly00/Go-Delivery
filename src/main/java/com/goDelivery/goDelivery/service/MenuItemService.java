@@ -35,6 +35,15 @@ public class MenuItemService {
     
     @Transactional
     public MenuItemResponse createMenuItem(MenuItemRequest request) {
+        // Log the incoming request for debugging
+        System.out.println("Creating menu item with categoryId: " + request.getCategoryId());
+        System.out.println("Restaurant ID: " + request.getRestaurantId());
+        
+        // Validate categoryId is not null
+        if (request.getCategoryId() == null) {
+            throw new IllegalArgumentException("Category ID cannot be null. Please select a valid category.");
+        }
+        
         // Find the restaurant
         Restaurant restaurant = restaurantRepository.findByRestaurantId(request.getRestaurantId())
             .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + request.getRestaurantId()));
@@ -42,6 +51,8 @@ public class MenuItemService {
         // Find the category
         MenuCategory category = menuCategoryRepository.findByCategoryId(request.getCategoryId())
             .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.getCategoryId()));
+        
+        System.out.println("Found category: " + category.getCategoryName());
         
         // Create and save the menu item
         MenuItem menuItem = MenuItem.builder()

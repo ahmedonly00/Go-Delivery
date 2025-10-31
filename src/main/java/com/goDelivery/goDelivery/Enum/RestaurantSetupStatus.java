@@ -3,7 +3,6 @@ package com.goDelivery.goDelivery.Enum;
 public enum RestaurantSetupStatus {
     ACCOUNT_CREATED,          // User account created, email not verified
     EMAIL_VERIFIED,           // Email verified, setup not started
-    BASIC_INFO_ADDED,         // Basic restaurant info added
     LOCATION_ADDED,           // Location details added
     SETTINGS_CONFIGURED,      // Settings configured
     OPERATING_HOURS_ADDED,    // Operating hours configured

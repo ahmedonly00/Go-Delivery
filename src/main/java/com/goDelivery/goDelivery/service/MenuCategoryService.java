@@ -63,6 +63,13 @@ public class MenuCategoryService {
         return menuCategoryMapper.toMenuCategoryDTO(menuCategoryRepository.findAll());
     }
 
+    public List<MenuCategoryDTO> getMenuCategoriesByRestaurant(Long restaurantId){
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RuntimeException("Restaurant not found with ID: " + restaurantId));
+        List<MenuCategory> categories = menuCategoryRepository.findByRestaurant(restaurant);
+        return menuCategoryMapper.toMenuCategoryDTO(categories);
+    }
+
     public MenuCategoryDTO getMenuCategoryByName(String categoryName){
         MenuCategory menuCategory = menuCategoryRepository.findByCategoryName(categoryName)
                 .orElseThrow(() -> new RuntimeException("MenuCategory not found"));

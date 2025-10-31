@@ -55,6 +55,11 @@ public class MenuCategoryController {
         return ResponseEntity.ok(menuCategoryService.getAllMenuCategories());
     }
 
+    @GetMapping("/restaurant/{restaurantId}")
+    public ResponseEntity<List<MenuCategoryDTO>> getMenuCategoriesByRestaurant(@PathVariable Long restaurantId){
+        return ResponseEntity.ok(menuCategoryService.getMenuCategoriesByRestaurant(restaurantId));
+    }
+
     @GetMapping("/name/{categoryName}")
     public ResponseEntity<MenuCategoryDTO> getMenuCategoryByName(@PathVariable String categoryName){
         return ResponseEntity.ok(menuCategoryService.getMenuCategoryByName(categoryName));
