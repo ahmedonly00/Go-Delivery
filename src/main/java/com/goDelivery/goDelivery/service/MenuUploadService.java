@@ -51,7 +51,7 @@ public class MenuUploadService {
     public FileUploadResponse processMenuUpload(MultipartFile file, Long restaurantId) {
         try {
             // Validate restaurant exists
-            Restaurant restaurant = restaurantRepository.findById(restaurantId)
+            Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
 
             // Get or create default category

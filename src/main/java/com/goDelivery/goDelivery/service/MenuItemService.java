@@ -36,11 +36,11 @@ public class MenuItemService {
     @Transactional
     public MenuItemResponse createMenuItem(MenuItemRequest request) {
         // Find the restaurant
-        Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(request.getRestaurantId())
             .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + request.getRestaurantId()));
             
         // Find the category
-        MenuCategory category = menuCategoryRepository.findById(request.getCategoryId())
+        MenuCategory category = menuCategoryRepository.findByCategoryId(request.getCategoryId())
             .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.getCategoryId()));
         
         // Create and save the menu item
@@ -65,7 +65,7 @@ public class MenuItemService {
     @Transactional
     public MenuItemResponse updateMenuItem(Long menuItemId, UpdateMenuItemRequest request) {
         // Find existing menu item
-        MenuItem menuItem = menuItemRepository.findById(menuItemId)
+        MenuItem menuItem = menuItemRepository.findByMenuItemId(menuItemId)
             .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + menuItemId));
             
         // Update fields if they are not null in the request
@@ -88,7 +88,7 @@ public class MenuItemService {
             menuItem.setPreparationTime(request.getPreparationTime());
         }
         if (request.getCategoryId() != null) {
-            MenuCategory category = menuCategoryRepository.findById(request.getCategoryId())
+            MenuCategory category = menuCategoryRepository.findByCategoryId(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.getCategoryId()));
             menuItem.setCategory(category);
         }
@@ -111,7 +111,7 @@ public class MenuItemService {
     
     @Transactional(readOnly = true)
     public MenuItemResponse getMenuItemById(Long menuItemId) {
-        return menuItemRepository.findById(menuItemId)
+        return menuItemRepository.findByMenuItemId(menuItemId)
             .map(menuItemMapper::toMenuItemResponse)
             .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + menuItemId));
     }
@@ -171,7 +171,7 @@ public class MenuItemService {
     
     @Transactional
     public MenuItemResponse updateMenuItemAvailability(Long menuItemId, boolean isAvailable) {
-        MenuItem menuItem = menuItemRepository.findById(menuItemId)
+        MenuItem menuItem = menuItemRepository.findByMenuItemId(menuItemId)
             .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + menuItemId));
             
         menuItem.setAvailable(isAvailable);
@@ -182,7 +182,7 @@ public class MenuItemService {
 
     @Transactional
     public MenuItemResponse updateMenuItemImage(Long menuItemId, String imageUrl) {
-        MenuItem menuItem = menuItemRepository.findById(menuItemId)
+        MenuItem menuItem = menuItemRepository.findByMenuItemId(menuItemId)
             .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + menuItemId));
             
         menuItem.setImage(imageUrl);
