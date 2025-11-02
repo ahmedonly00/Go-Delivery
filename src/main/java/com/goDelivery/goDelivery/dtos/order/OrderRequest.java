@@ -23,6 +23,9 @@ public class OrderRequest {
     @NotNull(message = "Customer ID is required")
     private Long customerId;
     
+    // Optional: Only required if restaurant has branches
+    private Long branchId;
+    
     @NotNull(message = "Delivery address ID is required")
     private Long deliveryAddressId;
     

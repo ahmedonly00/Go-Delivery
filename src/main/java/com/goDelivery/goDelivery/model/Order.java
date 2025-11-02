@@ -100,7 +100,7 @@ public class Order {
     private Restaurant restaurant;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "branch_id", nullable = false)
+    @JoinColumn(name = "branch_id", nullable = true)
     private Branches branch;
 
     @ManyToOne(fetch = FetchType.LAZY)

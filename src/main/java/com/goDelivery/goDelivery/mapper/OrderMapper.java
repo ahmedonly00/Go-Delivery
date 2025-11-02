@@ -6,6 +6,7 @@ import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.dtos.order.OrderItemResponse;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
+import com.goDelivery.goDelivery.model.Branches;
 import com.goDelivery.goDelivery.model.Customer;
 import com.goDelivery.goDelivery.model.MenuItem;
 import com.goDelivery.goDelivery.model.Order;
@@ -93,7 +94,7 @@ public class OrderMapper {
     }
 
     // convert order request to order
-    public Order toOrder(OrderRequest orderRequest, Customer customer, Restaurant restaurant) {
+    public Order toOrder(OrderRequest orderRequest, Customer customer, Restaurant restaurant, Branches branch) {
         if (orderRequest == null) {
             return null;
         }
@@ -101,6 +102,7 @@ public class OrderMapper {
         return Order.builder()
             .customer(customer)
             .restaurant(restaurant)
+            .branch(branch)
             .orderStatus(OrderStatus.PLACED)
             .paymentStatus(PaymentStatus.PENDING)
             .deliveryAddress(orderRequest.getDeliveryAddress())

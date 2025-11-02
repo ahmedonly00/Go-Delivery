@@ -10,6 +10,7 @@ import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.dtos.order.OrderTrackingResponse;
 import com.goDelivery.goDelivery.model.Bikers;
 import com.goDelivery.goDelivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.repository.BranchesRepository;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
 import com.goDelivery.goDelivery.repository.MenuItemRepository;
 import com.goDelivery.goDelivery.repository.OrderRepository;
@@ -35,6 +36,7 @@ public class OrderService {
     private final MenuItemRepository menuItemRepository;
     private final OrderMapper orderMapper;
     private final BikersRepository bikersRepository;
+    private final BranchesRepository branchesRepository;
 
     @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest) {
@@ -46,8 +48,15 @@ public class OrderService {
         Restaurant restaurant = restaurantRepository.findById(orderRequest.getRestaurantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + orderRequest.getRestaurantId()));
 
+        // Validate branch exists (optional - only if branchId is provided)
+        Branches branch = null;
+        if (orderRequest.getBranchId() != null) {
+            branch = branchesRepository.findById(orderRequest.getBranchId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + orderRequest.getBranchId()));
+        }
+
         // Create order
-        Order order = orderMapper.toOrder(orderRequest, customer, restaurant);
+        Order order = orderMapper.toOrder(orderRequest, customer, restaurant, branch);
 
         // Calculate total amount
         double totalAmount = orderRequest.getOrderItems().stream()
