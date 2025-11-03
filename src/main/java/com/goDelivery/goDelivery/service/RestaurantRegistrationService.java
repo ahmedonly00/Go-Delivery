@@ -75,6 +75,7 @@ public class RestaurantRegistrationService {
         // Update admin's restaurant reference and mark setup as complete
         admin.setRestaurant(savedRestaurant);
         admin.setSetupComplete(true);
+        admin.setEmailVerified(true); // Mark email as verified when restaurant setup is complete
 
         // Add admin to restaurant's users list
         savedRestaurant.setRestaurantUsers(new ArrayList<>());
@@ -85,17 +86,17 @@ public class RestaurantRegistrationService {
         restaurantRepository.save(savedRestaurant);
     
         // Send "under review" email instead of OTP
-        // COMMENTED OUT: OTP email will not be sent after restaurant setup
-        // Instead, send notification that restaurant is under review by MozFood team
+        // Email is now verified, so send the "under review" notification
         try {
+            log.info("Sending 'under review' email to restaurant admin: {}", admin.getEmail());
             emailService.sendRestaurantUnderReviewEmail(
                 admin.getEmail(), 
                 admin.getFullName(), 
                 savedRestaurant.getRestaurantName()
             );
-            log.info("Under review email sent to restaurant admin: {}", admin.getEmail());
+            log.info("✅ Under review email successfully sent to: {}", admin.getEmail());
         } catch (Exception e) {
-            log.error("Failed to send under review email: {}", e.getMessage());
+            log.error("❌ Failed to send under review email to {}: {}", admin.getEmail(), e.getMessage(), e);
         }
         
         // Convert to DTO and return

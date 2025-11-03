@@ -16,6 +16,9 @@ import com.goDelivery.goDelivery.repository.MenuItemRepository;
 import com.goDelivery.goDelivery.repository.OrderRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +43,11 @@ public class OrderService {
 
     @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest) {
+        // Validate order items exist
+        if (orderRequest.getOrderItems() == null || orderRequest.getOrderItems().isEmpty()) {
+            throw new IllegalArgumentException("Order must contain at least one item");
+        }
+        
         // Validate customer exists
         Customer customer = customerRepository.findById(orderRequest.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + orderRequest.getCustomerId()));
@@ -117,6 +125,9 @@ public class OrderService {
     }
 
     public List<OrderResponse> getOrdersByRestaurant(Long restaurantId) {
+        // Verify the authenticated user owns this restaurant
+        verifyRestaurantAccess(restaurantId);
+        
         List<Order> orders = orderRepository.findAllByRestaurantRestaurantId(restaurantId);
         return orders.stream()
                 .map(orderMapper::toOrderResponse)
@@ -297,15 +308,76 @@ public class OrderService {
         return (int) (Math.random() * 30) + 5; // 5-35 minutes remaining
     }
     
-    /**
-     * Generate a unique order number based on order ID and current date
-     * Format: ORD-YYYYMMDD-XXXXX
-     * Example: ORD-20251022-00001
-     */
     private String generateOrderNumber(Long orderId) {
         LocalDate now = LocalDate.now();
         String datePart = String.format("%04d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
         String orderIdPart = String.format("%05d", orderId);
         return "ORD-" + datePart + "-" + orderIdPart;
+    }
+    
+    @Transactional(readOnly = true)
+    public Long getTotalOrdersByRestaurant(Long restaurantId) {
+        // Verify the authenticated user owns this restaurant
+        verifyRestaurantAccess(restaurantId);
+        
+        return orderRepository.countByRestaurant_RestaurantId(restaurantId);
+    }
+    
+    @Transactional(readOnly = true)
+    public RestaurantOrderStats getRestaurantOrderStats(Long restaurantId) {
+        // Verify the authenticated user owns this restaurant
+        verifyRestaurantAccess(restaurantId);
+        
+        long totalOrders = orderRepository.countByRestaurant_RestaurantId(restaurantId);
+        List<Order> orders = orderRepository.findAllByRestaurantRestaurantId(restaurantId);
+        
+        long completedOrders = orders.stream()
+            .filter(o -> o.getOrderStatus() == OrderStatus.DELIVERED)
+            .count();
+            
+        long cancelledOrders = orders.stream()
+            .filter(o -> o.getOrderStatus() == OrderStatus.CANCELLED)
+            .count();
+            
+        long pendingOrders = orders.stream()
+            .filter(o -> o.getOrderStatus() == OrderStatus.PLACED || 
+                         o.getOrderStatus() == OrderStatus.CONFIRMED ||
+                         o.getOrderStatus() == OrderStatus.PREPARING)
+            .count();
+        
+        return new RestaurantOrderStats(totalOrders, completedOrders, cancelledOrders, pendingOrders);
+    }
+    
+    private void verifyRestaurantAccess(Long restaurantId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User is not authenticated");
+        }
+        
+        String username = authentication.getName();
+        
+        // Find the restaurant associated with the authenticated user
+        Restaurant restaurant = restaurantRepository.findByEmail(username)
+            .orElseThrow(() -> new AccessDeniedException("No restaurant found for authenticated user"));
+        
+        // Verify the restaurant ID matches
+        if (!restaurant.getRestaurantId().equals(restaurantId)) {
+            throw new AccessDeniedException("You do not have permission to access this restaurant's data");
+        }
+    }
+    
+    public static class RestaurantOrderStats {
+        public final long totalOrders;
+        public final long completedOrders;
+        public final long cancelledOrders;
+        public final long pendingOrders;
+        
+        public RestaurantOrderStats(long totalOrders, long completedOrders, long cancelledOrders, long pendingOrders) {
+            this.totalOrders = totalOrders;
+            this.completedOrders = completedOrders;
+            this.cancelledOrders = cancelledOrders;
+            this.pendingOrders = pendingOrders;
+        }
     }
 }

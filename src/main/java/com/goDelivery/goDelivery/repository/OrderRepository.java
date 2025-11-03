@@ -19,6 +19,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByOrderStatus(OrderStatus orderStatus);
     
     Page<Order> findAllByOrderStatus(OrderStatus orderStatus, Pageable pageable);
-
+    
+    // Optimized count query for total orders (better performance than .size())
+    long countByRestaurant_RestaurantId(Long restaurantId);
     
 }

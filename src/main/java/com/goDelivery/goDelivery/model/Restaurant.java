@@ -55,9 +55,6 @@ public class Restaurant {
     @Column(name = "total_reviews")
     @Builder.Default
     private Integer totalReviews = 0;
-
-    @Column(name = "total_orders")
-    private Integer totalOrders;
     
     @Column(name = "delivery_fee")
     private Float deliveryFee;

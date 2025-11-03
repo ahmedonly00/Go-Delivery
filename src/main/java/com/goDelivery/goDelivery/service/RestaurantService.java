@@ -8,6 +8,7 @@ import com.goDelivery.goDelivery.model.OperatingHours;
 import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.model.RestaurantUsers;
 import com.goDelivery.goDelivery.repository.OperatingHoursRepository;
+import com.goDelivery.goDelivery.repository.OrderRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
 import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.service.email.EmailService;
@@ -31,6 +32,7 @@ public class RestaurantService {
     private final RestaurantMapper restaurantMapper;
     private final EmailService emailService;
     private final RestaurantUsersRepository restaurantUsersRepository;
+    private final OrderRepository orderRepository;
 
     public RestaurantDTO registerRestaurant(RestaurantDTO restaurantDTO) {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
@@ -113,10 +115,11 @@ public class RestaurantService {
                     ));
                     break;
                 case "popularity":
-                    restaurants.sort((r1, r2) -> Integer.compare(
-                            r2.getTotalOrders() != null ? r2.getTotalOrders() : 0,
-                            r1.getTotalOrders() != null ? r1.getTotalOrders() : 0
-                    ));
+                    restaurants.sort((r1, r2) -> {
+                        long r1Orders = orderRepository.countByRestaurant_RestaurantId(r1.getRestaurantId());
+                        long r2Orders = orderRepository.countByRestaurant_RestaurantId(r2.getRestaurantId());
+                        return Long.compare(r2Orders, r1Orders); // Descending order (most popular first)
+                    });
                     break;
             }
         }
@@ -126,7 +129,6 @@ public class RestaurantService {
                 .collect(Collectors.toList());
     }
 
-   
     public RestaurantDTO getRestaurantById(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));

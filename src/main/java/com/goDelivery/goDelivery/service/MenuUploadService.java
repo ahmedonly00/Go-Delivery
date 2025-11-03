@@ -6,9 +6,11 @@ import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.model.MenuCategory;
 import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.model.MenuItem;
+import com.goDelivery.goDelivery.model.RestaurantUsers;
 import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
 import com.goDelivery.goDelivery.repository.MenuItemRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.service.email.EmailService;
 import com.goDelivery.goDelivery.service.email.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,7 @@ public class MenuUploadService {
     private final MenuCategoryRepository menuCategoryRepository;
     private final MenuItemRepository menuItemRepository;
     private final Tesseract tesseract;
+    private final EmailService emailService;
     private final EmailVerificationService emailVerificationService;
     
     @Value("${tess4j.data-path:./tessdata}")
@@ -121,22 +124,37 @@ public class MenuUploadService {
             // Save the file
             String fileUrl = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/menu-uploads");
             
-            // Send OTP verification after successful menu upload
+            // Send "Under Review" email after successful menu upload (NOT OTP)
             try {
-                emailVerificationService.sendVerificationEmail(
-                    restaurant.getEmail(),
-                    restaurant.getRestaurantName(),
-                    restaurantId
-                );
-                log.info("OTP verification email sent to restaurant admin: {}", restaurant.getEmail());
+                // Get restaurant admin user
+                RestaurantUsers admin = restaurant.getRestaurantUsers().stream()
+                    .filter(user -> user.getRole().name().equals("RESTAURANT_ADMIN"))
+                    .findFirst()
+                    .orElse(null);
+                
+                if (admin != null) {
+                    // Mark email as verified and setup as complete
+                    admin.setEmailVerified(true);
+                    admin.setSetupComplete(true);
+                    
+                    // Send "under review" email instead of OTP
+                    emailService.sendRestaurantUnderReviewEmail(
+                        admin.getEmail(),
+                        admin.getFullName(),
+                        restaurant.getRestaurantName()
+                    );
+                    log.info("✅ 'Under Review' email sent to restaurant admin: {}", admin.getEmail());
+                } else {
+                    log.warn("No restaurant admin found for restaurant: {}", restaurantId);
+                }
             } catch (Exception e) {
-                log.error("Failed to send OTP verification email: {}", e.getMessage());
+                log.error("❌ Failed to send 'Under Review' email: {}", e.getMessage());
                 // Don't fail the entire operation if email sending fails
             }
 
             return FileUploadResponse.builder()
                     .success(true)
-                    .message("File processed successfully. " + savedItems.size() + " items saved. Please check your email for OTP to verify and complete setup.")
+                    .message("File processed successfully. " + savedItems.size() + " items saved. Your restaurant is now under review. You will receive an email notification once approved.")
                     .menuItems(menuItems)
                     .fileUrl(fileUrl)
                     .build();

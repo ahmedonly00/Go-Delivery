@@ -87,8 +87,10 @@ public class RestaurantController {
             
             // Create success response with message
             Map<String, Object> successResponse = new HashMap<>();
-            successResponse.put("message", "Restaurant registered successfully!");
+            successResponse.put("message", "Restaurant registered successfully! Your application is now under review. You will receive an email notification once it's approved.");
             successResponse.put("restaurant", createdRestaurant);
+            successResponse.put("emailSent", true);
+            successResponse.put("emailType", "under_review");
             
             return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
         } catch (Exception e) {

@@ -30,6 +30,9 @@ public class RestaurantMapper {
             return null;
         }
 
+        // Note: totalOrders is NOT calculated here - it should be fetched separately
+        // via OrderService or analytics endpoints when needed
+        
         return RestaurantDTO.builder()
                 .restaurantId(restaurant.getRestaurantId())
                 .restaurantName(restaurant.getRestaurantName())
@@ -41,7 +44,7 @@ public class RestaurantMapper {
                 .description(restaurant.getDescription())
                 .rating(restaurant.getRating())
                 .totalReviews(restaurant.getTotalReviews())
-                .totalOrders(restaurant.getTotalOrders())
+                .totalOrders(null) // Set to null - should be populated by service layer if needed
                 .averagePreparationTime(restaurant.getAveragePreparationTime())
                 .deliveryFee(restaurant.getDeliveryFee())
                 .minimumOrderAmount(restaurant.getMinimumOrderAmount())
@@ -75,7 +78,7 @@ public class RestaurantMapper {
                 .description(restaurantDTO.getDescription())
                 .rating(restaurantDTO.getRating() != null ? restaurantDTO.getRating() : 0.0f)
                 .totalReviews(restaurantDTO.getTotalReviews() != null ? restaurantDTO.getTotalReviews() : 0)
-                .totalOrders(restaurantDTO.getTotalOrders() != null ? restaurantDTO.getTotalOrders() : 0)
+                // Note: totalOrders is not stored in Restaurant entity, calculated dynamically
                 .averagePreparationTime(restaurantDTO.getAveragePreparationTime() != null ? 
                     restaurantDTO.getAveragePreparationTime() : 30) // Default to 30 minutes
                 .deliveryFee(restaurantDTO.getDeliveryFee() != null ? restaurantDTO.getDeliveryFee() : 0.0f)
