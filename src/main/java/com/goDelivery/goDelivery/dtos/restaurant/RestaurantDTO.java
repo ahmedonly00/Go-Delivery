@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
+import com.goDelivery.goDelivery.Enum.DeliveryType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -49,9 +50,12 @@ public class RestaurantDTO {
     @Builder.Default
     private Double rating = 0.0;
     
-    @Builder.Default
-    private Integer totalOrders = 0;
-    
+    private DeliveryType deliveryType;
+
+    private Float deliveryFee;
+
+    private Double deliveryRadius;
+        
     @JsonIgnore
     private MultipartFile logoFile;
     
@@ -61,10 +65,6 @@ public class RestaurantDTO {
     @PositiveOrZero(message = "Average preparation time must be zero or positive")
     private Integer averagePreparationTime;
     
-    @NotNull(message = "Delivery fee is required")
-    @PositiveOrZero(message = "Delivery fee must be zero or positive")
-    private Float deliveryFee;
-    
     @NotNull(message = "Minimum order amount is required")
     @PositiveOrZero(message = "Minimum order amount must be zero or positive")
     private Float minimumOrderAmount;
@@ -72,12 +72,10 @@ public class RestaurantDTO {
     // Business Documents
     private String commercialRegistrationCertificateUrl;
     
-    private String taxIdentificationNumber; // NUIT as text input
+    private String taxIdentificationNumber;
     
-    private String taxIdentificationDocumentUrl; // NUIT PDF document
+    private String taxIdentificationDocumentUrl;
     
-    private String businessOperatingLicenseUrl;
-
     // Approval fields
     @Builder.Default
     private Boolean isApproved = false;

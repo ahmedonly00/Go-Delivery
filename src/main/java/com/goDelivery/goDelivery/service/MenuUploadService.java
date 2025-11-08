@@ -11,7 +11,6 @@ import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
 import com.goDelivery.goDelivery.repository.MenuItemRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
 import com.goDelivery.goDelivery.service.email.EmailService;
-import com.goDelivery.goDelivery.service.email.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.Tesseract;
@@ -46,7 +45,6 @@ public class MenuUploadService {
     private final MenuItemRepository menuItemRepository;
     private final Tesseract tesseract;
     private final EmailService emailService;
-    private final EmailVerificationService emailVerificationService;
     
     @Value("${tess4j.data-path:./tessdata}")
     private String tessDataPath;

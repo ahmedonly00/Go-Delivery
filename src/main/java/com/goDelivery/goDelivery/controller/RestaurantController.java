@@ -72,14 +72,6 @@ public class RestaurantController {
                 restaurantDTO.setTaxIdentificationDocumentUrl(fullUrl);
             }
             
-            // Store Business Operating License
-            if (businessOperatingLicense != null && !businessOperatingLicense.isEmpty()) {
-                String filePath = fileStorageService.storeFile(businessOperatingLicense, 
-                    "restaurants/temp/documents/operating-license");
-                String fullUrl = "/api/files/" + filePath.replace("\\", "/");
-                restaurantDTO.setBusinessOperatingLicenseUrl(fullUrl);
-            }
-            
             RestaurantDTO createdRestaurant = registrationService.completeRestaurantRegistration(
                 userDetails.getUsername(), 
                 restaurantDTO
@@ -275,15 +267,6 @@ public class RestaurantController {
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantService.updateTaxIdentificationDocument(restaurantId, fullUrl);
                 documentUrls.put("taxIdentificationDocumentUrl", fullUrl);
-            }
-            
-            // Upload Business Operating License
-            if (businessOperatingLicense != null && !businessOperatingLicense.isEmpty()) {
-                String filePath = fileStorageService.storeFile(businessOperatingLicense, 
-                    "restaurants/" + restaurantId + "/documents/operating-license");
-                String fullUrl = "/api/files/" + filePath.replace("\\", "/");
-                restaurantService.updateBusinessOperatingLicense(restaurantId, fullUrl);
-                documentUrls.put("businessOperatingLicenseUrl", fullUrl);
             }
             
             return ResponseEntity.ok(documentUrls);

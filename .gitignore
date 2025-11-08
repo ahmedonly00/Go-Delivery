@@ -4,6 +4,7 @@ HELP.md
 /*.md
 /*.txt
 /*.json
+/*.sql
 
 # Environment variables
 .env

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.goDelivery.goDelivery.Enum.DeliveryType;
 import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
 
 
@@ -56,8 +57,16 @@ public class Restaurant {
     @Builder.Default
     private Integer totalReviews = 0;
     
+    @Enumerated(EnumType.STRING)
+    @Column(name = "delivery_type", nullable = false)
+    @Builder.Default
+    private DeliveryType deliveryType = DeliveryType.SYSTEM_DELIVERY; // Default to system delivery
+
     @Column(name = "delivery_fee")
-    private Float deliveryFee;
+    private Float deliveryFee;  // Only applicable if deliveryType is SELF_DELIVERY
+    
+    @Column(name = "delivery_radius")
+    private Double deliveryRadius;  // In kilometers, only applicable if deliveryType is SELF_DELIVERY
 
     @Column(name = "description")
     private String description;
@@ -70,13 +79,10 @@ public class Restaurant {
     private String commercialRegistrationCertificateUrl;
 
     @Column(name = "tax_identification_number")
-    private String taxIdentificationNumber; // NUIT as text input
+    private String taxIdentificationNumber;
 
     @Column(name = "tax_identification_document_url")
-    private String taxIdentificationDocumentUrl; // NUIT PDF document
-
-    @Column(name = "business_operating_license_url")
-    private String businessOperatingLicenseUrl;
+    private String taxIdentificationDocumentUrl;
 
     // Approval fields
     @Column(name = "is_approved")

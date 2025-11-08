@@ -40,8 +40,9 @@ public class LocationService {
     
     public List<CityResponse> getCitiesByCountry(Long countryId) {
         // Verify country exists
-        Country country = countryRepository.findById(countryId)
-                .orElseThrow(() -> new RuntimeException("Country not found with ID: " + countryId));
+        if (!countryRepository.existsById(countryId)) {
+            throw new RuntimeException("Country not found with ID: " + countryId);
+        }
 
         List<City> cities = cityRepository.findByCountryCountryId(countryId);
         return locationMapper.toCityResponseList(cities);
@@ -85,8 +86,9 @@ public class LocationService {
     
     public List<AddressResponse> getCustomerAddresses(Long customerId) {
         // Verify customer exists
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
+        if (!customerRepository.existsById(customerId)) {
+            throw new RuntimeException("Customer not found with ID: " + customerId);
+        }
 
         List<CustomerAddress> addresses = addressRepository.findByCustomerCustomerIdOrderByIsDefaultDesc(customerId);
         return locationMapper.toAddressResponseList(addresses);

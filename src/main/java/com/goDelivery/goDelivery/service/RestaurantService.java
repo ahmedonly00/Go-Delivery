@@ -1,7 +1,9 @@
 package com.goDelivery.goDelivery.service;
 
+import com.goDelivery.goDelivery.Enum.DeliveryType;
 import com.goDelivery.goDelivery.Enum.Roles;
 import com.goDelivery.goDelivery.dtos.restaurant.*;
+import com.goDelivery.goDelivery.dtos.restaurant.DeliverySettingsRequest;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
 import com.goDelivery.goDelivery.model.OperatingHours;
@@ -44,6 +46,10 @@ public class RestaurantService {
         Restaurant existingRestaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
 
+        // Save the current review-related fields
+        Double currentRating = existingRestaurant.getRating();
+        Integer currentTotalReviews = existingRestaurant.getTotalReviews();
+
         // Update fields from DTO
         existingRestaurant.setRestaurantName(restaurantDTO.getRestaurantName());
         existingRestaurant.setLocation(restaurantDTO.getLocation());
@@ -52,7 +58,11 @@ public class RestaurantService {
         existingRestaurant.setPhoneNumber(restaurantDTO.getPhoneNumber());
         existingRestaurant.setLogoUrl(restaurantDTO.getLogoUrl());
         existingRestaurant.setIsActive(restaurantDTO.isActive());
-        existingRestaurant.setUpdatedAt(java.time.LocalDate.now());
+        existingRestaurant.setUpdatedAt(LocalDate.now());
+
+        // Restore the review-related fields
+        existingRestaurant.setRating(currentRating);
+        existingRestaurant.setTotalReviews(currentTotalReviews);
 
         Restaurant updatedRestaurant = restaurantRepository.save(existingRestaurant);
         return restaurantMapper.toRestaurantDTO(updatedRestaurant);
@@ -250,14 +260,6 @@ public class RestaurantService {
         restaurantRepository.save(restaurant);
     }
 
-    public void updateBusinessOperatingLicense(Long restaurantId, String licenseUrl) {
-        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
-        restaurant.setBusinessOperatingLicenseUrl(licenseUrl);
-        restaurant.setUpdatedAt(LocalDate.now());
-        restaurantRepository.save(restaurant);
-    }
-
     // Restaurant Approval Methods
     public List<RestaurantDTO> getPendingRestaurants() {
         return restaurantRepository.findPendingRestaurants().stream()
@@ -361,5 +363,33 @@ public class RestaurantService {
         return restaurantRepository.findByIsApprovedTrueAndIsActiveTrue().stream()
                 .map(restaurantMapper::toRestaurantDTO)
                 .collect(Collectors.toList());
+    }
+    
+    public RestaurantDTO updateDeliverySettings(Long restaurantId, DeliverySettingsRequest request) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+                
+        // Update delivery type
+        restaurant.setDeliveryType(request.getDeliveryType());
+        
+        // Update delivery fee and radius if it's self-delivery
+        if (request.getDeliveryType() == DeliveryType.SELF_DELIVERY) {
+            if (request.getDeliveryFee() == null) {
+                throw new IllegalArgumentException("Delivery fee is required for self-delivery");
+            }
+            if (request.getDeliveryRadius() == null || request.getDeliveryRadius() <= 0) {
+                throw new IllegalArgumentException("Valid delivery radius is required for self-delivery");
+            }
+            restaurant.setDeliveryFee(request.getDeliveryFee());
+            restaurant.setDeliveryRadius(request.getDeliveryRadius());
+        } else {
+            // Reset delivery fee and radius for system delivery
+            restaurant.setDeliveryFee(null);
+            restaurant.setDeliveryRadius(null);
+        }
+        
+        restaurant.setUpdatedAt(LocalDate.now());
+        
+        return restaurantMapper.toRestaurantDTO(restaurantRepository.save(restaurant));
     }
 }

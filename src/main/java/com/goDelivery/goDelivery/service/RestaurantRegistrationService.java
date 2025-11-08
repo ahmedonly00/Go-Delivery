@@ -144,15 +144,6 @@ public class RestaurantRegistrationService {
         admin = userRepository.save(admin);
         log.info("New restaurant admin registered: {}", admin.getEmail());
         
-        // COMMENTED OUT: Welcome email will not be sent during registration
-        // Instead, "under review" email will be sent after restaurant setup completion
-        // try {
-        //     emailService.sendWelcomeEmail(admin.getEmail(), admin.getFullName(), "");
-        //     log.info("Welcome email sent to new restaurant admin: {}", admin.getEmail());
-        // } catch (Exception e) {
-        //     log.error("Failed to send welcome email: {}", e.getMessage());
-        // }
-        
         return userMapper.toAdminResponseDTO(admin);
     }
     

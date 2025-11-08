@@ -29,9 +29,6 @@ public class RestaurantMapper {
         if (restaurant == null) {
             return null;
         }
-
-        // Note: totalOrders is NOT calculated here - it should be fetched separately
-        // via OrderService or analytics endpoints when needed
         
         return RestaurantDTO.builder()
                 .restaurantId(restaurant.getRestaurantId())
@@ -44,14 +41,12 @@ public class RestaurantMapper {
                 .description(restaurant.getDescription())
                 .rating(restaurant.getRating())
                 .totalReviews(restaurant.getTotalReviews())
-                .totalOrders(null) // Set to null - should be populated by service layer if needed
                 .averagePreparationTime(restaurant.getAveragePreparationTime())
                 .deliveryFee(restaurant.getDeliveryFee())
                 .minimumOrderAmount(restaurant.getMinimumOrderAmount())
                 .commercialRegistrationCertificateUrl(restaurant.getCommercialRegistrationCertificateUrl())
                 .taxIdentificationNumber(restaurant.getTaxIdentificationNumber())
                 .taxIdentificationDocumentUrl(restaurant.getTaxIdentificationDocumentUrl())
-                .businessOperatingLicenseUrl(restaurant.getBusinessOperatingLicenseUrl())
                 .isApproved(restaurant.getIsApproved())
                 .approvalStatus(restaurant.getApprovalStatus())
                 .rejectionReason(restaurant.getRejectionReason())
@@ -78,7 +73,6 @@ public class RestaurantMapper {
                 .description(restaurantDTO.getDescription())
                 .rating(restaurantDTO.getRating() != null ? restaurantDTO.getRating() : 0.0f)
                 .totalReviews(restaurantDTO.getTotalReviews() != null ? restaurantDTO.getTotalReviews() : 0)
-                // Note: totalOrders is not stored in Restaurant entity, calculated dynamically
                 .averagePreparationTime(restaurantDTO.getAveragePreparationTime() != null ? 
                     restaurantDTO.getAveragePreparationTime() : 30) // Default to 30 minutes
                 .deliveryFee(restaurantDTO.getDeliveryFee() != null ? restaurantDTO.getDeliveryFee() : 0.0f)
@@ -87,7 +81,6 @@ public class RestaurantMapper {
                 .commercialRegistrationCertificateUrl(restaurantDTO.getCommercialRegistrationCertificateUrl())
                 .taxIdentificationNumber(restaurantDTO.getTaxIdentificationNumber())
                 .taxIdentificationDocumentUrl(restaurantDTO.getTaxIdentificationDocumentUrl())
-                .businessOperatingLicenseUrl(restaurantDTO.getBusinessOperatingLicenseUrl())
                 .isApproved(restaurantDTO.getIsApproved() != null ? restaurantDTO.getIsApproved() : false)
                 .approvalStatus(restaurantDTO.getApprovalStatus() != null ? restaurantDTO.getApprovalStatus() : com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING)
                 .rejectionReason(restaurantDTO.getRejectionReason())
@@ -171,7 +164,6 @@ public class RestaurantMapper {
                 .commercialRegistrationCertificateUrl(restaurant.getCommercialRegistrationCertificateUrl())
                 .taxIdentificationNumber(restaurant.getTaxIdentificationNumber())
                 .taxIdentificationDocumentUrl(restaurant.getTaxIdentificationDocumentUrl())
-                .businessOperatingLicenseUrl(restaurant.getBusinessOperatingLicenseUrl())
                 .isApproved(restaurant.getIsApproved())
                 .approvalStatus(restaurant.getApprovalStatus())
                 .rejectionReason(restaurant.getRejectionReason())
