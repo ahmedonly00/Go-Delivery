@@ -37,12 +37,12 @@ public class OTPService {
             log.info("OTP email request submitted for: {}", customer.getEmail());
         } catch (Exception e) {
             log.error("Failed to submit OTP email request for: {}", customer.getEmail(), e);
-            // Don't fail the registration if email fails
         }
         
         return otp;
     }
     
+    @Transactional
     public boolean verifyOTP(String email, String otp) {
         if (email == null || email.trim().isEmpty()) {
             throw new IllegalArgumentException("Email cannot be null or empty");
@@ -52,10 +52,15 @@ public class OTPService {
             throw new IllegalArgumentException("OTP cannot be null or empty");
         }
         
+        log.info("Verifying OTP for email: {}", email);
         Customer customer = customerRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> {
+                    log.error("Customer not found for email: {}", email);
+                    return new RuntimeException("Customer not found");
+                });
                 
         if (customer.getOtp() == null || customer.getOtpExpiryTime() == null) {
+            log.warn("No OTP found or OTP expired for email: {}", email);
             return false;
         }
         
@@ -63,12 +68,20 @@ public class OTPService {
                            LocalDateTime.now().isBefore(customer.getOtpExpiryTime());
         
         if (isOtpValid) {
+            log.info("OTP is valid for email: {}. Updating verification status...", email);
+            
             customer.setOtp(null);
             customer.setOtpExpiryTime(null);
-            customer.setVerified(true);
+            
+            customer.setVerified(true);  
             customer.setEmailVerified(true);
-            customer.setActive(true); // Activate account after email verification
-            customerRepository.save(customer);
+            
+            customer = customerRepository.saveAndFlush(customer);
+            
+            log.info("Successfully verified customer. Email: {}, Verified: {}, Email Verified: {}, Active: {}", 
+                    email, customer.getIsVerified(), customer.isEmailVerified(), customer.getIsActive());
+        } else {
+            log.warn("Invalid OTP for email: {}", email);
         }
         
         return isOtpValid;
