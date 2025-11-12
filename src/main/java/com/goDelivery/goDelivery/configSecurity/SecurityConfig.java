@@ -76,7 +76,8 @@ public class SecurityConfig {
                         "/api/menu-items/getAllMenuItem",
                         "/api/menu-items/getMenuItemById/**",
                         "/api/menu-items/getMenuItemByName/**",
-                        "/api/menu-items/getMenuItemsByRestaurant/**"
+                        "/api/menu-items/getMenuItemsByRestaurant/**",
+                        "api/restaurants/approved"
                     ).permitAll()
                     // Customer endpoints - require CUSTOMER role
                     .requestMatchers(

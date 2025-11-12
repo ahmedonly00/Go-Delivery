@@ -221,14 +221,12 @@ public class RestaurantService {
         
     }
     
-    
     public List<RestaurantDTO> getAllActiveRestaurants() {
         return restaurantRepository.findByIsActive(true).stream()
                 .map(restaurantMapper::toRestaurantDTO)
                 .collect(Collectors.toList());
     }
 
-    
     public List<RestaurantDTO> getRestaurantsByCuisine(String cuisineType) {
         return restaurantRepository.findByCuisineTypeAndIsActive(cuisineType, true).stream()
                 .map(restaurantMapper::toRestaurantDTO)
