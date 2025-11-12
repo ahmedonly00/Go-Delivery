@@ -286,6 +286,7 @@ public class RestaurantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
         
         restaurant.setIsApproved(true);
+        restaurant.setIsActive(true);  // Activate the restaurant when approved
         restaurant.setApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus.APPROVED);
         restaurant.setReviewedBy(reviewerEmail);
         restaurant.setReviewedAt(LocalDate.now());
@@ -312,7 +313,6 @@ public class RestaurantService {
             }
         } catch (Exception e) {
             log.error("Failed to send approval email for restaurant ID {}: {}", restaurantId, e.getMessage());
-            // Don't fail the approval if email fails
         }
         
         return restaurantMapper.toRestaurantDTO(savedRestaurant);
@@ -327,7 +327,7 @@ public class RestaurantService {
         restaurant.setRejectionReason(rejectionReason);
         restaurant.setReviewedBy(reviewerEmail);
         restaurant.setReviewedAt(LocalDate.now());
-        restaurant.setIsActive(false); // Deactivate rejected restaurants
+        restaurant.setIsActive(false); // Always deactivate rejected restaurants
         restaurant.setUpdatedAt(LocalDate.now());
         
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
@@ -358,7 +358,13 @@ public class RestaurantService {
     }
 
     public List<RestaurantDTO> getApprovedRestaurants() {
-        return restaurantRepository.findByIsApprovedTrueAndIsActiveTrue().stream()
+        log.debug("Fetching approved and active restaurants");
+        List<Restaurant> restaurants = restaurantRepository.findByIsApprovedTrueAndIsActiveTrue();
+        log.debug("Found {} approved and active restaurants", restaurants.size());
+        if (!restaurants.isEmpty()) {
+            log.debug("First restaurant: {}", restaurants.get(0).getRestaurantName());
+        }
+        return restaurants.stream()
                 .map(restaurantMapper::toRestaurantDTO)
                 .collect(Collectors.toList());
     }
