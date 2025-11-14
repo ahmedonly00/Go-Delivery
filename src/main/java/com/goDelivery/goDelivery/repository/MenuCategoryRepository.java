@@ -15,6 +15,7 @@ public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Long
     Optional<MenuCategory> findByCategoryName(String categoryName);
     
     List<MenuCategory> findByRestaurant(Restaurant restaurant);
+    boolean existsByRestaurantAndCategoryName(Restaurant restaurant, String categoryName);
     
     default List<MenuCategory> findByRestaurantId(Long restaurantId) {
         Restaurant restaurant = new Restaurant();

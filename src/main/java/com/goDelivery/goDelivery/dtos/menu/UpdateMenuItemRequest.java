@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateMenuItemRequest {
+
     @NotBlank(message = "Menu item name is required")
     private String menuItemName;
 
@@ -19,7 +20,9 @@ public class UpdateMenuItemRequest {
     private Float price;
 
     private String image;
+
     private String ingredients;
+
     private Boolean isAvailable;
     
     @Positive(message = "Preparation time must be greater than 0")

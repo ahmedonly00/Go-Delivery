@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MenuItemRequest {
+
     @NotBlank(message = "Menu item name is required")
     private String menuItemName;
 
@@ -20,7 +21,9 @@ public class MenuItemRequest {
     private Float price;
 
     private String image;
+
     private String ingredients;
+    
     @Builder.Default
     private boolean isAvailable = true;
     
