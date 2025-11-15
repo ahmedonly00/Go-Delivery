@@ -34,13 +34,13 @@ public class CustomerAddress {
     @Column(name = "local_contact_number", nullable = false)
     private String localContactNumber;
 
-    @Column(name = "latitude", nullable = false)
+    @Column(name = "latitude", nullable = true)
     private Float latitude;
 
-    @Column(name = "longitude", nullable = false)
+    @Column(name = "longitude", nullable = true)
     private Float longitude;
 
-    @Column(name = "address_type", nullable = false)
+    @Column(name = "address_type", nullable = true)
     @Enumerated(EnumType.STRING)
     private AddressType addressType;
 
@@ -79,6 +79,4 @@ public class CustomerAddress {
         LocalDate now = LocalDate.now();
         updatedAt = now;
     }
-
-
 }
