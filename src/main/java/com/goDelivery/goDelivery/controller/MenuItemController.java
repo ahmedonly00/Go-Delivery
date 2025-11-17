@@ -88,14 +88,13 @@ public class MenuItemController {
     @PutMapping(value = "/updateMenuItem/{menuItemId}", consumes = {"multipart/form-data"})
     public MenuItemResponse updateMenuItem(
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long restaurantId,
             @PathVariable Long menuItemId,
             @RequestPart("menuItem") @Valid UpdateMenuItemRequest request,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
         try {
             // Handle image upload if provided
             if (imageFile != null && !imageFile.isEmpty()) {
-                String filePath = fileStorageService.storeFile(imageFile, "menu-items/" + restaurantId + "/images");
+                String filePath = fileStorageService.storeFile(imageFile, "menu-items/images");
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 request.setImage(fullUrl);
             }
@@ -110,7 +109,6 @@ public class MenuItemController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMenuItem(
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long restaurantId,
             @PathVariable Long menuItemId) {
         menuItemService.deleteMenuItem(menuItemId);
     }
@@ -118,7 +116,6 @@ public class MenuItemController {
     @PatchMapping(value = "/updateMenuItemAvailability/{menuItemId}")
     public MenuItemResponse updateMenuItemAvailability(
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long restaurantId,
             @PathVariable Long menuItemId,
             @RequestParam boolean available) {
         return menuItemService.updateMenuItemAvailability(menuItemId, available);
