@@ -168,10 +168,6 @@ public class MenuUploadService {
     private MenuCategory createDefaultCategory(Restaurant restaurant) {
         MenuCategory category = MenuCategory.builder()
                 .categoryName("Main Menu")
-                .description("Default menu category")
-                .image("")
-                .sortOrder(1)
-                .isActive(true)
                 .restaurant(restaurant)
                 .createdAt(LocalDate.now())
                 .build();

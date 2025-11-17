@@ -17,7 +17,9 @@ public class BaseMenuItemRequest {
     private Float price;
 
     private String image;
+
     private String ingredients;
+
     private boolean isAvailable = true;
     
     @Positive(message = "Preparation time must be greater than 0")

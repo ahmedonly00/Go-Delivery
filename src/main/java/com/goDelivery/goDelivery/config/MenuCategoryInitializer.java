@@ -63,18 +63,18 @@ public class MenuCategoryInitializer {
         
         try {
             // Main Categories
-            createdCount += createCategory(restaurant, "Main Course", "Delicious main dishes", 1, "main_course.jpg") ? 1 : 0;
-            createdCount += createCategory(restaurant, "Appetizers", "Tasty starters", 2, "appetizers.jpg") ? 1 : 0;
-            createdCount += createCategory(restaurant, "Desserts", "Sweet treats", 3, "desserts.jpg") ? 1 : 0;
-            createdCount += createCategory(restaurant, "Beverages", "Refreshing drinks", 4, "beverages.jpg") ? 1 : 0;
-            createdCount += createCategory(restaurant, "Sides", "Perfect accompaniments", 5, "sides.jpg") ? 1 : 0;
+            createdCount += createCategory(restaurant, "Main Course") ? 1 : 0;
+            createdCount += createCategory(restaurant, "Appetizers") ? 1 : 0;
+            createdCount += createCategory(restaurant, "Desserts") ? 1 : 0;
+            createdCount += createCategory(restaurant, "Beverages") ? 1 : 0;
+            createdCount += createCategory(restaurant, "Sides") ? 1 : 0;
             
             // Cuisine Specific Categories
-            createdCount += createCategory(restaurant, "Mozambican Specialties", "Traditional Mozambican dishes", 10, "mozambican.jpg") ? 1 : 0;
-            createdCount += createCategory(restaurant, "African Cuisine", "Authentic African flavors", 11, "african.jpg") ? 1 : 0;
-            createdCount += createCategory(restaurant, "Seafood", "Fresh from the ocean", 12, "seafood.jpg") ? 1 : 0;
-            createdCount += createCategory(restaurant, "Vegetarian", "Meat-free options", 13, "vegetarian.jpg") ? 1 : 0;
-            createdCount += createCategory(restaurant, "Daily Specials", "Today's featured items", 14, "specials.jpg") ? 1 : 0;
+            createdCount += createCategory(restaurant, "Mozambican Specialties") ? 1 : 0;
+            createdCount += createCategory(restaurant, "African Cuisine") ? 1 : 0;
+            createdCount += createCategory(restaurant, "Seafood") ? 1 : 0;
+            createdCount += createCategory(restaurant, "Vegetarian") ? 1 : 0;
+            createdCount += createCategory(restaurant, "Daily Specials") ? 1 : 0;
             
             log.debug("Created {} categories for restaurant: {}", createdCount, restaurant.getRestaurantName());
         } catch (Exception e) {
@@ -85,15 +85,11 @@ public class MenuCategoryInitializer {
         return createdCount;
     }
 
-    private boolean createCategory(Restaurant restaurant, String name, String description, int sortOrder, String image) {
+    private boolean createCategory(Restaurant restaurant, String name) {
         try {
             if (!menuCategoryRepository.existsByRestaurantAndCategoryName(restaurant, name)) {
                 MenuCategory category = MenuCategory.builder()
                         .categoryName(name)
-                        .description(description)
-                        .image(image)
-                        .sortOrder(sortOrder)
-                        .isActive(true)
                         .restaurant(restaurant)
                         .createdAt(LocalDate.now())
                         .build();

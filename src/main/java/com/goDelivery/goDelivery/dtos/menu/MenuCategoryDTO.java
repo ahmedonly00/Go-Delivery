@@ -22,14 +22,6 @@ public class MenuCategoryDTO {
 
     private String categoryName;
 
-    private String description;
-
-    private String image;
-
-    private Integer sortOrder;
-
-    private boolean isActive;
-
     private LocalDate createdAt;
 
     private Restaurant restaurant;

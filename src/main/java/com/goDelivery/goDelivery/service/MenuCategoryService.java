@@ -41,10 +41,6 @@ public class MenuCategoryService {
         MenuCategory menuCategory = menuCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("MenuCategory not found"));
         menuCategory.setCategoryName(menuCategoryDTO.getCategoryName());
-        menuCategory.setDescription(menuCategoryDTO.getDescription());
-        menuCategory.setImage(menuCategoryDTO.getImage());
-        menuCategory.setSortOrder(menuCategoryDTO.getSortOrder());
-        menuCategory.setActive(true);
         menuCategory.setCreatedAt(LocalDate.now());
         return menuCategoryMapper.toMenuCategoryDTO(menuCategoryRepository.save(menuCategory));
         

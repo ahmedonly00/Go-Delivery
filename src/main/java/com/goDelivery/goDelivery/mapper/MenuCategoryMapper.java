@@ -29,10 +29,6 @@ public class MenuCategoryMapper {
         MenuCategoryDTO.MenuCategoryDTOBuilder builder = MenuCategoryDTO.builder()
                 .categoryId(menuCategory.getCategoryId())
                 .categoryName(menuCategory.getCategoryName())
-                .description(menuCategory.getDescription())
-                .image(menuCategory.getImage())
-                .sortOrder(menuCategory.getSortOrder())
-                .isActive(menuCategory.isActive())
                 .createdAt(menuCategory.getCreatedAt())
                 .restaurant(menuCategory.getRestaurant());
                 
@@ -52,10 +48,6 @@ public class MenuCategoryMapper {
         return MenuCategory.builder()
                 .categoryId(menuCategoryDTO.getCategoryId())
                 .categoryName(menuCategoryDTO.getCategoryName())
-                .description(menuCategoryDTO.getDescription())
-                .image(menuCategoryDTO.getImage())
-                .sortOrder(menuCategoryDTO.getSortOrder())
-                .isActive(menuCategoryDTO.isActive())
                 .createdAt(menuCategoryDTO.getCreatedAt() != null ? menuCategoryDTO.getCreatedAt() : LocalDate.now())
                 .restaurant(menuCategoryDTO.getRestaurant())
                 .build();

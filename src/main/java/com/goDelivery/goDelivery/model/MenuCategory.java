@@ -27,18 +27,6 @@ public class MenuCategory {
     @Column(name = "category_name", nullable = false)
     private String categoryName;
 
-    @Column(name = "description", nullable = false)
-    private String description;
-
-    @Column(name = "image", length = 500 ,nullable = false)
-    private String image;
-
-    @Column(name = "sort_order", nullable = false)
-    private Integer sortOrder;
-
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive;
-
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
 
