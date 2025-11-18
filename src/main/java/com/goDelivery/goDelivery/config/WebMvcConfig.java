@@ -12,5 +12,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/")
                 .setCachePeriod(0);
+        
+        // Add handler for /api/files/** to match frontend URLs
+        registry.addResourceHandler("/api/files/**")
+                .addResourceLocations("file:uploads/")
+                .setCachePeriod(0);
     }
 }
