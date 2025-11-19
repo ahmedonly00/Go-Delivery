@@ -67,6 +67,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(
                         // Public endpoints
+                        "/api/files/**",
+                        "/uploads/**",
                         "/api/super-admin/register",
                         "/api/emails/**",
                         "/api/customers/register",
@@ -95,14 +97,12 @@ public class SecurityConfig {
                     // Restaurant Admin endpoints - require RESTAURANT_ADMIN role
                     .requestMatchers(
                         "/api/users/**",
-                        "/api/files/**",
-                        "/uploads/**",
                         "/api/menu-items/createMenuItem/**",
                         "/api/menu-items/updateMenuItem/**",
                         "/api/menu-items/deleteMenuItem/**",
                         "/api/menu-items/updateMenuItemAvailability/**",
                         "/api/menu-category/**",
-                        "/api/file-upload/**",
+                        "/api/file-upload/restaurants/**",
                         "/api/restaurants/registerRestaurant/**",
                         "/api/restaurants/updateRestaurant/**",
                         "/api/restaurants/deleteRestaurant/**"
