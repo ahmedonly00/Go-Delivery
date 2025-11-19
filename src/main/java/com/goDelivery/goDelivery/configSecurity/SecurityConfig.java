@@ -96,6 +96,7 @@ public class SecurityConfig {
                     .requestMatchers(
                         "/api/users/**",
                         "/api/files/**",
+                        "/uploads/**",
                         "/api/menu-items/createMenuItem/**",
                         "/api/menu-items/updateMenuItem/**",
                         "/api/menu-items/deleteMenuItem/**",
