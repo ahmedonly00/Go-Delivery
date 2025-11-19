@@ -32,10 +32,8 @@ public class AddressRequest {
     @NotBlank(message = "Local contact number is required")
     private String localContactNumber;
     
-    @NotNull(message = "Latitude is required")
     private Float latitude;
     
-    @NotNull(message = "Longitude is required")
     private Float longitude;
     
     @NotNull(message = "Address type is required")
