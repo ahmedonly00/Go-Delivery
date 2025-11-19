@@ -95,6 +95,7 @@ public class SecurityConfig {
                     // Restaurant Admin endpoints - require RESTAURANT_ADMIN role
                     .requestMatchers(
                         "/api/users/**",
+                        "/api/files/**",
                         "/api/menu-items/createMenuItem/**",
                         "/api/menu-items/updateMenuItem/**",
                         "/api/menu-items/deleteMenuItem/**",
