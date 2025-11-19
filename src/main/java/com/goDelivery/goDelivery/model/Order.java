@@ -90,6 +90,9 @@ public class Order {
 
     @Column(name = "cancellation_reason", nullable = true)
     private String cancellationReason;
+    
+    @Column(name = "updated_at")
+    private LocalDate updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
@@ -134,4 +137,9 @@ public class Order {
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     private List<WalletTransaction> walletTransactions;
 
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDate.now();
+    }
 }

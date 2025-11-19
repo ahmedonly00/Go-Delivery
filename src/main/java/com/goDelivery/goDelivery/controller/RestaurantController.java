@@ -46,8 +46,7 @@ public class RestaurantController {
             @RequestPart("restaurant") @Valid RestaurantDTO restaurantDTO,
             @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
             @RequestPart(value = "commercialRegistrationCertificate", required = false) MultipartFile commercialRegistrationCertificate,
-            @RequestPart(value = "taxIdentificationDocument", required = false) MultipartFile taxIdentificationDocument,
-            @RequestPart(value = "businessOperatingLicense", required = false) MultipartFile businessOperatingLicense) {
+            @RequestPart(value = "taxIdentificationDocument", required = false) MultipartFile taxIdentificationDocument) {
         try {
             // Store the logo file
             if (logoFile != null && !logoFile.isEmpty()) {

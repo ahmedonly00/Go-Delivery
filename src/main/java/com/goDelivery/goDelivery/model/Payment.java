@@ -30,6 +30,9 @@ public class Payment {
     @Column(name = "payment_provider", nullable = false)
     private String paymentProvider;
 
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
+
     @Column(name = "transaction_id", nullable = false)
     private String transactionId;
 
@@ -57,6 +60,11 @@ public class Payment {
 
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
+
+    @Version
+    @Column(name = "version", nullable = false)
+    @Builder.Default
+    private Long version = 0L;
 
     // One Payment belongs to One Order
     @OneToOne(fetch = FetchType.LAZY)

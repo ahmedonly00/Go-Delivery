@@ -1,38 +1,85 @@
 package com.goDelivery.goDelivery.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class NotificationService {
 
-    public void sendEmail(String toEmail, String subject, String templateName, Map<String, Object> templateData) {
-        // In a real implementation, this would send an email using a service like SendGrid, AWS SES, etc.
-        log.info("Sending email to: {}", toEmail);
-        log.info("Subject: {}", subject);
-        log.info("Template: {}", templateName);
-        log.info("Template data: {}", templateData);
-        
-        // For development, we'll just log the email content
-        String message = String.format("""
-            To: %s
-            Subject: %s
+    private final JavaMailSender emailSender;
+    
+    @Value("${spring.mail.username}")
+    private String fromEmail;
+    
+    @Value("${app.sms.enabled:false}")
+    private boolean smsEnabled;
+    
+    @Value("${app.sms.test-mode:true}")
+    private boolean smsTestMode;
+
+    @Async
+    public CompletableFuture<Boolean> sendEmail(String toEmail, String subject, String templateName, Map<String, Object> templateData) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject(subject);
             
-            %s
-            """, toEmail, subject, templateData.get("message"));
+            // In a real implementation, you would use a template engine like Thymeleaf or Freemarker
+            String textContent = String.valueOf(templateData.getOrDefault("message", ""));
+            message.setText(textContent);
             
-        log.info("Email content:\n{}", message);
+            emailSender.send(message);
+            
+            log.info("Email sent successfully to: {}", toEmail);
+            log.debug("Email details - Subject: {}, Template: {}, Data: {}", 
+                    subject, templateName, templateData);
+                    
+            return CompletableFuture.completedFuture(true);
+        } catch (Exception e) {
+            log.error("Failed to send email to {}: {}", toEmail, e.getMessage(), e);
+            return CompletableFuture.completedFuture(false);
+        }
     }
 
-    public void sendSms(String phoneNumber, String message) {
-        // In a real implementation, this would send an SMS using a service like Twilio, etc.
-        log.info("Sending SMS to: {}", phoneNumber);
-        log.info("Message: {}", message);
+    @Async
+    public CompletableFuture<Boolean> sendSms(String phoneNumber, String message) {
+        try {
+            if (smsTestMode) {
+                // In test mode, just log the SMS
+                log.info("[TEST MODE] SMS would be sent to: {}", phoneNumber);
+                log.info("[TEST MODE] Message: {}", message);
+                return CompletableFuture.completedFuture(true);
+            }
+            
+            if (!smsEnabled) {
+                log.warn("SMS notifications are disabled. Message to {} not sent.", phoneNumber);
+                return CompletableFuture.completedFuture(false);
+            }
+            
+            // In a real implementation, this would integrate with an SMS gateway like Twilio, AWS SNS, etc.
+            // Example with a hypothetical SmsService:
+            // smsService.send(phoneNumber, message);
+            
+            log.info("SMS sent to {}: {}", phoneNumber, message);
+            return CompletableFuture.completedFuture(true);
+            
+        } catch (Exception e) {
+            log.error("Failed to send SMS to {}: {}", phoneNumber, e.getMessage(), e);
+            return CompletableFuture.completedFuture(false);
+        }
     }
 
     public void sendPushNotification(Long userId, String title, String message, Map<String, String> data) {
@@ -102,6 +149,43 @@ public class NotificationService {
         // 2. Calculate distance to restaurant for each biker
         // 3. Send notifications to bikers within reasonable distance
         // 4. Implement first-come-first-served or intelligent assignment logic
+    }
+    
+    /**
+     * Sends a payment confirmation notification to the customer
+     * @param customerEmail The email address of the customer
+     * @param orderId The ID of the order
+     * @param amount The payment amount
+     * @param transactionId The payment transaction ID
+     */
+    public void sendPaymentConfirmation(String customerEmail, Long orderId, Float amount, String transactionId) {
+        log.info("Sending payment confirmation for order {} to {}", orderId, customerEmail);
+        
+        String subject = String.format("Payment Confirmation - Order #%d", orderId);
+        
+        String message = String.format("""
+            Thank you for your payment!
+            
+            Order #: %d
+            Amount: MZN %,.2f
+            Transaction ID: %s
+            Status: Paid
+            
+            Your order is being processed. You will receive another email once your order is confirmed.
+            
+            If you have any questions about your order, please contact our support team.
+            """, orderId, amount, transactionId);
+        
+        Map<String, Object> templateData = new HashMap<>();
+        templateData.put("orderId", orderId);
+        templateData.put("amount", amount);
+        templateData.put("transactionId", transactionId);
+        templateData.put("message", message);
+        
+        // Send email notification
+        sendEmail(customerEmail, subject, "payment-confirmation", templateData);
+        
+        log.info("Payment confirmation sent for order {}", orderId);
     }
     
     public void notifyDeliveryAccepted(com.goDelivery.goDelivery.model.Order order, 

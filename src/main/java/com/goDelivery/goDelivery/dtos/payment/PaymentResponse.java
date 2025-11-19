@@ -17,6 +17,7 @@ public class PaymentResponse {
     private Long paymentId;
     private PaymentMenthod paymentMethod;
     private String paymentProvider;
+    private String phoneNumber;
     private String transactionId;
     private String referenceNumber;
     private Float amount;
@@ -29,6 +30,8 @@ public class PaymentResponse {
     
     // Related DTOs
     private SimpleOrderDto order;
+    
+    private String message;
     
     @Data
     @Builder

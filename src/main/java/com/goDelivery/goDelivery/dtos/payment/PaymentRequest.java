@@ -14,6 +14,9 @@ public class PaymentRequest {
     
     @NotBlank(message = "Payment provider is required")
     private String paymentProvider;
+
+    @NotBlank(message = "Phone number is required")
+    private String phoneNumber;
     
     @NotBlank(message = "Transaction ID is required")
     private String transactionId;
