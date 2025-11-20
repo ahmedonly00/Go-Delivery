@@ -32,9 +32,21 @@ public class MenuCategoryService {
 
 
     public MenuCategoryDTO createMenuCategory(MenuCategoryDTO menuCategoryDTO){
-        MenuCategory menuCategory = menuCategoryMapper.toMenuCategory(menuCategoryDTO);
-        return menuCategoryMapper.toMenuCategoryDTO(menuCategoryRepository.save(menuCategory));
+        if (menuCategoryDTO.getCategoryName() == null || menuCategoryDTO.getCategoryName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be null or empty");
+        }
         
+        MenuCategory menuCategory = menuCategoryMapper.toMenuCategory(menuCategoryDTO);
+        menuCategory.setCreatedAt(LocalDate.now());
+        
+        // Ensure the restaurant is set if needed
+        if (menuCategory.getRestaurant() == null && menuCategoryDTO.getRestaurant() != null) {
+            Restaurant restaurant = restaurantRepository.findById(menuCategoryDTO.getRestaurant().getRestaurantId())
+                .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
+            menuCategory.setRestaurant(restaurant);
+        }
+        
+        return menuCategoryMapper.toMenuCategoryDTO(menuCategoryRepository.save(menuCategory));
     }
 
     public MenuCategoryDTO updateMenuCategory(Long categoryId, MenuCategoryDTO menuCategoryDTO){

@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.controller;
 
-import com.goDelivery.goDelivery.dto.mpesa.MpesaWebhookRequest;
+import com.goDelivery.goDelivery.dtos.mpesa.MpesaWebhookRequest;
 import com.goDelivery.goDelivery.service.MpesaPaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

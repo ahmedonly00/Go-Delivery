@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.controller;
 
-import com.goDelivery.goDelivery.dto.mpesa.MpesaPaymentRequest;
-import com.goDelivery.goDelivery.dto.mpesa.MpesaPaymentResponse;
-import com.goDelivery.goDelivery.dto.mpesa.MpesaWebhookRequest;
+import com.goDelivery.goDelivery.dtos.mpesa.MpesaPaymentRequest;
+import com.goDelivery.goDelivery.dtos.mpesa.MpesaPaymentResponse;
+import com.goDelivery.goDelivery.dtos.mpesa.MpesaWebhookRequest;
 import com.goDelivery.goDelivery.service.MpesaPaymentService;
 import com.goDelivery.goDelivery.service.PaymentService;
 import jakarta.validation.Valid;

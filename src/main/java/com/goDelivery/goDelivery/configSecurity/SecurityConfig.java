@@ -91,7 +91,9 @@ public class SecurityConfig {
                         "/api/orders/cancelOrder/**",
                         "/api/payments/process",
                         "/api/payments/customer/**",
-                        "/api/locations/**"
+                        "/api/locations/**",
+                        "/api/v1/payments/mpesa/**",
+                        "/api/webhooks/mpesa-payment"
 
                     ).hasRole("CUSTOMER")
                     // Restaurant Admin endpoints - require RESTAURANT_ADMIN role

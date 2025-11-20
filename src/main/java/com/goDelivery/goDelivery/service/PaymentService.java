@@ -2,14 +2,14 @@ package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.OrderStatus;
 import com.goDelivery.goDelivery.Enum.PaymentStatus;
-import com.goDelivery.goDelivery.dto.mpesa.MpesaPaymentRequest;
-import com.goDelivery.goDelivery.dto.mpesa.MpesaPaymentResponse;
-import com.goDelivery.goDelivery.dto.mpesa.MpesaWebhookRequest;
 import com.goDelivery.goDelivery.exception.ConcurrentModificationException;
 import com.goDelivery.goDelivery.model.Order;
 import com.goDelivery.goDelivery.repository.PaymentRepository;
 import com.goDelivery.goDelivery.repository.OrderRepository;
 import com.goDelivery.goDelivery.mapper.PaymentMapper;
+import com.goDelivery.goDelivery.dtos.mpesa.MpesaPaymentRequest;
+import com.goDelivery.goDelivery.dtos.mpesa.MpesaPaymentResponse;
+import com.goDelivery.goDelivery.dtos.mpesa.MpesaWebhookRequest;
 import com.goDelivery.goDelivery.dtos.payment.PaymentRequest;
 import com.goDelivery.goDelivery.dtos.payment.PaymentResponse;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
@@ -20,7 +20,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -106,8 +105,8 @@ public class PaymentService {
             // Create MPESA payment request
             MpesaPaymentRequest mpesaRequest = new MpesaPaymentRequest();
             mpesaRequest.setFromMsisdn(payment.getPhoneNumber());
-            // Convert amount to BigDecimal
-            mpesaRequest.setAmount(BigDecimal.valueOf(payment.getAmount()));
+            // Set amount as Double
+            mpesaRequest.setAmount(payment.getAmount().doubleValue());
             mpesaRequest.setDescription("Payment for order #" + order.getOrderId());
             
             // Set callback URL for webhook
@@ -410,7 +409,7 @@ public class PaymentService {
                 throw new ConcurrentModificationException(
                         "Failed to update payment after " + maxRetries + " attempts due to concurrent modification", e);
             }
-            throw e; // Let Spring's @Retryable handle the retry
+            throw e;
         }
     }
     

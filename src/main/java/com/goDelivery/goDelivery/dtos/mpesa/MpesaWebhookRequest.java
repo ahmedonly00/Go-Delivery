@@ -1,4 +1,4 @@
-package com.goDelivery.goDelivery.dto.mpesa;
+package com.goDelivery.goDelivery.dtos.mpesa;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
