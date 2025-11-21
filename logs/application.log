@@ -1388,3 +1388,5 @@ Caused by: java.net.SocketTimeoutException: Read timed out
 2025-11-21 10:59:22 [reactor-http-nio-3] DEBUG c.g.g.service.MpesaPaymentService - Raw MPESA API response: {"success":true,"message":"Transactions created successfully","data":[],"dataArray":null}
 2025-11-21 10:59:22 [reactor-http-nio-3] INFO  c.g.g.service.MpesaPaymentService - MPESA payment initiated successfully but no transaction data returned
 2025-11-21 10:59:23 [reactor-http-nio-3] INFO  c.g.g.service.MpesaPaymentService - MPESA payment initiated. Transaction ID: PENDING_06ca8317-e1a3-4848-942f-63094c93ad00
+2025-11-21 12:50:09 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@4b82599 (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2025-11-21 15:03:26 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2h465ms281µs400ns).

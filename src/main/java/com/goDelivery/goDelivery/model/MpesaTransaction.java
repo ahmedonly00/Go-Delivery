@@ -4,7 +4,6 @@ import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,7 +22,7 @@ public class MpesaTransaction {
     private String msisdn;
     
     @Column(nullable = false)
-    private BigDecimal amount;
+    private Float amount;
     
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

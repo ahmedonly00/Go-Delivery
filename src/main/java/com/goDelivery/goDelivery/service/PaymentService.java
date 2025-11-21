@@ -107,10 +107,9 @@ public class PaymentService {
             
             // Create MPESA payment request
             MpesaPaymentRequest mpesaRequest = new MpesaPaymentRequest();
-            mpesaRequest.setFromMsisdn(payment.getPhoneNumber());
+            mpesaRequest.setFromMSISDN(payment.getPhoneNumber());
             // Set amount as Double
-            mpesaRequest.setAmount(payment.getAmount().doubleValue());
-            mpesaRequest.setDescription("Payment for order #" + order.getOrderId());
+            mpesaRequest.setAmount(payment.getAmount().floatValue());
             
             // Set callback URL for webhook
             String webhookUrl = env.getProperty("app.base-url") + "/api/v1/payments/mpesa/webhook";
@@ -122,7 +121,7 @@ public class PaymentService {
             // Initiate MPESA payment
             MpesaPaymentResponse mpesaResponse = mpesaPaymentService.initiatePayment(mpesaRequest).block();
             
-            if (mpesaResponse != null && "200".equals(mpesaResponse.getCode())) {
+            if (mpesaResponse != null && mpesaResponse.getTransactionId() != null) {
                 // Payment initiated successfully
                 payment.setTransactionId(mpesaResponse.getTransactionId());
                 payment.setPaymentStatus(PaymentStatus.PENDING);
@@ -138,7 +137,8 @@ public class PaymentService {
             } else {
                 // Handle MPESA API error
                 String errorMsg = mpesaResponse != null ? 
-                    "Failed to initiate MPESA payment: " + mpesaResponse.getDescription() : 
+                    "Failed to initiate MPESA payment. Status: " + 
+                    (mpesaResponse.getTransactionStatus() != null ? mpesaResponse.getTransactionStatus() : "Unknown error") : 
                     "Failed to initiate MPESA payment: No response from payment gateway";
                 
                 log.error(errorMsg);

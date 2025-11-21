@@ -28,7 +28,6 @@ import reactor.core.publisher.Mono;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Map;
@@ -76,18 +75,23 @@ public class MpesaPaymentService {
      */
     private MpesaTransaction createTransactionFromRequest(MpesaPaymentRequest request, String apiResponse) {
         MpesaTransaction transaction = new MpesaTransaction();
-        transaction.setMsisdn(request.getFromMsisdn());
-        transaction.setAmount(new BigDecimal(request.getAmount().toString()));
-        transaction.setThirdPartyRef(request.getThirdPartyRef());
-        transaction.setDescription(request.getDescription());
+        transaction.setMsisdn(request.getFromMSISDN());
+        transaction.setAmount(request.getAmount());
         transaction.setApiResponse(apiResponse);
         transaction.setStatus(PaymentStatus.PENDING);
+        transaction.setCreatedAt(LocalDateTime.now());
         
         // If this is linked to an order, set the order
         if (request.getOrderId() != null) {
             Order order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + request.getOrderId()));
-            transaction.setOrder(order);
+
+        if (order.getPaymentStatus() == PaymentStatus.PENDING) {
+            order.setPaymentStatus(PaymentStatus.PENDING);
+            orderRepository.save(order);
+        }
+
+        transaction.setOrder(order);
         }
         
         return mpesaTransactionRepository.save(transaction);
@@ -105,16 +109,12 @@ public class MpesaPaymentService {
             transaction.setStatus(mapStatus(response.getTransactionStatus()));
         }
         
-        if (response.getDescription() != null) {
-            transaction.setDescription(response.getDescription());
-        }
-        
         if (response.getMsisdn() != null) {
             transaction.setMsisdn(response.getMsisdn());
         }
         
         if (response.getAmount() != null) {
-            transaction.setAmount(new BigDecimal(response.getAmount().toString()));
+            transaction.setAmount(response.getAmount());
         }
         
         mpesaTransactionRepository.save(transaction);
@@ -148,23 +148,12 @@ public class MpesaPaymentService {
     )
     @Transactional
     public Mono<MpesaPaymentResponse> initiatePayment(MpesaPaymentRequest request) {
-        // Generate a unique reference if not provided
-        if (request.getThirdPartyRef() == null || request.getThirdPartyRef().isEmpty()) {
-            request.setThirdPartyRef("MOZ_FOOD_" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        }
-
-        // Check if transaction with this reference already exists
-        if (mpesaTransactionRepository.existsByThirdPartyRef(request.getThirdPartyRef())) {
-            log.warn("Transaction with thirdPartyRef {} already exists", request.getThirdPartyRef());
-            return Mono.error(new RuntimeException("A transaction with this reference already exists"));
-        }
-
         // Set default callback URL if not provided
         if (request.getCallback() == null || request.getCallback().isEmpty()) {
             request.setCallback(baseUrl + "/api/webhooks/mpesa-payment");
         }
 
-        log.info("Initiating MPESA payment for MSISDN: {}", request.getFromMsisdn());
+        log.info("Initiating MPESA payment for MSISDN: {}", request.getFromMSISDN());
         log.debug("Request payload: {}", request);
         
         // Log the API key being used (masked for security)
@@ -186,12 +175,11 @@ public class MpesaPaymentService {
                 .defaultHeader("x-api-key", mpesaConfig.getApiKey())
                 .build();
         
-        String url = String.format("%s?fromMSISDN=%s&amount=%s&callback=%s&thirdPartyRef=%s",
+        String url = String.format("%s?fromMSISDN=%s&amount=%s&callback=%s",
                 mpesaConfig.getPaymentEndpoint(),
-                request.getFromMsisdn(),
+                request.getFromMSISDN(),
                 request.getAmount(),
-                request.getCallback() != null ? request.getCallback() : "",
-                request.getThirdPartyRef() != null ? request.getThirdPartyRef() : "");
+                request.getCallback() != null ? request.getCallback() : "");
                 
         log.info("Sending payment request to: {}{}", mpesaConfig.getApiBaseUrl(), url);
         
@@ -218,6 +206,13 @@ public class MpesaPaymentService {
                             log.info("MPESA payment initiated successfully. Transaction ID: {}", 
                                 paymentResponse.getTransactionId());
                             
+                            // Generate a unique reference for this transaction if not already set
+                            if (paymentResponse.getThirdPartyRef() == null || paymentResponse.getThirdPartyRef().isEmpty()) {
+                                String thirdPartyRef = "REF_" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+                                paymentResponse.setThirdPartyRef(thirdPartyRef);
+                                transaction.setThirdPartyRef(thirdPartyRef);
+                            }
+                            
                             // Update transaction with response data
                             updateTransactionFromResponse(transaction, paymentResponse);
                             return Mono.just(paymentResponse);
@@ -231,9 +226,15 @@ public class MpesaPaymentService {
                             transaction.setTransactionId("PENDING_" + UUID.randomUUID().toString());
                             mpesaTransactionRepository.save(transaction);
                             
+                            // Generate a unique reference for this transaction
+                            String ref = "REF_" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+                            transaction.setThirdPartyRef(ref);
+                            mpesaTransactionRepository.save(transaction);
+                            
                             MpesaPaymentResponse emptyResponse = new MpesaPaymentResponse();
                             emptyResponse.setTransactionId(transaction.getTransactionId());
                             emptyResponse.setTransactionStatus("PENDING");
+                            emptyResponse.setThirdPartyRef(ref);
                             return Mono.just(emptyResponse);
                         } 
                         // If we have an error message
@@ -335,9 +336,8 @@ public class MpesaPaymentService {
         String thirdPartyRef = webhookData.path("thirdPartyRef").asText();
         
         transaction.setTransactionId(transactionId);
-        transaction.setAmount(new BigDecimal(webhookData.path("amount").asDouble(0.0)));
+        transaction.setAmount(webhookData.path("amount").floatValue());
         transaction.setMsisdn(webhookData.path("msisdn").asText());
-        transaction.setDescription(webhookData.path("description").asText(""));
         transaction.setThirdPartyRef(thirdPartyRef);
         
         // Set status based on webhook data
@@ -365,7 +365,7 @@ public class MpesaPaymentService {
                         try {
                             // Try parsing as order ID if not found by order number
                             Long orderId = Long.parseLong(thirdPartyRef);
-                            return orderRepository.findById(orderId).orElse(null);
+                            return orderRepository.findByOrderId(orderId).orElse(null);
                         } catch (NumberFormatException e) {
                             return null;
                         }
@@ -402,7 +402,7 @@ public class MpesaPaymentService {
         
         // Update amount if provided
         if (webhookData.has("amount")) {
-            transaction.setAmount(new BigDecimal(webhookData.get("amount").asDouble()));
+            transaction.setAmount(webhookData.get("amount").floatValue());
         }
         
         // Update description if provided
@@ -428,7 +428,7 @@ public class MpesaPaymentService {
                         .orElseGet(() -> {
                             try {
                                 Long orderId = Long.parseLong(thirdPartyRef);
-                                return orderRepository.findById(orderId).orElse(null);
+                                return orderRepository.findByOrderId(orderId).orElse(null);
                             } catch (NumberFormatException e) {
                                 return null;
                             }
@@ -462,7 +462,7 @@ public class MpesaPaymentService {
         
         // Update other fields if provided
         if (webhookData.has("amount")) {
-            transaction.setAmount(new BigDecimal(webhookData.get("amount").asDouble()));
+            transaction.setAmount(webhookData.get("amount").floatValue());
         }
         
         if (webhookData.has("description")) {
@@ -543,6 +543,7 @@ public class MpesaPaymentService {
     }
 
     
+
     @Retryable(
         value = { WebClientResponseException.class },
         maxAttemptsExpression = "${mpesa.max-retries:3}",
@@ -612,7 +613,7 @@ public class MpesaPaymentService {
         try {
             // 1. Find the order by ID (assuming reference is the order ID)
             Long orderId = Long.parseLong(reference.replaceAll("[^0-9]", ""));
-            Order order = orderRepository.findById(orderId)
+            Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + reference));
             
             // Update order status to CONFIRMED (next status after payment)
@@ -674,7 +675,7 @@ public class MpesaPaymentService {
         try {
             // 1. Find the order by ID (assuming reference is the order ID)
             Long orderId = Long.parseLong(reference.replaceAll("[^0-9]", ""));
-            Order order = orderRepository.findById(orderId)
+            Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + reference));
             
             // Update order status to CANCELLED and payment status to FAILED
@@ -729,7 +730,7 @@ public class MpesaPaymentService {
         try {
             // 1. Find the order by ID (assuming reference is the order ID)
             Long orderId = Long.parseLong(reference.replaceAll("[^0-9]", ""));
-            Order order = orderRepository.findById(orderId)
+            Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + reference));
             
             // Update payment status to PENDING (keep order status as is)
@@ -808,7 +809,7 @@ public class MpesaPaymentService {
                 log.info("Payment for order: {} is now SUCCESSFUL", orderId);
                 
                 // Process the successful payment
-                Order order = orderRepository.findById(orderId)
+                Order order = orderRepository.findByOrderId(orderId)
                     .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
                 
                 order.setOrderStatus(OrderStatus.CONFIRMED);
@@ -828,7 +829,7 @@ public class MpesaPaymentService {
                 log.warn("Max retry attempts ({}) reached for order: {}. Marking payment as failed.", 
                         maxRetryCount, orderId);
                 
-                Order order = orderRepository.findById(orderId)
+                Order order = orderRepository.findByOrderId(orderId)
                     .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
                 
                 order.setOrderStatus(OrderStatus.CANCELLED);
@@ -867,7 +868,7 @@ public class MpesaPaymentService {
             // Call MPESA API to get transaction status
             return webClient.get()
                 .uri("/api/v1/transactions/{transactionId}/status", transactionId)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + mpesaConfig.getApiKey())
+                .header(HttpHeaders.AUTHORIZATION, "x-api-key " + mpesaConfig.getApiKey())
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), response -> {
                     log.error("Error querying transaction status: {}", response.statusCode());

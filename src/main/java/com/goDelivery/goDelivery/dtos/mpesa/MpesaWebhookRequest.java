@@ -8,11 +8,10 @@ import java.time.LocalDateTime;
 
 @Data
 public class MpesaWebhookRequest {
+
     @JsonProperty("transactionId")
     private String transactionId;
     
-    private Double amount;
-    private String msisdn;
     private String description;
     private String code;
     private String thirdPartyRef;
