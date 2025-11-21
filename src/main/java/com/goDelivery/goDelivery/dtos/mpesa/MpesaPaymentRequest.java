@@ -26,6 +26,9 @@ public class MpesaPaymentRequest {
     private String thirdPartyRef;
     
     private String description;
+    
+    @JsonProperty("orderId")
+    private Long orderId;
 
     @Override
     public String toString() {
@@ -35,6 +38,7 @@ public class MpesaPaymentRequest {
                 ", callback='" + callback + '\'' +
                 ", thirdPartyRef='" + thirdPartyRef + '\'' +
                 ", description='" + description + '\'' +
+                ", orderId=" + orderId +
                 '}';
     }
 }

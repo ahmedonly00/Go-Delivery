@@ -338,9 +338,7 @@ public class PaymentService {
         }
     }
     
-    /**
-     * Compares two strings in constant time to prevent timing attacks
-     */
+    //Compares two strings in constant time to prevent timing attacks
     private boolean constantTimeEquals(String a, String b) {
         if (a == null || b == null) {
             return false;
@@ -357,9 +355,7 @@ public class PaymentService {
         return result == 0;
     }
     
-    /**
-     * Hashes the input with HMAC-SHA256 using the provided key
-     */
+    //Generates an HMAC-SHA256 hash of the input data using the provided key
     private String hashWithHmacSha256(String data, String key) {
         try {
             javax.crypto.Mac sha256Hmac = javax.crypto.Mac.getInstance("HmacSHA256");

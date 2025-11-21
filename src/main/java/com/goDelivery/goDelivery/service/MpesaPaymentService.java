@@ -5,7 +5,9 @@ import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.config.MpesaConfig;
 import com.goDelivery.goDelivery.dtos.mpesa.*;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.model.MpesaTransaction;
 import com.goDelivery.goDelivery.model.Order;
+import com.goDelivery.goDelivery.repository.MpesaTransactionRepository;
 import com.goDelivery.goDelivery.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +23,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.springframework.core.ParameterizedTypeReference;
 import reactor.core.publisher.Mono;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Map;
@@ -31,7 +36,12 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.util.StringUtils;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
 
 
 @Slf4j
@@ -42,22 +52,111 @@ public class MpesaPaymentService {
     private final MpesaConfig mpesaConfig;
     private final WebClient webClient;
     private final OrderRepository orderRepository;
+    private final MpesaTransactionRepository mpesaTransactionRepository;
     private final NotificationService notificationService;
     private final TaskScheduler taskScheduler;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     
     @Value("${app.base-url}")
     private String baseUrl;
+    
+    @Value("${mpesa.payment.status-check.retry-count:3}")
+    private int maxRetryCount;
+    
+    @Value("${mpesa.payment.status-check.initial-delay:5}")
+    private int initialDelayMinutes;
+    
+    @Value("${mpesa.payment.status-check.backoff-multiplier:2}")
+    private int backoffMultiplier;
+    
+    private final Map<Long, Integer> retryCountMap = new ConcurrentHashMap<>();
 
-  
+    /**
+     * Creates a new MpesaTransaction from the payment request
+     */
+    private MpesaTransaction createTransactionFromRequest(MpesaPaymentRequest request, String apiResponse) {
+        MpesaTransaction transaction = new MpesaTransaction();
+        transaction.setMsisdn(request.getFromMsisdn());
+        transaction.setAmount(new BigDecimal(request.getAmount().toString()));
+        transaction.setThirdPartyRef(request.getThirdPartyRef());
+        transaction.setDescription(request.getDescription());
+        transaction.setApiResponse(apiResponse);
+        transaction.setStatus(PaymentStatus.PENDING);
+        
+        // If this is linked to an order, set the order
+        if (request.getOrderId() != null) {
+            Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + request.getOrderId()));
+            transaction.setOrder(order);
+        }
+        
+        return mpesaTransactionRepository.save(transaction);
+    }
+    
+    /**
+     * Updates an existing transaction with data from the payment response
+     */
+    private void updateTransactionFromResponse(MpesaTransaction transaction, MpesaPaymentResponse response) {
+        if (response.getTransactionId() != null) {
+            transaction.setTransactionId(response.getTransactionId());
+        }
+        
+        if (response.getTransactionStatus() != null) {
+            transaction.setStatus(mapStatus(response.getTransactionStatus()));
+        }
+        
+        if (response.getDescription() != null) {
+            transaction.setDescription(response.getDescription());
+        }
+        
+        if (response.getMsisdn() != null) {
+            transaction.setMsisdn(response.getMsisdn());
+        }
+        
+        if (response.getAmount() != null) {
+            transaction.setAmount(new BigDecimal(response.getAmount().toString()));
+        }
+        
+        mpesaTransactionRepository.save(transaction);
+    }
+    
+    /**
+     * Maps MPESA status string to PaymentStatus enum
+     */
+    private PaymentStatus mapStatus(String status) {
+        if (status == null) {
+            return PaymentStatus.PENDING;
+        }
+        
+        switch (status.toUpperCase()) {
+            case "SUCCESS":
+            case "COMPLETED":
+                return PaymentStatus.PAID;
+            case "FAILED":
+            case "REJECTED":
+                return PaymentStatus.FAILED;
+            case "PENDING":
+            default:
+                return PaymentStatus.PENDING;
+        }
+    }
+
     @Retryable(
         value = { WebClientResponseException.class },
         maxAttemptsExpression = "${mpesa.max-retries:3}",
         backoff = @Backoff(delayExpression = "${mpesa.retry-delay:1000}", multiplier = 2)
     )
+    @Transactional
     public Mono<MpesaPaymentResponse> initiatePayment(MpesaPaymentRequest request) {
         // Generate a unique reference if not provided
         if (request.getThirdPartyRef() == null || request.getThirdPartyRef().isEmpty()) {
             request.setThirdPartyRef("MOZ_FOOD_" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        }
+
+        // Check if transaction with this reference already exists
+        if (mpesaTransactionRepository.existsByThirdPartyRef(request.getThirdPartyRef())) {
+            log.warn("Transaction with thirdPartyRef {} already exists", request.getThirdPartyRef());
+            return Mono.error(new RuntimeException("A transaction with this reference already exists"));
         }
 
         // Set default callback URL if not provided
@@ -84,42 +183,334 @@ public class MpesaPaymentService {
                 .baseUrl(mpesaConfig.getApiBaseUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + mpesaConfig.getApiKey())
+                .defaultHeader("x-api-key", mpesaConfig.getApiKey())
                 .build();
         
-        return client.post()
-                .uri("/api/v1/transactions")
-                .bodyValue(request)
+        String url = String.format("%s?fromMSISDN=%s&amount=%s&callback=%s&thirdPartyRef=%s",
+                mpesaConfig.getPaymentEndpoint(),
+                request.getFromMsisdn(),
+                request.getAmount(),
+                request.getCallback() != null ? request.getCallback() : "",
+                request.getThirdPartyRef() != null ? request.getThirdPartyRef() : "");
+                
+        log.info("Sending payment request to: {}{}", mpesaConfig.getApiBaseUrl(), url);
+        
+        // Create and save the transaction record first
+        MpesaTransaction transaction = createTransactionFromRequest(request, null);
+        
+        return client.get()
+                .uri(url)
                 .retrieve()
-                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), response -> {
-                    log.error("MPESA API error: {}", response.statusCode());
-                    return response.bodyToMono(String.class)
-                        .defaultIfEmpty("No error details")
-                        .flatMap(errorBody -> {
-                            log.error("Error details: {}", errorBody);
-                            return Mono.error(new RuntimeException("MPESA API error: " + response.statusCode() + " - " + errorBody));
-                        });
-                })
-                .bodyToMono(new ParameterizedTypeReference<MpesaApiResponse<MpesaPaymentResponse>>() {})
-                .flatMap(apiResponse -> {
-                    if (apiResponse.isSuccess() && apiResponse.getData() != null) {
-                        MpesaPaymentResponse paymentResponse = apiResponse.getData();
-                        log.info("MPESA payment initiated successfully. Transaction ID: {}", paymentResponse.getTransactionId());
-                        return Mono.just(paymentResponse);
-                    } else {
-                        String errorMsg = "Failed to initiate payment: " + 
-                            (apiResponse.getMessage() != null ? apiResponse.getMessage() : "Unknown error");
-                        log.error(errorMsg);
-                        return Mono.error(new RuntimeException(errorMsg));
+                .bodyToMono(String.class)
+                .doOnNext(response -> log.debug("Raw MPESA API response: {}", response))
+                .flatMap(response -> {
+                    try {
+                        // Parse the response as a JsonNode to handle different response formats
+                        JsonNode rootNode = objectMapper.readTree(response);
+                        
+                        // Check if the response has a data array with elements
+                        if (rootNode.has("data") && rootNode.get("data").isArray() && rootNode.get("data").size() > 0) {
+                            // If data array has elements, parse the first one
+                            MpesaPaymentResponse paymentResponse = objectMapper.treeToValue(
+                                rootNode.get("data").get(0), 
+                                MpesaPaymentResponse.class
+                            );
+                            log.info("MPESA payment initiated successfully. Transaction ID: {}", 
+                                paymentResponse.getTransactionId());
+                            
+                            // Update transaction with response data
+                            updateTransactionFromResponse(transaction, paymentResponse);
+                            return Mono.just(paymentResponse);
+                        } 
+                        // If data array is empty but we have a success message, create a response
+                        else if (rootNode.has("success") && rootNode.get("success").asBoolean()) {
+                            log.info("MPESA payment initiated successfully but no transaction data returned");
+                            
+                            // Update transaction as pending
+                            transaction.setStatus(PaymentStatus.PENDING);
+                            transaction.setTransactionId("PENDING_" + UUID.randomUUID().toString());
+                            mpesaTransactionRepository.save(transaction);
+                            
+                            MpesaPaymentResponse emptyResponse = new MpesaPaymentResponse();
+                            emptyResponse.setTransactionId(transaction.getTransactionId());
+                            emptyResponse.setTransactionStatus("PENDING");
+                            return Mono.just(emptyResponse);
+                        } 
+                        // If we have an error message
+                        else if (rootNode.has("error")) {
+                            String errorMsg = rootNode.has("message") ? 
+                                rootNode.get("message").asText() : "Unknown error from MPESA API";
+                            log.error("MPESA API returned an error: {}", errorMsg);
+                            return Mono.error(new RuntimeException(errorMsg));
+                        } 
+                        // If we can't determine the response format
+                        else {
+                            log.error("Unexpected response format from MPESA API: {}", response);
+                            return Mono.error(new RuntimeException("Unexpected response format from MPESA API"));
+                        }
+                    } catch (Exception e) {
+                        log.error("Error parsing MPESA API response: {}", e.getMessage(), e);
+                        
+                        // Update transaction with error
+                        transaction.setStatus(PaymentStatus.FAILED);
+                        transaction.setDescription("Error parsing MPESA API response: " + e.getMessage());
+                        mpesaTransactionRepository.save(transaction);
+                        
+                        return Mono.error(new RuntimeException("Failed to parse MPESA API response: " + e.getMessage()));
                     }
                 })
+                .onErrorResume(e -> {
+                    log.error("Error processing MPESA payment: {}", e.getMessage(), e);
+                    
+                    // Update transaction with error
+                    transaction.setStatus(PaymentStatus.FAILED);
+                    transaction.setDescription("Error processing MPESA payment: " + e.getMessage());
+                    mpesaTransactionRepository.save(transaction);
+                    
+                    return Mono.error(new RuntimeException("Failed to process MPESA payment: " + e.getMessage()));
+                })
                 .doOnSuccess(response -> 
-                    log.info("MPESA payment initiated. Transaction ID: {}", response.getTransactionId()))
+                    log.info("MPESA payment initiated. Transaction ID: {}", 
+                        response.getTransactionId() != null ? response.getTransactionId() : "N/A"))
                 .doOnError(error -> 
                     log.error("Error initiating MPESA payment: {}", error.getMessage(), error));
     }
 
-   
+
+    @Async
+    public void processWebhook(String payload, String signature) {
+        try {
+            // Parse the payload
+            JsonNode rootNode = objectMapper.readTree(payload);
+            String transactionId = rootNode.path("transactionId").asText();
+            
+            if (!StringUtils.hasText(transactionId)) {
+                log.error("No transaction ID in webhook payload");
+                return;
+            }
+            
+            log.info("Processing MPESA webhook for transaction: {}", transactionId);
+            
+            // Find the transaction
+            MpesaTransaction transaction = mpesaTransactionRepository.findByTransactionId(transactionId)
+                    .orElseGet(() -> {
+                        log.warn("Transaction not found for ID: {}. Creating new transaction record.", transactionId);
+                        return createTransactionFromWebhook(rootNode);
+                    });
+            
+            // Save the raw payload
+            transaction.setCallbackPayload(payload);
+            
+            // Validate signature if required
+            if (mpesaConfig.isWebhookSignatureRequired() && !validateWebhookSignature(payload, signature)) {
+                log.warn("Invalid webhook signature for transaction: {}", transactionId);
+                transaction.setStatus(PaymentStatus.FAILED);
+                transaction.setDescription("Invalid webhook signature");
+                mpesaTransactionRepository.save(transaction);
+                return;
+            }
+            
+            // Update transaction status based on webhook payload
+            updateTransactionFromWebhook(transaction, rootNode);
+            
+            // Save the updated transaction
+            mpesaTransactionRepository.save(transaction);
+            log.info("Successfully processed webhook for transaction: {}", transactionId);
+            
+            // If the transaction is completed and has an associated order, we can clean up retry tracking
+            if ((transaction.getStatus() == PaymentStatus.PAID || 
+                 transaction.getStatus() == PaymentStatus.FAILED) &&
+                 transaction.getOrder() != null) {
+                retryCountMap.remove(transaction.getOrder().getOrderId());
+            }
+            
+        } catch (Exception e) {
+            log.error("Error processing webhook: " + e.getMessage(), e);
+        }
+    }
+    
+    private MpesaTransaction createTransactionFromWebhook(JsonNode webhookData) {
+        MpesaTransaction transaction = new MpesaTransaction();
+        String transactionId = webhookData.path("transactionId").asText();
+        String thirdPartyRef = webhookData.path("thirdPartyRef").asText();
+        
+        transaction.setTransactionId(transactionId);
+        transaction.setAmount(new BigDecimal(webhookData.path("amount").asDouble(0.0)));
+        transaction.setMsisdn(webhookData.path("msisdn").asText());
+        transaction.setDescription(webhookData.path("description").asText(""));
+        transaction.setThirdPartyRef(thirdPartyRef);
+        
+        // Set status based on webhook data
+        String status = webhookData.path("transactionStatus").asText("PENDING");
+        transaction.setStatus(mapStatus(status));
+        
+        // Set timestamps
+        LocalDateTime now = LocalDateTime.now();
+        transaction.setCreatedAt(now);
+        transaction.setUpdatedAt(now);
+        
+        // Set API response (the webhook payload)
+        try {
+            transaction.setApiResponse(webhookData.toString());
+        } catch (Exception e) {
+            log.warn("Failed to serialize webhook data to JSON", e);
+        }
+        
+        // Try to find and link the order if thirdPartyRef is an order ID
+        if (StringUtils.hasText(thirdPartyRef)) {
+            try {
+                // Assuming thirdPartyRef contains the order ID or can be used to find the order
+                Order order = orderRepository.findByOrderNumber(thirdPartyRef)
+                    .orElseGet(() -> {
+                        try {
+                            // Try parsing as order ID if not found by order number
+                            Long orderId = Long.parseLong(thirdPartyRef);
+                            return orderRepository.findById(orderId).orElse(null);
+                        } catch (NumberFormatException e) {
+                            return null;
+                        }
+                    });
+                
+                if (order != null) {
+                    transaction.setOrder(order);
+                    log.info("Linked transaction {} to order {}", transactionId, order.getOrderId());
+                }
+            } catch (Exception e) {
+                log.error("Error linking order to transaction: " + transactionId, e);
+            }
+        }
+        
+        // Set completedAt if this is a final status
+        if (transaction.getStatus() == PaymentStatus.PAID || 
+            transaction.getStatus() == PaymentStatus.FAILED) {
+            transaction.setCompletedAt(LocalDateTime.now());
+        }
+        
+        return mpesaTransactionRepository.save(transaction);
+    }
+    
+    private void updateTransactionFromWebhook(MpesaTransaction transaction, JsonNode webhookData) {
+        boolean statusChanged = false;
+        
+        // Update status if provided in webhook
+        if (webhookData.has("transactionStatus")) {
+            String status = webhookData.get("transactionStatus").asText();
+            PaymentStatus newStatus = mapStatus(status);
+            statusChanged = transaction.getStatus() != newStatus;
+            transaction.setStatus(newStatus);
+        }
+        
+        // Update amount if provided
+        if (webhookData.has("amount")) {
+            transaction.setAmount(new BigDecimal(webhookData.get("amount").asDouble()));
+        }
+        
+        // Update description if provided
+        if (webhookData.has("description")) {
+            transaction.setDescription(webhookData.get("description").asText());
+        }
+        
+        // Update MSISDN if provided
+        if (webhookData.has("msisdn")) {
+            transaction.setMsisdn(webhookData.get("msisdn").asText());
+        }
+        
+        // Update thirdPartyRef if provided
+        if (webhookData.has("thirdPartyRef")) {
+            String thirdPartyRef = webhookData.get("thirdPartyRef").asText();
+            transaction.setThirdPartyRef(thirdPartyRef);
+            
+            // Try to link order if not already linked and we have a thirdPartyRef
+            if (transaction.getOrder() == null && StringUtils.hasText(thirdPartyRef)) {
+                try {
+                    // Try to find order by order number or ID
+                    Order order = orderRepository.findByOrderNumber(thirdPartyRef)
+                        .orElseGet(() -> {
+                            try {
+                                Long orderId = Long.parseLong(thirdPartyRef);
+                                return orderRepository.findById(orderId).orElse(null);
+                            } catch (NumberFormatException e) {
+                                return null;
+                            }
+                        });
+                    
+                    if (order != null) {
+                        transaction.setOrder(order);
+                        log.info("Linked transaction {} to order {}", transaction.getTransactionId(), order.getOrderId());
+                    }
+                } catch (Exception e) {
+                    log.error("Error linking order to transaction: " + transaction.getTransactionId(), e);
+                }
+            }
+        }
+        
+        // Update API response with latest webhook data
+        try {
+            transaction.setApiResponse(webhookData.toString());
+        } catch (Exception e) {
+            log.warn("Failed to serialize webhook data to JSON", e);
+        }
+        
+        // Update timestamps
+        transaction.setUpdatedAt(LocalDateTime.now());
+        
+        // Set completedAt if this is a final status and it's a new status
+        if (statusChanged && (transaction.getStatus() == PaymentStatus.PAID || 
+                             transaction.getStatus() == PaymentStatus.FAILED)) {
+            transaction.setCompletedAt(LocalDateTime.now());
+        }
+        
+        // Update other fields if provided
+        if (webhookData.has("amount")) {
+            transaction.setAmount(new BigDecimal(webhookData.get("amount").asDouble()));
+        }
+        
+        if (webhookData.has("description")) {
+            transaction.setDescription(webhookData.get("description").asText());
+        }
+        
+        // Update the last updated timestamp
+        transaction.setUpdatedAt(LocalDateTime.now());
+    }
+    
+    private boolean validateWebhookSignature(String payload, String signature) {
+        // Skip validation if not required
+        if (!mpesaConfig.isWebhookSignatureRequired()) {
+            return true;
+        }
+        
+        // If signature is required but not provided
+        if (!StringUtils.hasText(signature)) {
+            log.warn("No signature provided for webhook validation");
+            return false;
+        }
+        
+        try {
+            String secret = mpesaConfig.getWebhookSecret();
+            if (!StringUtils.hasText(secret)) {
+                log.warn("Webhook secret is not configured");
+                return false;
+            }
+            
+            // Generate HMAC-SHA256 signature
+            String algorithm = mpesaConfig.getWebhookSignatureAlgorithm();
+            Mac hmac = Mac.getInstance(algorithm);
+            SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), algorithm);
+            hmac.init(secretKey);
+            
+            byte[] signatureBytes = hmac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+            String computedSignature = Base64.getEncoder().encodeToString(signatureBytes);
+            
+            // Compare signatures in constant time to prevent timing attacks
+            return MessageDigest.isEqual(computedSignature.getBytes(StandardCharsets.UTF_8), 
+                                       signature.getBytes(StandardCharsets.UTF_8));
+            
+        } catch (Exception e) {
+            log.error("Error validating webhook signature", e);
+            return false;
+        }
+    }
+
     @Async
     public CompletableFuture<Void> handlePaymentWebhook(MpesaWebhookRequest webhookRequest, String signature) {
         log.info("Processing MPESA webhook for transaction: {}", webhookRequest.getTransactionId());
@@ -377,18 +768,7 @@ public class MpesaPaymentService {
             log.error("Error processing pending payment for transaction: {}", transactionId, e);
         }
     }
-    
-    @Value("${mpesa.payment.status-check.retry-count:3}")
-    private int maxRetryCount;
-    
-    @Value("${mpesa.payment.status-check.initial-delay:5}")
-    private int initialDelayMinutes;
-    
-    @Value("${mpesa.payment.status-check.backoff-multiplier:2}")
-    private int backoffMultiplier;
-    
-    private final Map<Long, Integer> retryCountMap = new ConcurrentHashMap<>();
-    
+        
     @Async
     protected void schedulePaymentStatusCheck(Long orderId, String transactionId, int delayInMinutes) {
         try {
@@ -539,4 +919,5 @@ public class MpesaPaymentService {
             log.error("Failed to send payment failure notification for order: {}", order.getOrderId(), e);
         }
     }
+
 }

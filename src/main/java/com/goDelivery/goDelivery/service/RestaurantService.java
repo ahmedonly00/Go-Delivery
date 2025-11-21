@@ -102,6 +102,12 @@ public class RestaurantService {
                     .filter(r -> r.getLocation().equalsIgnoreCase(searchRequest.getLocation()))
                     .collect(Collectors.toList());
         }
+
+        if (searchRequest.getRestaurantName() != null && !searchRequest.getRestaurantName().isEmpty()) {
+            restaurants = restaurants.stream()
+                    .filter(r -> r.getRestaurantName().equalsIgnoreCase(searchRequest.getRestaurantName()))
+                    .collect(Collectors.toList());
+        }
         
         if (searchRequest.getCuisineType() != null && !searchRequest.getCuisineType().isEmpty()) {
             restaurants = restaurants.stream()

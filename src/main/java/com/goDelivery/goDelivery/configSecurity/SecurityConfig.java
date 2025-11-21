@@ -55,18 +55,22 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(authorize -> 
                 authorize
+                    // Public endpoints - no authentication required
                     .requestMatchers(
+                        // Auth and documentation
                         "/api/auth/**",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
                         "/webjars/**",
                         "/error",
-                        "/favicon.ico"
-                    ).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers(
-                        // Public endpoints
+                        "/favicon.ico",
+                        
+                        // Webhooks
+                        "/api/webhooks/**",
+                        "/api/v1/payments/mpesa/webhook",
+                        
+                        // Public API endpoints
                         "/api/files/**",
                         "/uploads/**",
                         "/api/super-admin/register",
@@ -79,9 +83,18 @@ public class SecurityConfig {
                         "/api/menu-items/getMenuItemById/**",
                         "/api/menu-items/getMenuItemByName/**",
                         "/api/menu-items/getMenuItemsByRestaurant/**",
-                        "/api/restaurants/approved"
+                        "/api/restaurants/approved",
+                        
+                        // Public order tracking
+                        "/api/orders/*/track",
+                        "/api/bikers/tracking/*",
+                        
+                        // Options requests
+                        "/**"
                     ).permitAll()
-                    // Customer endpoints - require CUSTOMER role
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    
+                    // Customer endpoints
                     .requestMatchers(
                         "/api/customers/**",
                         "/api/cart/**",
@@ -91,12 +104,16 @@ public class SecurityConfig {
                         "/api/orders/cancelOrder/**",
                         "/api/payments/process",
                         "/api/payments/customer/**",
-                        "/api/locations/**",
-                        "/api/v1/payments/mpesa/**",
-                        "/api/webhooks/mpesa-payment"
-
+                        "/api/locations/**"
                     ).hasRole("CUSTOMER")
-                    // Restaurant Admin endpoints - require RESTAURANT_ADMIN role
+                    
+                    // MPESA endpoints
+                    .requestMatchers(
+                        "/api/v1/payments/mpesa/initiate",
+                        "/api/v1/payments/mpesa/status/**"
+                    ).authenticated()
+                    
+                    // Restaurant Admin endpoints
                     .requestMatchers(
                         "/api/users/**",
                         "/api/menu-items/createMenuItem/**",
@@ -109,15 +126,13 @@ public class SecurityConfig {
                         "/api/restaurants/updateRestaurant/**",
                         "/api/restaurants/deleteRestaurant/**"
                     ).hasRole("RESTAURANT_ADMIN")
-                    // Shared endpoints - both CUSTOMER and RESTAURANT_ADMIN
+                    
+                    // Shared endpoints
                     .requestMatchers(
                         "/api/orders/**"
                     ).hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER")
-                    // Public order tracking
-                    .requestMatchers(
-                        "/api/orders/*/track"
-                    ).permitAll()
-                    // Biker endpoints - require BIKER role
+                    
+                    // Biker endpoints
                     .requestMatchers(
                         "/api/bikers/*/availableOrders",
                         "/api/bikers/*/activeOrders",
@@ -130,18 +145,18 @@ public class SecurityConfig {
                         "/api/bikers/updateLocation",
                         "/api/bikers/getNavigation"
                     ).hasRole("BIKER")
-                    // Public tracking endpoint - no authentication required
-                    .requestMatchers(
-                        "/api/bikers/tracking/*"
-                    ).permitAll()
+                    
                     // Cashier endpoints
                     .requestMatchers(
                         "/api/cashier/**"
                     ).hasRole("CASHIER")
+                    
                     // Analytics endpoints
                     .requestMatchers(
                         "/api/analytics/**"
                     ).hasAnyRole("RESTAURANT_ADMIN", "SUPER_ADMIN")
+                    
+                    // All other requests require authentication
                     .anyRequest().authenticated()
             )
             .sessionManagement(session -> 

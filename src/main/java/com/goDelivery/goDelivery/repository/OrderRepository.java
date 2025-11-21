@@ -10,6 +10,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.goDelivery.goDelivery.Enum.OrderStatus;
 import com.goDelivery.goDelivery.model.Order;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findByOrderId(Long orderId);
@@ -22,5 +25,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     // Optimized count query for total orders (better performance than .size())
     long countByRestaurant_RestaurantId(Long restaurantId);
+    
+    // Find order by order number
+    Optional<Order> findByOrderNumber(String orderNumber);
     
 }

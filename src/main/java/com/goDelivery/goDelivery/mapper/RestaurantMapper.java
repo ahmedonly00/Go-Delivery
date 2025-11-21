@@ -15,12 +15,37 @@ import java.util.stream.Collectors;
 @Component
 public class RestaurantMapper {
 
+    //Convert List of Restaurants to List of RestaurantDTO
     public List<RestaurantDTO> toRestaurantDTO(List<Restaurant> restaurants) {
         if (restaurants == null) {
             return null;
         }
+       
         return restaurants.stream()
-                .map(this::toRestaurantDTO)
+                .map(restaurant -> RestaurantDTO.builder()
+                .restaurantId(restaurant.getRestaurantId())
+                .restaurantName(restaurant.getRestaurantName())
+                .location(restaurant.getLocation())
+                .cuisineType(restaurant.getCuisineType())
+                .email(restaurant.getEmail())
+                .phoneNumber(restaurant.getPhoneNumber())
+                .logoUrl(restaurant.getLogoUrl())
+                .description(restaurant.getDescription())
+                .rating(restaurant.getRating())
+                .totalReviews(restaurant.getTotalReviews())
+                .averagePreparationTime(restaurant.getAveragePreparationTime())
+                .deliveryFee(restaurant.getDeliveryFee())
+                .minimumOrderAmount(restaurant.getMinimumOrderAmount())
+                .commercialRegistrationCertificateUrl(restaurant.getCommercialRegistrationCertificateUrl())
+                .taxIdentificationNumber(restaurant.getTaxIdentificationNumber())
+                .taxIdentificationDocumentUrl(restaurant.getTaxIdentificationDocumentUrl())
+                .isApproved(restaurant.getIsApproved())
+                .approvalStatus(restaurant.getApprovalStatus())
+                .rejectionReason(restaurant.getRejectionReason())
+                .reviewedBy(restaurant.getReviewedBy())
+                .reviewedAt(restaurant.getReviewedAt())
+                .isActive(restaurant.getIsActive())
+                .build())
                 .collect(Collectors.toList());
     }
     

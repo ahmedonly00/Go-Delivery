@@ -1,12 +1,12 @@
 package com.goDelivery.goDelivery.mapper;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
+import com.goDelivery.goDelivery.dtos.menu.MenuCategoryResponseDTO;
 import com.goDelivery.goDelivery.model.MenuCategory;
 
 @Component
@@ -45,12 +45,24 @@ public class MenuCategoryMapper {
             return null;
         }
 
-        return MenuCategory.builder()
-                .categoryId(menuCategoryDTO.getCategoryId())
-                .categoryName(menuCategoryDTO.getCategoryName())
-                .createdAt(menuCategoryDTO.getCreatedAt() != null ? menuCategoryDTO.getCreatedAt() : LocalDate.now())
-                .restaurant(menuCategoryDTO.getRestaurant())
-                .build();
+        MenuCategory menuCategory = new MenuCategory();
+        menuCategory.setCategoryName(menuCategoryDTO.getCategoryName());
+        menuCategory.setCreatedAt(menuCategoryDTO.getCreatedAt());
+        
+        return menuCategory;
     }
     
+    public MenuCategoryResponseDTO toMenuCategoryResponseDTO(MenuCategory menuCategory) {
+        if (menuCategory == null) {
+            return null;
+        }
+
+        return MenuCategoryResponseDTO.builder()
+            .categoryId(menuCategory.getCategoryId())
+            .categoryName(menuCategory.getCategoryName())
+            .createdAt(menuCategory.getCreatedAt())
+            .restaurantId(menuCategory.getRestaurant() != null ? 
+                menuCategory.getRestaurant().getRestaurantId() : null)
+            .build();
+    }
 }
