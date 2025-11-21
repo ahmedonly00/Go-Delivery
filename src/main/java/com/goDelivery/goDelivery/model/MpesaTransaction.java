@@ -3,8 +3,6 @@ package com.goDelivery.goDelivery.model;
 import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -47,11 +45,9 @@ public class MpesaTransaction {
     @JoinColumn(name = "order_id")
     private Order order;
     
-    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
-    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
@@ -74,5 +70,16 @@ public class MpesaTransaction {
         this.status = PaymentStatus.FAILED;
         this.description = failureReason;
         this.completedAt = LocalDateTime.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

@@ -5,6 +5,9 @@ import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.exception.ConcurrentModificationException;
 import com.goDelivery.goDelivery.model.Order;
 import com.goDelivery.goDelivery.repository.PaymentRepository;
+
+import io.jsonwebtoken.lang.Arrays;
+
 import com.goDelivery.goDelivery.repository.OrderRepository;
 import com.goDelivery.goDelivery.mapper.PaymentMapper;
 import com.goDelivery.goDelivery.dtos.mpesa.MpesaPaymentRequest;
@@ -159,15 +162,40 @@ public class PaymentService {
     public void handleMpesaWebhook(MpesaWebhookRequest webhookRequest) {
         log.info("Processing MPESA webhook: {}", webhookRequest);
         
-        // Validate webhook signature if available
+        // Get the signature from headers
         String signature = null;
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         
         if (attributes != null && attributes.getRequest() != null) {
+            // Try different possible header names
             signature = attributes.getRequest().getHeader("X-MPESA-Signature");
+            if (signature == null) {
+                signature = attributes.getRequest().getHeader("signature");
+            }
+            if (signature == null) {
+                signature = attributes.getRequest().getHeader("x-mpesa-signature");
+            }
+            
+            // Log all headers for debugging (sensitive info should be redacted in production)
+            if (log.isDebugEnabled()) {
+                java.util.Enumeration<String> headerNames = attributes.getRequest().getHeaderNames();
+                while (headerNames.hasMoreElements()) {
+                    String headerName = headerNames.nextElement();
+                    log.debug("Header: {} = {}", headerName, attributes.getRequest().getHeader(headerName));
+                }
+            }
         }
         
-        if (signature == null || !isValidSignature(webhookRequest, signature)) {
+        // Log the received signature for debugging
+        log.debug("Received webhook signature: {}", signature);
+        
+        // Skip signature validation in development if configured
+        if (Arrays.asList(env.getActiveProfiles()).contains("dev") || 
+            "true".equalsIgnoreCase(env.getProperty("mpesa.webhook.disable-signature-validation", "false"))) {
+            log.warn("Skipping webhook signature validation in development mode");
+        } 
+        // Validate signature if not in development mode
+        else if (signature == null || !isValidSignature(webhookRequest, signature)) {
             log.warn("Invalid or missing webhook signature. Possible tampering detected or not called in an HTTP request context.");
             throw new SecurityException("Invalid or missing webhook signature");
         }
@@ -306,8 +334,8 @@ public class PaymentService {
     }
     
     //Validates the MPESA webhook signature to ensure it's from a trusted source
-    private boolean isValidSignature(MpesaWebhookRequest webhookRequest, String signature) {
-        if (signature == null || signature.trim().isEmpty()) {
+    private boolean isValidSignature(MpesaWebhookRequest webhookRequest, String receivedSignature) {
+        if (receivedSignature == null || receivedSignature.trim().isEmpty()) {
             log.warn("No signature provided for webhook validation");
             return false;
         }
@@ -316,21 +344,43 @@ public class PaymentService {
             // Get the MPESA API key from environment variables
             String apiKey = env.getProperty("mpesa.api-key");
             if (apiKey == null || apiKey.trim().isEmpty()) {
-                log.error("MPESA API key is not configured");
+                log.error("MPESA API key is not configured. Please set 'mpesa.api-key' in your application properties.");
                 return false;
             }
             
-            // Create the expected signature using only available fields
-            String payload = String.format("%s%s%s", 
+            // Log the input values for debugging (be careful with sensitive data in production)
+            log.debug("Validating signature with transactionId: {}, status: {}", 
+                webhookRequest.getTransactionId(), 
+                webhookRequest.getTransactionStatus());
+            
+            // Create the expected signature using the request data
+            // Note: The exact format should match what MPESA is using to generate the signature
+            // This is just an example - adjust according to MPESA's documentation
+            String payload = String.format(
+                "%s%s%s", 
                 webhookRequest.getTransactionId() != null ? webhookRequest.getTransactionId() : "",
                 webhookRequest.getTransactionStatus() != null ? webhookRequest.getTransactionStatus() : "",
                 apiKey
             );
             
+            log.debug("Payload for signature: {}", payload);
+            
+            // Generate the expected signature
             String expectedSignature = hashWithHmacSha256(payload, apiKey);
+            log.debug("Generated signature: {}", expectedSignature);
+            log.debug("Received signature: {}", receivedSignature);
             
             // Compare the signatures in a time-constant manner to prevent timing attacks
-            return constantTimeEquals(signature, expectedSignature);
+            boolean isValid = constantTimeEquals(receivedSignature, expectedSignature);
+            
+            if (!isValid) {
+                log.warn("Signature validation failed. Expected: {}, Actual: {}", 
+                    expectedSignature, receivedSignature);
+            } else {
+                log.debug("Signature validation successful");
+            }
+            
+            return isValid;
             
         } catch (Exception e) {
             log.error("Error validating webhook signature: {}", e.getMessage(), e);
@@ -435,11 +485,11 @@ public class PaymentService {
         return paymentMapper.toDto(payment);
     }
 
-    private PaymentResponse processMomoPayment(Payment payment) {
-        log.info("Processing Momo payment");
-        payment.setPaymentStatus(PaymentStatus.PENDING);
-        payment.setGateWayResponse("Payment will be processed on delivery");
-        payment = paymentRepository.save(payment);
-        return paymentMapper.toDto(payment);
-    }
+    // private PaymentResponse processMomoPayment(Payment payment) {
+    //     log.info("Processing Momo payment");
+    //     payment.setPaymentStatus(PaymentStatus.PENDING);
+    //     payment.setGateWayResponse("Payment will be processed on delivery");
+    //     payment = paymentRepository.save(payment);
+    //     return paymentMapper.toDto(payment);
+    // }
 }

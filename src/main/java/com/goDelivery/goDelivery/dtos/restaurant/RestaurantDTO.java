@@ -41,7 +41,6 @@ public class RestaurantDTO {
     @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Phone number should be valid")
     private String phoneNumber;
     
-    @JsonIgnore
     private String logoUrl;
 
     @NotBlank(message = "Description is required")

@@ -1,7 +1,9 @@
 package com.goDelivery.goDelivery.Enum;
 
 public enum TransactionType {
-    CREDIT,
-    DEBIT,
-    REFUND
+    
+    COLLECTION,
+    DISBURSEMENT_SINGLE,
+    DISBURSEMENT_BULK,
+    COLLECTION_DISBURSEMENT
 }
