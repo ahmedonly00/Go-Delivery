@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Error Alert: Transaction <span th:text="${referenceId}"></span></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 30px;
+        }
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .error-box {
+            background: #fff5f5;
+            border: 1px solid #ffcdd2;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            color: #c62828;
+        }
+        .details {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .details h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 0.9em;
+            color: #6c757d;
+            text-align: center;
+        }
+        .priority-tag {
+            display: inline-block;
+            background-color: #dc3545;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://your-logo-url.png" alt="GoDelivery Logo" class="logo">
+        <h1>Transaction Processing Error</h1>
+        <div class="priority-tag">HIGH PRIORITY</div>
+    </div>
+    
+    <div class="content">
+        <p>Hello Operations Team,</p>
+        
+        <p>An error occurred while processing a transaction in the MoMo payment system. Immediate attention is required.</p>
+        
+        <div class="details">
+            <h3>Error Details</h3>
+            <p><strong>Transaction ID:</strong> <span th:text="${referenceId}"></span></p>
+            <p><strong>Timestamp:</strong> <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+        </div>
+        
+        <div class="error-box" th:text="${error}">
+            <!-- Error message will be inserted here -->
+        </div>
+        
+        <h3>Recommended Actions:</h3>
+        <ol>
+            <li>Check the application logs for the full stack trace</li>
+            <li>Verify the transaction status in the MoMo portal</li>
+            <li>Check if the transaction exists in the database</li>
+            <li>Contact the customer if necessary</li>
+            <li>Update the transaction status manually if required</li>
+        </ol>
+        
+        <p>You can access the transaction details in the admin panel:</p>
+        <p>
+            <a th:href="${'https://admin.yourdomain.com/transactions/' + referenceId}" 
+               style="color: #0d6efd; text-decoration: none;">
+                View Transaction #<span th:text="${referenceId}"></span>
+            </a>
+        </p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated message from GoDelivery Payment Processing System.</p>
+        <p>© 2025 GoDelivery. All rights reserved.</p>
+    </div>
+</body>
+</html>

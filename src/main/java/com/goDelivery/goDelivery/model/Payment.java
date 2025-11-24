@@ -71,6 +71,18 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+    @OneToOne(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private MomoTransaction momoTransaction;
+    
+    @Column(name = "payment_provider_reference")
+    private String paymentProviderReference;
+    
+    @Column(name = "payment_provider_fee")
+    private Float paymentProviderFee;
+    
+    @Column(name = "tax_amount")
+    private Float taxAmount;
+
     @PrePersist
     protected void onCreate() {
         LocalDate now = LocalDate.now();

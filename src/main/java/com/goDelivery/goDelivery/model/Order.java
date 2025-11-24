@@ -110,10 +110,6 @@ public class Order {
     @JoinColumn(name = "biker_id")
     private Bikers bikers;
 
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "delivery_address_id", nullable = false)
-    // private CustomerAddress deliveryAddress;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
@@ -141,5 +137,60 @@ public class Order {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDate.now();
+    }
+    
+    // Helper method to add a payment to this order
+    public void addPayment(Payment payment) {
+        if (payment == null) {
+            return;
+        }
+        this.payment = payment;
+        payment.setOrder(this);
+        
+        // Update payment status if needed
+        if (payment.getPaymentStatus() != null) {
+            this.setPaymentStatus(payment.getPaymentStatus());
+        }
+    }
+    
+    // Helper method to add a transaction to this order
+    public void addTransaction(MomoTransaction transaction) {
+        if (transaction == null) {
+            return;
+        }
+        transaction.setOrder(this);
+        
+        // Link transaction with payment if not already linked
+        if (this.payment != null && transaction.getPayment() == null) {
+            transaction.setPayment(this.payment);
+            this.payment.setMomoTransaction(transaction);
+        }
+        
+        // Update order status based on transaction status if needed
+        if (transaction.getStatus() != null) {
+            switch (transaction.getStatus()) {
+                case SUCCESS:
+                    this.setPaymentStatus(PaymentStatus.PAID);
+                    break;
+                case FAILED:
+                    this.setPaymentStatus(PaymentStatus.FAILED);
+                    break;
+                case PENDING:
+                    this.setPaymentStatus(PaymentStatus.PENDING);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    // Helper method to check if order is paid
+    public boolean isPaid() {
+        return this.paymentStatus == PaymentStatus.PAID;
+    }
+    
+    // Helper method to check if order can be processed
+    public boolean canBeProcessed() {
+        return this.isPaid() && this.orderStatus != OrderStatus.CANCELLED;
     }
 }

@@ -554,7 +554,7 @@ public class MpesaPaymentService {
         
         return webClient.get()
                 .uri("/api/v1/transactions/status/{transactionId}" + transactionId)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + mpesaConfig.getApiKey())
+                .header(HttpHeaders.AUTHORIZATION, "x-api-key " + mpesaConfig.getApiKey())
                 .retrieve()
                 .bodyToMono(MpesaApiResponse.class)
                 .flatMap(response -> {
