@@ -1,8 +1,6 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.model.Bikers;
-import com.goDelivery.goDelivery.repository.BikersRepository;
-import com.goDelivery.goDelivery.service.geo.GeoLocationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +9,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.goDelivery.goDelivery.repository.BikersRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,17 +20,18 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final BikersRepository bikersRepository;
     private final GeoLocationService geoLocationService;
-    private final SmsService smsService;
     
     @Value("${app.notifications.sms.enabled:false}")
     private boolean smsEnabled;
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
     
     @Value("${app.notifications.sms.test-mode:true}")
     private boolean smsTestMode;
 
-    private final BikersRepository bikersRepository;
+    private final JavaMailSender emailSender;
 
     /**
      * Sends a welcome notification to a newly registered biker
@@ -55,17 +53,7 @@ public class NotificationService {
         log.info("Welcome notification sent to biker: {}", biker.getEmail());
     }
 
-    private final JavaMailSender emailSender;
     
-    @Value("${spring.mail.username}")
-    private String fromEmail;
-    
-    @Value("${app.sms.enabled:false}")
-    private boolean smsEnabled;
-    
-    @Value("${app.sms.test-mode:true}")
-    private boolean smsTestMode;
-
     @Async
     public CompletableFuture<Boolean> sendEmail(String toEmail, String subject, String templateName, Map<String, Object> templateData) {
         try {

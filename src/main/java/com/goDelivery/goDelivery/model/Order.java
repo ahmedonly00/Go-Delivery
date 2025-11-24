@@ -90,6 +90,9 @@ public class Order {
 
     @Column(name = "cancellation_reason", nullable = true)
     private String cancellationReason;
+
+    @Column(name = "created_at")
+    private LocalDate createdAt;
     
     @Column(name = "updated_at")
     private LocalDate updatedAt;
