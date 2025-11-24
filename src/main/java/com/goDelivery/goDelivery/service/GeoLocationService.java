@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.model.Bikers;
 import com.goDelivery.goDelivery.model.Coordinates;
+import com.goDelivery.goDelivery.repository.BikersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,7 @@ public class GeoLocationService {
 
     private final GeocodingService geocodingService;
     private final DistanceCalculationService distanceService;
-    private final BikerService bikerService;
+    private final BikersRepository bikersRepository;
 
    
     public List<Bikers> findNearestBikers(String pickupAddress, double maxDistanceKm) {
@@ -30,7 +31,7 @@ public class GeoLocationService {
             Coordinates pickupCoords = geocodingService.geocodeAddress(pickupAddress);
             
             // Get all available bikers
-            List<Bikers> availableBikers = bikerService.findAvailableBikers();
+            List<Bikers> availableBikers = bikersRepository.findAvailableBikers();
             
             // Calculate distances and filter by max distance
             return availableBikers.parallelStream()

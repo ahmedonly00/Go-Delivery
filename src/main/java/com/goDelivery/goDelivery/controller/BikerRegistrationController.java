@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/bikers")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class BikerRegistrationController {
 
     private final BikerService bikerService;
