@@ -92,6 +92,12 @@ public class Bikers implements CustomUserDetails {
     @Column(name = "last_active", nullable = false)
     private LocalDate lastActive;
 
+    @Column(name = "updated_at", nullable = false)
+    private LocalDate updatedAt;
+    
+    @Transient
+    private Double distanceFromPickup; // Transient field to store calculated distance
+
     // One Biker can deliver many Orders
     @OneToMany(mappedBy = "bikers", fetch = FetchType.LAZY)
     private List<Order> orders;
@@ -153,9 +159,10 @@ public class Bikers implements CustomUserDetails {
         return this.isActive;
     }
 
-    
-
-    
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDate.now();
+    }
 
 
 }

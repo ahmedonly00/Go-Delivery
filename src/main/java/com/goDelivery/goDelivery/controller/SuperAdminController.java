@@ -1,6 +1,8 @@
 package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dtos.admin.CreateSuperAdminRequest;
+import com.goDelivery.goDelivery.dtos.biker.BikerDetailsResponse;
+import com.goDelivery.goDelivery.dtos.biker.BikerUpdateRequest;
 import com.goDelivery.goDelivery.model.SuperAdmin;
 import com.goDelivery.goDelivery.service.SuperAdminService;
 import jakarta.validation.Valid;
@@ -27,6 +29,7 @@ import java.util.List;
 public class SuperAdminController {
 
     private final SuperAdminService superAdminService;
+    
 
     @PostMapping(value = "/registerSuperAdmin")
     public ResponseEntity<SuperAdmin> registerSuperAdmin(
@@ -46,6 +49,50 @@ public class SuperAdminController {
     @GetMapping(value = "/all")
     public ResponseEntity<List<SuperAdmin>> getAllSuperAdmins() {
         return ResponseEntity.ok(superAdminService.getAllSuperAdmins());
+    }
+    
+    @GetMapping(value = "/getAllBikers")
+    public ResponseEntity<List<BikerDetailsResponse>> getAllBikers() {
+        List<BikerDetailsResponse> bikers = superAdminService.getAllBikers();
+        return ResponseEntity.ok(bikers);
+    }
+    
+    @GetMapping(value = "/getActiveBikers")
+    public ResponseEntity<List<BikerDetailsResponse>> getActiveBikers() {
+        List<BikerDetailsResponse> activeBikers = superAdminService.getActiveBikers();
+        return ResponseEntity.ok(activeBikers);
+    }
+    
+    @GetMapping(value = "/getBikerById/{bikerId}")
+    public ResponseEntity<BikerDetailsResponse> getBikerById(@PathVariable Long bikerId) {
+        BikerDetailsResponse biker = superAdminService.getBikerById(bikerId);
+        return ResponseEntity.ok(biker);
+    }
+    
+    @PutMapping(value = "/updateBiker/{bikerId}")
+    public ResponseEntity<BikerDetailsResponse> updateBiker(
+            @PathVariable Long bikerId,
+            @Valid @RequestBody BikerUpdateRequest updateRequest) {
+        BikerDetailsResponse updatedBiker = superAdminService.updateBiker(bikerId, updateRequest);
+        return ResponseEntity.ok(updatedBiker);
+    }
+    
+    @DeleteMapping(value = "/deleteBiker/{bikerId}")
+    public ResponseEntity<Void> deleteBiker(@PathVariable Long bikerId) {
+        superAdminService.deleteBiker(bikerId);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @PutMapping(value = "/activateBiker/{bikerId}")
+    public ResponseEntity<Void> activateBiker(@PathVariable Long bikerId) {
+        superAdminService.activateBiker(bikerId, true);
+        return ResponseEntity.ok().build();
+    }
+    
+    @PutMapping(value = "/deactivateBiker/{bikerId}")
+    public ResponseEntity<Void> deactivateBiker(@PathVariable Long bikerId) {
+        superAdminService.activateBiker(bikerId, false);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/{id}")

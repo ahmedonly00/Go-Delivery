@@ -29,4 +29,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     // Find order by order number
     Optional<Order> findByOrderNumber(String orderNumber);
     
+    // Find orders by status and where biker is not assigned
+    List<Order> findByOrderStatusAndBikersIsNull(OrderStatus status);
+    
 }

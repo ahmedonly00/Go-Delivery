@@ -1,7 +1,10 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.OrderStatus;
+import com.goDelivery.goDelivery.dtos.biker.BikerRegistrationRequest;
+import com.goDelivery.goDelivery.dtos.biker.BikerRegistrationResponse;
 import com.goDelivery.goDelivery.dtos.delivery.*;
+import com.goDelivery.goDelivery.mapper.BikerMapper;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.model.Bikers;
 import com.goDelivery.goDelivery.model.Order;
@@ -16,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,24 +29,40 @@ public class BikerService {
     private final BikersRepository bikersRepository;
     private final OrderRepository orderRepository;
     private final NotificationService notificationService;
+    private final BikerMapper bikerMapper;
     
-    /**
-     * Find available bikers who are online and not currently on a delivery
-     */
+    
+    //Find available bikers who are online and not currently on a delivery
+    @Transactional
+    public BikerRegistrationResponse registerBiker(BikerRegistrationRequest request) {
+        // Check if email already exists
+        if (bikersRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalStateException("Email already in use");
+        }
+
+        // Check if phone number already exists
+        if (bikersRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
+            throw new IllegalStateException("Phone number already in use");
+        }
+
+        // Check if license number already exists
+        if (bikersRepository.findByLicenseNumber(request.getLicenseNumber()).isPresent()) {
+            throw new IllegalStateException("License number already registered");
+        }
+
+        // Map and save new biker
+        Bikers savedBiker = bikersRepository.save(bikerMapper.toBiker(request));
+
+        // Send welcome email/notification (uncomment when NotificationService is implemented)
+        notificationService.sendBikerWelcomeNotification(savedBiker);
+
+        return bikerMapper.toBikerResponse(savedBiker);
+    }
+
     @Transactional(readOnly = true)
     public List<Bikers> findAvailableBikers() {
-        // In a real implementation, you would query for bikers who are:
-        // 1. isOnline = true
-        // 2. isAvailable = true
-        // 3. isActive = true
-        
         log.info("Finding available bikers");
-        List<Bikers> availableBikers = bikersRepository.findAll().stream()
-                .filter(Bikers::isOnline)
-                .filter(Bikers::isAvailable)
-                .filter(Bikers::isActive)
-                .toList();
-        
+        List<Bikers> availableBikers = bikersRepository.findAvailableBikers();
         log.info("Found {} available bikers", availableBikers.size());
         return availableBikers;
     }
@@ -252,21 +272,49 @@ public class BikerService {
     }
    
     @Transactional(readOnly = true)
-    public List<Order> getAvailableOrdersForBiker(Long bikerId) {
-        // Validate biker exists
-        bikersRepository.findByBikerId(bikerId)
+    public Bikers getBikerById(Long bikerId) {
+        return bikersRepository.findById(bikerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + bikerId));
+    }
+    
+    /**
+     * Get delivery history for a biker
+     * @param bikerId The ID of the biker
+     * @return List of orders associated with the biker
+     */
+    @Transactional(readOnly = true)
+    public List<Order> getDeliveryHistory(Long bikerId) {
+        // Verify biker exists
+        if (!bikersRepository.existsById(bikerId)) {
+            throw new ResourceNotFoundException("Biker not found with id: " + bikerId);
+        }
         
-        // Get orders that are CONFIRMED or READY and either unassigned or assigned to this biker
-        return orderRepository.findAll().stream()
-                .filter(order -> order.getOrderStatus() == OrderStatus.CONFIRMED || 
-                               order.getOrderStatus() == OrderStatus.READY)
-                .filter(order -> order.getBikers() == null || 
-                               order.getBikers().getBikerId().equals(bikerId))
-                .toList();
+        // Find all orders assigned to this biker and sort by creation date descending
+        return orderRepository.findAllByBikersBikerId(bikerId).stream()
+                .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
+                .collect(Collectors.toList());
     }
     
  
+    /**
+     * Get orders that are available for a biker to accept (READY status and not assigned to any biker)
+     * @param bikerId The ID of the biker (for validation)
+     * @return List of available orders
+     */
+    @Transactional(readOnly = true)
+    public List<Order> getAvailableOrdersForBiker(Long bikerId) {
+        // Verify biker exists and is active
+        Bikers biker = bikersRepository.findById(bikerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + bikerId));
+        
+        if (!biker.isActive()) {
+            throw new IllegalStateException("Biker account is not active");
+        }
+        
+        // Get orders that are READY and not assigned to any biker
+        return orderRepository.findByOrderStatusAndBikersIsNull(OrderStatus.READY);
+    }
+    
     @Transactional(readOnly = true)
     public List<Order> getBikerActiveOrders(Long bikerId) {
         // Verify biker exists before proceeding

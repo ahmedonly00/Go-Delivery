@@ -1,5 +1,8 @@
 package com.goDelivery.goDelivery.service;
 
+import com.goDelivery.goDelivery.model.Bikers;
+import com.goDelivery.goDelivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.service.geo.GeoLocationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,7 +11,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.goDelivery.goDelivery.repository.BikersRepository;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,6 +22,38 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @RequiredArgsConstructor
 public class NotificationService {
+
+    private final BikersRepository bikersRepository;
+    private final GeoLocationService geoLocationService;
+    private final SmsService smsService;
+    
+    @Value("${app.notifications.sms.enabled:false}")
+    private boolean smsEnabled;
+    
+    @Value("${app.notifications.sms.test-mode:true}")
+    private boolean smsTestMode;
+
+    private final BikersRepository bikersRepository;
+
+    /**
+     * Sends a welcome notification to a newly registered biker
+     * @param biker The biker who just registered
+     */
+    @Async
+    public void sendBikerWelcomeNotification(Bikers biker) {
+        // Log the welcome notification
+        log.info("Sending welcome notification to biker: {} ({})", biker.getFullNames(), biker.getEmail());
+        
+        // In a real implementation, you would send an email or push notification here
+        // For example:
+        // sendEmail(
+        //     biker.getEmail(),
+        //     "Welcome to GoDelivery!",
+        //     String.format("Hello %s, welcome to GoDelivery! Your account is now active.", biker.getFullNames())
+        // );
+        
+        log.info("Welcome notification sent to biker: {}", biker.getEmail());
+    }
 
     private final JavaMailSender emailSender;
     
@@ -135,29 +172,82 @@ public class NotificationService {
         log.info("Sent new order notification to biker {} for order {}", bikerId, orderNumber);
     }
 
+    @Async
     public void notifyAvailableBikersForOrder(String orderNumber, String restaurantName, 
-                                               String pickupAddress, String deliveryAddress) {
-        // In a real implementation, this would query available bikers and send notifications
-        // For now, this is a placeholder for broadcasting to available bikers
+                                           String pickupAddress, String deliveryAddress) {
+        log.info("Notifying available bikers for order: {}", orderNumber);
         
-        log.info("Broadcasting new order {} to all available bikers", orderNumber);
-        log.info("Restaurant: {}, Pickup: {}, Delivery: {}", 
-                restaurantName, pickupAddress, deliveryAddress);
-        
-        // In a real implementation:
-        // 1. Query BikersRepository for available online bikers
-        // 2. Calculate distance to restaurant for each biker
-        // 3. Send notifications to bikers within reasonable distance
-        // 4. Implement first-come-first-served or intelligent assignment logic
+        try {
+            // 1. Find nearest available bikers within a reasonable distance (e.g., 10km)
+            List<Bikers> availableBikers = geoLocationService.findNearestBikers(pickupAddress, 10.0);
+            
+            if (availableBikers.isEmpty()) {
+                log.warn("No available bikers found within range for order: {}", orderNumber);
+                return;
+            }
+            
+            log.info("Found {} available bikers for order: {}", availableBikers.size(), orderNumber);
+            
+            // 2. Select the best biker based on criteria (nearest, highest rating, etc.)
+            Bikers assignedBiker = selectBestBiker(availableBikers);
+            
+            // 3. Send notification to the assigned biker
+            sendOrderAssignmentNotification(assignedBiker, orderNumber, restaurantName, 
+                                        pickupAddress, deliveryAddress);
+            
+            log.info("Assigned order {} to biker: {} (ID: {})", 
+                    orderNumber, assignedBiker.getFullNames(), assignedBiker.getBikerId());
+                    
+        } catch (Exception e) {
+            log.error("Error notifying bikers for order: " + orderNumber, e);
+            // Consider implementing a retry mechanism or fallback strategy
+        }
     }
     
     /**
-     * Sends a payment confirmation notification to the customer
-     * @param customerEmail The email address of the customer
-     * @param orderId The ID of the order
-     * @param amount The payment amount
-     * @param transactionId The payment transaction ID
+     * Selects the best biker from the available ones based on criteria
      */
+    private Bikers selectBestBiker(List<Bikers> availableBikers) {
+        // In a real implementation, you might consider:
+        // 1. Distance to pickup
+        // 2. Biker rating
+        // 3. Number of current deliveries
+        // 4. Biker's preferred areas
+        
+        // For now, we'll just return the first available biker (nearest one)
+        return availableBikers.get(0);
+    }
+    
+    /**
+     * Sends an order assignment notification to a specific biker
+     */
+    @Async
+    protected void sendOrderAssignmentNotification(Bikers biker, String orderNumber, 
+                                                 String restaurantName, String pickupAddress, 
+                                                 String deliveryAddress) {
+        String title = "New Order #" + orderNumber;
+        String message = String.format(
+            "You have been assigned a new order!\n" +
+            "Restaurant: %s\n" +
+            "Pickup: %s\n" +
+            "Delivery: %s\n" +
+            "Please proceed to the restaurant to pick up the order.",
+            restaurantName, pickupAddress, deliveryAddress
+        );
+        
+        log.info("Sending order notification to biker {}: {} - {}", 
+                biker.getBikerId(), title, message);
+                
+        // In a real implementation, you would:
+        // 1. Send push notification to the biker's mobile app
+        // 2. Optionally send an SMS if push notification is not available
+        // 3. Log the notification in the database
+        
+        // For now, we'll just log it
+        log.info("Order notification sent to biker {} for order {}", 
+                biker.getBikerId(), orderNumber);
+    }
+    
     public void sendPaymentConfirmation(String customerEmail, Long orderId, Float amount, String transactionId) {
         log.info("Sending payment confirmation for order {} to {}", orderId, customerEmail);
         

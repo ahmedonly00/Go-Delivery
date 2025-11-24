@@ -160,4 +160,19 @@ public class BikerController {
                 bikerService.getCustomerInteractionDetails(orderId, bikerId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping(value = "/{bikerId}/deliveryHistory")
+    @PreAuthorize("hasRole('BIKER')")
+    public ResponseEntity<List<OrderResponse>> getDeliveryHistory(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long bikerId) {
+        log.info("Getting delivery history for biker {}", userDetails.getUsername());
+        List<Order> orders = bikerService.getDeliveryHistory(bikerId);
+        List<OrderResponse> orderResponses = orders.stream()
+                .map(orderMapper::toOrderResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(orderResponses);
+    }
+
+    
 }
