@@ -2,10 +2,7 @@ package com.goDelivery.goDelivery.model;
 
 import com.goDelivery.goDelivery.Enum.Roles;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -49,11 +46,9 @@ public class RestaurantUsers implements CustomUserDetails {
     @Column(name = "email_verified")
     private boolean emailVerified;
 
-    @Builder.Default
     @Column(name = "is_active")
-    private boolean isActive = true;
-    
-    
+    private boolean isActive;
+
     @Builder.Default
     @Column(name = "setup_complete")
     private boolean setupComplete = false;  
