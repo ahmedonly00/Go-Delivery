@@ -47,15 +47,21 @@ public class MomoConfig {
     }
     
     public String getCollectionBaseUrl() {
-        return baseUrl + "collection/v1_0";
+        return baseUrl + "collection/";
     }
     
     public String getDisbursementBaseUrl() {
-        return baseUrl + "disbursement/v1_0";
+        return baseUrl + "disbursement/";
     }
     
     public String getAuthUrl() {
         // The auth endpoint is typically at /collection/token/ for both sandbox and production
-        return baseUrl + "collection/token/";
+        return baseUrl + "collection/";
     }
+
+    // private void validateBaseUrl() {
+    //     if (baseUrl == null || baseUrl.isBlank()) {
+    //         throw new IllegalStateException("MoMo base URL is not configured");
+    //     }
+    // }
 }

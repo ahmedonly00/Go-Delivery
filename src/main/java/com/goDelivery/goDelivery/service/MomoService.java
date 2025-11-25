@@ -282,7 +282,7 @@ public class MomoService {
      * Generate an authentication token from MoMo API using username and password
      */
     private String generateAuthToken() {
-        String authUrl = momoConfig.getAuthUrl();
+        String authUrl = momoConfig.getAuthUrl() + "/auth/login";
         
         try {
             // Log the configuration being used (without sensitive data)
