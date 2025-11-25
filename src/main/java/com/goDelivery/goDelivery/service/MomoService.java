@@ -282,23 +282,28 @@ public class MomoService {
      * Generate an authentication token from MoMo API using username and password
      */
     private String generateAuthToken() {
+        String authUrl = momoConfig.getAuthUrl();
+        
         try {
-            String authUrl = momoConfig.getAuthUrl();
+            // Log the configuration being used (without sensitive data)
+            log.info("Attempting to authenticate with MoMo API");
+            log.debug("Auth URL: {}", authUrl);
+            log.debug("Environment: {}", momoConfig.getEnvironment());
             
-            // Create login request
-            Map<String, String> loginRequest = new HashMap<>();
-            loginRequest.put("username", momoConfig.getUsername());
-            loginRequest.put("password", momoConfig.getPassword());
-            
-            // Set headers
+            // Create login request with Basic Auth
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Ocp-Apim-Subscription-Key", momoConfig.getSubscriptionKey());
             
-            // Create HTTP entity with login request
-            HttpEntity<Map<String, String>> entity = new HttpEntity<>(loginRequest, headers);
+            // For Basic Auth, the format is "Basic base64(username:password)"
+            String authString = momoConfig.getUsername() + ":" + momoConfig.getPassword();
+            String base64Auth = java.util.Base64.getEncoder().encodeToString(authString.getBytes());
+            headers.set("Authorization", "Basic " + base64Auth);
             
-            log.info("Requesting auth token from: {}", authUrl);
+            // Create HTTP entity with empty body and auth headers
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            
+            log.debug("Sending authentication request to: {}", authUrl);
             
             // Make the authentication request
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
@@ -308,27 +313,49 @@ public class MomoService {
                 new ParameterizedTypeReference<Map<String, Object>>() {}
             );
             
+            log.debug("Auth response status: {}", response.getStatusCode());
+            
+            if (response.getStatusCode() == HttpStatus.FORBIDDEN) {
+                log.error("Authentication failed with 403 Forbidden. Please check:");
+                log.error("1. Subscription Key: {}", momoConfig.getSubscriptionKey());
+                log.error("2. Username/Password: {}:******", momoConfig.getUsername());
+                log.error("3. Environment: {}", momoConfig.getEnvironment());
+                throw new RuntimeException("Authentication failed: Invalid credentials or insufficient permissions");
+            }
+            
             if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-                log.error("Failed to get auth token. Status: {}, Body: {}", 
+                log.error("Failed to get auth token. Status: {}, Headers: {}, Body: {}", 
                          response.getStatusCode(), 
+                         response.getHeaders(),
                          response.getBody());
                 throw new RuntimeException("Failed to get auth token. Status: " + response.getStatusCode());
             }
             
             // Safely get the JWT token from the response
             Map<String, Object> responseBody = response.getBody();
-            Object token = responseBody.get("token");
+            log.debug("Auth response body: {}", responseBody);
             
-            if (token != null && token instanceof String && !((String) token).isBlank()) {
-                log.info("Successfully obtained JWT token");
-                return (String) token;
+            // Check for different possible token field names in the response
+            String token = null;
+            String[] possibleTokenFields = {"access_token", "token", "jwt"};
+            
+            for (String field : possibleTokenFields) {
+                if (responseBody.containsKey(field) && responseBody.get(field) != null) {
+                    token = responseBody.get(field).toString();
+                    break;
+                }
             }
             
-            log.error("Invalid or missing JWT token in response: {}", responseBody);
-            throw new RuntimeException("Invalid or missing JWT token in response");
+            if (token != null && !token.isBlank()) {
+                log.info("Successfully obtained JWT token");
+                return token;
+            }
+            
+            log.error("No valid token found in response. Response body: {}", responseBody);
+            throw new RuntimeException("No valid token found in authentication response");
             
         } catch (Exception e) {
-            log.error("Error generating JWT auth token", e);
+            log.error("Error generating JWT auth token. URL: {}", authUrl, e);
             throw new RuntimeException("JWT Authentication failed: " + e.getMessage(), e);
         }
     }
