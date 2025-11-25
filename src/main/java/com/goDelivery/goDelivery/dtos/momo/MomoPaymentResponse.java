@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -14,11 +13,11 @@ public class MomoPaymentResponse {
     private boolean success;
     private String status;
     private String message;
-    private BigDecimal amount;
+    private Float amount;
     private String currency;
     private String externalId;
 
-    public static MomoPaymentResponse success(String referenceId, String externalId, BigDecimal amount) {
+    public static MomoPaymentResponse success(String referenceId, String externalId, Float amount) {
         MomoPaymentResponse response = new MomoPaymentResponse();
         response.setSuccess(true);
         response.setReferenceId(referenceId);

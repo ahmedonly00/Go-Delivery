@@ -139,7 +139,7 @@ public class MomoService {
                 throw new RuntimeException("Failed to initiate payment: " + response.getBody());
             }
             
-            return MomoPaymentResponse.success(transaction.getExternalId(), request.getAmount());
+            return MomoPaymentResponse.success(transaction.getReferenceId(), transaction.getExternalId(), request.getAmount().floatValue());
             
         } catch (Exception e) {
             log.error("Error requesting payment from MoMo API", e);
