@@ -69,7 +69,7 @@ public class SecurityConfig {
                         // Webhooks
                         "/api/webhooks/**",
                         "/api/v1/payments/mpesa/webhook",
-                        "/api/v1/payments/momo/webhook",
+                        "/api/v1/momo/webhook/callback",
                         
                         // Public API endpoints
                         "/api/files/**",
