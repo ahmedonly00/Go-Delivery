@@ -47,6 +47,12 @@ public class MomoService {
      * Request payment from a customer's mobile money account
      */
     public MomoPaymentResponse requestPayment(MomoPaymentRequest request) {
+        // Check if MoMo is configured
+        if (momoConfig.getUsername() == null || momoConfig.getUsername().isBlank()) {
+            log.warn("MoMo payment is not configured. Please provide MoMo credentials in application.properties");
+            return MomoPaymentResponse.error("MoMo payment is not configured");
+        }
+        
         // Check for duplicate external ID
         if (momoTransactionRepository.existsByExternalId(request.getExternalId())) {
             throw new RuntimeException("Transaction with this external ID already exists");
@@ -66,12 +72,21 @@ public class MomoService {
             // Generate JWT auth token
             String authToken = generateAuthToken();
             
+            if (authToken == null) {
+                throw new RuntimeException("Failed to authenticate with MoMo API: No token received");
+            }
+            
             // Prepare request headers for payment request
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Authorization", "Bearer " + authToken);
             headers.set("X-Target-Environment", momoConfig.getEnvironment());
-            headers.set("Ocp-Apim-Subscription-Key", momoConfig.getSubscriptionKey());
+            
+            // Only add subscription key if it's configured
+            if (momoConfig.getSubscriptionKey() != null && !momoConfig.getSubscriptionKey().isEmpty()) {
+                headers.set("Ocp-Apim-Subscription-Key", momoConfig.getSubscriptionKey());
+            }
+            
             headers.set("X-Reference-Id", transaction.getReferenceId());
             headers.set("X-Callback-Url", transaction.getCallbackUrl());
             
@@ -282,7 +297,13 @@ public class MomoService {
      * Generate an authentication token from MoMo API using username and password
      */
     private String generateAuthToken() {
-        String authUrl = momoConfig.getAuthUrl() + "/auth/login";
+        // Check if credentials are provided
+        if (momoConfig.getUsername() == null || momoConfig.getUsername().isBlank()) {
+            log.warn("No MoMo username configured. Skipping authentication.");
+            return null;
+        }
+        
+        String authUrl = momoConfig.getAuthUrl();
         
         try {
             // Log the configuration being used (without sensitive data)
@@ -293,7 +314,11 @@ public class MomoService {
             // Create login request with Basic Auth
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Ocp-Apim-Subscription-Key", momoConfig.getSubscriptionKey());
+            
+            // Only add subscription key if it's configured
+            if (momoConfig.getSubscriptionKey() != null && !momoConfig.getSubscriptionKey().isEmpty()) {
+                headers.set("Ocp-Apim-Subscription-Key", momoConfig.getSubscriptionKey());
+            }
             
             // For Basic Auth, the format is "Basic base64(username:password)"
             String authString = momoConfig.getUsername() + ":" + momoConfig.getPassword();

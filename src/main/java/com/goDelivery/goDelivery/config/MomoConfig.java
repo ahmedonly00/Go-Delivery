@@ -19,13 +19,10 @@ public class MomoConfig {
     @NotBlank(message = "MoMo base URL is required")
     private String baseUrl;
     
-    @NotBlank(message = "MoMo username is required")
-    private String username;
+    private String username = "";
+    private String password = "";
     
-    @NotBlank(message = "MoMo password is required")
-    private String password;
-    
-    @NotBlank(message = "MoMo subscription key is required")
+    // Subscription key is optional when using username/password authentication
     private String subscriptionKey;
     
     @NotBlank(message = "MoMo environment is required")
@@ -41,22 +38,32 @@ public class MomoConfig {
         log.info("Environment: {}", environment);
         log.info("Callback Host: {}", callbackHost);
         
+        // Only validate required fields if username is provided
+        if (username != null && !username.isBlank()) {
+            log.info("Using username/password authentication");
+            if (password == null || password.isBlank()) {
+                log.warn("Username is provided but password is empty");
+            }
+        } else {
+            log.warn("No MoMo username provided. MoMo payment features will be disabled.");
+        }
+        
         if (!baseUrl.endsWith("/")) {
             baseUrl = baseUrl + "/";
         }
     }
     
     public String getCollectionBaseUrl() {
-        return baseUrl + "collection/";
+        return baseUrl.endsWith("/") ? baseUrl + "collection/" : baseUrl + "/collection/";
     }
     
     public String getDisbursementBaseUrl() {
-        return baseUrl + "disbursement/";
+        return baseUrl.endsWith("/") ? baseUrl + "disbursement/" : baseUrl + "/disbursement/";
     }
     
     public String getAuthUrl() {
         // The auth endpoint is typically at /collection/token/ for both sandbox and production
-        return baseUrl + "collection/";
+        return (baseUrl.endsWith("/") ? baseUrl : baseUrl + "/") + "collection/token/";
     }
 
     // private void validateBaseUrl() {
