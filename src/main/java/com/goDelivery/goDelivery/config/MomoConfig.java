@@ -63,7 +63,7 @@ public class MomoConfig {
     
     public String getAuthUrl() {
         // The auth endpoint is typically at /collection/token/ for both sandbox and production
-        return (baseUrl.endsWith("/") ? baseUrl : baseUrl + "/") + "collection/token/";
+        return (baseUrl.endsWith("/") ? baseUrl : baseUrl + "/") + "collection/auth/login";
     }
 
     // private void validateBaseUrl() {
