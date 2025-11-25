@@ -10,11 +10,9 @@ import lombok.Data;
 @Data
 public class MomoConfig {
     private String baseUrl;
-    private String apiKey;
-    private String apiSecret;
+    private String username;
+    private String password;
     private String subscriptionKey;
-    private String collectionPrimaryKey;
-    private String disbursementPrimaryKey;
     private String environment; // sandbox or production
     private String callbackHost;
     
@@ -24,5 +22,9 @@ public class MomoConfig {
     
     public String getDisbursementBaseUrl() {
         return baseUrl + "/disbursement/v1_0";
+    }
+    
+    public String getAuthUrl() {
+        return baseUrl + "/auth/token";
     }
 }

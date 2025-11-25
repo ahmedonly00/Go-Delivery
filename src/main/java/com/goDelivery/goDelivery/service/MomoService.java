@@ -24,7 +24,6 @@ import org.springframework.core.ParameterizedTypeReference;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -64,10 +63,10 @@ public class MomoService {
         transaction.setCallbackUrl(request.getCallback());
         
         try {
-            // Generate auth token
+            // Generate JWT auth token
             String authToken = generateAuthToken();
             
-            // Prepare request headers
+            // Prepare request headers for payment request
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Authorization", "Bearer " + authToken);
@@ -76,14 +75,17 @@ public class MomoService {
             headers.set("X-Reference-Id", transaction.getReferenceId());
             headers.set("X-Callback-Url", transaction.getCallbackUrl());
             
-            // Prepare request body
+            // Format the phone number to remove any non-digit characters
+            String formattedMsisdn = request.getMsisdn().replaceAll("[^0-9]", "");
+            
+            // Prepare request body according to MoMo API requirements
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("amount", transaction.getAmount());
             requestBody.put("currency", "RWF");
             requestBody.put("externalId", transaction.getExternalId());
             requestBody.put("payer", Map.of(
                 "partyIdType", "MSISDN",
-                "partyId", transaction.getMsisdn()
+                "partyId", formattedMsisdn
             ));
             requestBody.put("payerMessage", request.getPayerMessageTitle());
             requestBody.put("payeeNote", request.getPayerMessageDescription());
@@ -96,6 +98,7 @@ public class MomoService {
             log.debug("Request headers: {}", headers);
             log.debug("Request body: {}", requestBody);
             
+            // Make the payment request
             ResponseEntity<String> response = restTemplate.exchange(
                 apiUrl,
                 HttpMethod.POST,
@@ -276,19 +279,28 @@ public class MomoService {
     }
 
     /**
-     * Handle business logic when a transaction is updated
+     * Generate an authentication token from MoMo API using username and password
      */
     private String generateAuthToken() {
         try {
-            String authUrl = momoConfig.getCollectionBaseUrl() + "/token/";
-            String auth = momoConfig.getApiKey() + ":" + momoConfig.getApiSecret();
-            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            String authUrl = momoConfig.getAuthUrl();
             
+            // Create login request
+            Map<String, String> loginRequest = new HashMap<>();
+            loginRequest.put("username", momoConfig.getUsername());
+            loginRequest.put("password", momoConfig.getPassword());
+            
+            // Set headers
             HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Basic " + encodedAuth);
+            headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Ocp-Apim-Subscription-Key", momoConfig.getSubscriptionKey());
             
-            HttpEntity<String> entity = new HttpEntity<>(headers);
+            // Create HTTP entity with login request
+            HttpEntity<Map<String, String>> entity = new HttpEntity<>(loginRequest, headers);
+            
+            log.info("Requesting auth token from: {}", authUrl);
+            
+            // Make the authentication request
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 authUrl,
                 HttpMethod.POST,
@@ -297,22 +309,27 @@ public class MomoService {
             );
             
             if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
+                log.error("Failed to get auth token. Status: {}, Body: {}", 
+                         response.getStatusCode(), 
+                         response.getBody());
                 throw new RuntimeException("Failed to get auth token. Status: " + response.getStatusCode());
             }
             
-            // Safely get the access token from the response
+            // Safely get the JWT token from the response
             Map<String, Object> responseBody = response.getBody();
-            Object token = responseBody.get("access_token");
+            Object token = responseBody.get("token");
             
-            if (token instanceof String && !((String) token).isBlank()) {
+            if (token != null && token instanceof String && !((String) token).isBlank()) {
+                log.info("Successfully obtained JWT token");
                 return (String) token;
             }
             
-            log.error("Invalid or missing access token in response: {}", responseBody);
-            throw new RuntimeException("Invalid or missing access token in response");
+            log.error("Invalid or missing JWT token in response: {}", responseBody);
+            throw new RuntimeException("Invalid or missing JWT token in response");
+            
         } catch (Exception e) {
-            log.error("Error generating auth token", e);
-            throw new RuntimeException("Authentication failed", e);
+            log.error("Error generating JWT auth token", e);
+            throw new RuntimeException("JWT Authentication failed: " + e.getMessage(), e);
         }
     }
     
