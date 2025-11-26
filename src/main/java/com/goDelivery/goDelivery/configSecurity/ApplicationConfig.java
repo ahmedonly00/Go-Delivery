@@ -35,8 +35,6 @@ public class ApplicationConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        // In Spring Security 6.x, the recommended approach is to use the constructor with UserDetailsService and PasswordEncoder
-        // and then set any additional properties if needed
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
