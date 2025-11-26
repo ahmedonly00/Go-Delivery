@@ -69,6 +69,8 @@ public class PaymentService {
                     return processCardPayment(payment);
                 case CASH:
                     return processCashPayment(payment);
+                case MOMO:
+                    return processMomoPayment(payment);
                 default:
                     throw new IllegalArgumentException("Unsupported payment method: " + paymentRequest.getPaymentMethod());
             }
@@ -157,7 +159,6 @@ public class PaymentService {
             throw new RuntimeException("Failed to process MPESA payment: " + e.getMessage(), e);
         }
     }
-
 
     public void handleMpesaWebhook(MpesaWebhookRequest webhookRequest) {
         log.info("Processing MPESA webhook: {}", webhookRequest);
@@ -485,11 +486,67 @@ public class PaymentService {
         return paymentMapper.toDto(payment);
     }
 
-    // private PaymentResponse processMomoPayment(Payment payment) {
-    //     log.info("Processing Momo payment");
-    //     payment.setPaymentStatus(PaymentStatus.PENDING);
-    //     payment.setGateWayResponse("Payment will be processed on delivery");
-    //     payment = paymentRepository.save(payment);
-    //     return paymentMapper.toDto(payment);
-    // }
+    private PaymentResponse processMomoPayment(Payment payment) {
+        log.info("Processing MoMo payment for order: {}", payment.getOrder().getOrderId());
+        
+        try {
+            // Get order details
+            Order order = payment.getOrder();
+            
+            // Create MoMo payment request
+            MomoPaymentRequest momoRequest = new MomoPaymentRequest();
+            momoRequest.setMsisdn(payment.getPhoneNumber());
+            momoRequest.setAmount(payment.getAmount().floatValue());
+            
+            // Set callback URL for webhook
+            String webhookUrl = env.getProperty("app.base-url") + "/api/v1/payments/momo/webhook";
+            momoRequest.setCallback(webhookUrl);
+            
+            // Set external ID (order ID)
+            String externalId = "ORDER_" + order.getOrderId();
+            momoRequest.setExternalId(externalId);
+            
+            // Set payment message
+            momoRequest.setPayerMessageTitle("Moz Food Order #" + order.getOrderId());
+            momoRequest.setPayerMessageDescription("Payment for order #" + order.getOrderId());
+            
+            // Initiate MoMo payment
+            MomoPaymentResponse momoResponse = momoService.requestPayment(momoRequest);
+            
+            if (momoResponse != null && momoResponse.getReferenceId() != null) {
+                // Payment initiated successfully
+                payment.setTransactionId(momoResponse.getReferenceId());
+                payment.setPaymentStatus(PaymentStatus.PENDING);
+                payment.setGateWayResponse("MoMo payment initiated. Reference ID: " + momoResponse.getReferenceId());
+                
+                // Save payment with transaction ID for future reference
+                payment = paymentRepository.save(payment);
+                
+                // Return response with payment instructions
+                PaymentResponse response = paymentMapper.toDto(payment);
+                response.setMessage("Please complete the payment on your phone. You will receive an MoMo prompt.");
+                return response;
+            } else {
+                // Handle MoMo API error
+                String errorMsg = momoResponse != null ? 
+                    "Failed to initiate MoMo payment. " + 
+                    (momoResponse.getMessage() != null ? momoResponse.getMessage() : "Unknown error") : 
+                    "Failed to initiate MoMo payment: No response from payment gateway";
+                
+                log.error(errorMsg);
+                payment.setPaymentStatus(PaymentStatus.FAILED);
+                payment.setGateWayResponse(errorMsg);
+                paymentRepository.save(payment);
+                
+                throw new RuntimeException(errorMsg);
+            }
+        } catch (Exception e) {
+            log.error("Error processing MoMo payment: {}", e.getMessage(), e);
+            payment.setPaymentStatus(PaymentStatus.FAILED);
+            payment.setGateWayResponse("Error processing MoMo payment: " + e.getMessage());
+            paymentRepository.save(payment);
+            
+            throw new RuntimeException("Failed to process MoMo payment: " + e.getMessage(), e);
+        }
+    }
 }

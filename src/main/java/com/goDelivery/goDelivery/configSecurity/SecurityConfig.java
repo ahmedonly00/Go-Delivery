@@ -69,7 +69,7 @@ public class SecurityConfig {
                         // Webhooks
                         "/api/webhooks/**",
                         "/api/v1/payments/mpesa/webhook",
-                        "/api/v1/momo/webhook/callback",
+                        "/api/v1/payments/momo/webhook",
                         
                         // Public API endpoints
                         "/api/files/**",
@@ -109,12 +109,12 @@ public class SecurityConfig {
                         "/api/locations/**"
                     ).hasRole("CUSTOMER")
                     
-                    // MPESA endpoints
+                    // MPESA and MoMo endpoints
                     .requestMatchers(
                         "/api/v1/payments/mpesa/initiate",
                         "/api/v1/payments/mpesa/status/**",
-                        "/api/v1/momo/collection/request",
-                        "/api/v1/momo/collection/status/**"
+                        "/api/v1/payments/momo/request",
+                        "/api/v1/payments/momo/status/**"
                     ).authenticated()
                     
                     // Restaurant Admin endpoints

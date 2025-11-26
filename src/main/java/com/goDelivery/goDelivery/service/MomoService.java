@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 
@@ -80,66 +81,67 @@ public class MomoService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Authorization", "Bearer " + authToken);
-            headers.set("X-Target-Environment", momoConfig.getEnvironment());
-            
-            // Only add subscription key if it's configured
-            if (momoConfig.getSubscriptionKey() != null && !momoConfig.getSubscriptionKey().isEmpty()) {
-                headers.set("Ocp-Apim-Subscription-Key", momoConfig.getSubscriptionKey());
-            }
-            
-            headers.set("X-Reference-Id", transaction.getReferenceId());
-            headers.set("X-Callback-Url", transaction.getCallbackUrl());
             
             // Format the phone number to remove any non-digit characters
             String formattedMsisdn = request.getMsisdn().replaceAll("[^0-9]", "");
             
-            // Prepare request body according to MoMo API requirements
+            // Prepare request body according to MoMo API documentation
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("amount", transaction.getAmount());
-            requestBody.put("currency", "RWF");
             requestBody.put("externalId", transaction.getExternalId());
-            requestBody.put("payer", Map.of(
-                "partyIdType", "MSISDN",
-                "partyId", formattedMsisdn
-            ));
-            requestBody.put("payerMessage", request.getPayerMessageTitle());
-            requestBody.put("payeeNote", request.getPayerMessageDescription());
+            requestBody.put("msisdn", formattedMsisdn);
+            requestBody.put("amount", transaction.getAmount().doubleValue());
+            requestBody.put("callback", transaction.getCallbackUrl());
+            requestBody.put("payerMessageTitle", request.getPayerMessageTitle());
+            requestBody.put("payerMessageDescription", request.getPayerMessageDescription());
             
             // Make API call to request payment
-            String apiUrl = momoConfig.getCollectionBaseUrl() + "/requesttopay";
+            String apiUrl = momoConfig.getCollectionUrl();
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
             
             log.info("Sending payment request to MoMo API: {}", apiUrl);
-            log.debug("Request headers: {}", headers);
             log.debug("Request body: {}", requestBody);
             
             // Make the payment request
-            ResponseEntity<String> response = restTemplate.exchange(
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 apiUrl,
                 HttpMethod.POST,
                 entity,
-                String.class
+                new ParameterizedTypeReference<Map<String, Object>>() {}
             );
             
             // Save transaction with updated details
-            transaction.setApiResponse(response.getBody());
+            transaction.setApiResponse(response.getBody() != null ? response.getBody().toString() : "");
             transaction.setStatusCode(response.getStatusCode().value());
             momoTransactionRepository.save(transaction);
             
             log.info("MoMo API response status: {}", response.getStatusCode());
             log.debug("MoMo API response body: {}", response.getBody());
             
-            // Start polling for status updates
-            if (response.getStatusCode() == HttpStatus.ACCEPTED) {
+            // Start polling for status updates if request was successful
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                Map<String, Object> responseBody = response.getBody();
+                
+                // Update transaction with response data
+                if (responseBody.containsKey("referenceId")) {
+                    transaction.setReferenceId((String) responseBody.get("referenceId"));
+                }
+                
+                momoTransactionRepository.save(transaction);
+                
+                // Start polling
                 pollTransactionStatus(transaction.getReferenceId());
+                
+                return MomoPaymentResponse.success(
+                    transaction.getReferenceId(), 
+                    transaction.getExternalId(), 
+                    request.getAmount().floatValue()
+                );
             } else {
                 transaction.setStatus(TransactionStatus.FAILED);
                 transaction.setErrorReason("Failed to initiate payment: " + response.getStatusCode());
                 momoTransactionRepository.save(transaction);
                 throw new RuntimeException("Failed to initiate payment: " + response.getBody());
             }
-            
-            return MomoPaymentResponse.success(transaction.getReferenceId(), transaction.getExternalId(), request.getAmount().floatValue());
             
         } catch (Exception e) {
             log.error("Error requesting payment from MoMo API", e);
@@ -190,28 +192,33 @@ public class MomoService {
     public CompletableFuture<Void> pollTransactionStatus(String referenceId) {
         return momoTransactionRepository.findByReferenceId(referenceId)
             .map(transaction -> CompletableFuture.runAsync(() -> {
-                int maxAttempts = 10; // Maximum number of polling attempts
+                int maxAttempts = 120; // Poll for up to 60 minutes (120 * 30 seconds)
                 int attempt = 0;
-                long delayMs = 5000; // Start with 5 seconds delay
+                long delayMs = 30000; // 30 seconds between polls (as per documentation)
+
+                log.info("Starting status polling for transaction: {}", referenceId);
 
                 while (attempt < maxAttempts) {
                     try {
                         // Generate new auth token for each attempt
                         String authToken = generateAuthToken();
                         
+                        if (authToken == null) {
+                            log.error("Failed to get auth token for polling attempt {}", attempt);
+                            break;
+                        }
+                        
                         // Prepare headers
                         HttpHeaders headers = new HttpHeaders();
                         headers.set("Authorization", "Bearer " + authToken);
-                        headers.set("Ocp-Apim-Subscription-Key", momoConfig.getSubscriptionKey());
-                        headers.set("X-Target-Environment", momoConfig.getEnvironment());
                         
-                        // Build request
-                        String statusUrl = momoConfig.getCollectionBaseUrl() + 
-                                         "/requesttopay/" + transaction.getReferenceId();
+                        // Build request URL
+                        String statusUrl = momoConfig.getCollectionStatusUrl(transaction.getReferenceId());
                         
                         HttpEntity<Void> entity = new HttpEntity<>(headers);
                         
-                        log.debug("Checking payment status for reference: {}", referenceId);
+                        log.debug("Checking payment status for reference: {} (attempt {}/{})", 
+                            referenceId, attempt + 1, maxAttempts);
                         
                         // Make API call to check status
                         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
@@ -225,6 +232,8 @@ public class MomoService {
                             Map<String, Object> statusResponse = response.getBody();
                             String status = (String) statusResponse.get("status");
                             
+                            log.debug("Status check response for {}: {}", referenceId, status);
+                            
                             // Update transaction status based on response
                             updateTransactionStatus(transaction, status, statusResponse);
                             
@@ -236,26 +245,29 @@ public class MomoService {
                             }
                         }
 
-                        // Exponential backoff for next poll
+                        // Wait before next poll
                         attempt++;
                         if (attempt < maxAttempts) {
-                            long delay = delayMs * (long) Math.pow(2, attempt - 1);
                             log.debug("Will check status again in {}ms (attempt {}/{})", 
-                                     delay, attempt + 1, maxAttempts);
-                            Thread.sleep(delay);
+                                     delayMs, attempt + 1, maxAttempts);
+                            Thread.sleep(delayMs);
                         }
                         
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
+                        log.error("Polling interrupted for transaction: {}", referenceId);
                         throw new RuntimeException("Polling interrupted", ie);
                     } catch (Exception e) {
-                        log.error("Error checking payment status for reference: " + referenceId, e);
+                        log.error("Error checking payment status for reference: {} (attempt {})", 
+                            referenceId, attempt, e);
                         attempt++;
-                        try {
-                            Thread.sleep(delayMs); // Wait before retry on error
-                        } catch (InterruptedException ie) {
-                            Thread.currentThread().interrupt();
-                            throw new RuntimeException("Polling interrupted during error handling", ie);
+                        if (attempt < maxAttempts) {
+                            try {
+                                Thread.sleep(delayMs);
+                            } catch (InterruptedException ie) {
+                                Thread.currentThread().interrupt();
+                                throw new RuntimeException("Polling interrupted during error handling", ie);
+                            }
                         }
                     }
                 }
@@ -266,31 +278,12 @@ public class MomoService {
                     transaction.setErrorReason("Max polling attempts reached without final status");
                     momoTransactionRepository.save(transaction);
                     log.warn("Max polling attempts reached for transaction: {}", referenceId);
+                    
+                    // Trigger update handler for failed transaction
+                    handleTransactionUpdate(transaction);
                 }
             }))
             .orElse(CompletableFuture.completedFuture(null));
-    }
-
-    private MomoTransactionStatus mapToTransactionStatus(MomoTransaction transaction) {
-        MomoTransactionStatus status = new MomoTransactionStatus();
-        status.setReferenceId(transaction.getReferenceId());
-        status.setStatus(transaction.getStatus().name());
-        status.setAmount(transaction.getAmount().doubleValue());
-        status.setCurrency(transaction.getCurrency());
-        status.setFinancialTransactionId(transaction.getFinancialTransactionId());
-        status.setExternalId(transaction.getExternalId());
-        status.setErrorReason(transaction.getErrorReason());
-        status.setTimestamp(transaction.getUpdatedAt());
-        return status;
-    }
-
-    private TransactionStatus mapToTransactionStatus(String status) {
-        try {
-            return TransactionStatus.valueOf(status);
-        } catch (IllegalArgumentException e) {
-            log.warn("Unknown transaction status: {}", status);
-            return TransactionStatus.FAILED;
-        }
     }
 
     /**
@@ -306,29 +299,21 @@ public class MomoService {
         String authUrl = momoConfig.getAuthUrl();
         
         try {
-            // Log the configuration being used (without sensitive data)
             log.info("Attempting to authenticate with MoMo API");
             log.debug("Auth URL: {}", authUrl);
-            log.debug("Environment: {}", momoConfig.getEnvironment());
+            log.debug("Username: {}", momoConfig.getUsername());
             
-            // Create login request with Basic Auth
+            // Create JSON request body with username and password
+            Map<String, String> authRequest = new HashMap<>();
+            authRequest.put("username", momoConfig.getUsername());
+            authRequest.put("password", momoConfig.getPassword());
+            
+            // Create headers
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             
-            // Only add subscription key if it's configured
-            if (momoConfig.getSubscriptionKey() != null && !momoConfig.getSubscriptionKey().isEmpty()) {
-                headers.set("Ocp-Apim-Subscription-Key", momoConfig.getSubscriptionKey());
-            }
-            
-            // For Basic Auth, the format is "Basic base64(username:password)"
-            String authString = momoConfig.getUsername() + ":" + momoConfig.getPassword();
-            String base64Auth = java.util.Base64.getEncoder().encodeToString(authString.getBytes());
-            headers.set("Authorization", "Basic " + base64Auth);
-            
-            // Create HTTP entity with empty body and auth headers
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-            
-            log.debug("Sending authentication request to: {}", authUrl);
+            // Create HTTP entity with JSON body
+            HttpEntity<Map<String, String>> entity = new HttpEntity<>(authRequest, headers);
             
             // Make the authentication request
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
@@ -338,54 +323,82 @@ public class MomoService {
                 new ParameterizedTypeReference<Map<String, Object>>() {}
             );
             
-            log.debug("Auth response status: {}", response.getStatusCode());
+            log.info("Auth response status: {}", response.getStatusCode());
             
-            if (response.getStatusCode() == HttpStatus.FORBIDDEN) {
-                log.error("Authentication failed with 403 Forbidden. Please check:");
-                log.error("1. Subscription Key: {}", momoConfig.getSubscriptionKey());
-                log.error("2. Username/Password: {}:******", momoConfig.getUsername());
-                log.error("3. Environment: {}", momoConfig.getEnvironment());
-                throw new RuntimeException("Authentication failed: Invalid credentials or insufficient permissions");
+            // Check response status
+            if (response.getStatusCode() != HttpStatus.OK) {
+                String errorMsg = String.format(
+                    "Authentication failed with status %s. Please check your credentials.", 
+                    response.getStatusCode()
+                );
+                log.error(errorMsg);
+                throw new RuntimeException(errorMsg);
             }
             
-            if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-                log.error("Failed to get auth token. Status: {}, Headers: {}, Body: {}", 
-                         response.getStatusCode(), 
-                         response.getHeaders(),
-                         response.getBody());
-                throw new RuntimeException("Failed to get auth token. Status: " + response.getStatusCode());
-            }
-            
-            // Safely get the JWT token from the response
+            // Get response body
             Map<String, Object> responseBody = response.getBody();
-            log.debug("Auth response body: {}", responseBody);
+            if (responseBody == null) {
+                log.error("Empty response body from authentication endpoint");
+                throw new RuntimeException("Empty response from authentication endpoint");
+            }
             
-            // Check for different possible token field names in the response
+            log.debug("Auth response body keys: {}", responseBody.keySet());
+            
+            // Extract token - the API returns "token" field according to documentation
             String token = null;
-            String[] possibleTokenFields = {"access_token", "token", "jwt"};
             
-            for (String field : possibleTokenFields) {
-                if (responseBody.containsKey(field) && responseBody.get(field) != null) {
-                    token = responseBody.get(field).toString();
-                    break;
-                }
+            if (responseBody.containsKey("token")) {
+                token = (String) responseBody.get("token");
+            } else if (responseBody.containsKey("access_token")) {
+                token = (String) responseBody.get("access_token");
             }
             
-            if (token != null && !token.isBlank()) {
-                log.info("Successfully obtained JWT token");
-                return token;
+            if (token == null || token.isEmpty()) {
+                log.error("No token found in response. Available keys: {}", responseBody.keySet());
+                throw new RuntimeException("No token found in authentication response");
             }
             
-            log.error("No valid token found in response. Response body: {}", responseBody);
-            throw new RuntimeException("No valid token found in authentication response");
+            log.info("Successfully obtained authentication token");
+            log.debug("Token prefix: {}...", token.substring(0, Math.min(20, token.length())));
+            
+            return token;
+            
+        } catch (HttpClientErrorException.Forbidden e) {
+            String errorMsg = String.format("""
+                Authentication failed with 403 Forbidden.
+                URL: %s
+                Username: %s
+                
+                Possible issues:
+                1. Invalid username or password
+                2. User account doesn't have required permissions (COLLECTION_REQUEST)
+                3. Account may be locked or disabled
+                
+                Response: %s
+                """, 
+                authUrl, 
+                momoConfig.getUsername(),
+                e.getResponseBodyAsString()
+            );
+            log.error(errorMsg);
+            throw new RuntimeException("Authentication failed: Invalid credentials or insufficient permissions", e);
+            
+        } catch (HttpClientErrorException e) {
+            log.error("HTTP error during authentication: {} - {}", 
+                e.getStatusCode(), e.getResponseBodyAsString());
+            throw new RuntimeException("Authentication request failed: " + e.getMessage(), e);
             
         } catch (Exception e) {
-            log.error("Error generating JWT auth token. URL: {}", authUrl, e);
-            throw new RuntimeException("JWT Authentication failed: " + e.getMessage(), e);
+            log.error("Error during authentication request to {}", authUrl, e);
+            throw new RuntimeException("Authentication request failed: " + e.getMessage(), e);
         }
     }
-    
-    private void updateTransactionStatus(MomoTransaction transaction, String status, Map<String, Object> statusResponse) {
+
+    /**
+     * Update transaction status based on API response
+     */
+    private void updateTransactionStatus(MomoTransaction transaction, String status, 
+                                        Map<String, Object> statusResponse) {
         TransactionStatus newStatus = mapToTransactionStatus(status);
         transaction.setStatus(newStatus);
         
@@ -418,13 +431,18 @@ public class MomoService {
         handleTransactionUpdate(transaction);
     }
     
+    /**
+     * Check if status is final (no more polling needed)
+     */
     private boolean isFinalStatus(String status) {
         return "SUCCESSFUL".equalsIgnoreCase(status) || 
                "FAILED".equalsIgnoreCase(status) || 
                "CANCELLED".equalsIgnoreCase(status);
     }
     
-    
+    /**
+     * Handle transaction updates and trigger related business logic
+     */
     private void handleTransactionUpdate(MomoTransaction transaction) {
         log.info("Handling transaction update for {} with status {}", 
                 transaction.getReferenceId(), 
@@ -458,82 +476,71 @@ public class MomoService {
                     log.info("Order {} confirmed after successful payment", order.getOrderId());
                     
                     // Process the order after successful payment
-                    // Using CashierService to handle the order confirmation
                     try {
-                        // Use the configured default preparation time
                         int estimatedPrepTimeMinutes = orderConfig.getDefaultPreparationTimeMinutes();
                         log.debug("Using preparation time of {} minutes for order {}", 
                                 estimatedPrepTimeMinutes, order.getOrderId());
                         
-                        // Update order status to CONFIRMED and handle notifications
                         cashierService.acceptOrder(order.getOrderId(), estimatedPrepTimeMinutes);
                         log.info("Order {} successfully processed after payment", order.getOrderId());
                     } catch (Exception e) {
                         log.error("Failed to process order {} after payment: {}", 
                                 order.getOrderId(), e.getMessage(), e);
-                        // Even if processing fails, we don't want to mark the payment as failed
-                        // since the payment itself was successful
                     }
                     
                 } else if (transaction.getStatus() == TransactionStatus.FAILED) {
                     order.setPaymentStatus(PaymentStatus.FAILED);
                     order.setOrderStatus(OrderStatus.CANCELLED);
                     log.warn("Payment failed for order {}", order.getOrderId());
-                    
-                    // Notify customer about payment failure
-                    try {
-                        Map<String, Object> failureData = new HashMap<>();
-                        failureData.put("orderId", order.getOrderId().toString());
-                        failureData.put("error", transaction.getErrorReason());
-                        failureData.put("message", "We couldn't process your payment. Please try again or use a different payment method.");
-                        
-                        notificationService.sendEmail(
-                            order.getCustomer().getEmail(),
-                            "Payment Failed - Order #" + order.getOrderId(),
-                            "payment-failed",
-                            failureData
-                        );
-                    } catch (Exception ex) {
-                        log.error("Failed to send payment failure email for order {}", order.getOrderId(), ex);
-                    }
+                }
+                
+                orderRepository.save(order);
             }
-            
-            orderRepository.save(order);
-        }
 
-        // 3. Send appropriate notifications
-        sendTransactionNotifications(transaction);
+            // 3. Send appropriate notifications
+            sendTransactionNotifications(transaction);
 
-        // 4. Log the transaction update
-        log.info("Transaction {} processed with status: {}", 
-                transaction.getReferenceId(), 
-                transaction.getStatus());
+            // 4. Log the transaction update
+            log.info("Transaction {} processed with status: {}", 
+                    transaction.getReferenceId(), 
+                    transaction.getStatus());
 
-    } catch (Exception e) {
-        log.error("Error handling transaction update for {}", transaction.getReferenceId(), e);
-        // Send error notification to operations team
-        try {
-            Map<String, Object> errorData = new HashMap<>();
-            errorData.put("error", e.getMessage());
-            errorData.put("referenceId", transaction.getReferenceId());
-            errorData.put("message", String.format(
-                "An error occurred while processing transaction %s. Please check the logs for more details.", 
-                transaction.getReferenceId()
-            ));
-            
-            // Send to operations team email (replace with actual operations email from config)
-            notificationService.sendEmail(
-                "operations@mozfood.com",
-                "[Action Required] Transaction Update Error: " + transaction.getReferenceId(),
-                "error-alert",
-                errorData
-            );
-        } catch (Exception ex) {
-            log.error("Failed to send error notification for transaction {}", transaction.getReferenceId(), ex);
+        } catch (Exception e) {
+            log.error("Error handling transaction update for {}", transaction.getReferenceId(), e);
         }
     }
-}
 
+    /**
+     * Map transaction status from MoMo to internal transaction status
+     */
+    private MomoTransactionStatus mapToTransactionStatus(MomoTransaction transaction) {
+        MomoTransactionStatus status = new MomoTransactionStatus();
+        status.setReferenceId(transaction.getReferenceId());
+        status.setStatus(transaction.getStatus().name());
+        status.setAmount(transaction.getAmount().doubleValue());
+        status.setCurrency(transaction.getCurrency());
+        status.setFinancialTransactionId(transaction.getFinancialTransactionId());
+        status.setExternalId(transaction.getExternalId());
+        status.setErrorReason(transaction.getErrorReason());
+        status.setTimestamp(transaction.getUpdatedAt());
+        return status;
+    }
+
+    /**
+     * Map string status to TransactionStatus enum
+     */
+    private TransactionStatus mapToTransactionStatus(String status) {
+        try {
+            return TransactionStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            log.warn("Unknown transaction status: {}, defaulting to FAILED", status);
+            return TransactionStatus.FAILED;
+        }
+    }
+
+    /**
+     * Map TransactionStatus to PaymentStatus
+     */
     private PaymentStatus mapToPaymentStatus(TransactionStatus status) {
         return switch (status) {
             case SUCCESS -> PaymentStatus.PAID;
@@ -544,6 +551,9 @@ public class MomoService {
         };
     }
 
+    /**
+     * Send transaction notifications to customer
+     */
     private void sendTransactionNotifications(MomoTransaction transaction) {
         if (transaction.getOrder() == null || transaction.getOrder().getCustomer() == null) {
             return;
@@ -554,7 +564,6 @@ public class MomoService {
         
         switch (transaction.getStatus()) {
             case SUCCESS:
-                // Use sendPaymentConfirmation for successful payments
                 notificationService.sendPaymentConfirmation(
                     customerEmail,
                     Long.parseLong(orderId),
@@ -564,7 +573,6 @@ public class MomoService {
                 break;
                 
             case FAILED:
-                // For failed payments, use the generic sendEmail method
                 Map<String, Object> failureData = new HashMap<>();
                 failureData.put("orderId", orderId);
                 failureData.put("error", transaction.getErrorReason());
@@ -579,7 +587,6 @@ public class MomoService {
                 break;
                 
             case PENDING:
-                // For pending payments
                 Map<String, Object> pendingData = new HashMap<>();
                 pendingData.put("orderId", orderId);
                 pendingData.put("message", "Your payment is being processed. You will receive a confirmation once it's completed.");
@@ -593,7 +600,6 @@ public class MomoService {
                 break;
 
             case CANCELLED:
-                // For cancelled payments
                 Map<String, Object> cancelledData = new HashMap<>();
                 cancelledData.put("orderId", orderId);
                 cancelledData.put("message", "Your payment has been cancelled. If this was unexpected, please contact support.");
