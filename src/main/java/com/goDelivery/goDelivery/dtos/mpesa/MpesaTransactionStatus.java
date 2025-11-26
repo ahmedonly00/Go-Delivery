@@ -15,7 +15,7 @@ public class MpesaTransactionStatus {
     private String status;
     
     @JsonProperty("amount")
-    private Double amount;
+    private Float amount;
     
     @JsonProperty("msisdn")
     private String msisdn;

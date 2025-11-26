@@ -12,7 +12,7 @@ public class WebhookCallback {
     private String externalId;
     private String status;
     private String financialTransactionId;
-    private Double amount;
+    private Float amount;
     private String currency;
     private String type;
     private ReasonInfo reason;

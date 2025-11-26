@@ -22,7 +22,7 @@ public class DisbursementRequest {
     
     @NotNull(message = "Amount is required")
     @Positive(message = "Amount must be positive")
-    private Double amount;
+    private Float amount;
     
     private String callback;
     

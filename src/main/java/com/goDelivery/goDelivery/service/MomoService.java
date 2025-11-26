@@ -517,7 +517,7 @@ public class MomoService {
         MomoTransactionStatus status = new MomoTransactionStatus();
         status.setReferenceId(transaction.getReferenceId());
         status.setStatus(transaction.getStatus().name());
-        status.setAmount(transaction.getAmount().doubleValue());
+        status.setAmount(transaction.getAmount().floatValue());
         status.setCurrency(transaction.getCurrency());
         status.setFinancialTransactionId(transaction.getFinancialTransactionId());
         status.setExternalId(transaction.getExternalId());

@@ -11,7 +11,7 @@ public class CollectionResponse {
     private String referenceId;
     private String status;
     private String message;
-    private Double amount;
+    private Float amount;
     private String currency;
     private String externalId;
     

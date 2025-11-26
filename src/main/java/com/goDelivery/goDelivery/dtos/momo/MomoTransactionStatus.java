@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class MomoTransactionStatus {
     private String referenceId;
     private String status;
-    private Double amount;
+    private Float amount;
     private String currency;
     private String financialTransactionId;
     private String externalId;

@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 public class TransactionStatusResponse {
     private String referenceId;
     private String status;
-    private Double amount;
+    private Float amount;
     private String currency;
     private String financialTransactionId;
     private String externalId;

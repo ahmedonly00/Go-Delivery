@@ -18,7 +18,7 @@ public class MomoPaymentRequest {
     private String msisdn;
     
     @Positive(message = "Amount must be a positive number")
-    private Double amount;
+    private Float amount;
     
     @NotBlank(message = "Payer message title is required")
     private String payerMessageTitle;
