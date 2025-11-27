@@ -49,17 +49,17 @@ public class OrderService {
         }
         
         // Validate customer exists
-        Customer customer = customerRepository.findById(orderRequest.getCustomerId())
+        Customer customer = customerRepository.findByCustomerId(orderRequest.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + orderRequest.getCustomerId()));
 
         // Validate restaurant exists
-        Restaurant restaurant = restaurantRepository.findById(orderRequest.getRestaurantId())
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(orderRequest.getRestaurantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + orderRequest.getRestaurantId()));
 
         // Validate branch exists (optional - only if branchId is provided)
         Branches branch = null;
         if (orderRequest.getBranchId() != null) {
-            branch = branchesRepository.findById(orderRequest.getBranchId())
+            branch = branchesRepository.findByBranchId(orderRequest.getBranchId())
                     .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + orderRequest.getBranchId()));
         }
 
@@ -69,7 +69,7 @@ public class OrderService {
         // Calculate total amount
         double totalAmount = orderRequest.getOrderItems().stream()
                 .mapToDouble(orderItem -> {
-                    MenuItem menuItem = menuItemRepository.findById(orderItem.getMenuItemId())
+                    MenuItem menuItem = menuItemRepository.findByMenuItemId(orderItem.getMenuItemId())
                             .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + orderItem.getMenuItemId()));
                     return menuItem.getPrice() * orderItem.getQuantity();
                 })
@@ -88,7 +88,7 @@ public class OrderService {
         // Create order items
         List<OrderItem> orderItems = orderRequest.getOrderItems().stream()
                 .map(item -> {
-                    MenuItem menuItem = menuItemRepository.findById(item.getMenuItemId())
+                    MenuItem menuItem = menuItemRepository.findByMenuItemId(item.getMenuItemId())
                             .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + item.getMenuItemId()));
                     
                     OrderItem orderItem = new OrderItem();
@@ -112,7 +112,7 @@ public class OrderService {
     }
 
     public OrderResponse getOrderById(Long orderId) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
         return orderMapper.toOrderResponse(order);
     }
@@ -136,7 +136,7 @@ public class OrderService {
 
     @Transactional
     public OrderResponse updateOrderStatus(Long orderId, OrderStatusUpdate statusUpdate) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
         
         order.setOrderStatus(statusUpdate.getStatus());
@@ -150,7 +150,7 @@ public class OrderService {
 
     @Transactional
     public OrderResponse cancelOrder(Long orderId, String cancellationReason) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
         
         // Only allow canceling if order is not already completed or cancelled
@@ -168,7 +168,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public OrderTrackingResponse getOrderTrackingInfo(Long orderId) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
 
         // Get delivery person info if assigned
@@ -177,7 +177,7 @@ public class OrderService {
         Double deliveryPersonRating = null;
         
         if (order.getBikers() != null) {
-            Bikers biker = bikersRepository.findById(order.getBikers().getBikerId())
+            Bikers biker = bikersRepository.findByBikerId(order.getBikers().getBikerId())
                     .orElse(null);
             if (biker != null) {
                 deliveryPersonName = biker.getFullName();
