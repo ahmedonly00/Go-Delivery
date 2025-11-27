@@ -107,7 +107,6 @@ public class OrderMapper {
             .deliveryAddress(orderRequest.getDeliveryAddress())
             .specialInstructions(orderRequest.getSpecialInstructions())
             .paymentMethod(orderRequest.getPaymentMethod() != null ? orderRequest.getPaymentMethod() : PaymentMenthod.CASH)
-            .estimatedDeliveryTime(orderRequest.getEstimatedDelivery())
             .subTotal(orderRequest.getSubTotal())
             .discountAmount(orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f)
             .deliveryFee(orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f)

@@ -198,7 +198,6 @@ public class OrderService {
                 .orderNumber(String.valueOf(order.getOrderNumber()))
                 .currentStatus(order.getOrderStatus())
                 .lastUpdated(LocalDateTime.now())
-                .estimatedDeliveryTime(estimatedDeliveryTime)
                 .statusHistory(statusHistory)
                 .deliveryPersonName(deliveryPersonName)
                 .deliveryPersonContact(deliveryPersonContact)
