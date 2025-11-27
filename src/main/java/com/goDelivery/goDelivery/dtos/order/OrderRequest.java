@@ -61,10 +61,6 @@ public class OrderRequest {
     
     private String specialInstructions;
     
-    @NotNull(message = "Estimated delivery date is required")
-    @FutureOrPresent(message = "Estimated delivery date must be in the present or future")
-    private LocalDate estimatedDelivery;
-    
     private String cancellationReason;
 
     private LocalDate orderPlacedAt;

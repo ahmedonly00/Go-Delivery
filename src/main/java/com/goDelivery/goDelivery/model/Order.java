@@ -67,9 +67,6 @@ public class Order {
     @Column(name = "special_instructions", nullable = true)
     private String specialInstructions;
 
-    @Column(name = "estimated_delivery_time", nullable = false)
-    private LocalDate estimatedDeliveryTime;
-
     @Column(name = "order_placed_at", nullable = false)
     private LocalDate orderPlacedAt;
 

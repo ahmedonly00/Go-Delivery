@@ -38,7 +38,6 @@ public class OrderMapper {
                 .discountAmount(order.getDiscountAmount())
                 .paymentMethod(order.getPaymentMethod())
                 .specialInstructions(order.getSpecialInstructions())
-                .estimatedDeliveryTime(order.getEstimatedDeliveryTime())
                 .createdAt (LocalDate.now())
                 .orderPlacedAt(LocalDate.now())
                 .orderConfirmedAt(LocalDate.now())

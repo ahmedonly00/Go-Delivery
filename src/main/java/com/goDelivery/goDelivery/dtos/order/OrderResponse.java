@@ -37,7 +37,6 @@ public class OrderResponse {
     private LocalDate cancelledAt;
     private LocalDate createdAt;
     private LocalDate updatedAt;
-    private LocalDate estimatedDeliveryTime;
     private String cancellationReason;
     
     // Related entity IDs

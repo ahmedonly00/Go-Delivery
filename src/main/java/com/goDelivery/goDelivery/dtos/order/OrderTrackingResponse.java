@@ -18,7 +18,6 @@ public class OrderTrackingResponse {
     private String orderNumber;
     private OrderStatus currentStatus;
     private LocalDateTime lastUpdated;
-    private String estimatedDeliveryTime;
     private List<StatusUpdate> statusHistory;
     private String deliveryPersonName;
     private String deliveryPersonContact;
