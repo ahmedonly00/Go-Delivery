@@ -2,7 +2,6 @@ package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.OrderStatus;
 import com.goDelivery.goDelivery.Enum.PaymentStatus;
-import com.goDelivery.goDelivery.Enum.PaymentMenthod;
 import com.goDelivery.goDelivery.exception.ConcurrentModificationException;
 import com.goDelivery.goDelivery.dtos.momo.MomoPaymentRequest;
 import com.goDelivery.goDelivery.dtos.momo.MomoPaymentResponse;

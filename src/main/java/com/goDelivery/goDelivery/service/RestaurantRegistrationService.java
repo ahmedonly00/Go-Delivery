@@ -8,6 +8,7 @@ import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
 import com.goDelivery.goDelivery.exception.ResourceAlreadyExistsException;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.OperatingHoursMapper;
+import com.goDelivery.goDelivery.mapper.RestaurantMapper;
 import com.goDelivery.goDelivery.mapper.RestaurantUserMapper;
 import com.goDelivery.goDelivery.model.OperatingHours;
 import com.goDelivery.goDelivery.model.Restaurant;
@@ -38,6 +39,7 @@ public class RestaurantRegistrationService {
     private final RestaurantUserMapper userMapper;
     private final OperatingHoursMapper operatingHoursMapper;
     private final EmailService emailService;
+    private final RestaurantMapper restaurantMapper;
 
 
     @Transactional
@@ -51,15 +53,8 @@ public class RestaurantRegistrationService {
             throw new ResourceAlreadyExistsException("Admin already has a registered restaurant");
         }
         
-        // Create and save the restaurant
-        Restaurant restaurant = new Restaurant();
-        restaurant.setRestaurantName(restaurantDTO.getRestaurantName());
-        restaurant.setCuisineType(restaurantDTO.getCuisineType());
-        restaurant.setLocation(restaurantDTO.getLocation());
-        restaurant.setDescription(restaurantDTO.getDescription());
-        restaurant.setPhoneNumber(restaurantDTO.getPhoneNumber());
-        restaurant.setEmail(restaurantDTO.getEmail());
-        restaurant.setLogoUrl(restaurantDTO.getLogoUrl());
+        // Create and save the restaurant using mapper
+        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         restaurant.setSetupStatus(RestaurantSetupStatus.COMPLETED);
         
         // Convert and set operating hours if present
@@ -99,16 +94,8 @@ public class RestaurantRegistrationService {
             log.error("❌ Failed to send under review email to {}: {}", admin.getEmail(), e.getMessage(), e);
         }
         
-        // Convert to DTO and return
-        return RestaurantDTO.builder()
-                .restaurantId(savedRestaurant.getRestaurantId())
-                .restaurantName(savedRestaurant.getRestaurantName())
-                .description(savedRestaurant.getDescription())
-                .cuisineType(savedRestaurant.getCuisineType())
-                .location(savedRestaurant.getLocation())
-                .phoneNumber(savedRestaurant.getPhoneNumber())
-                .email(savedRestaurant.getEmail())
-                .build();
+        // Convert to DTO using mapper and return
+        return restaurantMapper.toRestaurantDTO(savedRestaurant);
     }
     
     @Transactional
