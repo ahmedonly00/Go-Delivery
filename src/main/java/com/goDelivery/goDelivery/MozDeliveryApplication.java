@@ -19,9 +19,9 @@ import com.goDelivery.goDelivery.config.AsyncConfig;
     "com.goDelivery.goDelivery.controller"
 })
 @Import(AsyncConfig.class)
-public class GoDeliveryApplication {
+public class MozDeliveryApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GoDeliveryApplication.class, args);
+        SpringApplication.run(MozDeliveryApplication.class, args);
     }
 }
