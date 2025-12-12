@@ -123,7 +123,7 @@ public class RestaurantRegistrationService {
                 .phoneNumber(registrationDTO.getPhoneNumber())
                 .isActive(true)
                 .lastLogin(LocalDate.now())
-                .emailVerified(false) // Will be verified via OTP
+                .emailVerified(true) // Will be verified via OTP
                 .role(Roles.RESTAURANT_ADMIN) // Set the role
                 .permissions("RESTAURANT:READ,RESTAURANT:WRITE") // Basic permissions
                 .build();
