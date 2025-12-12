@@ -89,6 +89,7 @@ public class RestaurantMapper {
         }
 
         return Restaurant.builder()
+                .restaurantId(restaurantDTO.getRestaurantId())
                 .restaurantName(restaurantDTO.getRestaurantName())
                 .location(restaurantDTO.getLocation())
                 .cuisineType(restaurantDTO.getCuisineType())
