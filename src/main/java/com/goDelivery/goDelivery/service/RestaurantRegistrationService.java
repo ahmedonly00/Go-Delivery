@@ -54,7 +54,7 @@ public class RestaurantRegistrationService {
         }
         
         // Create and save the restaurant using mapper
-        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        Restaurant restaurant = restaurantMapper.toRestaurantForCreate(restaurantDTO);
         restaurant.setSetupStatus(RestaurantSetupStatus.COMPLETED);
         
         // Convert and set operating hours if present

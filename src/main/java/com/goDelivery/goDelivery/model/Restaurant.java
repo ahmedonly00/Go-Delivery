@@ -23,7 +23,7 @@ import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
 public class Restaurant {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "restaurant_id", nullable = false)
     private Long restaurantId;
 

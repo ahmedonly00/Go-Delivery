@@ -37,7 +37,7 @@ public class RestaurantService {
     private final OrderRepository orderRepository;
 
     public RestaurantDTO registerRestaurant(RestaurantDTO restaurantDTO) {
-        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        Restaurant restaurant = restaurantMapper.toRestaurantForCreate(restaurantDTO);
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
         return restaurantMapper.toRestaurantDTO(savedRestaurant);
     }
@@ -46,21 +46,11 @@ public class RestaurantService {
         Restaurant existingRestaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
 
-        // Save the current review-related fields
         Double currentRating = existingRestaurant.getRating();
         Integer currentTotalReviews = existingRestaurant.getTotalReviews();
 
-        // Update fields from DTO
-        existingRestaurant.setRestaurantName(restaurantDTO.getRestaurantName());
-        existingRestaurant.setLocation(restaurantDTO.getLocation());
-        existingRestaurant.setCuisineType(restaurantDTO.getCuisineType());
-        existingRestaurant.setEmail(restaurantDTO.getEmail());
-        existingRestaurant.setPhoneNumber(restaurantDTO.getPhoneNumber());
-        existingRestaurant.setLogoUrl(restaurantDTO.getLogoUrl());
-        existingRestaurant.setIsActive(restaurantDTO.isActive());
-        existingRestaurant.setUpdatedAt(LocalDate.now());
+        restaurantMapper.toRestaurantForUpdate(existingRestaurant, restaurantDTO);
 
-        // Restore the review-related fields
         existingRestaurant.setRating(currentRating);
         existingRestaurant.setTotalReviews(currentTotalReviews);
 

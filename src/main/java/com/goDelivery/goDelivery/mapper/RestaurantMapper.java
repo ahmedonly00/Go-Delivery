@@ -82,13 +82,13 @@ public class RestaurantMapper {
     }
 
     //Convert RestaurantDTO to Restaurant
-    public Restaurant toRestaurant(RestaurantDTO restaurantDTO) {
+    // For CREATING new restaurants(no ID mapping)
+    public Restaurant toRestaurantForCreate(RestaurantDTO restaurantDTO) {
         if (restaurantDTO == null) {
             return null;
         }
-        
+
         return Restaurant.builder()
-                .restaurantId(restaurantDTO.getRestaurantId())
                 .restaurantName(restaurantDTO.getRestaurantName())
                 .location(restaurantDTO.getLocation())
                 .cuisineType(restaurantDTO.getCuisineType())
@@ -115,6 +115,26 @@ public class RestaurantMapper {
                 .createdAt(LocalDate.now())
                 .updatedAt(LocalDate.now())
                 .build();
+    }
+
+    // For UPDATING existing restaurants (with ID mapping)
+    public void toRestaurantForUpdate(Restaurant existingRestaurant, RestaurantDTO restaurantDTO) {
+
+        existingRestaurant.setRestaurantName(restaurantDTO.getRestaurantName());
+        existingRestaurant.setLocation(restaurantDTO.getLocation());
+        existingRestaurant.setCuisineType(restaurantDTO.getCuisineType());
+        existingRestaurant.setEmail(restaurantDTO.getEmail());
+        existingRestaurant.setPhoneNumber(restaurantDTO.getPhoneNumber());
+        existingRestaurant.setLogoUrl(restaurantDTO.getLogoUrl());
+        existingRestaurant.setDescription(restaurantDTO.getDescription());
+        existingRestaurant.setAveragePreparationTime(restaurantDTO.getAveragePreparationTime());
+        existingRestaurant.setDeliveryFee(restaurantDTO.getDeliveryFee());
+        existingRestaurant.setMinimumOrderAmount(restaurantDTO.getMinimumOrderAmount());
+        existingRestaurant.setCommercialRegistrationCertificateUrl(restaurantDTO.getCommercialRegistrationCertificateUrl());
+        existingRestaurant.setTaxIdentificationNumber(restaurantDTO.getTaxIdentificationNumber());
+        existingRestaurant.setTaxIdentificationDocumentUrl(restaurantDTO.getTaxIdentificationDocumentUrl());
+        existingRestaurant.setIsActive(restaurantDTO.isActive());
+        existingRestaurant.setUpdatedAt(LocalDate.now());
     }
 
     //Branches
