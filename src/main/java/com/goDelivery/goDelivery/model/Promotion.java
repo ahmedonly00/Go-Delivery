@@ -29,29 +29,29 @@ public class Promotion {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "promo_code", nullable = false)
+    @Column(name = "promo_code", nullable = true)
     private String promoCode;
 
-    @Column(name = "promotion_type", nullable = false)
+    @Column(name = "promotion_type", nullable = true)
     @Enumerated(EnumType.STRING)
     private PromotionType promotionType;
 
-    @Column(name = "discount_percentage", nullable = false)
+    @Column(name = "discount_percentage", nullable = true)
     private Float discountPercentage;
 
-    @Column(name = "discount_amount", nullable = false)
+    @Column(name = "discount_amount", nullable = true)
     private Float discountAmount;
 
-    @Column(name = "minimum_order_amount", nullable = false)
+    @Column(name = "minimum_order_amount", nullable = true)
     private Float minimumOrderAmount;
 
-    @Column(name = "maximum_discount_amount", nullable = false)
+    @Column(name = "maximum_discount_amount", nullable = true)
     private Float maximumDiscountAmount;
 
-    @Column(name = "usage_limit", nullable = false)
+    @Column(name = "usage_limit", nullable = true)
     private Integer usageLimit;
 
-    @Column(name = "usage_count", nullable = false)
+    @Column(name = "usage_count", nullable = true)
     private Integer usageCount;
 
     @Column(name = "start_date", nullable = false)

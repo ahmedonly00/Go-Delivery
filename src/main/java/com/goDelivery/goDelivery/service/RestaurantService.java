@@ -3,7 +3,6 @@ package com.goDelivery.goDelivery.service;
 import com.goDelivery.goDelivery.Enum.DeliveryType;
 import com.goDelivery.goDelivery.Enum.Roles;
 import com.goDelivery.goDelivery.dtos.restaurant.*;
-import com.goDelivery.goDelivery.dtos.restaurant.DeliverySettingsRequest;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
 import com.goDelivery.goDelivery.model.OperatingHours;
@@ -56,6 +55,10 @@ public class RestaurantService {
 
         Restaurant updatedRestaurant = restaurantRepository.save(existingRestaurant);
         return restaurantMapper.toRestaurantDTO(updatedRestaurant);
+    }
+
+    public boolean isUserRestaurantAdmin(String username, Long restaurantId) {
+        return restaurantRepository.existsByIdAndAdmin_Email(restaurantId, username);
     }
 
     public List<RestaurantDTO> getAllRestaurants() {

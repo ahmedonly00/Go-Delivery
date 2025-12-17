@@ -91,6 +91,55 @@ public class RestaurantController {
                 .body(errorResponse);
         }
     }
+
+    @PutMapping(value = "/updateRestaurant/{restaurantId}", consumes = {"multipart/form-data"})
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    public ResponseEntity<?> updateRestaurant(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long restaurantId,
+            @RequestPart("restaurant") @Valid RestaurantDTO restaurantDTO,
+            @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
+            @RequestPart(value = "commercialRegistrationCertificate", required = false) MultipartFile commercialRegistrationCertificate,
+            @RequestPart(value = "taxIdentificationDocument", required = false) MultipartFile taxIdentificationDocument) {
+        try {
+            // Store the logo file if provided
+            if (logoFile != null && !logoFile.isEmpty()) {
+                String filePath = fileStorageService.storeFile(logoFile, "restaurants/updates/logo");
+                String fullUrl = "/api/files/" + filePath.replace("\\", "/");
+                restaurantDTO.setLogoUrl(fullUrl);
+            }
+            
+            // Update Commercial Registration Certificate if provided
+            if (commercialRegistrationCertificate != null && !commercialRegistrationCertificate.isEmpty()) {
+                String filePath = fileStorageService.storeFile(commercialRegistrationCertificate, 
+                    "restaurants/updates/documents/commercial-registration");
+                String fullUrl = "/api/files/" + filePath.replace("\\", "/");
+                restaurantDTO.setCommercialRegistrationCertificateUrl(fullUrl);
+            }
+            
+            // Update Tax Identification Document if provided
+            if (taxIdentificationDocument != null && !taxIdentificationDocument.isEmpty()) {
+                String filePath = fileStorageService.storeFile(taxIdentificationDocument, 
+                    "restaurants/updates/documents/tax-identification");
+                String fullUrl = "/api/files/" + filePath.replace("\\", "/");
+                restaurantDTO.setTaxIdentificationDocumentUrl(fullUrl);
+            }
+            
+            // Verify the authenticated user is the admin of this restaurant
+            if (!restaurantService.isUserRestaurantAdmin(userDetails.getUsername(), restaurantId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "You don't have permission to update this restaurant"));
+            }
+
+            RestaurantDTO updatedRestaurant = restaurantService.updateRestaurant(restaurantId, restaurantDTO);
+            return ResponseEntity.ok(updatedRestaurant);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to update restaurant: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errorResponse);
+        }
+    }
     
     @PutMapping(value = "/{restaurantId}/operating-hours")
     public ResponseEntity<RestaurantDTO> updateOperatingHours(
@@ -110,14 +159,6 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurant);
     }
 
-    @PutMapping(value = "/updateRestaurant/{restaurantId}")
-    public ResponseEntity<RestaurantDTO> updateRestaurant(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long restaurantId,
-            @Valid @RequestBody RestaurantDTO restaurantDTO) {
-        RestaurantDTO updatedRestaurant = restaurantService.updateRestaurant(restaurantId, restaurantDTO);
-        return ResponseEntity.ok(updatedRestaurant);
-    }
 
     @GetMapping(value = "/getRestaurantsByLocation/{location}")
     public ResponseEntity<List<RestaurantDTO>> getRestaurantsByLocation(
