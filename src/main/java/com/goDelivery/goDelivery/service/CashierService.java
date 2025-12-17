@@ -115,7 +115,7 @@ public class CashierService {
                 order.setOrderConfirmedAt(now);
                 break;
             case PREPARING:
-                order.setFoodReadyAt(now);
+                order.setOrderPreparedAt(now);
                 break;
             case READY:
                 // No specific timestamp for READY status

@@ -41,7 +41,7 @@ public class OrderStatusUpdateService {
                 order.setOrderConfirmedAt(now);
                 break;
             case PREPARING:
-                order.setFoodReadyAt(now);
+                order.setOrderPreparedAt(now);
                 break;
             case READY:
                 order.setActualPrepCompletedAt(now);

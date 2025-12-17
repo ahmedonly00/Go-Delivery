@@ -221,11 +221,11 @@ public class OrderService {
         }
         
         if (order.getOrderStatus().ordinal() >= OrderStatus.PREPARING.ordinal()) {
-            history.add(createStatusUpdate(OrderStatus.PREPARING, "Restaurant is preparing your food", order.getFoodReadyAt()));
+            history.add(createStatusUpdate(OrderStatus.PREPARING, "Restaurant is preparing your food", order.getOrderPreparedAt()));
         }
         
         if (order.getOrderStatus().ordinal() >= OrderStatus.READY.ordinal()) {
-            history.add(createStatusUpdate(OrderStatus.READY, "Your order is ready for pickup", order.getFoodReadyAt()));
+            history.add(createStatusUpdate(OrderStatus.READY, "Your order is ready for pickup", order.getOrderPreparedAt()));
         }
         
         if (order.getOrderStatus().ordinal() >= OrderStatus.PICKED_UP.ordinal()) {

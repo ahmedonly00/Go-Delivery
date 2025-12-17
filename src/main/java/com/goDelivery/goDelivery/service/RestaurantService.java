@@ -58,7 +58,7 @@ public class RestaurantService {
     }
 
     public boolean isUserRestaurantAdmin(String username, Long restaurantId) {
-        return restaurantRepository.existsByIdAndAdmin_Email(restaurantId, username);
+        return restaurantRepository.existsByRestaurantIdAndEmail(restaurantId, username);
     }
 
     public List<RestaurantDTO> getAllRestaurants() {

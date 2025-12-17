@@ -73,8 +73,8 @@ public class Order {
     @Column(name = "order_confirmed_at", nullable = true)
     private LocalDate orderConfirmedAt;
 
-    @Column(name = "food_ready_at", nullable = true)
-    private LocalDate foodReadyAt;
+    @Column(name = "order_prepared_at", nullable = true)
+    private LocalDate OrderPreparedAt;
 
     @Column(name = "picked_up_at", nullable = true)
     private LocalDate pickedUpAt;
