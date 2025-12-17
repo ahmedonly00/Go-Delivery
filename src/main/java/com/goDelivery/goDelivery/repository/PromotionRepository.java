@@ -12,8 +12,7 @@ import com.goDelivery.goDelivery.model.Promotion;
 public interface PromotionRepository extends JpaRepository<Promotion, Long> {
     Optional<Promotion> findByPromotionId(Long promotionId);
     Optional<Promotion> findByPromoCode(String promoCode);
-    List<Promotion> findByRestaurantIdAndIsActiveTrue(Long restaurantId);
-    List<Promotion> findByRestaurantId(Long restaurantId);
-
+    List<Promotion> findByRestaurant_RestaurantIdAndIsActiveTrue(Long restaurantId);
+    List<Promotion> findByRestaurant_RestaurantId(Long restaurantId);
     
 }

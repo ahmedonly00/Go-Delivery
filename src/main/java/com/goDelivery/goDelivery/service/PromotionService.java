@@ -69,12 +69,12 @@ public class PromotionService {
     }
 
     public List<PromotionResponse> getActivePromotionsByRestaurant(Long restaurantId){
-        List<Promotion> existingPromotions = promotionRepository.findByRestaurantIdAndIsActiveTrue(restaurantId);
+        List<Promotion> existingPromotions = promotionRepository.findByRestaurant_RestaurantIdAndIsActiveTrue(restaurantId);
         return promotionMapper.toResponse(existingPromotions);
     }
 
     public List<PromotionResponse> getAllPromotionsByRestaurant(Long restaurantId) {
-        List<Promotion> promotions = promotionRepository.findByRestaurantId(restaurantId);
+        List<Promotion> promotions = promotionRepository.findByRestaurant_RestaurantId(restaurantId);
         return promotionMapper.toResponse(promotions);
     }      
     
