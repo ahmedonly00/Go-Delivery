@@ -26,39 +26,39 @@ public class PromotionController {
     
     private final PromotionService promotionService;
     
-    @PostMapping(value = "/create", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/createPromotion", consumes = "application/json", produces = "application/json")
     public PromotionResponse createPromotion(@RequestBody PromotionRequest promotionRequest){
         return promotionService.createPromotion(promotionRequest);
     }
 
-    @PutMapping(value = "/{promotionId}", consumes = "application/json", produces = "application/json")
+    @PutMapping(value = "/updatePromotion/{promotionId}", consumes = "application/json", produces = "application/json")
     public PromotionResponse updatePromotion(@PathVariable Long promotionId, @RequestBody PromotionRequest promotionRequest) {
         return promotionService.updatePromotion(promotionId, promotionRequest);
     }
 
-    @DeleteMapping(value = "/{promotionId}", produces = "application/json")
+    @DeleteMapping(value = "/deletePromotion/{promotionId}", produces = "application/json")
     public void deletePromotion(@PathVariable Long promotionId) {
         promotionService.deletePromotion(promotionId);
     }
 
-    @GetMapping(value = "/{promotionId}", produces = "application/json")
+    @GetMapping(value = "/getPromotion/{promotionId}", produces = "application/json")
     public PromotionResponse getPromotionById(@PathVariable Long promotionId) {
         return promotionService.getPromotionById(promotionId);
     }
 
-    @GetMapping(value = "/getAll", consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/getAllPromotions", produces = "application/json")
     public List<PromotionResponse> getAllPromotions(){
-        return promotionService.getAllPromotions();
+        return promotionService.getAllPromotions(); 
     }
 
-    // @GetMapping(value = "/restaurant/{restaurantId}", produces = "application/json")
-    // public PromotionResponse getPromotionByRestaurantId(@PathVariable Long restaurantId) {
-    //     return promotionService.getPromotionByRestaurantId(restaurantId);
-    // }
+    @GetMapping(value = "/getActivePromotionsByRestaurant/{restaurantId}", produces = "application/json")
+    public List<PromotionResponse> getActivePromotionsByRestaurant(@PathVariable Long restaurantId) {
+        return promotionService.getActivePromotionsByRestaurant(restaurantId);
+    }
 
-    // @GetMapping(value = "/restaurant/{restaurantId}/all", produces = "application/json")
-    // public List<PromotionResponse> getAllPromotionsByRestaurantId(@PathVariable Long restaurantId) {
-    //     return promotionService.getAllPromotionsByRestaurantId(restaurantId);
-    // }
+    @GetMapping(value = "/getAllPromotionsByRestaurant/{restaurantId}/all", produces = "application/json")
+    public List<PromotionResponse> getAllPromotionsByRestaurant(@PathVariable Long restaurantId) {
+        return promotionService.getAllPromotionsByRestaurant(restaurantId);
+    }
     
 }

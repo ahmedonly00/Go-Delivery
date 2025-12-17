@@ -68,18 +68,14 @@ public class PromotionService {
         return promotionMapper.toResponse(promotions);
     }
 
-    // public PromotionResponse getPromotionByRestaurantId(Long restaurantId){
-    //     Promotion existingPromotion = promotionRepository.findByRestaurantId(restaurantId)
-    //             .orElseThrow(() -> new ResourceNotFoundException("Promotion not found with restaurant id: " + restaurantId));
-    //     return promotionMapper.toResponse(existingPromotion);
-    // }
+    public List<PromotionResponse> getActivePromotionsByRestaurant(Long restaurantId){
+        List<Promotion> existingPromotions = promotionRepository.findByRestaurantIdAndIsActiveTrue(restaurantId);
+        return promotionMapper.toResponse(existingPromotions);
+    }
 
-    // public List<PromotionResponse> getAllPromotionsByRestaurantId(Long restaurantId) {
-    //     return promotionRepository.findByRestaurantId(restaurantId)
-    //         .map(promotion -> List.of(promotion))
-    //         .map(promotionMapper::toResponse)
-    //         .orElseGet(List::of);
-    // }      
+    public List<PromotionResponse> getAllPromotionsByRestaurant(Long restaurantId) {
+        List<Promotion> promotions = promotionRepository.findByRestaurantId(restaurantId);
+        return promotionMapper.toResponse(promotions);
+    }      
     
-
 }
