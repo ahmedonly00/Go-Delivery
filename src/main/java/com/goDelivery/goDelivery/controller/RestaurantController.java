@@ -1,8 +1,13 @@
 package com.goDelivery.goDelivery.controller;
 
+import com.goDelivery.goDelivery.dtos.report.OrderReportDTO;
+import com.goDelivery.goDelivery.dtos.report.SalesReportDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.*;
 import com.goDelivery.goDelivery.service.RestaurantService;
 import com.goDelivery.goDelivery.service.FileStorageService;
+import com.goDelivery.goDelivery.service.ReportService;
+
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import com.goDelivery.goDelivery.service.RestaurantRegistrationService;
@@ -11,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +34,7 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
     private final RestaurantRegistrationService registrationService;
     private final FileStorageService fileStorageService;
+    private final ReportService reportService;
 
 
     @PostMapping("/registerAdmin")
@@ -315,6 +322,58 @@ public class RestaurantController {
             errorResponse.put("error", "Failed to upload documents: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
+    }
+
+    @GetMapping("/{restaurantId}/reports/sales")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    public ResponseEntity<SalesReportDTO> getSalesReport(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long restaurantId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        
+        // Set default date range if not provided (last 30 days)
+        LocalDate end = endDate != null ? endDate : LocalDate.now();
+        LocalDate start = startDate != null ? startDate : end.minusDays(30);
+        
+        // Ensure start date is before or equal to end date
+        if (start.isAfter(end)) {
+            throw new IllegalArgumentException("Start date must be before or equal to end date");
+        }
+        
+        // Verify the authenticated user is the admin of this restaurant
+        if (!restaurantService.isUserRestaurantAdmin(userDetails.getUsername(), restaurantId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
+        SalesReportDTO report = reportService.generateSalesReport(restaurantId, start, end);
+        return ResponseEntity.ok(report);
+    }
+    
+    @GetMapping("/{restaurantId}/reports/orders")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    public ResponseEntity<OrderReportDTO> getOrderReport(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long restaurantId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        
+        // Set default date range if not provided (last 30 days)
+        LocalDate end = endDate != null ? endDate : LocalDate.now();
+        LocalDate start = startDate != null ? startDate : end.minusDays(30);
+        
+        // Ensure start date is before or equal to end date
+        if (start.isAfter(end)) {
+            throw new IllegalArgumentException("Start date must be before or equal to end date");
+        }
+        
+        // Verify the authenticated user is the admin of this restaurant
+        if (!restaurantService.isUserRestaurantAdmin(userDetails.getUsername(), restaurantId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
+        OrderReportDTO report = reportService.generateOrderReport(restaurantId, start, end);
+        return ResponseEntity.ok(report);
     }
     
 }
