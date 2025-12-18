@@ -12,6 +12,9 @@ import com.goDelivery.goDelivery.repository.BikersRepository;
 import com.goDelivery.goDelivery.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +35,6 @@ public class BikerService {
     private final BikerMapper bikerMapper;
     
     
-    //Find available bikers who are online and not currently on a delivery
     @Transactional
     public BikerRegistrationResponse registerBiker(BikerRegistrationRequest request) {
         // Check if email already exists
@@ -277,11 +279,7 @@ public class BikerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + bikerId));
     }
     
-    /**
-     * Get delivery history for a biker
-     * @param bikerId The ID of the biker
-     * @return List of orders associated with the biker
-     */
+    
     @Transactional(readOnly = true)
     public List<Order> getDeliveryHistory(Long bikerId) {
         // Verify biker exists
@@ -295,12 +293,7 @@ public class BikerService {
                 .collect(Collectors.toList());
     }
     
- 
-    /**
-     * Get orders that are available for a biker to accept (READY status and not assigned to any biker)
-     * @param bikerId The ID of the biker (for validation)
-     * @return List of available orders
-     */
+
     @Transactional(readOnly = true)
     public List<Order> getAvailableOrdersForBiker(Long bikerId) {
         // Verify biker exists and is active
@@ -770,5 +763,16 @@ public class BikerService {
                 .arrivalMessage(arrivalMessage)
                 .completionMessage(completionMessage)
                 .build();
+    }
+    
+    // Get all bikers (for super admin) with filtering options
+    @Transactional(readOnly = true)
+    public Page<Bikers> getAllBikers(Pageable pageable, Boolean isActive, Boolean isOnline, Boolean isAvailable) {
+        log.info("Fetching bikers with filters - isActive: {}, isOnline: {}, isAvailable: {}", 
+                isActive != null ? (isActive ? "true" : "false") : "all", 
+                isOnline != null ? (isOnline ? "true" : "false") : "all", 
+                isAvailable != null ? (isAvailable ? "true" : "false") : "all");
+        
+        return bikersRepository.findAllWithFilters(isActive, isOnline, isAvailable, pageable);
     }
 }

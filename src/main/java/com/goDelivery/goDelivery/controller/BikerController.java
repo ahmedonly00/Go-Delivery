@@ -1,6 +1,12 @@
 package com.goDelivery.goDelivery.controller;
 
+import com.goDelivery.goDelivery.dtos.biker.BikerRegistrationRequest;
+import com.goDelivery.goDelivery.dtos.biker.BikerRegistrationResponse;
 import com.goDelivery.goDelivery.dtos.delivery.CustomerInteractionDetails;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import com.goDelivery.goDelivery.dtos.delivery.DeliveryAcceptanceRequest;
 import com.goDelivery.goDelivery.dtos.delivery.DeliveryAcceptanceResponse;
 import com.goDelivery.goDelivery.dtos.delivery.DeliveryConfirmationRequest;
@@ -14,11 +20,14 @@ import com.goDelivery.goDelivery.dtos.delivery.PickupConfirmationRequest;
 import com.goDelivery.goDelivery.dtos.delivery.PickupConfirmationResponse;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.mapper.OrderMapper;
+import com.goDelivery.goDelivery.model.Bikers;
 import com.goDelivery.goDelivery.model.Order;
 import com.goDelivery.goDelivery.service.BikerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -174,5 +183,25 @@ public class BikerController {
         return ResponseEntity.ok(orderResponses);
     }
 
+    @GetMapping("/getAllBikers")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Page<Bikers>> getAllBikers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) Boolean isOnline,
+            @RequestParam(required = false) Boolean isAvailable) {
+        
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Bikers> bikers = bikerService.getAllBikers(pageable, isActive, isOnline, isAvailable);
+        return ResponseEntity.ok(bikers);
+    }  
+    
+    @PostMapping(value = "/registerBiker")
+    public ResponseEntity<BikerRegistrationResponse> registerBiker(
+            @Valid @RequestBody BikerRegistrationRequest request) {
+        BikerRegistrationResponse response = bikerService.registerBiker(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
     
 }

@@ -77,7 +77,7 @@ public class SecurityConfig {
                         "/api/super-admin/register",
                         "/api/emails/**",
                         "/api/customers/register",
-                        "/api/bikers/register",
+                        "/api/bikers/registerBiker",
                         "/api/restaurants/registerAdmin",
                         "/api/restaurants/getAllActiveRestaurants",
                         "/api/restaurants/getRestaurantById/**",
