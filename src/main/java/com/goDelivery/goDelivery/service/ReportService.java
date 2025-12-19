@@ -1,11 +1,17 @@
 package com.goDelivery.goDelivery.service;
 
+import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.report.OrderReportDTO;
 import com.goDelivery.goDelivery.dtos.report.SalesReportDTO;
+import com.goDelivery.goDelivery.mapper.OrderMapper;
 import com.goDelivery.goDelivery.model.Order;
 import com.goDelivery.goDelivery.Enum.OrderStatus;
+import com.goDelivery.goDelivery.repository.OrderAnalyticsRepository;
 import com.goDelivery.goDelivery.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,15 +20,17 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReportService {
 
     private final ReportRepository reportRepository;
+    private final OrderAnalyticsRepository orderAnalyticsRepository;
+    private final OrderMapper orderMapper;
 
     @Transactional(readOnly = true)
     public SalesReportDTO generateSalesReport(Long restaurantId, LocalDate startDate, LocalDate endDate) {
@@ -83,7 +91,7 @@ public class ReportService {
 
         // Calculate average preparation time (in minutes)
         double avgPrepTime = orders.stream()
-            .filter(o -> o.getOrderStatus() == OrderStatus.DELIVERED || o.getOrderStatus()  == OrderStatus.DELIVERED)
+            .filter(o -> o.getOrderStatus() == OrderStatus.DELIVERED)
             .mapToLong(order -> {
                 if (order.getDeliveredAt() != null && order.getOrderPreparedAt() != null) {
                     return java.time.Duration.between(
@@ -107,4 +115,15 @@ public class ReportService {
 
         return report;
     }
+
+    @Transactional(readOnly = true)
+    public Page<OrderResponse> getOrderHistory(Long restaurantId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay() : LocalDateTime.of(2000, 1, 1, 0, 0);
+        LocalDateTime endDateTime = endDate != null ? endDate.atTime(LocalTime.MAX) : LocalDateTime.now();
+        
+        return orderAnalyticsRepository.findByRestaurant_RestaurantIdAndOrderPlacedAtBetween(
+                restaurantId, startDateTime, endDateTime, pageable)
+                .map(orderMapper::toOrderResponse);
+    }
+
 }
