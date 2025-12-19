@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -49,6 +50,10 @@ public class Bikers implements CustomUserDetails {
 
     @Column(name = "license_number", nullable = false)
     private String licenseNumber;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime createdAt;
 
     @Column(name = "vehicle_type", nullable = false)
     private VehicleType vehicleType;
@@ -162,6 +167,11 @@ public class Bikers implements CustomUserDetails {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDate.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
 
 
