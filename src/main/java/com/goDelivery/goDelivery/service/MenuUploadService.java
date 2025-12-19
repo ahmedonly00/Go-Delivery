@@ -277,37 +277,71 @@ public class MenuUploadService {
         try {
             Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
             
-            // Set the path to the tessdata directory
+            // Set the path to the tessdata directory and configure Tesseract
             tesseract.setDatapath(tessDataPath);
+            tesseract.setPageSegMode(4); // Assume a single column of text
+            tesseract.setVariable("preserve_interword_spaces", "1");
             
             // Perform OCR on the image
+            log.info("Starting OCR processing...");
             String result = tesseract.doOCR(tempFile.toFile());
+            log.debug("OCR Result:\n" + result);
             
-            // Parse the OCR result (this is a simple example, you might need more sophisticated parsing)
+            // Parse the OCR result
             String[] lines = result.split("\\r?\\n");
+            
+            // Pattern to match various price formats:
+            // - $10.99
+            // - 10.99$
+            // - 10.99 EGP
+            // - 10,99 (European format)
+            // - 10 MT or 10 MZN (Mozambican Metical)
+            // - 10  (just a number)
+            Pattern pricePattern = Pattern.compile(
+                "([$€£]?\\s*\\d+[.,]?\\d*\\.?\\d*\\s*[$€£]?|\\d+[.,]?\\d*\\s*(?:USD|EGP|EUR|MZN|MT|£|€))"
+            );
             
             for (String line : lines) {
                 line = line.trim();
-                if (line.matches(".*\\d+\\.?\\d*\\s*\\$?\\s*\\d+.*") || line.matches(".*\\$\\s*\\d+\\.?\\d*.*")) {
-                    // This is a simple pattern match for menu items with prices
-                    // You might need to adjust this based on your menu format
-                    String[] parts = line.split("\\s+\\$");
-                    if (parts.length >= 2) {
-                        String name = parts[0].trim();
-                        String priceStr = parts[1].split("\\s+")[0].replaceAll("[^\\d.]", "");
-                        
-                        try {
-                            float price = Float.parseFloat(priceStr);
+                if (line.isEmpty() || line.length() < 3) continue; // Skip very short lines
+                
+                log.debug("Processing line: " + line);
+                
+                // Look for price in the line
+                Matcher matcher = pricePattern.matcher(line);
+                if (matcher.find()) {
+                    String priceMatch = matcher.group(1);
+                    // Extract the price value by removing all non-digit characters except decimal point
+                    String priceStr = priceMatch.replaceAll("[^\\d.,]", "")
+                                             .replace(',', '.'); // Handle European decimal format
+                    
+                    // Extract the item name (everything before the price)
+                    String name = line.substring(0, matcher.start()).trim();
+                    
+                    // Clean up the name - remove any trailing non-alphanumeric characters
+                    name = name.replaceAll("[^\\p{L}\\p{N}\\s]$", "").trim();
+                    
+                    // Skip if name is too short (likely not a real menu item)
+                    if (name.length() < 2) continue;
+                    
+                    try {
+                        float price = Float.parseFloat(priceStr);
+                        if (price > 0) {
                             items.add(MenuItemRequest.builder()
                                     .menuItemName(name)
                                     .price(price)
                                     .isAvailable(true)
                                     .preparationTime(15) // Default value
+                                    .categoryId(categoryId)
+                                    .restaurantId(restaurantId)
                                     .build());
-                        } catch (NumberFormatException e) {
-                            log.warn("Could not parse price from: " + line);
+                            log.info("Added menu item: {} - {}", name, price);
                         }
+                    } catch (NumberFormatException e) {
+                        log.warn("Could not parse price from '{}' in line: {}", priceMatch, line);
                     }
+                } else {
+                    log.debug("No price found in line: {}", line);
                 }
             }
             
