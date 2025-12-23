@@ -5,6 +5,8 @@ HELP.md
 /*.txt
 /*.json
 /*.sql
+*.jar
+*.war
 
 # Environment variables
 .env
@@ -12,6 +14,7 @@ HELP.md
 .env.*.local
 
 logs/
+*.log
 uploads/ 
 target/
 .mvn/wrapper/maven-wrapper.jar
@@ -45,3 +48,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Tesseract data (if large)
+tesseract/
