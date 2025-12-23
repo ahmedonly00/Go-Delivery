@@ -27,4 +27,5 @@ public class OrderItemResponse {
     
     // Optional: Basic variant info if needed
     private String variantInfo; // e.g., "Large, Spicy"
+
 }

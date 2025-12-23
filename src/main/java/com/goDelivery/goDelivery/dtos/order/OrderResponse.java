@@ -21,7 +21,7 @@ public class OrderResponse {
     private String orderNumber;
     private OrderStatus orderStatus;
     private String deliveryAddress;
-    private String contactNumber;
+    private String phoneNumber;
     private String specialInstructions;
     private Float subTotal;
     private Float deliveryFee;
@@ -31,7 +31,7 @@ public class OrderResponse {
     private PaymentStatus paymentStatus;
     private LocalDate orderPlacedAt;
     private LocalDate orderConfirmedAt;
-    private LocalDate foodReadyAt;
+    private LocalDate OrderPreparedAt;
     private LocalDate pickedUpAt;
     private LocalDate deliveredAt;
     private LocalDate cancelledAt;
@@ -47,18 +47,4 @@ public class OrderResponse {
     // Order items
     private List<OrderItemResponse> items;
     
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class OrderItemResponse {
-        private Long itemId;
-        private Long menuItemId;
-        private String itemName;
-        private Integer quantity;
-        private Float unitPrice;
-        private Float totalPrice;
-        private String specialInstructions;
-        private List<Long> variantIds;
-    }
 }
