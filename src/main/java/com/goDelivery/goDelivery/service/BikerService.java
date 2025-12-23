@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +34,7 @@ public class BikerService {
     private final OrderRepository orderRepository;
     private final NotificationService notificationService;
     private final BikerMapper bikerMapper;
+    private final FileStorageService fileStorageService;
     
     
     @Transactional
@@ -775,4 +777,40 @@ public class BikerService {
         
         return bikersRepository.findAllWithFilters(isActive, isOnline, isAvailable, pageable);
     }
+
+    @Transactional
+    public String uploadProfileImage(Long bikerId, MultipartFile image) {
+        Bikers biker = bikersRepository.findById(bikerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Biker not found"));
+        
+        // Validate image
+        validateImage(image);
+        
+        // Upload to storage (S3, local, etc.)
+        String imageUrl = fileStorageService.storeFile(image, "biker-profiles");
+        
+        // Update biker record
+        biker.setProfileImage(imageUrl);
+        bikersRepository.save(biker);
+        
+        return imageUrl;
+    }
+
+    private void validateImage(MultipartFile image) {
+        if (image.isEmpty()) {
+            throw new IllegalArgumentException("Image file is empty");
+        }
+        
+        // Check file size (e.g., max 5MB)
+        if (image.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("Image size exceeds 5MB limit");
+        }
+        
+        // Check file type
+        String contentType = image.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("File must be an image");
+        }
+    }
+    
 }

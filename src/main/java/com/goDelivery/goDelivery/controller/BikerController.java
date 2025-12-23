@@ -33,6 +33,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -202,6 +203,14 @@ public class BikerController {
             @Valid @RequestBody BikerRegistrationRequest request) {
         BikerRegistrationResponse response = bikerService.registerBiker(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/bikers/{bikerId}/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadProfileImage(
+            @PathVariable Long bikerId,
+            @RequestParam("image") MultipartFile image) {
+        String imageUrl = bikerService.uploadProfileImage(bikerId, image);
+        return ResponseEntity.ok(imageUrl);
     }
     
 }
