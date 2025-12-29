@@ -17,15 +17,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
-    @NotNull(message = "Restaurant ID is required")
-    private Long restaurantId;
-    
+   
     @NotNull(message = "Customer ID is required")
     private Long customerId;
-    
-    // Optional: Only required if restaurant has branches
-    private Long branchId;
-    
+
     @NotNull(message = "Delivery address ID is required")
     private Long deliveryAddressId;
     
@@ -64,11 +59,30 @@ public class OrderRequest {
     private String cancellationReason;
 
     private LocalDate orderPlacedAt;
-    
+
     @NotEmpty(message = "At least one order item is required")
-    private List<OrderItemRequest> orderItems;
+    private List<RestaurantOrderRequest> restaurantOrders;
+
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RestaurantOrderRequest {
+        @NotNull(message = "Restaurant ID is required")
+        private Long restaurantId;
+        
+        // Optional: Only required if restaurant has branches
+        private Long branchId;
+        
+        @NotEmpty(message = "At least one order item is required")
+        private List<OrderItemRequest> orderItems;
+    }
     
     @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class OrderItemRequest {
         @NotNull(message = "Menu item ID is required")
         private Long menuItemId;

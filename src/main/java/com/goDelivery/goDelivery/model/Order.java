@@ -1,5 +1,6 @@
 package com.goDelivery.goDelivery.model;
 
+import com.goDelivery.goDelivery.Enum.DisbursementStatus;
 import com.goDelivery.goDelivery.Enum.OrderStatus;
 import com.goDelivery.goDelivery.Enum.PaymentMenthod;
 import com.goDelivery.goDelivery.Enum.PaymentStatus;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -87,6 +89,22 @@ public class Order {
 
     @Column(name = "cancellation_reason", nullable = true)
     private String cancellationReason;
+
+    @Column(name = "payment_completed_at", nullable = true)
+    private LocalDateTime PaymentCompletedAt;
+    
+    @Column(name = "payment_failure_reason", nullable = true)
+    private String paymentFailureReason;
+
+    @Column(name = "disbursement_reference")
+    private String disbursementReference;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "disbursement_status")
+    private DisbursementStatus disbursementStatus;
+    
+    @Column(name = "disbursement_completed_at")
+    private LocalDateTime disbursementCompletedAt;
 
     @Column(name = "created_at")
     private LocalDate createdAt;

@@ -1,6 +1,8 @@
 package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dtos.momo.*;
+import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementCallback;
+import com.goDelivery.goDelivery.service.DisbursementService;
 import com.goDelivery.goDelivery.service.MomoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +28,7 @@ import java.util.UUID;
 public class MomoPaymentController {
 
     private final MomoService momoService;
+    private final DisbursementService disbursementService;
 
     @PostMapping(value = "/request")
     @Operation(
@@ -51,7 +54,7 @@ public class MomoPaymentController {
             // Set default callback if not provided
             if (request.getCallback() == null || request.getCallback().trim().isEmpty()) {
                 // This should be configured in your application properties
-                request.setCallback("http://129.151.188.8:8085/api/v1/payments/momo/webhook");
+                request.setCallback("https://delivery.apis.ivas.rw:8085/api/v1/payments/momo/webhook");
             }
             
             MomoPaymentResponse response = momoService.requestPayment(request);
@@ -114,6 +117,28 @@ public class MomoPaymentController {
         } catch (Exception e) {
             log.error("Error processing MoMo webhook: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/disbursement")
+    @Operation(
+        summary = "MoMo Disbursement Callback",
+        description = "Webhook endpoint for MoMo disbursement callbacks",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Disbursement callback processed successfully"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+        }
+    )
+    public ResponseEntity<Void> handleDisbursementCallback(
+            @RequestBody DisbursementCallback callback) {
+        log.info("Received MoMo disbursement callback: {}", callback);
+        
+        try {
+            disbursementService.handleDisbursementCallback(callback);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Error processing disbursement callback", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

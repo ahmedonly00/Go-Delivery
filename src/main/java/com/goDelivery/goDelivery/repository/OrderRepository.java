@@ -26,6 +26,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     // Optimized count query for total orders (better performance than .size())
     long countByRestaurant_RestaurantId(Long restaurantId);
     
+    // Find order by disbursement reference
+    Optional<Order> findByDisbursementReference(String disbursementReference);
+    
     // Find order by order number
     Optional<Order> findByOrderNumber(String orderNumber);
     

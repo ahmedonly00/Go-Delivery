@@ -1,14 +1,30 @@
 package com.goDelivery.goDelivery.service;
 
+import com.goDelivery.goDelivery.Enum.NotificationType;
+import com.goDelivery.goDelivery.Enum.RecipientType;
+import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.model.Bikers;
+import com.goDelivery.goDelivery.model.Notification;
+import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.repository.NotificationRepository;
+import com.goDelivery.goDelivery.repository.RestaurantRepository;
+
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +37,9 @@ import java.util.concurrent.CompletableFuture;
 public class NotificationService {
 
     private final GeoLocationService geoLocationService;
+    private final NotificationRepository notificationRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final TemplateEngine templateEngine;
     
     @Value("${app.notifications.sms.enabled:false}")
     private boolean smsEnabled;
@@ -32,28 +51,55 @@ public class NotificationService {
     private boolean smsTestMode;
 
     private final JavaMailSender emailSender;
+    
+    @Value("${app.notifications.email.payment-received.subject:Payment Received}")
+    private String paymentReceivedEmailSubject;
+    
+    @Value("${app.notifications.push.payment-received.title:Payment Received}")
+    private String paymentReceivedPushTitle;
 
-    /**
-     * Sends a welcome notification to a newly registered biker
-     * @param biker The biker who just registered
-     */
+    //Sends a welcome notification to a newly registered biker
     @Async
     public void sendBikerWelcomeNotification(Bikers biker) {
-        // Log the welcome notification
-        log.info("Sending welcome notification to biker: {} ({})", biker.getFullNames(), biker.getEmail());
-        
-        // In a real implementation, you would send an email or push notification here
-        // For example:
-        // sendEmail(
-        //     biker.getEmail(),
-        //     "Welcome to GoDelivery!",
-        //     String.format("Hello %s, welcome to GoDelivery! Your account is now active.", biker.getFullNames())
-        // );
-        
-        log.info("Welcome notification sent to biker: {}", biker.getEmail());
+        try {
+            log.info("Sending welcome notification to biker: {} ({})", biker.getFullNames(), biker.getEmail());
+            
+            // Prepare the evaluation context with variables for the template
+            Context context = new Context();
+            context.setVariable("bikerName", biker.getFullNames());
+            context.setVariable("currentYear", LocalDate.now().getYear());
+            
+            // Process the template with the context
+            String emailContent = templateEngine.process("emails/biker-welcome", context);
+            
+            // Prepare email using MimeMessage
+            MimeMessage mimeMessage = emailSender.createMimeMessage();
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
+            
+            message.setFrom(fromEmail);
+            message.setTo(biker.getEmail());
+            message.setSubject("Welcome to MozFood Delivery!");
+            message.setText(emailContent, true); // true = isHtml
+            
+            // Send the email
+            emailSender.send(mimeMessage);
+            
+            log.info("Welcome email sent to biker: {}", biker.getEmail());
+            
+            // Optionally, you could also send a push notification
+            // sendPushNotification(biker.getUserId(), "Welcome to MozFood Delivery!", 
+            //     "Your account has been activated. Start accepting delivery requests now!");
+            
+        } catch (MessagingException e) {
+            log.error("Failed to create welcome email for biker {}: {}", biker.getId(), e.getMessage(), e);
+        } catch (MailException e) {
+            log.error("Failed to send welcome email to biker {}: {}", biker.getId(), e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("Unexpected error sending welcome email to biker {}: {}", 
+                    biker.getId(), e.getMessage(), e);
+        }
     }
 
-    
     @Async
     public CompletableFuture<Boolean> sendEmail(String toEmail, String subject, String templateName, Map<String, Object> templateData) {
         try {
@@ -178,8 +224,7 @@ public class NotificationService {
             
             // 2. Select the best biker based on criteria (nearest, highest rating, etc.)
             Bikers assignedBiker = selectBestBiker(availableBikers);
-            
-            // 3. Send notification to the assigned biker
+    
             sendOrderAssignmentNotification(assignedBiker, orderNumber, restaurantName, 
                                         pickupAddress, deliveryAddress);
             
@@ -552,5 +597,96 @@ public class NotificationService {
         }
         
         log.info("Sent delivery completion notifications for order {}", order.getOrderNumber());
+    }
+
+    //Sends a payment notification to a restaurant
+    @Async
+    public void sendPaymentNotification(Long restaurantId, Double amount, String orderReference, String paymentMethod) {
+        try {
+            // Format the amount with 2 decimal places
+            String formattedAmount = String.format("%.2f", amount);
+            
+            // Create the notification message
+            String message = String.format("You have received a payment of %s MZN for order %s via %s. " +
+                    "The amount will be credited to your account within 1-2 business days.", 
+                    formattedAmount, orderReference, paymentMethod);
+            
+            // Create and save the notification
+            Notification notification = Notification.builder()
+                    .recipientType(RecipientType.RESTAURANT)
+                    .recipientId(restaurantId)
+                    .title("Payment Received")
+                    .message(message)
+                    .notificationType(NotificationType.PAYMENT)
+                    .isRead(false)
+                    .sentAt(LocalDate.now())
+                    .createdAt(LocalDate.now())
+                    .build();
+            
+            // In a real implementation, you would save this to the database
+            notificationRepository.save(notification);
+            
+            // Send email notification
+            sendRestaurantPaymentEmail(restaurantId, formattedAmount, orderReference, paymentMethod);
+            
+            // Log the notification
+            log.info("Payment notification sent to restaurant {} for order {}", restaurantId, orderReference);
+            
+        } catch (Exception e) {
+            log.error("Error sending payment notification to restaurant {}: {}", restaurantId, e.getMessage(), e);
+        }
+    }
+    
+    //Sends an email notification to a restaurant about a received payment          
+    @Async
+    protected void sendRestaurantPaymentEmail(Long restaurantId, String amount, String orderReference, String paymentMethod) {
+        try {
+            // Fetch the restaurant's email and name from the database
+            Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "Restaurant not found with id: " + restaurantId));
+            
+            String restaurantEmail = restaurant.getEmail();
+            String restaurantName = restaurant.getRestaurantName();
+            
+            // Validate email
+            if (restaurantEmail == null || restaurantEmail.trim().isEmpty()) {
+                log.warn("No email found for restaurant ID: {}. Email notification not sent.", restaurantId);
+                return;
+            }
+            // Prepare the evaluation context with variables for the template
+            Context context = new Context();
+            context.setVariable("restaurantName", restaurantName);
+            context.setVariable("orderReference", orderReference);
+            context.setVariable("amount", amount);
+            context.setVariable("paymentMethod", paymentMethod);
+            context.setVariable("processingDate", LocalDateTime.now());
+            // Process the template with the context
+            String emailContent = templateEngine.process("emails/restaurant-payment-notification", context);
+            // Prepare email using MimeMessage
+            MimeMessage mimeMessage = emailSender.createMimeMessage();
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
+            
+            message.setFrom(fromEmail);
+            message.setTo(restaurantEmail);
+            message.setSubject(paymentReceivedEmailSubject);
+            message.setText(emailContent, true); // true = isHtml
+            
+            // Send the email
+            emailSender.send(mimeMessage);
+            
+            log.info("Payment email sent to restaurant {} ({}) for order {}", 
+                    restaurantId, restaurantEmail, orderReference);
+                
+        } catch (ResourceNotFoundException e) {
+            log.error("Failed to send payment email: Restaurant not found with ID: {}", restaurantId, e);
+        } catch (MessagingException e) {
+            log.error("Failed to create payment email for restaurant {}: {}", restaurantId, e.getMessage(), e);
+        } catch (MailException e) {
+            log.error("Failed to send payment email to restaurant {}: {}", restaurantId, e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("Unexpected error sending payment email to restaurant {}: {}", 
+                    restaurantId, e.getMessage(), e);
+        }
     }
 }

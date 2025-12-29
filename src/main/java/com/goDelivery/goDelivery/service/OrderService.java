@@ -1,6 +1,7 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.OrderStatus;
+import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
@@ -8,7 +9,6 @@ import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.OrderMapper;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.dtos.order.OrderTrackingResponse;
-import com.goDelivery.goDelivery.model.Bikers;
 import com.goDelivery.goDelivery.repository.BikersRepository;
 import com.goDelivery.goDelivery.repository.BranchesRepository;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,9 +43,9 @@ public class OrderService {
     private final BranchesRepository branchesRepository;
 
     @Transactional
-    public OrderResponse createOrder(OrderRequest orderRequest) {
+    public List<OrderResponse> createOrder(OrderRequest orderRequest) {
         // Validate order items exist
-        if (orderRequest.getOrderItems() == null || orderRequest.getOrderItems().isEmpty()) {
+        if (orderRequest.getRestaurantOrders() == null || orderRequest.getRestaurantOrders().isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one item");
         }
         
@@ -52,22 +53,56 @@ public class OrderService {
         Customer customer = customerRepository.findByCustomerId(orderRequest.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + orderRequest.getCustomerId()));
 
-        // Validate restaurant exists
-        Restaurant restaurant = restaurantRepository.findByRestaurantId(orderRequest.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + orderRequest.getRestaurantId()));
+        List<OrderResponse> createdOrders = new ArrayList<>();
+        String parentOrderNumber = generateOrderNumber(null); // Generate a common prefix for all related orders
 
-        // Validate branch exists (optional - only if branchId is provided)
-        Branches branch = null;
-        if (orderRequest.getBranchId() != null) {
-            branch = branchesRepository.findByBranchId(orderRequest.getBranchId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + orderRequest.getBranchId()));
+        for (int i = 0; i < orderRequest.getRestaurantOrders().size(); i++) {
+            OrderRequest.RestaurantOrderRequest restaurantOrder = orderRequest.getRestaurantOrders().get(i);
+            
+            // Create a new order for each restaurant
+            OrderResponse orderResponse = createSingleRestaurantOrder(
+                    orderRequest, 
+                    restaurantOrder, 
+                    customer,
+                    parentOrderNumber + "-" + (i + 1) // Append index to make order numbers unique
+            );
+            createdOrders.add(orderResponse);
         }
 
-        // Create order
-        Order order = orderMapper.toOrder(orderRequest, customer, restaurant, branch);
+        return createdOrders;
+    }
 
-        // Calculate total amount
-        double totalAmount = orderRequest.getOrderItems().stream()
+    private OrderResponse createSingleRestaurantOrder(
+            OrderRequest orderRequest, 
+            OrderRequest.RestaurantOrderRequest restaurantOrder,
+            Customer customer,
+            String orderNumber
+    ) {
+        // Validate restaurant exists
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantOrder.getRestaurantId())
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantOrder.getRestaurantId()));
+
+        // Validate branch exists (if provided)
+        Branches branch = null;
+        if (restaurantOrder.getBranchId() != null) {
+            branch = branchesRepository.findByBranchId(restaurantOrder.getBranchId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + restaurantOrder.getBranchId()));
+        }
+
+        // Create order with common details
+        Order order = new Order();
+        order.setCustomer(customer);
+        order.setRestaurant(restaurant);
+        order.setBranch(branch);
+        order.setOrderStatus(OrderStatus.PLACED);
+        order.setPaymentStatus(PaymentStatus.PENDING);
+        order.setDeliveryAddress(orderRequest.getDeliveryAddress());
+        order.setSpecialInstructions(orderRequest.getSpecialInstructions());
+        order.setPaymentMethod(orderRequest.getPaymentMethod());
+        order.setOrderPlacedAt(LocalDate.now());
+        
+        // Calculate total amount for this restaurant's items
+        double totalAmount = restaurantOrder.getOrderItems().stream()
                 .mapToDouble(orderItem -> {
                     MenuItem menuItem = menuItemRepository.findByMenuItemId(orderItem.getMenuItemId())
                             .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + orderItem.getMenuItemId()));
@@ -75,18 +110,30 @@ public class OrderService {
                 })
                 .sum();
 
+        // // 2. Apply restaurant-specific discounts
+        // double discountAmount = applyRestaurantDiscounts(restaurant, totalAmount, orderRequest.getPromotionId());
+        // // 3. Calculate delivery fee (could be based on distance, order value, etc.)
+        // double deliveryFee = calculateDeliveryFee(restaurant, orderRequest.getDeliveryAddress(), totalAmount);
+        // // 4. Apply any platform-wide promotions
+        // double platformDiscount = applyPlatformWideDiscounts(totalAmount, orderRequest.getPromotionCode());
+        // // 5. Apply any customer-specific discounts (loyalty, first order, etc.)
+        // double customerDiscount = applyCustomerDiscounts(customer, totalAmount);
+        // // 6. Calculate final amount
+        // double finalAmount = totalAmount - discountAmount - platformDiscount - customerDiscount + deliveryFee;
+        // // Ensure final amount is not negative
+        // finalAmount = Math.max(0, finalAmount);        
+
         order.setSubTotal((float) totalAmount);
-        order.setFinalAmount((float) totalAmount); // In a real app, apply discounts, taxes, etc.
+        // order.setDiscountAmount((float) (discountAmount + platformDiscount + customerDiscount));
+        // order.setDeliveryFee((float) deliveryFee);
+        order.setFinalAmount((float) totalAmount);
+        order.setOrderNumber(orderNumber);
 
         // Save order to get the ID
         Order savedOrder = orderRepository.save(order);
-        
-        // Generate and set order number
-        String orderNumber = generateOrderNumber(savedOrder.getOrderId());
-        savedOrder.setOrderNumber(orderNumber);
 
         // Create order items
-        List<OrderItem> orderItems = orderRequest.getOrderItems().stream()
+        List<OrderItem> orderItems = restaurantOrder.getOrderItems().stream()
                 .map(item -> {
                     MenuItem menuItem = menuItemRepository.findByMenuItemId(item.getMenuItemId())
                             .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + item.getMenuItemId()));
@@ -109,6 +156,13 @@ public class OrderService {
         Order finalOrder = orderRepository.save(savedOrder);
         
         return orderMapper.toOrderResponse(finalOrder);
+    }
+
+    private String generateOrderNumber(Long orderId) {
+        LocalDate now = LocalDate.now();
+        String datePart = String.format("%04d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+        String orderIdPart = String.format("%05d", orderId);
+        return "ORD-" + datePart + "-" + orderIdPart;
     }
 
     public OrderResponse getOrderById(Long orderId) {
@@ -307,13 +361,6 @@ public class OrderService {
         return (int) (Math.random() * 30) + 5; // 5-35 minutes remaining
     }
     
-    private String generateOrderNumber(Long orderId) {
-        LocalDate now = LocalDate.now();
-        String datePart = String.format("%04d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
-        String orderIdPart = String.format("%05d", orderId);
-        return "ORD-" + datePart + "-" + orderIdPart;
-    }
-    
     @Transactional(readOnly = true)
     public Long getTotalOrdersByRestaurant(Long restaurantId) {
         // Verify the authenticated user owns this restaurant
@@ -379,4 +426,73 @@ public class OrderService {
             this.pendingOrders = pendingOrders;
         }
     }
+
+    // // Helper methods for discount calculations
+    // private double applyRestaurantDiscounts(Restaurant restaurant, double amount, Long promotionId) {
+    //     double discount = 0.0;
+        
+    //     // Check if there's a specific promotion for this restaurant
+    //     if (promotionId != null) {
+    //         Promotion promotion = promotionRepository.findById(promotionId)
+    //             .filter(p -> p.getRestaurant().equals(restaurant))
+    //             .filter(p -> p.isActive() && !p.isExpired())
+    //             .orElse(null);
+                
+    //         if (promotion != null) {
+    //             if (promotion.getDiscountType() == DiscountType.PERCENTAGE) {
+    //                 discount += amount * (promotion.getDiscountValue() / 100.0);
+    //             } else { // FIXED_AMOUNT
+    //                 discount += Math.min(promotion.getDiscountValue(), amount);
+    //             }
+    //         }
+    //     }
+        
+    //     // Apply restaurant's default discount if any
+    //     if (restaurant.getDefaultDiscount() > 0) {
+    //         discount += amount * (restaurant.getDefaultDiscount() / 100.0);
+    //     }
+        
+    //     return discount;
+    // }
+    // private double calculateDeliveryFee(Restaurant restaurant, String deliveryAddress, double orderAmount) {
+    //     // Base delivery fee
+    //     double fee = restaurant.getBaseDeliveryFee();
+        
+    //     // Free delivery for orders above certain amount
+    //     if (orderAmount >= restaurant.getFreeDeliveryThreshold()) {
+    //         return 0.0;
+    //     }
+        
+    //     // Additional fee for distance (simplified example)
+    //     double distance = calculateDistance(restaurant.getAddress(), deliveryAddress);
+    //     if (distance > 5) { // 5km
+    //         fee += (distance - 5) * restaurant.getPerKmFee();
+    //     }
+        
+    //     return Math.min(fee, restaurant.getMaxDeliveryFee());
+    // }
+    // private double applyPlatformWideDiscounts(double amount, String promotionCode) {
+    //     if (promotionCode == null || promotionCode.isEmpty()) {
+    //         return 0.0;
+    //     }
+        
+    //     return promotionService.validateAndApplyPromotion(promotionCode, amount);
+    // }
+    // private double applyCustomerDiscounts(Customer customer, double amount) {
+    //     double discount = 0.0;
+        
+    //     // First order discount
+    //     if (!orderRepository.existsByCustomer(customer)) {
+    //         discount += amount * 0.1; // 10% off for first order
+    //     }
+        
+    //     // Loyalty discount
+    //     int orderCount = orderRepository.countByCustomer(customer);
+    //     if (orderCount >= 10) {
+    //         discount += amount * 0.05; // 5% off for loyal customers
+    //     }
+        
+    //     // Apply maximum discount cap if needed
+    //     return Math.min(discount, amount * 0.3); // Max 30% discount from customer benefits
+    // }
 }

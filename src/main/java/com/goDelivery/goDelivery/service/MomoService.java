@@ -2,6 +2,9 @@ package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.config.MomoConfig;
 import com.goDelivery.goDelivery.dtos.momo.*;
+import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementRequest;
+import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementResponse;
+import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementStatusResponse;
 import com.goDelivery.goDelivery.model.MomoTransaction;
 import com.goDelivery.goDelivery.model.Order;
 import com.goDelivery.goDelivery.model.Payment;
@@ -153,12 +156,90 @@ public class MomoService {
     }
 
     /**
+     * Initiate a disbursement transaction
+     * @param request the disbursement request
+     * @return the response
+     */
+    public CollectionDisbursementResponse initiateCollectionDisbursement(CollectionDisbursementRequest request) {
+        try {
+            String authToken = generateAuthToken();
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", "Bearer " + authToken);
+            
+            // Format the collection MSISDN to remove any non-digit characters
+            request.setCollectionMsisdn(formatMsisdn(request.getCollectionMsisdn()));
+            
+            // Format all recipient MSISDNs
+            request.getDisbursementRecipients().forEach(recipient -> 
+                recipient.setMsisdn(formatMsisdn(recipient.getMsisdn())));
+            
+            HttpEntity<CollectionDisbursementRequest> entity = new HttpEntity<>(request, headers);
+            
+            log.info("Initiating collection-disbursement request to MoMo API");
+            ResponseEntity<CollectionDisbursementResponse> response = restTemplate.exchange(
+                momoConfig.getBaseUrl() + "/disbursement/collection-disbursement",
+                HttpMethod.POST,
+                entity,
+                CollectionDisbursementResponse.class
+            );
+            
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Failed to initiate collection-disbursement: " + 
+                    response.getStatusCode().value() + " - " + response.getBody());
+            }
+        } catch (Exception e) {
+            log.error("Error processing collection-disbursement", e);
+            throw new RuntimeException("Failed to process collection-disbursement: " + e.getMessage());
+        }
+    }
+    public DisbursementStatusResponse checkDisbursementStatus(String referenceId) {
+        try {
+            String authToken = generateAuthToken();
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + authToken);
+            
+            String url = String.format("%s/disbursement/status/%s", 
+                momoConfig.getBaseUrl(), referenceId);
+                
+            ResponseEntity<DisbursementStatusResponse> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                DisbursementStatusResponse.class
+            );
+            
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Failed to check disbursement status: " + 
+                    response.getStatusCode().value() + " - " + (response.getBody() != null ? response.getBody().toString() : "No response body"));
+            }
+        } catch (Exception e) {
+            log.error("Error checking disbursement status", e);
+            throw new RuntimeException("Failed to check disbursement status: " + e.getMessage());
+        }
+    }
+    private String formatMsisdn(String msisdn) {
+        // Remove any non-digit characters and ensure it starts with country code
+        String digits = msisdn.replaceAll("[^0-9]", "");
+        if (digits.startsWith("0")) {
+            return "250" + digits.substring(1); // Assuming Rwanda as default
+        }
+        return digits;
+    }
+
+    /**
      * Check the status of a transaction
      */
     public MomoTransactionStatus checkTransactionStatus(String referenceId) {
         return momoTransactionRepository.findByReferenceId(referenceId)
                 .map(this::mapToTransactionStatus)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+                .orElseThrow(() -> new RuntimeException("Transaction not found: " + referenceId));
     }
 
     /**
