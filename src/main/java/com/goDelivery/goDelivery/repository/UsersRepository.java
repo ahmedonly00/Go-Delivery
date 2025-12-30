@@ -24,4 +24,6 @@ public interface UsersRepository extends JpaRepository<RestaurantUsers, Long> {
     
     // Find users by role and restaurant ID
     List<RestaurantUsers> findByRoleAndRestaurant_RestaurantId(Roles role, Long restaurantId);
+
+    boolean existsByRestaurant_RestaurantIdAndEmail(Long restaurantId, String email);
 }

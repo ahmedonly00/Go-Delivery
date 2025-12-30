@@ -11,5 +11,7 @@ import com.goDelivery.goDelivery.model.Branches;
 @Repository
 public interface BranchesRepository extends JpaRepository<Branches, Long> {
     Optional<Branches> findByBranchId(Long branchId);
+    Optional<Branches> findByBranchName(String branchName);
+    Optional<Branches> findByRestaurant_RestaurantId(Long restaurantId);
     
 }
