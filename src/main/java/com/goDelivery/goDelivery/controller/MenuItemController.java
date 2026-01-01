@@ -17,11 +17,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/menu-items")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Menu Item", description = "Menu Item management")
 public class MenuItemController {
 
     private final MenuItemService menuItemService;

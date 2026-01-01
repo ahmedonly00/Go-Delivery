@@ -23,6 +23,8 @@ import com.goDelivery.goDelivery.mapper.OrderMapper;
 import com.goDelivery.goDelivery.model.Bikers;
 import com.goDelivery.goDelivery.model.Order;
 import com.goDelivery.goDelivery.service.BikerService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +46,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @CrossOrigin(origins = "*")
+@Tag(name = "Bikers", description = "Bikers management")
 public class BikerController {
 
     private final BikerService bikerService;

@@ -114,6 +114,8 @@ public class SecurityConfig {
                         "/api/v1/payments/mpesa/initiate",
                         "/api/v1/payments/mpesa/status/**",
                         "/api/v1/payments/momo/request",
+                        "/api/v1/payments/momo/processOrderDisbursement",
+                        "/api/v1/payments/momo/disbursement/status/*",
                         "/api/v1/payments/momo/status/**"
                     ).authenticated()
                     

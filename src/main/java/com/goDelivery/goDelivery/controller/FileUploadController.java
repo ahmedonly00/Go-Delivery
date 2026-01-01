@@ -9,10 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/file-upload/restaurants")
 @CrossOrigin(origins = "*")
+@Tag(name = "File Upload", description = "File upload management")
 public class FileUploadController {
 
     @Autowired

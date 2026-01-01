@@ -120,6 +120,132 @@ public class MomoPaymentController {
         }
     }
 
+   @PostMapping("/processOrderDisbursement")
+   @Operation(
+        summary = "Process order disbursement",
+        description = "Processes disbursement for a completed order to the respective restaurants",
+        responses = {
+            @ApiResponse(responseCode = "200", 
+                description = "Disbursement processed successfully",
+                content = @Content(schema = @Schema(implementation = CollectionDisbursementResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid order or order not eligible for disbursement"),
+            @ApiResponse(responseCode = "500", description = "Error processing disbursement")
+        }
+    )
+    public ResponseEntity<?> processOrderDisbursement(
+            @Parameter(description = "Order details for disbursement") 
+            @Valid @RequestBody Order order) {
+        
+        try {
+            log.info("Processing disbursement for order: {}", order.getOrderNumber());
+            
+            // Validate order exists and is eligible for disbursement
+            Order existingOrder = orderRepository.findByOrderId(order.getOrderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + order.getOrderId()));
+                
+            if (existingOrder.getPaymentStatus() != PaymentStatus.PAID) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Order is not paid", "orderStatus", existingOrder.getPaymentStatus()));
+            }
+            
+            // Process the disbursement
+            CollectionDisbursementResponse response = disbursementService.processOrderDisbursement(existingOrder);
+            log.info("Disbursement initiated successfully for order: {}. Reference: {}", 
+                    order.getOrderNumber(), response.getReferenceId());
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (ResourceNotFoundException e) {
+            log.error("Order not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (IllegalStateException e) {
+            log.error("Invalid disbursement request: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error processing disbursement for order {}: {}", 
+                    order.getOrderNumber(), e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to process disbursement: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/disbursement/status/{referenceId}")
+    @Operation(
+        summary = "Check disbursement status",
+        description = "Checks the status of a disbursement using the reference ID",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Status retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Disbursement not found")
+        }
+    )
+    public ResponseEntity<?> getDisbursementStatus(
+            @Parameter(description = "Disbursement reference ID") 
+            @PathVariable String referenceId) {
+        
+        try {
+            log.info("Fetching status for disbursement: {}", referenceId);
+            
+            // Check if it's a collection or disbursement reference
+            if (referenceId.startsWith("COLL_")) {
+                // Handle collection status check
+                return ResponseEntity.ok(disbursementService.getCollectionStatus(referenceId));
+            } else {
+                // Handle disbursement status check
+                return ResponseEntity.ok(disbursementService.getDisbursementStatus(referenceId));
+            }
+            
+        } catch (ResourceNotFoundException e) {
+            log.error("Disbursement not found: {}", referenceId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Disbursement not found: " + referenceId));
+        } catch (Exception e) {
+            log.error("Error fetching disbursement status: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to fetch disbursement status: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/order/{orderId}/disbursements")
+    @Operation(
+        summary = "Get all disbursements for an order",
+        description = "Retrieves all disbursement transactions for a specific order"
+    )
+    public ResponseEntity<?> getOrderDisbursements(
+            @Parameter(description = "Order ID") 
+            @PathVariable Long orderId) {
+        
+        try {
+            List<DisbursementTransaction> transactions = 
+                transactionRepository.findByOrder_OrderId(orderId);
+                
+            if (transactions.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "No disbursements found for order: " + orderId));
+            }
+            
+            // Convert to DTOs if needed
+            List<Map<String, Object>> result = transactions.stream()
+                .map(tx -> Map.of(
+                    "referenceId", tx.getReferenceId(),
+                    "status", tx.getStatus().name(),
+                    "amount", tx.getAmount(),
+                    "restaurant", tx.getRestaurant().getRestaurantName(),
+                    "createdAt", tx.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+                
+            return ResponseEntity.ok(result);
+            
+        } catch (Exception e) {
+            log.error("Error fetching disbursements for order {}: {}", orderId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to fetch disbursements: " + e.getMessage()));
+        }
+    }
+
+    
     @PostMapping("/disbursement")
     @Operation(
         summary = "MoMo Disbursement Callback",

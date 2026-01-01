@@ -3,6 +3,8 @@ package com.goDelivery.goDelivery.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goDelivery.goDelivery.service.MpesaPaymentService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/webhooks")
 @RequiredArgsConstructor
+@Tag(name = "MPESA Webhook", description = "MPESA Webhook management")
 public class MpesaWebhookController {
     
     private final MpesaPaymentService mpesaPaymentService;

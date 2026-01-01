@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import io.swagger.v3.oas.annotations.tags.Tag;  
 
 import java.net.URI;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
 @RequestMapping("/api/super-admin")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Super Admin", description = "Super admin management")
 public class SuperAdminController {
 
     private final SuperAdminService superAdminService;

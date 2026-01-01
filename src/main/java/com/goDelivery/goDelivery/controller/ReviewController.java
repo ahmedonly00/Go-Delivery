@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+@Tag(name = "Review", description = "Review management")
 public class ReviewController {
 
     private final ReviewService reviewService;

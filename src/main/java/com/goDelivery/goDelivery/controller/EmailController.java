@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
+            
 @RestController
 @RequestMapping("/api/emails")
 @RequiredArgsConstructor
+@Tag(name = "Emails", description = "Email management")
 public class EmailController {
 
     private final EmailService emailService;

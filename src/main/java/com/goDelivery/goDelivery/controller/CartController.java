@@ -6,6 +6,7 @@ import com.goDelivery.goDelivery.model.Customer;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
 import com.goDelivery.goDelivery.service.CartService;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Cart", description = "Cart management")
 public class CartController {
 
     private final CartService cartService;

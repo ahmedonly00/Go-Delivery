@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import java.util.List;
 
@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Users", description = "User management")
 public class UsersController {
 
     private final UsersService usersService;

@@ -8,10 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/restaurants")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+@Tag(name = "Restaurant Delivery", description = "Restaurant delivery management")
 public class RestaurantDeliveryController {
 
     private final RestaurantService restaurantService;

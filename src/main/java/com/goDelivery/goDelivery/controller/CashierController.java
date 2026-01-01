@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @PreAuthorize("hasAnyRole('CASHIER', 'ADMIN')")
 @CrossOrigin(origins = "*")
+@Tag(name = "Cashier", description = "Cashier management")
 public class CashierController {
 
     private final CashierService cashierService;

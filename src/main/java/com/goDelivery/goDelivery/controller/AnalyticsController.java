@@ -5,7 +5,7 @@ import com.goDelivery.goDelivery.dtos.analytics.SalesReportDTO;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
 @CrossOrigin(origins = "*")
+@Tag(name = "Analytics", description = "Analytics management")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;

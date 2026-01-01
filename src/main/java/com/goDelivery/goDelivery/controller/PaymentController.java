@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
 @Slf4j
 @CrossOrigin(origins = "*")
+@Tag(name = "Payment", description = "Payment management")
 public class PaymentController {
 
     private final PaymentService paymentService;

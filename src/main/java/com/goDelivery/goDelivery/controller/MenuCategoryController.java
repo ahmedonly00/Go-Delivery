@@ -23,12 +23,14 @@ import com.goDelivery.goDelivery.service.MenuCategoryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/menu-category")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Menu Category", description = "Menu Category management")
 public class MenuCategoryController {
 
     private final MenuCategoryService menuCategoryService;

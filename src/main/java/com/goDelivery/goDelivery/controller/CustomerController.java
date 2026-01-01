@@ -22,12 +22,14 @@ import com.goDelivery.goDelivery.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Customers", description = "Customers management")
 public class CustomerController {
 
     private final CustomerService customerService;

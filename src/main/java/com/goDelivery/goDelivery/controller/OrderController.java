@@ -7,13 +7,14 @@ import com.goDelivery.goDelivery.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Order", description = "Order management")
 public class OrderController {
 
     private final OrderService orderService;

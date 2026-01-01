@@ -100,11 +100,12 @@ public class BranchesService {
     }
 
     @Transactional
-    public void toggleBranchStatus(Long branchId, boolean isActive, String userEmail) {
+    public BranchesDTO toggleBranchStatus(Long branchId, boolean isActive, String userEmail) {
         Branches branch = getBranchWithPermissionCheck(branchId, userEmail);
         branch.setActive(isActive);
-        branchesRepository.save(branch);
+        Branches updatedBranch = branchesRepository.save(branch);
         log.info("{} branch {}", isActive ? "Activated" : "Deactivated", branchId);
+        return restaurantMapper.toBranchDTO(updatedBranch);
     }
     // Helper methods
     private Restaurant verifyRestaurantAccess(Long restaurantId, String userEmail) {
@@ -116,6 +117,7 @@ public class BranchesService {
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
     }
+
     private Branches getBranchWithPermissionCheck(Long branchId, String userEmail) {
         Branches branch = branchesRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
@@ -125,6 +127,7 @@ public class BranchesService {
         
         return branch;
     }
+
     private void validateBranchData(BranchesDTO branchDTO) {
         if (StringUtils.isBlank(branchDTO.getBranchName())) {
             throw new ValidationException("Branch name is required");

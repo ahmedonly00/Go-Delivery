@@ -9,13 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/feedback")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Feedback", description = "Feedback management")
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
