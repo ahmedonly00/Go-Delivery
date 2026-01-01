@@ -1,10 +1,18 @@
 package com.goDelivery.goDelivery.controller;
 
+import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.dtos.momo.*;
+import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementResponse;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementCallback;
+import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.model.DisbursementTransaction;
+import com.goDelivery.goDelivery.model.Order;
+import com.goDelivery.goDelivery.repository.OrderRepository;
+import com.goDelivery.goDelivery.repository.TransactionRepository;
 import com.goDelivery.goDelivery.service.DisbursementService;
 import com.goDelivery.goDelivery.service.MomoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,7 +25,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Validated
@@ -29,6 +40,8 @@ public class MomoPaymentController {
 
     private final MomoService momoService;
     private final DisbursementService disbursementService;
+    private final OrderRepository orderRepository;
+    private final TransactionRepository transactionRepository;
 
     @PostMapping(value = "/request")
     @Operation(

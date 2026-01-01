@@ -13,6 +13,9 @@ import com.goDelivery.goDelivery.repository.RestaurantRepository;
 import com.goDelivery.goDelivery.repository.UsersRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -270,7 +273,17 @@ public class  UsersService {
         
         return restaurantUserMapper.mapToResponse(updatedUser);
     }
-    
+
+    public RestaurantUsers getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UnauthorizedException("User not authenticated");
+        }
+        
+        String username = authentication.getName();
+        return usersRepository.findByEmail(username)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + username));
+    }
 
     private void validateAdminRestaurantAccess(String adminEmail, Long restaurantId) {
         RestaurantUsers admin = usersRepository.findByEmail(adminEmail)

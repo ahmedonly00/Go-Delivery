@@ -130,7 +130,9 @@ public class SecurityConfig {
                         "/api/file-upload/restaurants/**",
                         "/api/restaurants/registerRestaurant/**",
                         "/api/restaurants/updateRestaurant/**",
-                        "/api/restaurants/deleteRestaurant/**"
+                        "/api/restaurants/deleteRestaurant/**",
+                        "/api/v1/disbursements/restaurant/summary",
+                        "/api/v1/disbursements/restaurant/transactions"
                     ).hasRole("RESTAURANT_ADMIN")
                     
                     // Shared endpoints
@@ -154,7 +156,9 @@ public class SecurityConfig {
                     
                     // Cashier endpoints
                     .requestMatchers(
-                        "/api/cashier/**"
+                        "/api/cashier/**",
+                        "/api/v1/disbursements/restaurant/summary",
+                        "/api/v1/disbursements/restaurant/transactions"
                     ).hasRole("CASHIER")
                     
                     // Analytics endpoints

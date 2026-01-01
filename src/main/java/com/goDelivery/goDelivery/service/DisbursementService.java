@@ -1,13 +1,20 @@
 package com.goDelivery.goDelivery.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.goDelivery.goDelivery.Enum.DisbursementStatus;
 import com.goDelivery.goDelivery.Enum.PaymentStatus;
@@ -16,6 +23,8 @@ import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisb
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementResponse;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementCallback;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementRecipient;
+import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO;
+import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.RestaurantDisbursementSummaryDTO;
 import com.goDelivery.goDelivery.exception.PaymentProcessingException;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.model.DisbursementTransaction;
@@ -26,7 +35,6 @@ import com.goDelivery.goDelivery.repository.OrderRepository;
 import com.goDelivery.goDelivery.repository.PaymentRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -119,7 +127,7 @@ public class DisbursementService {
         // Update order and transactions with the reference ID
         order.setDisbursementReference(response.getReferenceId());
         order.setDisbursementStatus(DisbursementStatus.PENDING);
-        order.setUpdatedAt(LocalDateTime.now());
+        order.setUpdatedAt(LocalDate.now());
         orderRepository.save(order);
         
         transactionRepository.updateReferenceIdByOrder(
@@ -175,12 +183,12 @@ public class DisbursementService {
         if (DisbursementStatus.SUCCESSFUL.equals(callback.getStatus())) {
             order.setPaymentStatus(PaymentStatus.PAID);
             order.setPaymentCompletedAt(LocalDateTime.now());
-            order.setUpdatedAt(LocalDateTime.now());
+            order.setUpdatedAt(LocalDate.now());
             log.info("Collection successful for order {}", order.getOrderId());
         } else if (DisbursementStatus.FAILED.equals(callback.getStatus())) {
             order.setPaymentStatus(PaymentStatus.FAILED);
             order.setPaymentFailureReason(callback.getErrorReason());
-            order.setUpdatedAt(LocalDateTime.now());
+            order.setUpdatedAt(LocalDate.now());
             log.info("Collection failed for order {}", order.getOrderId());
         }
         
@@ -282,7 +290,7 @@ public class DisbursementService {
             log.info("Disbursement pending for order {}", order.getOrderId());
         }
         
-        order.setUpdatedAt(LocalDateTime.now());
+        order.setUpdatedAt(LocalDate.now());
         orderRepository.save(order);
     }
 
@@ -301,8 +309,8 @@ public class DisbursementService {
             "currency", "RWF", // Assuming RWF as default currency
             "financialTransactionId", transaction.getFinancialTransactionId() != null ? 
                 transaction.getFinancialTransactionId() : "N/A",
-            "externalId", "DISB" + transaction.getTransactionId(), // Or use another identifier
-            "reason", transaction.getStatus().getDescription(), // Add getDescription() to enum if needed
+            "externalId", "DISB" + transaction.getFinancialTransactionId(),
+            "reason", transaction.getStatus().name(),
             "errorReason", transaction.getErrorMessage()
         );
     }
@@ -361,7 +369,7 @@ public class DisbursementService {
         for (DisbursementTransaction transaction : pendingTransactions) {
             try {
                 log.debug("Checking status for transaction ID: {}, Reference: {}", 
-                        transaction.getTransactionId(), transaction.getReferenceId());
+                        transaction.getFinancialTransactionId(), transaction.getReferenceId());
                 
                 // Get the latest status from MoMo API
                 Map<String, Object> statusResponse = momoService.getTransactionStatus(transaction.getReferenceId());
@@ -402,6 +410,57 @@ public class DisbursementService {
                         transaction.getReferenceId(), e.getMessage(), e);
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<DisbursementSummaryDTO> getDisbursementsForRestaurant(Long restaurantId) {
+        return transactionRepository.findDisbursementSummaryByRestaurantId(restaurantId);
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
+    public List<DisbursementSummaryDTO> getAllDisbursements() {
+        return transactionRepository.findAllDisbursementSummaries();
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
+    public List<RestaurantDisbursementSummaryDTO> getRestaurantDisbursementSummaries() {
+        return transactionRepository.getRestaurantDisbursementSummaries();
+    }
+
+    @Transactional(readOnly = true)
+    public RestaurantDisbursementSummaryDTO getRestaurantDisbursementSummary(Long restaurantId) {
+        List<DisbursementSummaryDTO> transactions = transactionRepository
+            .findDisbursementSummaryByRestaurantId(restaurantId);
+        
+        if (transactions.isEmpty()) {
+            return new RestaurantDisbursementSummaryDTO(
+                restaurantId,
+                "", // Restaurant name will be empty if no transactions
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                0L,
+                transactions
+            );
+        }
+        
+        BigDecimal totalDisbursed = transactions.stream()
+            .map(DisbursementSummaryDTO::getAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        BigDecimal totalCommission = transactions.stream()
+            .map(DisbursementSummaryDTO::getCommission)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        return new RestaurantDisbursementSummaryDTO(
+            restaurantId,
+            transactions.get(0).getRestaurantName(),
+            totalDisbursed,
+            totalCommission,
+            (long) transactions.size(),
+            transactions
+        );
     }
 
 }

@@ -15,4 +15,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByStatus(TransactionStatus status);
     boolean existsByExternalId(String externalId);
     
+
+    
 }
