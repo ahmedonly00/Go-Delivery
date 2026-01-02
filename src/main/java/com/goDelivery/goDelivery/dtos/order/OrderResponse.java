@@ -44,6 +44,10 @@ public class OrderResponse {
     private Long restaurantId;
     private Long bikerId;
     
+    // Related entity names
+    private String customerName;
+    private String restaurantName;
+    
     // Order items
     private List<OrderItemResponse> items;
     

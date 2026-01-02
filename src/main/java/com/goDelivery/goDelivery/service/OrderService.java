@@ -126,9 +126,11 @@ public class OrderService {
         // finalAmount = Math.max(0, finalAmount);        
 
         order.setSubTotal((float) totalAmount);
-        // order.setDiscountAmount((float) (discountAmount + platformDiscount + customerDiscount));
-        // order.setDeliveryFee((float) deliveryFee);
-        order.setFinalAmount((float) totalAmount);
+        order.setDiscountAmount(orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
+        order.setDeliveryFee(orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f);
+        // Calculate final amount: subtotal + delivery fee - discount
+        float finalAmount = (float) totalAmount + (orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f) - (orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
+        order.setFinalAmount(finalAmount);
         order.setOrderNumber(orderNumber);
 
         // Save order to get the ID

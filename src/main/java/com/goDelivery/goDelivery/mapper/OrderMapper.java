@@ -51,7 +51,9 @@ public class OrderMapper {
                 .cancelledAt(order.getCancelledAt())
                 .cancellationReason(order.getCancellationReason())
                 .customerId(order.getCustomer() != null ? order.getCustomer().getCustomerId() : null)
+                .customerName(order.getCustomer() != null ? order.getCustomer().getFullNames() : null)
                 .restaurantId(order.getRestaurant() != null ? order.getRestaurant().getRestaurantId() : null)
+                .restaurantName(order.getRestaurant() != null ? order.getRestaurant().getRestaurantName() : null)
                 .bikerId(order.getBikers() != null ? order.getBikers().getBikerId() : null)
                 .items(toOrderItemResponseList(order.getOrderItems())) // Add this line to include order items
                 .build();
