@@ -30,7 +30,8 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
 
     @Query("SELECT new com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO(" +
            "dt.id, dt.referenceId, o.orderId, o.orderNumber, r.id, r.restaurantName, " +
-           "dt.amount, dt.commission, dt.status, dt.createdAt, dt.updatedAt) " +
+           "CAST(dt.amount AS java.math.BigDecimal), CAST(dt.commission AS java.math.BigDecimal), " +
+           "dt.status, dt.createdAt, dt.updatedAt) " +
            "FROM DisbursementTransaction dt " +
            "JOIN dt.order o " +
            "JOIN dt.restaurant r " +
@@ -39,7 +40,8 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
     List<DisbursementSummaryDTO> findDisbursementSummaryByRestaurantId(@Param("restaurantId") Long restaurantId);
     @Query("SELECT new com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO(" +
            "dt.id, dt.referenceId, o.orderId, o.orderNumber, r.id, r.restaurantName, " +
-           "dt.amount, dt.commission, dt.status, dt.createdAt, dt.updatedAt) " +
+           "CAST(dt.amount AS java.math.BigDecimal), CAST(dt.commission AS java.math.BigDecimal), " +
+           "dt.status, dt.createdAt, dt.updatedAt) " +
            "FROM DisbursementTransaction dt " +
            "JOIN dt.order o " +
            "JOIN dt.restaurant r " +
