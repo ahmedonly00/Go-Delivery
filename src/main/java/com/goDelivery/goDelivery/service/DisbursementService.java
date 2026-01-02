@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -37,21 +39,35 @@ import com.goDelivery.goDelivery.repository.OrderRepository;
 import com.goDelivery.goDelivery.repository.PaymentRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class DisbursementService {
-    private final MomoService momoService;
-    private final OrderRepository orderRepository;
-    private final RestaurantRepository restaurantRepository;
-    private final DisbursementTransactionRepository transactionRepository;
-    private final PaymentRepository paymentRepository;
-    private final MomoConfig momoConfig;
-    private final CommissionConfig commissionConfig;
-    private final NotificationService notificationService;
+    @Lazy
+    @Autowired
+    private MomoService momoService;
+    
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+    
+    @Autowired
+    private DisbursementTransactionRepository transactionRepository;
+    
+    @Autowired
+    private PaymentRepository paymentRepository;
+    
+    @Autowired
+    private MomoConfig momoConfig;
+    
+    @Autowired
+    private CommissionConfig commissionConfig;
+    
+    @Autowired
+    private NotificationService notificationService;
 
     @Value("${app.payment.method.momo:MoMo}")
     private String momoPaymentMethod;

@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/file-upload/branches")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin("*")
 @Tag(name = "Branch File Upload", description = "Branch file upload operations")
 public class BranchFileUploadController {
     
