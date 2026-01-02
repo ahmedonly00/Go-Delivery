@@ -28,7 +28,7 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
     @Query("UPDATE DisbursementTransaction t SET t.referenceId = :referenceId WHERE t.order.id = :orderId")
     void updateReferenceIdByOrder(@Param("referenceId") String referenceId, @Param("orderId") Long orderId);
 
-    @Query("SELECT new com.goDelivery.goDelivery.dto.DisbursementSummaryDTO(" +
+    @Query("SELECT new com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO(" +
            "dt.id, dt.referenceId, o.orderId, o.orderNumber, r.id, r.restaurantName, " +
            "dt.amount, dt.commission, dt.status, dt.createdAt, dt.updatedAt) " +
            "FROM DisbursementTransaction dt " +
@@ -37,7 +37,7 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
            "WHERE r.id = :restaurantId " +
            "ORDER BY dt.createdAt DESC")
     List<DisbursementSummaryDTO> findDisbursementSummaryByRestaurantId(@Param("restaurantId") Long restaurantId);
-    @Query("SELECT new com.goDelivery.goDelivery.dto.DisbursementSummaryDTO(" +
+    @Query("SELECT new com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO(" +
            "dt.id, dt.referenceId, o.orderId, o.orderNumber, r.id, r.restaurantName, " +
            "dt.amount, dt.commission, dt.status, dt.createdAt, dt.updatedAt) " +
            "FROM DisbursementTransaction dt " +
@@ -45,7 +45,7 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
            "JOIN dt.restaurant r " +
            "ORDER BY dt.createdAt DESC")
     List<DisbursementSummaryDTO> findAllDisbursementSummaries();
-    @Query("SELECT NEW com.goDelivery.goDelivery.dto.RestaurantDisbursementSummaryDTO(" +
+    @Query("SELECT NEW com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.RestaurantDisbursementSummaryDTO(" +
            "r.id, r.restaurantName, " +
            "COALESCE(SUM(dt.amount), 0), " +
            "COALESCE(SUM(dt.commission), 0), " +
