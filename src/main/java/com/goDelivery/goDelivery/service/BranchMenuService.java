@@ -1,9 +1,12 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.MenuItemDTO;
+import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
+import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.exception.UnauthorizedException;
+import com.goDelivery.goDelivery.mapper.MenuCategoryMapper;
+import com.goDelivery.goDelivery.mapper.MenuItemMapper;
 import com.goDelivery.goDelivery.model.BranchUsers;
 import com.goDelivery.goDelivery.model.Branches;
 import com.goDelivery.goDelivery.model.MenuCategory;
@@ -35,6 +38,8 @@ public class BranchMenuService {
     private final MenuItemRepository menuItemRepository;
     private final BranchesRepository branchesRepository;
     private final BranchUsersRepository branchUsersRepository;
+    private final MenuItemMapper menuItemMapper;
+    private final MenuCategoryMapper menuCategoryMapper;
     private final UsersService usersService;
     
     private final String UPLOAD_DIR = "uploads/branch-menu/";
@@ -60,11 +65,13 @@ public class BranchMenuService {
         MenuCategory savedCategory = menuCategoryRepository.save(category);
         log.info("Created menu category '{}' for branch {}", categoryDTO.getCategoryName(), branchId);
         
-        return convertToDTO(savedCategory);
+        MenuCategoryDTO dto = menuCategoryMapper.toMenuCategoryDTO(savedCategory);
+        dto.setBranchId(branchId);
+        return dto;
     }
 
     @Transactional
-    public MenuItemDTO createMenuItem(Long branchId, Long categoryId, MenuItemDTO menuItemDTO,
+    public MenuItemResponse createMenuItem(Long branchId, Long categoryId, MenuItemRequest menuItemRequest,
                                     MultipartFile imageFile) {
         // Verify branch access
         verifyBranchAccess(branchId);
@@ -85,20 +92,21 @@ public class BranchMenuService {
         
         // Create menu item
         MenuItem menuItem = new MenuItem();
-        menuItem.setMenuItemName(menuItemDTO.getItemName());
-        menuItem.setDescription(menuItemDTO.getDescription());
-        menuItem.setPrice(menuItemDTO.getPrice());
+        menuItem.setMenuItemName(menuItemRequest.getMenuItemName());
+        menuItem.setDescription(menuItemRequest.getDescription());
+        menuItem.setPrice(menuItemRequest.getPrice());
         menuItem.setCategory(category);
         menuItem.setImage(imageUrl);
-        menuItem.setAvailable(menuItemDTO.isAvailable());
-        menuItem.setPreparationTime(menuItemDTO.getPreparationTime());
+        menuItem.setAvailable(menuItemRequest.isAvailable());
+        menuItem.setPreparationTime(menuItemRequest.getPreparationTime());
         menuItem.setBranch(category.getBranch());
+        menuItem.setRestaurant(category.getBranch().getRestaurant()); // Set the restaurant from branch
         
         MenuItem savedItem = menuItemRepository.save(menuItem);
         log.info("Created menu item '{}' for category {} in branch {}", 
-                menuItemDTO.getItemName(), categoryId, branchId);
+                menuItemRequest.getMenuItemName(), categoryId, branchId);
         
-        return convertToDTO(savedItem);
+        return menuItemMapper.toMenuItemResponse(savedItem);
     }
 
     @Transactional(readOnly = true)
@@ -109,12 +117,16 @@ public class BranchMenuService {
         
         return menuCategoryRepository.findByBranch_BranchId(branchId)
                 .stream()
-                .map(this::convertToDTO)
+                .map(category -> {
+                    MenuCategoryDTO dto = menuCategoryMapper.toMenuCategoryDTO(category);
+                    dto.setBranchId(branchId);
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<MenuItemDTO> getBranchMenuItems(Long branchId, Long categoryId) {
+    public List<MenuItemResponse> getBranchMenuItems(Long branchId, Long categoryId) {
         MenuCategory category = menuCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu category not found"));
         
@@ -125,7 +137,7 @@ public class BranchMenuService {
         
         return menuItemRepository.findByCategory_CategoryId(categoryId)
                 .stream()
-                .map(this::convertToDTO)
+                .map(menuItemMapper::toMenuItemResponse)
                 .collect(Collectors.toList());
     }
 
@@ -147,7 +159,9 @@ public class BranchMenuService {
         MenuCategory updatedCategory = menuCategoryRepository.save(category);
         log.info("Updated menu category {} for branch {}", categoryId, branchId);
         
-        return convertToDTO(updatedCategory);
+        MenuCategoryDTO dto = menuCategoryMapper.toMenuCategoryDTO(updatedCategory);
+        dto.setBranchId(branchId);
+        return dto;
     }
 
     @Transactional
@@ -208,25 +222,5 @@ public class BranchMenuService {
         }
     }
 
-    private MenuCategoryDTO convertToDTO(MenuCategory category) {
-        MenuCategoryDTO dto = new MenuCategoryDTO();
-        dto.setCategoryId(category.getCategoryId());
-        dto.setCategoryName(category.getCategoryName());
-        dto.setBranchId(category.getBranch().getBranchId());
-        return dto;
-    }
 
-    private MenuItemDTO convertToDTO(MenuItem item) {
-        MenuItemDTO dto = new MenuItemDTO();
-        dto.setItemId(item.getMenuItemId());
-        dto.setItemName(item.getMenuItemName());
-        dto.setDescription(item.getDescription());
-        dto.setPrice(item.getPrice());
-        dto.setImageUrl(item.getImage());
-        dto.setAvailable(item.isAvailable());
-        dto.setPreparationTime(item.getPreparationTime());
-        dto.setCategoryId(item.getCategory().getCategoryId());
-        dto.setBranchId(item.getBranch().getBranchId());
-        return dto;
-    }
 }

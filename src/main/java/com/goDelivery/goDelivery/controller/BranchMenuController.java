@@ -1,7 +1,8 @@
 package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.MenuItemDTO;
+import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
+import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.service.BranchMenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,18 +54,18 @@ public class BranchMenuController {
         summary = "Create menu item",
         description = "Create a new menu item in a category"
     )
-    public ResponseEntity<MenuItemDTO> createMenuItem(
+    public ResponseEntity<MenuItemResponse> createMenuItem(
             @PathVariable Long branchId,
             @PathVariable Long categoryId,
-            @RequestPart("itemData") @Valid MenuItemDTO menuItemDTO,
+            @RequestPart("itemData") @Valid MenuItemRequest menuItemRequest,
             @RequestPart(value = "image", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal UserDetails userDetails) {
         
         log.info("Creating menu item '{}' for category {} in branch {} by user {}", 
-                menuItemDTO.getItemName(), categoryId, branchId, userDetails.getUsername());
+                menuItemRequest.getMenuItemName(), categoryId, branchId, userDetails.getUsername());
         
-        MenuItemDTO createdItem = branchMenuService.createMenuItem(
-                branchId, categoryId, menuItemDTO, imageFile);
+        MenuItemResponse createdItem = branchMenuService.createMenuItem(
+                branchId, categoryId, menuItemRequest, imageFile);
         
         return ResponseEntity.ok(createdItem);
     }
@@ -86,13 +87,13 @@ public class BranchMenuController {
         summary = "Get menu items",
         description = "Get all menu items in a category"
     )
-    public ResponseEntity<List<MenuItemDTO>> getMenuItems(
+    public ResponseEntity<List<MenuItemResponse>> getMenuItems(
             @PathVariable Long branchId,
             @PathVariable Long categoryId) {
         
         log.info("Fetching menu items for category {} in branch {}", categoryId, branchId);
         
-        List<MenuItemDTO> items = branchMenuService.getBranchMenuItems(branchId, categoryId);
+        List<MenuItemResponse> items = branchMenuService.getBranchMenuItems(branchId, categoryId);
         return ResponseEntity.ok(items);
     }
 
