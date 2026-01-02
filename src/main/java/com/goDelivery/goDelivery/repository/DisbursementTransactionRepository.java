@@ -47,9 +47,9 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
     List<DisbursementSummaryDTO> findAllDisbursementSummaries();
     @Query("SELECT NEW com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.RestaurantDisbursementSummaryDTO(" +
            "r.id, r.restaurantName, " +
-           "COALESCE(SUM(dt.amount), 0), " +
-           "COALESCE(SUM(dt.commission), 0), " +
-           "COUNT(dt)) " +
+           "COALESCE(CAST(SUM(dt.amount) AS java.math.BigDecimal), 0), " +
+           "COALESCE(CAST(SUM(dt.commission) AS java.math.BigDecimal), 0), " +
+           "CAST(COUNT(dt) AS java.lang.Long)) " +
            "FROM DisbursementTransaction dt " +
            "JOIN dt.restaurant r " +
            "GROUP BY r.id, r.restaurantName")

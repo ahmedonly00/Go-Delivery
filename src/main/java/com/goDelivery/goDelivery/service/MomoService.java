@@ -19,6 +19,7 @@ import com.goDelivery.goDelivery.repository.PaymentRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,10 @@ public class MomoService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
     private final OrderConfig orderConfig;
+    private final DisbursementService disbursementService;
+    
+    @Value("${app.payment.auto-disbursement.enabled:true}")
+    private boolean autoDisbursementEnabled;
 
     /**
      * Request payment from a customer's mobile money account
@@ -625,6 +630,24 @@ public class MomoService {
                         
                         cashierService.acceptOrder(order.getOrderId(), estimatedPrepTimeMinutes);
                         log.info("Order {} successfully processed after payment", order.getOrderId());
+                        
+                        // NEW: Trigger automatic disbursement for all paid orders
+                        if (autoDisbursementEnabled) {
+                            log.info("Auto-disbursement enabled for order {}, triggering disbursement", 
+                                    order.getOrderId());
+                            try {
+                                disbursementService.processOrderDisbursement(order);
+                                log.info("Automatic disbursement initiated for order {}", order.getOrderId());
+                            } catch (Exception e) {
+                                log.error("Failed to initiate automatic disbursement for order {}: {}", 
+                                        order.getOrderId(), e.getMessage(), e);
+                                // Don't fail the order, just log the error
+                            }
+                        } else {
+                            log.info("Auto-disbursement is disabled for order {}", 
+                                    order.getOrderId());
+                        }
+                        
                     } catch (Exception e) {
                         log.error("Failed to process order {} after payment: {}", 
                                 order.getOrderId(), e.getMessage(), e);
@@ -691,6 +714,22 @@ public class MomoService {
             case CANCELLED -> PaymentStatus.CANCELLED;
             default -> PaymentStatus.PENDING;
         };
+    }
+
+    /**
+     * Check if an order contains items from multiple restaurants
+     */
+    private boolean hasMultipleRestaurants(Order order) {
+        if (order == null || order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
+            return false;
+        }
+        
+        long distinctRestaurantCount = order.getOrderItems().stream()
+            .map(item -> item.getMenuItem().getRestaurant())
+            .distinct()
+            .count();
+            
+        return distinctRestaurantCount > 1;
     }
 
     /**

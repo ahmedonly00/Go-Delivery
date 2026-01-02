@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.goDelivery.goDelivery.Enum.DisbursementStatus;
 import com.goDelivery.goDelivery.Enum.PaymentStatus;
+import com.goDelivery.goDelivery.config.CommissionConfig;
 import com.goDelivery.goDelivery.config.MomoConfig;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementRequest;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementResponse;
@@ -49,6 +50,7 @@ public class DisbursementService {
     private final DisbursementTransactionRepository transactionRepository;
     private final PaymentRepository paymentRepository;
     private final MomoConfig momoConfig;
+    private final CommissionConfig commissionConfig;
     private final NotificationService notificationService;
 
     @Value("${app.payment.method.momo:MoMo}")
@@ -151,8 +153,25 @@ public class DisbursementService {
     }
 
     private double calculateCommission(double amount) {
-        // Example: 15% commission
-        return amount * 0.15;
+        // Use configured commission rate
+        double commission = amount * commissionConfig.getDefaultRate();
+        
+        // Apply minimum and maximum limits
+        commission = Math.max(commission, commissionConfig.getMinimumAmount());
+        commission = Math.min(commission, commissionConfig.getMaximumAmount());
+        
+        // Check for tiered rates (if configured)
+        if (commissionConfig.getTieredRates() != null) {
+            for (CommissionConfig.TieredRate tier : commissionConfig.getTieredRates()) {
+                if (amount >= tier.getMinAmount() && amount < tier.getMaxAmount()) {
+                    commission = amount * tier.getRate();
+                    break;
+                }
+            }
+        }
+        
+        log.debug("Calculated commission: {} for amount: {}", commission, amount);
+        return commission;
     }
 
     @Transactional
