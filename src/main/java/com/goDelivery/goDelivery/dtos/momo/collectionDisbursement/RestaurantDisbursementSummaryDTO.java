@@ -29,4 +29,16 @@ public class RestaurantDisbursementSummaryDTO {
         this.transactions = null;
     }
     
+    // Full constructor
+    public RestaurantDisbursementSummaryDTO(Long restaurantId, String restaurantName,
+                                           BigDecimal totalDisbursed, BigDecimal totalCommission,
+                                           Long totalTransactions, List<DisbursementSummaryDTO> transactions) {
+        this.restaurantId = restaurantId;
+        this.restaurantName = restaurantName;
+        this.totalDisbursed = totalDisbursed;
+        this.totalCommission = totalCommission;
+        this.totalTransactions = totalTransactions;
+        this.transactions = transactions;
+    }
+    
 }

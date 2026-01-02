@@ -29,22 +29,18 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
     void updateReferenceIdByOrder(@Param("referenceId") String referenceId, @Param("orderId") Long orderId);
 
     @Query("SELECT new com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO(" +
-           "dt.id, dt.referenceId, o.orderId, o.orderNumber, r.id, r.restaurantName, " +
+           "dt.id, dt.referenceId, dt.order.orderId, dt.order.orderNumber, dt.restaurant.id, dt.restaurant.restaurantName, " +
            "CAST(dt.amount AS java.math.BigDecimal), CAST(dt.commission AS java.math.BigDecimal), " +
            "dt.status, dt.createdAt, dt.updatedAt) " +
            "FROM DisbursementTransaction dt " +
-           "JOIN dt.order o " +
-           "JOIN dt.restaurant r " +
-           "WHERE r.id = :restaurantId " +
+           "WHERE dt.restaurant.id = :restaurantId " +
            "ORDER BY dt.createdAt DESC")
     List<DisbursementSummaryDTO> findDisbursementSummaryByRestaurantId(@Param("restaurantId") Long restaurantId);
     @Query("SELECT new com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO(" +
-           "dt.id, dt.referenceId, o.orderId, o.orderNumber, r.id, r.restaurantName, " +
+           "dt.id, dt.referenceId, dt.order.orderId, dt.order.orderNumber, dt.restaurant.id, dt.restaurant.restaurantName, " +
            "CAST(dt.amount AS java.math.BigDecimal), CAST(dt.commission AS java.math.BigDecimal), " +
            "dt.status, dt.createdAt, dt.updatedAt) " +
            "FROM DisbursementTransaction dt " +
-           "JOIN dt.order o " +
-           "JOIN dt.restaurant r " +
            "ORDER BY dt.createdAt DESC")
     List<DisbursementSummaryDTO> findAllDisbursementSummaries();
     @Query("SELECT NEW com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.RestaurantDisbursementSummaryDTO(" +
