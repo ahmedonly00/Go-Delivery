@@ -20,11 +20,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByRestaurantRestaurantId(Long restaurantId);
     List<Order> findAllByBikersBikerId(Long bikerId);
     List<Order> findAllByOrderStatus(OrderStatus orderStatus);
+    List<Order> findAllByBranch_BranchId(Long branchId);
     
     Page<Order> findAllByOrderStatus(OrderStatus orderStatus, Pageable pageable);
     
     // Optimized count query for total orders (better performance than .size())
     long countByRestaurant_RestaurantId(Long restaurantId);
+    long countByBranch_BranchId(Long branchId);
     
     // Find order by disbursement reference
     Optional<Order> findByDisbursementReference(String disbursementReference);

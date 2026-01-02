@@ -321,13 +321,13 @@ public class  UsersService {
     private String getDefaultPermissionsForRole(Roles role) {
         switch (role) {
             case CASHIER:
-                return "READ_ORDERS,UPDATE_ORDERS,PROCESS_PAYMENTS";
+                return "READ_ORDERS,UPDATE_ORDERS,PROCESS_PAYMENTS,DISBURSEMENT_COLLECTION,DISBURSEMENT_STATUS";
             case BIKER:
                 return "READ_DELIVERIES,UPDATE_DELIVERIES";
             case RESTAURANT_ADMIN:
-                return "FULL_ACCESS";
+                return "FULL_ACCESS,DISBURSEMENT_COLLECTION,DISBURSEMENT_STATUS";
             case SUPER_ADMIN:
-                return "SUPER_ACCESS";
+                return "SUPER_ACCESS,DISBURSEMENT_COLLECTION,DISBURSEMENT_STATUS";
             default:
                 return "READ_ONLY";
         }

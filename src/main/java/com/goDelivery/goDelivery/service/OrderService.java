@@ -10,6 +10,7 @@ import com.goDelivery.goDelivery.mapper.OrderMapper;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.dtos.order.OrderTrackingResponse;
 import com.goDelivery.goDelivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.repository.BranchesRepository;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
 import com.goDelivery.goDelivery.repository.MenuItemRepository;
@@ -40,6 +41,7 @@ public class OrderService {
     private final MenuItemRepository menuItemRepository;
     private final OrderMapper orderMapper;
     private final BikersRepository bikersRepository;
+    private final BranchUsersRepository branchUsersRepository;
     private final BranchesRepository branchesRepository;
 
     @Transactional
@@ -183,6 +185,16 @@ public class OrderService {
         verifyRestaurantAccess(restaurantId);
         
         List<Order> orders = orderRepository.findAllByRestaurantRestaurantId(restaurantId);
+        return orders.stream()
+                .map(orderMapper::toOrderResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderResponse> getOrdersByBranch(Long branchId) {
+        // Verify the authenticated user has access to this branch
+        verifyBranchAccess(branchId);
+        
+        List<Order> orders = orderRepository.findAllByBranch_BranchId(branchId);
         return orders.stream()
                 .map(orderMapper::toOrderResponse)
                 .collect(Collectors.toList());
@@ -362,11 +374,19 @@ public class OrderService {
     }
     
     @Transactional(readOnly = true)
-    public Long getTotalOrdersByRestaurant(Long restaurantId) {
+    public long getTotalOrdersByRestaurant(Long restaurantId) {
         // Verify the authenticated user owns this restaurant
         verifyRestaurantAccess(restaurantId);
         
         return orderRepository.countByRestaurant_RestaurantId(restaurantId);
+    }
+    
+    @Transactional(readOnly = true)
+    public long getTotalOrdersByBranch(Long branchId) {
+        // Verify the authenticated user has access to this branch
+        verifyBranchAccess(branchId);
+        
+        return orderRepository.countByBranch_BranchId(branchId);
     }
     
     @Transactional(readOnly = true)
@@ -411,6 +431,42 @@ public class OrderService {
         if (!restaurant.getRestaurantId().equals(restaurantId)) {
             throw new AccessDeniedException("You do not have permission to access this restaurant's data");
         }
+    }
+    
+    private void verifyBranchAccess(Long branchId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User is not authenticated");
+        }
+        
+        String username = authentication.getName();
+        
+        // Check if user is a restaurant admin
+        Restaurant restaurant = restaurantRepository.findByEmail(username)
+            .orElse(null);
+        
+        if (restaurant != null) {
+            // Verify restaurant admin has access to this branch's restaurant
+            Branches branch = branchesRepository.findByBranchId(branchId)
+                .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
+            
+            if (restaurant.getRestaurantId().equals(branch.getRestaurant().getRestaurantId())) {
+                return; // Restaurant admin has access
+            }
+        }
+        
+        // Check if user is a branch manager
+        BranchUsers branchUser = branchUsersRepository.findByEmail(username)
+            .orElse(null);
+        
+        if (branchUser != null && branchUser.getBranch() != null) {
+            if (branchUser.getBranch().getBranchId().equals(branchId)) {
+                return; // Branch manager has access to their own branch
+            }
+        }
+        
+        throw new AccessDeniedException("You do not have permission to access this branch's data");
     }
     
     public static class RestaurantOrderStats {

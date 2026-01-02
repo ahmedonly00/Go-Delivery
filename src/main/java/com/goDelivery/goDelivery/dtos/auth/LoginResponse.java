@@ -16,6 +16,8 @@ public class LoginResponse {
     private String fullName;
     private Long restaurantId;
     private String restaurantName;
+    private Long branchId;
+    private String branchName;
     
     // Constructor without restaurant details (for backward compatibility)
     public LoginResponse(String token, String tokenType, Long id, String email, String role, String fullName) {

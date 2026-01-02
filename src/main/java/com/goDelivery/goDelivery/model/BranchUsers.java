@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,8 +17,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "restaurant_users")
-public class RestaurantUsers implements CustomUserDetails {
+@Table(name = "branch_users")
+public class BranchUsers implements CustomUserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id", nullable = false)
@@ -85,33 +84,16 @@ public class RestaurantUsers implements CustomUserDetails {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "restaurantUser", fetch = FetchType.LAZY)
-    private List<ReviewResponse> reviewResponses;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id")
+    private Branches branch;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        
-        // Add role-based authority
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
-        
-        // Add permission-based authorities if permissions exist
-        if (permissions != null && !permissions.trim().isEmpty()) {
-            // Split permissions by comma or semicolon
-            String[] permissionArray = permissions.split("[,;]");
-            for (String permission : permissionArray) {
-                String trimmedPermission = permission.trim();
-                if (!trimmedPermission.isEmpty()) {
-                    authorities.add(new SimpleGrantedAuthority(trimmedPermission));
-                }
-            }
-        }
-        
-        return authorities;
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     public String getPassword() {
-
         return this.password;
     }
 
@@ -137,17 +119,16 @@ public class RestaurantUsers implements CustomUserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.isActive;
     }
-
+    
     @Override
     public Long getId() {
         return this.userId;
     }
-
+    
     @Override
-   public String getFullName() {
-       return this.fullName;
-   }
-
+    public String getFullName() {
+        return this.fullName;
+    }
 }

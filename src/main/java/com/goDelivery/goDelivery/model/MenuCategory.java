@@ -31,8 +31,12 @@ public class MenuCategory {
     private LocalDate createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false)
+    @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id")
+    private Branches branch;
 
     @Builder.Default
     @JsonManagedReference("menu-category-items")

@@ -23,6 +23,7 @@ import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisb
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementResponse;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementCallback;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementRecipient;
+import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementStatusResponse;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.RestaurantDisbursementSummaryDTO;
 import com.goDelivery.goDelivery.exception.PaymentProcessingException;
@@ -164,7 +165,7 @@ public class DisbursementService {
                 handleCollectionCallback(callback);
                 break;
             case DISBURSEMENT:
-                handleDisbursementCallback(callback);
+                handleDisbursementStatusUpdate(callback);
                 break;
             default:
                 log.warn("Unknown callback type: {}", callback.getType());
@@ -339,8 +340,8 @@ public class DisbursementService {
             "status", overallStatus,
             "amount", transactions.stream().mapToDouble(t -> t.getAmount().doubleValue()).sum(),
             "currency", "RWF",
-            "financialTransactionId", order.getPaymentTransactionId() != null ? 
-                order.getPaymentTransactionId() : "N/A",
+            "financialTransactionId", order.getPayment() != null && order.getPayment().getMomoTransaction() != null ? 
+                order.getPayment().getMomoTransaction().getFinancialTransactionId() : "N/A",
             "externalId", "COLL" + order.getOrderNumber(),
             "reason", "Order #" + order.getOrderNumber(),
             "errorReason", transactions.stream()
@@ -372,8 +373,8 @@ public class DisbursementService {
                         transaction.getFinancialTransactionId(), transaction.getReferenceId());
                 
                 // Get the latest status from MoMo API
-                Map<String, Object> statusResponse = momoService.getTransactionStatus(transaction.getReferenceId());
-                String status = (String) statusResponse.get("status");
+                DisbursementStatusResponse statusResponse = momoService.checkDisbursementStatus(transaction.getReferenceId());
+                String status = statusResponse.getStatus();
                 
                 log.info("Transaction {} status from provider: {}", 
                         transaction.getReferenceId(), status);
@@ -383,14 +384,12 @@ public class DisbursementService {
                 transaction.setStatus(newStatus);
                 
                 // Update additional fields if available
-                if (statusResponse.containsKey("financialTransactionId")) {
-                    transaction.setFinancialTransactionId(
-                        String.valueOf(statusResponse.get("financialTransactionId"))
-                    );
+                if (statusResponse.getFinancialTransactionId() != null) {
+                    transaction.setFinancialTransactionId(statusResponse.getFinancialTransactionId());
                 }
                 
-                if (statusResponse.containsKey("errorReason")) {
-                    transaction.setErrorMessage(String.valueOf(statusResponse.get("errorReason")));
+                if (statusResponse.getErrorReason() != null) {
+                    transaction.setErrorMessage(statusResponse.getErrorReason());
                 }
                 
                 transaction.setUpdatedAt(LocalDateTime.now());

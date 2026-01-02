@@ -156,6 +156,65 @@ public class MomoService {
     }
 
     /**
+     * Poll for collection-disbursement status updates
+     */
+    @Async
+    public CompletableFuture<Void> pollCollectionDisbursementStatus(String referenceId) {
+        return CompletableFuture.runAsync(() -> {
+            int maxAttempts = 120; // Poll for up to 60 minutes (120 * 30 seconds)
+            int attempt = 0;
+            long delayMs = 30000; // 30 seconds between polls (as per documentation)
+
+            log.info("Starting collection-disbursement status polling for reference: {}", referenceId);
+
+            while (attempt < maxAttempts) {
+                try {
+                    // Check if collection is successful
+                    DisbursementStatusResponse statusResponse = checkDisbursementStatus(referenceId);
+                    String status = statusResponse.getStatus();
+                    
+                    log.debug("Collection-disbursement status check for {}: {} (attempt {}/{})", 
+                        referenceId, status, attempt + 1, maxAttempts);
+                    
+                    // If collection is completed (successful or failed), stop polling
+                    if (isFinalStatus(status)) {
+                        log.info("Collection-disbursement {} completed with status: {}", 
+                                referenceId, status);
+                        return;
+                    }
+
+                    // Wait before next poll
+                    attempt++;
+                    if (attempt < maxAttempts) {
+                        log.debug("Will check collection-disbursement status again in {}ms (attempt {}/{})", 
+                                 delayMs, attempt + 1, maxAttempts);
+                        Thread.sleep(delayMs);
+                    }
+                    
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    log.error("Collection-disbursement polling interrupted for reference: {}", referenceId);
+                    throw new RuntimeException("Polling interrupted", ie);
+                } catch (Exception e) {
+                    log.error("Error checking collection-disbursement status for reference: {} (attempt {})", 
+                        referenceId, attempt, e);
+                    attempt++;
+                    if (attempt < maxAttempts) {
+                        try {
+                            Thread.sleep(delayMs);
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            throw new RuntimeException("Polling interrupted during error handling", ie);
+                        }
+                    }
+                }
+            }
+            
+            log.warn("Max polling attempts reached for collection-disbursement: {}", referenceId);
+        });
+    }
+
+    /**
      * Initiate a disbursement transaction
      * @param request the disbursement request
      * @return the response
@@ -186,6 +245,8 @@ public class MomoService {
             );
             
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                // Start polling for collection status
+                pollCollectionDisbursementStatus(response.getBody().getReferenceId());
                 return response.getBody();
             } else {
                 throw new RuntimeException("Failed to initiate collection-disbursement: " + 

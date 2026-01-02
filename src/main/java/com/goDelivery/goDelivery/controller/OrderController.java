@@ -62,4 +62,14 @@ public class OrderController {
     public ResponseEntity<OrderService.RestaurantOrderStats> getRestaurantOrderStats(@PathVariable Long restaurantId) {
         return ResponseEntity.ok(orderService.getRestaurantOrderStats(restaurantId));
     }
+    
+    @GetMapping("/branch/{branchId}")
+    public ResponseEntity<List<OrderResponse>> getOrdersByBranch(@PathVariable Long branchId) {
+        return ResponseEntity.ok(orderService.getOrdersByBranch(branchId));
+    }
+    
+    @GetMapping("/branch/{branchId}/total")
+    public ResponseEntity<Long> getTotalOrdersByBranch(@PathVariable Long branchId) {
+        return ResponseEntity.ok(orderService.getTotalOrdersByBranch(branchId));
+    }
 }

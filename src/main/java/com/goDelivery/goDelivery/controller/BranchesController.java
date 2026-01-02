@@ -50,7 +50,8 @@ public class BranchesController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long restaurantId,
             @Valid @RequestBody BranchesDTO branchDTO) {
-        log.info("Adding branch details for branch {}", branchDTO.getBranchName());
+        log.info("Adding branch '{}' for restaurant {} by user {}", 
+                branchDTO.getBranchName(), restaurantId, userDetails.getUsername());
         BranchesDTO createdBranch = branchesService.addBranchToRestaurant(restaurantId, branchDTO);
         return new ResponseEntity<>(createdBranch, HttpStatus.CREATED);
     }
@@ -69,8 +70,8 @@ public class BranchesController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long branchId,
             @Valid @RequestBody BranchesDTO branchDTO) {
-        log.info("Updating branch details for branch {}", branchId);
-        BranchesDTO updatedBranch = branchesService.updateBranch(branchId, branchDTO);
+        log.info("Updating branch '{}' by user {}", branchId, userDetails.getUsername());
+        BranchesDTO updatedBranch = branchesService.updateBranch(branchId, branchDTO, userDetails.getUsername());
         return ResponseEntity.ok(updatedBranch);
     }
 
@@ -104,9 +105,48 @@ public class BranchesController {
     }
     
     @DeleteMapping("/deleteBranch/{branchId}")
-    public ResponseEntity<Void> deleteBranch(@PathVariable Long branchId) {
-        log.info("Deleting branch details for branch {}", branchId);
-        branchesService.deleteBranch(branchId);
+    public ResponseEntity<Void> deleteBranch(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long branchId) {
+        log.info("Deleting branch '{}' by user {}", branchId, userDetails.getUsername());
+        branchesService.deleteBranch(branchId, userDetails.getUsername());
         return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/my-branches")
+    @Operation(
+        summary = "Get current user's restaurant branches",
+        description = "Retrieve all branches belonging to the current user's restaurant"
+    )
+    public ResponseEntity<List<BranchesDTO>> getCurrentUserBranches(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("Getting branches for user '{}'", userDetails.getUsername());
+        List<BranchesDTO> branches = branchesService.getCurrentUserRestaurantBranches();
+        return ResponseEntity.ok(branches);
+    }
+    
+    @GetMapping("/my-branches/{branchId}")
+    @Operation(
+        summary = "Get specific branch for current user",
+        description = "Retrieve a specific branch if it belongs to the current user's restaurant"
+    )
+    public ResponseEntity<BranchesDTO> getBranchForCurrentUser(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long branchId) {
+        log.info("Getting branch '{}' for user '{}'", branchId, userDetails.getUsername());
+        BranchesDTO branch = branchesService.getBranchForCurrentUser(branchId);
+        return ResponseEntity.ok(branch);
+    }
+    
+    @GetMapping("/check-branch/{branchId}/restaurant/{restaurantId}")
+    @Operation(
+        summary = "Check if branch belongs to restaurant",
+        description = "Verify if a branch belongs to a specific restaurant"
+    )
+    public ResponseEntity<Boolean> checkBranchBelongsToRestaurant(
+            @PathVariable Long branchId,
+            @PathVariable Long restaurantId) {
+        boolean belongs = branchesService.isBranchBelongsToRestaurant(branchId, restaurantId);
+        return ResponseEntity.ok(belongs);
     }
 }

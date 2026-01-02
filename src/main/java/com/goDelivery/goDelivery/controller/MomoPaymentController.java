@@ -7,6 +7,7 @@ import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementCa
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.model.DisbursementTransaction;
 import com.goDelivery.goDelivery.model.Order;
+import com.goDelivery.goDelivery.repository.DisbursementTransactionRepository;
 import com.goDelivery.goDelivery.repository.OrderRepository;
 import com.goDelivery.goDelivery.repository.TransactionRepository;
 import com.goDelivery.goDelivery.service.DisbursementService;
@@ -20,11 +21,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,6 +45,7 @@ public class MomoPaymentController {
     private final DisbursementService disbursementService;
     private final OrderRepository orderRepository;
     private final TransactionRepository transactionRepository;
+    private final DisbursementTransactionRepository disbursementTransactionRepository;
 
     @PostMapping(value = "/request")
     @Operation(
@@ -193,6 +197,7 @@ public class MomoPaymentController {
             @ApiResponse(responseCode = "404", description = "Disbursement not found")
         }
     )
+    @PreAuthorize("hasAuthority('DISBURSEMENT_STATUS')")
     public ResponseEntity<?> getDisbursementStatus(
             @Parameter(description = "Disbursement reference ID") 
             @PathVariable String referenceId) {
@@ -225,13 +230,14 @@ public class MomoPaymentController {
         summary = "Get all disbursements for an order",
         description = "Retrieves all disbursement transactions for a specific order"
     )
+    @PreAuthorize("hasAuthority('DISBURSEMENT_STATUS')")
     public ResponseEntity<?> getOrderDisbursements(
             @Parameter(description = "Order ID") 
             @PathVariable Long orderId) {
         
         try {
             List<DisbursementTransaction> transactions = 
-                transactionRepository.findByOrder_OrderId(orderId);
+                disbursementTransactionRepository.findByOrder_OrderId(orderId);
                 
             if (transactions.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -240,13 +246,15 @@ public class MomoPaymentController {
             
             // Convert to DTOs if needed
             List<Map<String, Object>> result = transactions.stream()
-                .map(tx -> Map.of(
-                    "referenceId", tx.getReferenceId(),
-                    "status", tx.getStatus().name(),
-                    "amount", tx.getAmount(),
-                    "restaurant", tx.getRestaurant().getRestaurantName(),
-                    "createdAt", tx.getCreatedAt()
-                ))
+                .map(tx -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("referenceId", tx.getReferenceId());
+                    map.put("status", tx.getStatus().name());
+                    map.put("amount", tx.getAmount());
+                    map.put("restaurant", tx.getRestaurant().getRestaurantName());
+                    map.put("createdAt", tx.getCreatedAt());
+                    return map;
+                })
                 .collect(Collectors.toList());
                 
             return ResponseEntity.ok(result);

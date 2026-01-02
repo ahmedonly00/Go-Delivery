@@ -7,22 +7,26 @@ import lombok.Data;
 
 @Data
 public class MenuItemDTO {
-    private Long id;
+    private Long itemId;  // Changed from id to itemId
     
     @NotBlank(message = "Menu item name is required")
-    private String name;
+    private String itemName;  // Changed from name to itemName
     
     private String description;
     
     @NotNull(message = "Price is required")
     @Positive(message = "Price must be a positive number")
-    private Double price;
+    private Float price;  // Changed from Double to Float
     
     private String imageUrl;
     
-    private String category;
+    private Long categoryId;
+    
+    private Long branchId;
     
     private boolean available = true;
+    
+    private boolean isAvailable = true;  // Added this field
     
     @Positive(message = "Preparation time must be a positive number")
     private Integer preparationTime; // in minutes

@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery.auth;
 
 import com.goDelivery.goDelivery.dtos.auth.*;
 import com.goDelivery.goDelivery.model.*;
+import com.goDelivery.goDelivery.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
 import com.goDelivery.goDelivery.repository.PasswordResetTokenRepository;
 import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @Slf4j
 public class AuthenticationService {
 
+    private final BranchUsersRepository branchUsersRepository;
     private final RestaurantUsersRepository restaurantUsersRepository;
     private final SuperAdminRepository superAdminRepository;
     private final CustomerRepository customerRepository;
@@ -91,6 +93,19 @@ public class AuthenticationService {
                     }
                 }
                 
+                // Add restaurant and branch details for branch users
+                if (user instanceof BranchUsers) {
+                    BranchUsers branchUser = (BranchUsers) user;
+                    if (branchUser.getRestaurant() != null) {
+                        response.setRestaurantId(branchUser.getRestaurant().getRestaurantId());
+                        response.setRestaurantName(branchUser.getRestaurant().getRestaurantName());
+                    }
+                    if (branchUser.getBranch() != null) {
+                        response.setBranchId(branchUser.getBranch().getBranchId());
+                        response.setBranchName(branchUser.getBranch().getBranchName());
+                    }
+                }
+                
                 return response;
 
             } catch (Exception e) {
@@ -116,6 +131,14 @@ public class AuthenticationService {
         log.info("Searching for user with email: {}", email);
         
         try {
+            // Check Branch Users
+            log.debug("Checking branch_users table...");
+            Optional<BranchUsers> branchUser = branchUsersRepository.findByEmail(email);
+            if (branchUser.isPresent()) {
+                log.info("Found user in branch_users table");
+                return branchUser.get();
+            }
+            
             // Check Restaurant Users (includes ADMIN, CASHIER, BIKER, RESTAURANT_ADMIN roles)
             log.debug("Checking restaurant_users table...");
             Optional<RestaurantUsers> restaurantUser = restaurantUsersRepository.findByEmail(email);
@@ -186,6 +209,10 @@ public class AuthenticationService {
                 Customer customer = (Customer) userDetails;
                 customer.setPassword(encodedPassword);
                 customerRepository.save(customer);
+            } else if (userDetails instanceof BranchUsers) {
+                BranchUsers branchUser = (BranchUsers) userDetails;
+                branchUser.setPassword(encodedPassword);
+                branchUsersRepository.save(branchUser);
             } else if (userDetails instanceof RestaurantUsers) {
                 RestaurantUsers restaurantUser = (RestaurantUsers) userDetails;
                 restaurantUser.setPassword(encodedPassword);

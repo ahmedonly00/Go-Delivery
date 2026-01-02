@@ -1,9 +1,11 @@
 package com.goDelivery.goDelivery.mapper;
 
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.BranchUserDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO;
 import com.goDelivery.goDelivery.model.Branches;
+import com.goDelivery.goDelivery.model.BranchUsers;
 import com.goDelivery.goDelivery.model.Restaurant;
 import org.springframework.stereotype.Component;
 
@@ -161,11 +163,36 @@ public class RestaurantMapper {
                 .latitude(branch.getLatitude())
                 .longitude(branch.getLongitude())
                 .phoneNumber(branch.getPhoneNumber())
+                .email(branch.getEmail())
+                .website(branch.getWebsite())
                 .operatingHours(branch.getOperatingHours())
                 .isActive(branch.isActive())
+                .logoUrl(branch.getLogoUrl())
                 .createdAt(branch.getCreatedAt())
                 .updatedAt(branch.getUpdatedAt())
+                .approvalStatus(branch.getApprovalStatus())
+                .businessDocumentUrl(branch.getBusinessDocumentUrl())
+                .operatingLicenseUrl(branch.getOperatingLicenseUrl())
+                .description(branch.getDescription())
+                .approvedBy(branch.getApprovedBy())
+                .approvedAt(branch.getApprovedAt())
+                .reviewedBy(branch.getReviewedBy())
+                .reviewedAt(branch.getReviewedAt())
+                .rejectionReason(branch.getRejectionReason())
                 .restaurantId(branch.getRestaurant() != null ? branch.getRestaurant().getRestaurantId() : null)
+                .deliveryAvailable(branch.getDeliveryAvailable())
+                .deliveryRadius(branch.getDeliveryRadius())
+                .minimumOrderAmount(branch.getMinimumOrderAmount())
+                .deliveryFee(branch.getDeliveryFee())
+                .facebookUrl(branch.getFacebookUrl())
+                .instagramUrl(branch.getInstagramUrl())
+                .twitterUrl(branch.getTwitterUrl())
+                .hasParking(branch.getHasParking())
+                .hasWifi(branch.getHasWifi())
+                .hasOutdoorSeating(branch.getHasOutdoorSeating())
+                .acceptsReservations(branch.getAcceptsReservations())
+                .averageRating(branch.getAverageRating())
+                .reviewCount(branch.getReviewCount())
                 .build();
     }
 
@@ -186,6 +213,15 @@ public class RestaurantMapper {
                 .isActive(branchDTO.isActive())
                 .createdAt(branchDTO.getCreatedAt() != null ? branchDTO.getCreatedAt() : LocalDate.now())
                 .updatedAt(branchDTO.getUpdatedAt() != null ? branchDTO.getUpdatedAt() : LocalDate.now())
+                .approvalStatus(branchDTO.getApprovalStatus() != null ? branchDTO.getApprovalStatus() : com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING)
+                .businessDocumentUrl(branchDTO.getBusinessDocumentUrl())
+                .operatingLicenseUrl(branchDTO.getOperatingLicenseUrl())
+                .description(branchDTO.getDescription())
+                .approvedBy(branchDTO.getApprovedBy())
+                .approvedAt(branchDTO.getApprovedAt())
+                .reviewedBy(branchDTO.getReviewedBy())
+                .reviewedAt(branchDTO.getReviewedAt())
+                .rejectionReason(branchDTO.getRejectionReason())
                 .build();
     }
 
@@ -227,5 +263,49 @@ public class RestaurantMapper {
         return restaurants.stream()
                 .map(this::toRestaurantReviewDTO)
                 .collect(Collectors.toList());
+    }
+    
+    // BranchUsers mapping methods
+    public BranchUserDTO toBranchUserDTO(BranchUsers branchUser) {
+        if (branchUser == null) {
+            return null;
+        }
+
+        return BranchUserDTO.builder()
+                .userId(branchUser.getUserId())
+                .fullName(branchUser.getFullName())
+                .email(branchUser.getEmail())
+                .phoneNumber(branchUser.getPhoneNumber())
+                .role(branchUser.getRole())
+                .permissions(branchUser.getPermissions())
+                .emailVerified(branchUser.isEmailVerified())
+                .isActive(branchUser.isActive())
+                .setupComplete(branchUser.isSetupComplete())
+                .branchId(branchUser.getBranch() != null ? branchUser.getBranch().getBranchId() : null)
+                .branchName(branchUser.getBranch() != null ? branchUser.getBranch().getBranchName() : null)
+                .restaurantId(branchUser.getRestaurant() != null ? branchUser.getRestaurant().getRestaurantId() : null)
+                .restaurantName(branchUser.getRestaurant() != null ? branchUser.getRestaurant().getRestaurantName() : null)
+                .build();
+    }
+
+    public BranchUsers toBranchUser(BranchUserDTO branchUserDTO) {
+        if (branchUserDTO == null) {
+            return null;
+        }
+
+        return BranchUsers.builder()
+                .userId(branchUserDTO.getUserId())
+                .fullName(branchUserDTO.getFullName())
+                .email(branchUserDTO.getEmail())
+                .phoneNumber(branchUserDTO.getPhoneNumber())
+                .password(branchUserDTO.getPassword()) // Password should be encoded in service
+                .role(branchUserDTO.getRole())
+                .permissions(branchUserDTO.getPermissions())
+                .emailVerified(branchUserDTO.isEmailVerified())
+                .isActive(branchUserDTO.isActive())
+                .setupComplete(branchUserDTO.isSetupComplete())
+                .createdAt(LocalDate.now())
+                .updatedAt(LocalDate.now())
+                .build();
     }
 }

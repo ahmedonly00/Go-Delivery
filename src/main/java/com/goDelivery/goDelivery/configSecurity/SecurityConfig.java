@@ -79,6 +79,8 @@ public class SecurityConfig {
                         "/api/customers/register",
                         "/api/bikers/registerBiker",
                         "/api/restaurants/registerAdmin",
+                        "/api/v1/branch-users/register",
+                        "/api/v1/branch-registration/register",
                         "/api/restaurants/getAllActiveRestaurants",
                         "/api/restaurants/getRestaurantById/**",
                         "/api/menu-items/getAllMenuItem",
@@ -132,13 +134,27 @@ public class SecurityConfig {
                         "/api/restaurants/updateRestaurant/**",
                         "/api/restaurants/deleteRestaurant/**",
                         "/api/v1/disbursements/restaurant/summary",
-                        "/api/v1/disbursements/restaurant/transactions"
+                        "/api/v1/disbursements/restaurant/transactions",
+                        "/api/v1/branches/**",
+                        "/api/v1/branch-users/**",
+                        "/api/v1/branch-registration/**",
+                        "/api/v1/branches/{branchId}/menu/**"
                     ).hasRole("RESTAURANT_ADMIN")
+                    
+                    // Branch Manager endpoints
+                    .requestMatchers(
+                        "/api/v1/branches/my-branches/**",
+                        "/api/v1/branches/getBranches/**",
+                        "/api/v1/branches/updateBranch/**",
+                        "/api/v1/branches/{branchId}/menu/**",
+                        "/api/v1/branch-setup/**",
+                        "/api/v1/branch-orders/**"
+                    ).hasRole("BRANCH_MANAGER")
                     
                     // Shared endpoints
                     .requestMatchers(
                         "/api/orders/**"
-                    ).hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER")
+                    ).hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER", "BRANCH_MANAGER")
                     
                     // Biker endpoints
                     .requestMatchers(
@@ -164,7 +180,7 @@ public class SecurityConfig {
                     // Analytics endpoints
                     .requestMatchers(
                         "/api/analytics/**"
-                    ).hasAnyRole("RESTAURANT_ADMIN", "SUPER_ADMIN")
+                    ).hasAnyRole("RESTAURANT_ADMIN", "SUPER_ADMIN", "BRANCH_MANAGER")
                     
                     // All other requests require authentication
                     .anyRequest().authenticated()

@@ -16,4 +16,11 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     List<MenuItem> findByRestaurant_RestaurantIdAndIsAvailableTrue(Long restaurantId);
     List<MenuItem> findByRestaurant_RestaurantIdAndCategory_CategoryId(Long restaurantId, Long categoryId);
     List<MenuItem> findByRestaurant_RestaurantIdAndCategory_CategoryIdAndIsAvailableTrue(Long restaurantId, Long categoryId);
+    
+    // Branch support
+    List<MenuItem> findByBranch_BranchId(Long branchId);
+    List<MenuItem> findByBranch_BranchIdAndIsAvailableTrue(Long branchId);
+    List<MenuItem> findByCategory_CategoryId(Long categoryId);
+    List<MenuItem> findByBranch_BranchIdAndCategory_CategoryId(Long branchId, Long categoryId);
+    List<MenuItem> findByBranch_BranchIdAndCategory_CategoryIdAndIsAvailableTrue(Long branchId, Long categoryId);
 }

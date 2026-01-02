@@ -5,5 +5,6 @@ public enum Roles {
     CASHIER,
     BIKER,
     SUPER_ADMIN,
-    RESTAURANT_ADMIN
+    RESTAURANT_ADMIN,
+    BRANCH_MANAGER
 }

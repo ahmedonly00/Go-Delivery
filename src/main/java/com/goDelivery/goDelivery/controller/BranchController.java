@@ -1,0 +1,149 @@
+package com.goDelivery.goDelivery.controller;
+
+import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
+import com.goDelivery.goDelivery.service.BranchCreationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.validation.Valid;
+import java.util.List;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/v1/branches")
+@RequiredArgsConstructor
+@Tag(name = "Branch Management", description = "Comprehensive branch creation and management")
+@CrossOrigin("*")
+public class BranchController {
+
+    private final BranchCreationService branchCreationService;
+
+    @PostMapping("/create/{restaurantId}")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    @Operation(
+        summary = "Create a new branch",
+        description = "Create a comprehensive branch with all details similar to restaurant creation"
+    )
+    public ResponseEntity<BranchesDTO> createBranch(
+            @Parameter(description = "Restaurant ID") 
+            @PathVariable Long restaurantId,
+            @RequestPart("branchData") @Valid BranchCreationDTO creationDTO,
+            @RequestPart(value = "logo", required = false) MultipartFile logoFile,
+            @RequestPart(value = "documents", required = false) MultipartFile[] documentFiles,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("Creating new branch for restaurant {} by user {}", restaurantId, userDetails.getUsername());
+        
+        BranchesDTO createdBranch = branchCreationService.createBranch(
+                restaurantId, creationDTO, logoFile, documentFiles);
+        
+        return ResponseEntity.ok(createdBranch);
+    }
+
+    @PutMapping("/update/{branchId}")
+    @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
+    @Operation(
+        summary = "Update branch details",
+        description = "Update branch information including logo"
+    )
+    public ResponseEntity<BranchesDTO> updateBranch(
+            @Parameter(description = "Branch ID") 
+            @PathVariable Long branchId,
+            @RequestPart("branchData") @Valid BranchCreationDTO updateDTO,
+            @RequestPart(value = "logo", required = false) MultipartFile logoFile,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("Updating branch {} by user {}", branchId, userDetails.getUsername());
+        
+        BranchesDTO updatedBranch = branchCreationService.updateBranch(
+                branchId, updateDTO, logoFile);
+        
+        return ResponseEntity.ok(updatedBranch);
+    }
+
+    @GetMapping("/restaurant/{restaurantId}")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    @Operation(
+        summary = "Get all branches for a restaurant",
+        description = "Retrieve all branches belonging to a specific restaurant"
+    )
+    public ResponseEntity<List<BranchesDTO>> getRestaurantBranches(
+            @Parameter(description = "Restaurant ID") 
+            @PathVariable Long restaurantId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("Fetching branches for restaurant {} by user {}", restaurantId, userDetails.getUsername());
+        
+        // This would use the existing BranchService to get branches
+        // List<BranchesDTO> branches = branchService.getBranchesByRestaurant(restaurantId);
+        
+        return ResponseEntity.ok(null); // Placeholder
+    }
+
+    @GetMapping("/{branchId}")
+    @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
+    @Operation(
+        summary = "Get branch details",
+        description = "Get detailed information about a specific branch"
+    )
+    public ResponseEntity<BranchesDTO> getBranch(
+            @Parameter(description = "Branch ID") 
+            @PathVariable Long branchId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("Fetching branch {} by user {}", branchId, userDetails.getUsername());
+        
+        // This would use the existing BranchService to get branch details
+        // BranchesDTO branch = branchService.getBranchById(branchId);
+        
+        return ResponseEntity.ok(null); // Placeholder
+    }
+
+    @PostMapping("/{branchId}/activate")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    @Operation(
+        summary = "Activate a branch",
+        description = "Activate a branch that has been approved"
+    )
+    public ResponseEntity<Void> activateBranch(
+            @Parameter(description = "Branch ID") 
+            @PathVariable Long branchId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("Activating branch {} by user {}", branchId, userDetails.getUsername());
+        
+        // This would use the existing BranchService to activate branch
+        // branchService.activateBranch(branchId);
+        
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{branchId}/deactivate")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    @Operation(
+        summary = "Deactivate a branch",
+        description = "Deactivate a branch temporarily"
+    )
+    public ResponseEntity<Void> deactivateBranch(
+            @Parameter(description = "Branch ID") 
+            @PathVariable Long branchId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("Deactivating branch {} by user {}", branchId, userDetails.getUsername());
+        
+        // This would use the existing BranchService to deactivate branch
+        // branchService.deactivateBranch(branchId);
+        
+        return ResponseEntity.ok().build();
+    }
+}
