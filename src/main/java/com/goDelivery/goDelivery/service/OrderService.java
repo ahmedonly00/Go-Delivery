@@ -55,6 +55,18 @@ public class OrderService {
         Customer customer = customerRepository.findByCustomerId(orderRequest.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + orderRequest.getCustomerId()));
 
+        // Collect all menu item IDs to fetch them in a single query
+        List<Long> menuItemIds = orderRequest.getRestaurantOrders().stream()
+                .flatMap(restaurantOrder -> restaurantOrder.getOrderItems().stream())
+                .map(OrderRequest.OrderItem::getMenuItemId)
+                .distinct()
+                .collect(Collectors.toList());
+        
+        // Fetch all menu items in one query to avoid N+1 problem
+        List<MenuItem> allMenuItems = menuItemRepository.findByMenuItemIdIn(menuItemIds);
+        Map<Long, MenuItem> menuItemMap = allMenuItems.stream()
+                .collect(Collectors.toMap(MenuItem::getMenuItemId, item -> item));
+
         List<OrderResponse> createdOrders = new ArrayList<>();
         String parentOrderNumber = generateOrderNumber(null); // Generate a common prefix for all related orders
 
@@ -66,7 +78,8 @@ public class OrderService {
                     orderRequest, 
                     restaurantOrder, 
                     customer,
-                    parentOrderNumber + "-" + (i + 1) // Append index to make order numbers unique
+                    parentOrderNumber + "-" + (i + 1), // Append index to make order numbers unique
+                    menuItemMap // Pass the pre-fetched menu items
             );
             createdOrders.add(orderResponse);
         }
@@ -78,7 +91,8 @@ public class OrderService {
             OrderRequest orderRequest, 
             OrderRequest.RestaurantOrderRequest restaurantOrder,
             Customer customer,
-            String orderNumber
+            String orderNumber,
+            Map<Long, MenuItem> menuItemMap
     ) {
         // Validate restaurant exists
         Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantOrder.getRestaurantId())
@@ -91,59 +105,26 @@ public class OrderService {
                     .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + restaurantOrder.getBranchId()));
         }
 
-        // Create order with common details
-        Order order = new Order();
-        order.setCustomer(customer);
-        order.setRestaurant(restaurant);
-        order.setBranch(branch);
-        order.setOrderStatus(OrderStatus.PLACED);
-        order.setPaymentStatus(PaymentStatus.PENDING);
-        order.setDeliveryAddress(orderRequest.getDeliveryAddress());
-        order.setSpecialInstructions(orderRequest.getSpecialInstructions());
-        order.setPaymentMethod(orderRequest.getPaymentMethod());
-        order.setOrderPlacedAt(LocalDate.now());
-        
-        // Calculate total amount for this restaurant's items
+        // Calculate total amount using pre-fetched menu items
         double totalAmount = restaurantOrder.getOrderItems().stream()
                 .mapToDouble(orderItem -> {
-                    MenuItem menuItem = menuItemRepository.findByMenuItemId(orderItem.getMenuItemId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + orderItem.getMenuItemId()));
+                    MenuItem menuItem = menuItemMap.get(orderItem.getMenuItemId());
+                    if (menuItem == null) {
+                        throw new ResourceNotFoundException("Menu item not found with id: " + orderItem.getMenuItemId());
+                    }
                     return menuItem.getPrice() * orderItem.getQuantity();
                 })
                 .sum();
 
-        // // 2. Apply restaurant-specific discounts
-        // double discountAmount = applyRestaurantDiscounts(restaurant, totalAmount, orderRequest.getPromotionId());
-        // // 3. Calculate delivery fee (could be based on distance, order value, etc.)
-        // double deliveryFee = calculateDeliveryFee(restaurant, orderRequest.getDeliveryAddress(), totalAmount);
-        // // 4. Apply any platform-wide promotions
-        // double platformDiscount = applyPlatformWideDiscounts(totalAmount, orderRequest.getPromotionCode());
-        // // 5. Apply any customer-specific discounts (loyalty, first order, etc.)
-        // double customerDiscount = applyCustomerDiscounts(customer, totalAmount);
-        // // 6. Calculate final amount
-        // double finalAmount = totalAmount - discountAmount - platformDiscount - customerDiscount + deliveryFee;
-        // // Ensure final amount is not negative
-        // finalAmount = Math.max(0, finalAmount);        
-
-        order.setSubTotal((float) totalAmount);
-        order.setDiscountAmount(orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
-        order.setDeliveryFee(orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f);
-        // Calculate final amount: subtotal + delivery fee - discount
-        float finalAmount = (float) totalAmount + (orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f) - (orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
-        order.setFinalAmount(finalAmount);
-        order.setOrderNumber(orderNumber);
-
-        // Save order to get the ID
-        Order savedOrder = orderRepository.save(order);
-
-        // Create order items
+        // Create order items list using pre-fetched menu items
         List<OrderItem> orderItems = restaurantOrder.getOrderItems().stream()
                 .map(item -> {
-                    MenuItem menuItem = menuItemRepository.findByMenuItemId(item.getMenuItemId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + item.getMenuItemId()));
+                    MenuItem menuItem = menuItemMap.get(item.getMenuItemId());
+                    if (menuItem == null) {
+                        throw new ResourceNotFoundException("Menu item not found with id: " + item.getMenuItemId());
+                    }
                     
                     OrderItem orderItem = new OrderItem();
-                    orderItem.setOrder(savedOrder);
                     orderItem.setMenuItem(menuItem);
                     orderItem.setQuantity(item.getQuantity());
                     orderItem.setUnitPrice(menuItem.getPrice());
@@ -155,11 +136,33 @@ public class OrderService {
                 })
                 .collect(Collectors.toList());
 
-        // Set order items and save again
-        savedOrder.setOrderItems(orderItems);
-        Order finalOrder = orderRepository.save(savedOrder);
+        // Create order with all details
+        Order order = new Order();
+        order.setCustomer(customer);
+        order.setRestaurant(restaurant);
+        order.setBranch(branch);
+        order.setOrderStatus(OrderStatus.PLACED);
+        order.setPaymentStatus(PaymentStatus.PENDING);
+        order.setDeliveryAddress(orderRequest.getDeliveryAddress());
+        order.setSpecialInstructions(orderRequest.getSpecialInstructions());
+        order.setPaymentMethod(orderRequest.getPaymentMethod());
+        order.setOrderPlacedAt(LocalDate.now());
+        order.setSubTotal((float) totalAmount);
+        order.setDiscountAmount(orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
+        order.setDeliveryFee(orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f);
         
-        return orderMapper.toOrderResponse(finalOrder);
+        // Calculate final amount: subtotal + delivery fee - discount
+        float finalAmount = (float) totalAmount + (orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f) - (orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
+        order.setFinalAmount(finalAmount);
+        order.setOrderNumber(orderNumber);
+        
+        // Set order items before saving to avoid multiple saves
+        order.setOrderItems(orderItems);
+        
+        // Save only once
+        Order savedOrder = orderRepository.save(order);
+        
+        return orderMapper.toOrderResponse(savedOrder);
     }
 
     private String generateOrderNumber(Long orderId) {

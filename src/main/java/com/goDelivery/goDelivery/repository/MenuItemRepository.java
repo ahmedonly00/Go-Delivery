@@ -11,6 +11,7 @@ import com.goDelivery.goDelivery.model.MenuItem;
 @Repository
 public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     Optional<MenuItem> findByMenuItemId(Long itemId);
+    List<MenuItem> findByMenuItemIdIn(List<Long> itemIds);
     Optional<MenuItem> findByMenuItemName(String itemName);
     List<MenuItem> findByRestaurant_RestaurantId(Long restaurantId);
     List<MenuItem> findByRestaurant_RestaurantIdAndIsAvailableTrue(Long restaurantId);
