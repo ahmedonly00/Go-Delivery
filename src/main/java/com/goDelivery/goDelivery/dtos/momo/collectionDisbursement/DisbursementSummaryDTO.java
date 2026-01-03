@@ -21,22 +21,4 @@ public class DisbursementSummaryDTO {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
-    // Explicit constructor for JPQL queries
-    public DisbursementSummaryDTO(Long transactionId, String referenceId, Long orderId, 
-                                  String orderNumber, Long restaurantId, String restaurantName,
-                                  BigDecimal amount, BigDecimal commission, String status,
-                                  LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.transactionId = transactionId;
-        this.referenceId = referenceId;
-        this.orderId = orderId;
-        this.orderNumber = orderNumber;
-        this.restaurantId = restaurantId;
-        this.restaurantName = restaurantName;
-        this.amount = amount;
-        this.commission = commission;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 }

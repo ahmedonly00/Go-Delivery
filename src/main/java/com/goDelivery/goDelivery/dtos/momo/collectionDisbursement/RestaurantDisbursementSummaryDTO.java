@@ -17,7 +17,7 @@ public class RestaurantDisbursementSummaryDTO {
     private Long totalTransactions;
     private List<DisbursementSummaryDTO> transactions;
     
-    // Constructor for queries without transactions
+    // Constructor for queries without transactions (5 parameters)
     public RestaurantDisbursementSummaryDTO(Long restaurantId, String restaurantName, 
                                            BigDecimal totalDisbursed, BigDecimal totalCommission, 
                                            Long totalTransactions) {
@@ -28,17 +28,4 @@ public class RestaurantDisbursementSummaryDTO {
         this.totalTransactions = totalTransactions;
         this.transactions = null;
     }
-    
-    // Full constructor
-    public RestaurantDisbursementSummaryDTO(Long restaurantId, String restaurantName,
-                                           BigDecimal totalDisbursed, BigDecimal totalCommission,
-                                           Long totalTransactions, List<DisbursementSummaryDTO> transactions) {
-        this.restaurantId = restaurantId;
-        this.restaurantName = restaurantName;
-        this.totalDisbursed = totalDisbursed;
-        this.totalCommission = totalCommission;
-        this.totalTransactions = totalTransactions;
-        this.transactions = transactions;
-    }
-    
 }

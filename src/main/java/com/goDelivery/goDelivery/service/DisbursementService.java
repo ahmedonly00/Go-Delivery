@@ -447,53 +447,130 @@ public class DisbursementService {
     }
 
     @Transactional(readOnly = true)
-    public List<DisbursementSummaryDTO> getDisbursementsForRestaurant(Long restaurantId) {
-        return transactionRepository.findDisbursementSummaryByRestaurantId(restaurantId);
+    public List<DisbursementSummaryDTO> getDisbursementSummaryByRestaurantId(Long restaurantId) {
+        // Alternative implementation since JPQL constructor query is temporarily disabled
+        List<DisbursementTransaction> transactions = transactionRepository.findAll();
+        return transactions.stream()
+            .filter(dt -> dt.getRestaurant().getRestaurantId().equals(restaurantId))
+            .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+            .map(this::convertToDisbursementSummaryDTO)
+            .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
-    public List<DisbursementSummaryDTO> getAllDisbursements() {
-        return transactionRepository.findAllDisbursementSummaries();
+    public List<DisbursementSummaryDTO> getAllDisbursementSummaries() {
+        // Alternative implementation since JPQL constructor query is temporarily disabled
+        return transactionRepository.findAll().stream()
+            .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+            .map(this::convertToDisbursementSummaryDTO)
+            .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     public List<RestaurantDisbursementSummaryDTO> getRestaurantDisbursementSummaries() {
-        return transactionRepository.getRestaurantDisbursementSummaries();
+        // Alternative implementation since JPQL constructor query is temporarily disabled
+        List<DisbursementTransaction> transactions = transactionRepository.findAll();
+        return transactions.stream()
+            .collect(Collectors.groupingBy(
+                DisbursementTransaction::getRestaurant,
+                Collectors.toList()
+            ))
+            .entrySet().stream()
+            .map(entry -> convertToRestaurantSummaryDTO(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
+    }
+    
+    private DisbursementSummaryDTO convertToDisbursementSummaryDTO(DisbursementTransaction transaction) {
+        return DisbursementSummaryDTO.builder()
+            .transactionId(transaction.getId())
+            .referenceId(transaction.getReferenceId())
+            .orderId(transaction.getOrder().getOrderId())
+            .orderNumber(transaction.getOrder().getOrderNumber())
+            .restaurantId(transaction.getRestaurant().getRestaurantId())
+            .restaurantName(transaction.getRestaurant().getRestaurantName())
+            .amount(BigDecimal.valueOf(transaction.getAmount()))
+            .commission(BigDecimal.valueOf(transaction.getCommission()))
+            .status(transaction.getStatus().name())
+            .createdAt(transaction.getCreatedAt())
+            .updatedAt(transaction.getUpdatedAt())
+            .build();
+    }
+    
+    private RestaurantDisbursementSummaryDTO convertToRestaurantSummaryDTO(Restaurant restaurant, 
+                                                                          List<DisbursementTransaction> transactions) {
+        List<DisbursementSummaryDTO> dtos = transactions.stream()
+            .map(this::convertToDisbursementSummaryDTO)
+            .collect(Collectors.toList());
+            
+        BigDecimal totalDisbursed = dtos.stream()
+            .map(DisbursementSummaryDTO::getAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+        BigDecimal totalCommission = dtos.stream()
+            .map(DisbursementSummaryDTO::getCommission)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        return new RestaurantDisbursementSummaryDTO(
+            restaurant.getRestaurantId(),
+            restaurant.getRestaurantName(),
+            totalDisbursed,
+            totalCommission,
+            (long) transactions.size(),
+            dtos
+        );
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
+    public List<RestaurantDisbursementSummaryDTO> getAdminRestaurantDisbursementSummaries() {
+        // Alternative implementation since JPQL constructor query is temporarily disabled
+        List<DisbursementTransaction> transactions = transactionRepository.findAll();
+        return transactions.stream()
+            .collect(Collectors.groupingBy(
+                DisbursementTransaction::getRestaurant,
+                Collectors.toList()
+            ))
+            .entrySet().stream()
+            .map(entry -> convertToRestaurantSummaryDTO(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public RestaurantDisbursementSummaryDTO getRestaurantDisbursementSummary(Long restaurantId) {
-        List<DisbursementSummaryDTO> transactions = transactionRepository
-            .findDisbursementSummaryByRestaurantId(restaurantId);
-        
-        if (transactions.isEmpty()) {
+        // Alternative implementation since JPQL constructor query is temporarily disabled
+        List<DisbursementTransaction> transactions = transactionRepository.findAll();
+        List<DisbursementTransaction> filteredTransactions = transactions.stream()
+            .filter(dt -> dt.getRestaurant().getRestaurantId().equals(restaurantId))
+            .collect(Collectors.toList());
+            
+        if (filteredTransactions.isEmpty()) {
             return new RestaurantDisbursementSummaryDTO(
                 restaurantId,
                 "", // Restaurant name will be empty if no transactions
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
                 0L,
-                transactions
+                new ArrayList<>()
             );
         }
         
-        BigDecimal totalDisbursed = transactions.stream()
+        List<DisbursementSummaryDTO> dtos = filteredTransactions.stream()
+            .map(this::convertToDisbursementSummaryDTO)
+            .collect(Collectors.toList());
+        
+        BigDecimal totalDisbursed = dtos.stream()
             .map(DisbursementSummaryDTO::getAmount)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
         
-        BigDecimal totalCommission = transactions.stream()
+        BigDecimal totalCommission = dtos.stream()
             .map(DisbursementSummaryDTO::getCommission)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
         
         return new RestaurantDisbursementSummaryDTO(
             restaurantId,
-            transactions.get(0).getRestaurantName(),
+            dtos.get(0).getRestaurantName(),
             totalDisbursed,
             totalCommission,
-            (long) transactions.size(),
-            transactions
+            (long) dtos.size(),
+            dtos
         );
     }
 
