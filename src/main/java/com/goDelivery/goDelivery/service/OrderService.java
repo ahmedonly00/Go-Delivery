@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -58,7 +59,7 @@ public class OrderService {
         // Collect all menu item IDs to fetch them in a single query
         List<Long> menuItemIds = orderRequest.getRestaurantOrders().stream()
                 .flatMap(restaurantOrder -> restaurantOrder.getOrderItems().stream())
-                .map(OrderRequest.OrderItem::getMenuItemId)
+                .map(OrderRequest.OrderItemRequest::getMenuItemId)
                 .distinct()
                 .collect(Collectors.toList());
         
