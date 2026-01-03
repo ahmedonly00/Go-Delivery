@@ -17,9 +17,10 @@ import com.goDelivery.goDelivery.repository.OrderRepository;
 import com.goDelivery.goDelivery.config.OrderConfig;
 import com.goDelivery.goDelivery.repository.PaymentRepository;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -36,19 +37,36 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class MomoService {
 
-    private final RestTemplate restTemplate;
-    private final MomoConfig momoConfig;
-    private final MomoTransactionRepository momoTransactionRepository;
-    private final CashierService cashierService;
-    private final NotificationService notificationService;
-    private final PaymentRepository paymentRepository;
-    private final OrderRepository orderRepository;
-    private final OrderConfig orderConfig;
-    private final DisbursementService disbursementService;
+    @Autowired
+    private RestTemplate restTemplate;
     
+    @Autowired
+    private MomoConfig momoConfig;
+    
+    @Autowired
+    private MomoTransactionRepository momoTransactionRepository;
+    
+    @Autowired
+    private CashierService cashierService;
+    
+    @Autowired
+    private NotificationService notificationService;
+    
+    @Autowired
+    private PaymentRepository paymentRepository;
+    
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    @Autowired
+    private OrderConfig orderConfig;
+    
+    @Lazy
+    @Autowired
+    private DisbursementService disbursementService;
+
     @Value("${app.payment.auto-disbursement.enabled:true}")
     private boolean autoDisbursementEnabled;
 
