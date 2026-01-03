@@ -17,6 +17,7 @@ import com.goDelivery.goDelivery.repository.MenuItemRepository;
 import com.goDelivery.goDelivery.repository.OrderRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -47,12 +49,16 @@ public class OrderService {
 
     @Transactional
     public List<OrderResponse> createOrder(OrderRequest orderRequest) {
+        log.info("Starting order creation for customer ID: {}", orderRequest.getCustomerId());
+        
         // Validate order items exist
         if (orderRequest.getRestaurantOrders() == null || orderRequest.getRestaurantOrders().isEmpty()) {
+            log.error("Order validation failed: No restaurant orders provided");
             throw new IllegalArgumentException("Order must contain at least one item");
         }
         
         // Validate customer exists
+        log.debug("Looking up customer with ID: {}", orderRequest.getCustomerId());
         Customer customer = customerRepository.findByCustomerId(orderRequest.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + orderRequest.getCustomerId()));
 
@@ -63,16 +69,26 @@ public class OrderService {
                 .distinct()
                 .collect(Collectors.toList());
         
+        log.debug("Found {} unique menu item IDs to fetch", menuItemIds.size());
+        
         // Fetch all menu items in one query to avoid N+1 problem
         List<MenuItem> allMenuItems = menuItemRepository.findByMenuItemIdIn(menuItemIds);
+        log.debug("Retrieved {} menu items from database", allMenuItems.size());
+        
+        if (allMenuItems.size() != menuItemIds.size()) {
+            log.error("Menu item count mismatch. Expected: {}, Found: {}", menuItemIds.size(), allMenuItems.size());
+        }
+        
         Map<Long, MenuItem> menuItemMap = allMenuItems.stream()
                 .collect(Collectors.toMap(MenuItem::getMenuItemId, item -> item));
 
         List<OrderResponse> createdOrders = new ArrayList<>();
         String parentOrderNumber = generateOrderNumber(null); // Generate a common prefix for all related orders
+        log.info("Processing {} restaurant orders", orderRequest.getRestaurantOrders().size());
 
         for (int i = 0; i < orderRequest.getRestaurantOrders().size(); i++) {
             OrderRequest.RestaurantOrderRequest restaurantOrder = orderRequest.getRestaurantOrders().get(i);
+            log.debug("Processing restaurant order {} for restaurant ID: {}", i+1, restaurantOrder.getRestaurantId());
             
             // Create a new order for each restaurant
             OrderResponse orderResponse = createSingleRestaurantOrder(
@@ -83,8 +99,10 @@ public class OrderService {
                     menuItemMap // Pass the pre-fetched menu items
             );
             createdOrders.add(orderResponse);
+            log.debug("Created order with number: {}", orderResponse.getOrderNumber());
         }
 
+        log.info("Successfully created {} orders", createdOrders.size());
         return createdOrders;
     }
 

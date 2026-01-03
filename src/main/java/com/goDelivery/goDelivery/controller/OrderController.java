@@ -3,13 +3,16 @@ package com.goDelivery.goDelivery.controller;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
+import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -21,7 +24,24 @@ public class OrderController {
 
     @PostMapping("/createOrder")
     public ResponseEntity<List<OrderResponse>> createOrder(@RequestBody OrderRequest orderRequest) {
-        return ResponseEntity.ok(orderService.createOrder(orderRequest));
+        try {
+            log.info("Creating order for customer: {}", orderRequest.getCustomerId());
+            log.info("Order contains {} restaurant orders", orderRequest.getRestaurantOrders().size());
+            
+            List<OrderResponse> result = orderService.createOrder(orderRequest);
+            log.info("Order created successfully with {} orders", result.size());
+            
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid order request: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch (ResourceNotFoundException e) {
+            log.error("Resource not found: {}", e.getMessage());
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Error creating order", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/getOrderById/{orderId}")
