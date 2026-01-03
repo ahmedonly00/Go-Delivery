@@ -6,8 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.api.client.util.Value;
-
 import lombok.extern.slf4j.Slf4j;
 import lombok.Data;
 
@@ -18,17 +16,13 @@ import lombok.Data;
 @Validated
 public class MomoConfig {
     @NotBlank(message = "MoMo base URL is required")
-    @Value("${momo.base-url}")
-    private String baseUrl ;
+    private String baseUrl;
     
-    @Value("${momo.username}")
-    private String username ;
+    private String username;
     
-    @Value("${momo.password}")
-    private String password ;  
+    private String password;  
     
-    @Value("${momo.callback-host}")    
-    private String callbackHost ;
+    private String callbackHost;
 
     public String getAuthUrl() {
         return baseUrl + "/api/v1/auth/login";
