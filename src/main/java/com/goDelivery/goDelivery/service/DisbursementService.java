@@ -456,6 +456,11 @@ public class DisbursementService {
             .map(this::convertToDisbursementSummaryDTO)
             .collect(Collectors.toList());
     }
+    
+    // Method name expected by controller
+    public List<DisbursementSummaryDTO> getDisbursementsForRestaurant(Long restaurantId) {
+        return getDisbursementSummaryByRestaurantId(restaurantId);
+    }
 
     public List<DisbursementSummaryDTO> getAllDisbursementSummaries() {
         // Alternative implementation since JPQL constructor query is temporarily disabled
@@ -463,6 +468,11 @@ public class DisbursementService {
             .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
             .map(this::convertToDisbursementSummaryDTO)
             .collect(Collectors.toList());
+    }
+    
+    // Method name expected by controller
+    public List<DisbursementSummaryDTO> getAllDisbursements() {
+        return getAllDisbursementSummaries();
     }
 
     public List<RestaurantDisbursementSummaryDTO> getRestaurantDisbursementSummaries() {
