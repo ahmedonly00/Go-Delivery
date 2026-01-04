@@ -26,6 +26,13 @@ public class OrderController {
     public ResponseEntity<List<OrderResponse>> createOrder(@RequestBody OrderRequest orderRequest) {
         try {
             log.info("Creating order for customer: {}", orderRequest.getCustomerId());
+            
+            // Check if restaurantOrders is null
+            if (orderRequest.getRestaurantOrders() == null) {
+                log.error("Restaurant orders list is null in the request");
+                return ResponseEntity.badRequest().build();
+            }
+            
             log.info("Order contains {} restaurant orders", orderRequest.getRestaurantOrders().size());
             
             List<OrderResponse> result = orderService.createOrder(orderRequest);

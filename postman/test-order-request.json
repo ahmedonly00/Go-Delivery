@@ -1,0 +1,31 @@
+{
+  "customerId": 1,
+  "deliveryAddressId": 1,
+  "orderStatus": "PENDING",
+  "deliveryAddress": "123 Main Street, Maputo, Mozambique",
+  "paymentStatus": "UNPAID",
+  "subTotal": 250.00,
+  "deliveryFee": 20.00,
+  "discountAmount": 10.00,
+  "finalAmount": 260.00,
+  "paymentMethod": "MOMO",
+  "specialInstructions": "Please deliver to the gate",
+  "restaurantOrders": [
+    {
+      "restaurantId": 1,
+      "branchId": 1,
+      "orderItems": [
+        {
+          "menuItemId": 1,
+          "quantity": 2,
+          "specialInstructions": "Extra spicy"
+        },
+        {
+          "menuItemId": 2,
+          "quantity": 1,
+          "specialInstructions": "No onions"
+        }
+      ]
+    }
+  ]
+}

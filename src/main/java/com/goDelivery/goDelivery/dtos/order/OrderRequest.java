@@ -60,7 +60,8 @@ public class OrderRequest {
 
     private LocalDate orderPlacedAt;
 
-    @NotEmpty(message = "At least one order item is required")
+    @NotNull(message = "Restaurant orders are required")
+    @NotEmpty(message = "At least one restaurant order is required")
     private List<RestaurantOrderRequest> restaurantOrders;
 
 

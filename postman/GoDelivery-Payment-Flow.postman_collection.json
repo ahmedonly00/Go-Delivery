@@ -1,0 +1,246 @@
+{
+  "info": {
+    "_postman_id": "go-delivery-payment-flow",
+    "name": "GoDelivery - Payment Flow Testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": 1,\n  \"deliveryAddressId\": 1,\n  \"orderStatus\": \"PENDING\",\n  \"deliveryAddress\": \"123 Main Street, Maputo, Mozambique\",\n  \"paymentStatus\": \"UNPAID\",\n  \"subTotal\": 250.00,\n  \"deliveryFee\": 20.00,\n  \"discountAmount\": 10.00,\n  \"finalAmount\": 260.00,\n  \"paymentMethod\": \"MOMO\",\n  \"specialInstructions\": \"Please deliver to the gate\",\n  \"restaurantOrders\": [\n    {\n      \"restaurantId\": 1,\n      \"branchId\": 1,\n      \"orderItems\": [\n        {\n          \"menuItemId\": 1,\n          \"quantity\": 2,\n          \"specialInstructions\": \"Extra spicy\"\n        },\n        {\n          \"menuItemId\": 2,\n          \"quantity\": 1,\n          \"specialInstructions\": \"No onions\"\n        }\n      ]\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/orders/createOrder",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orders", "createOrder"]
+        }
+      }
+    },
+    {
+      "name": "2. Initiate MoMo Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"externalId\": \"ORDER_123_PAYMENT\",\n  \"msisdn\": \"250841234567\",\n  \"amount\": 260.00,\n  \"payerMessageTitle\": \"GoDelivery Order Payment\",\n  \"payerMessageDescription\": \"Payment for order #123-456\",\n  \"callback\": \"https://delivery.apis.ivas.rw:8085/api/v1/payments/momo/webhook\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/payments/momo/request",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "payments", "momo", "request"]
+        }
+      }
+    },
+    {
+      "name": "3. Check MoMo Payment Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/payments/momo/status/{{referenceId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "payments", "momo", "status", "{{referenceId}}"]
+        }
+      }
+    },
+    {
+      "name": "4. Process Payment (After Confirmation)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": 123,\n  \"paymentMethod\": \"MOMO\",\n  \"paymentProvider\": \"MOMO_MZ\",\n  \"phoneNumber\": \"250841234567\",\n  \"transactionId\": \"TXN_123456789\",\n  \"referenceNumber\": \"REF_987654321\",\n  \"amount\": 260.00,\n  \"currency\": \"MZN\",\n  \"gatewayResponse\": \"{\\\"status\\\":\\\"SUCCESSFUL\\\",\\\"transactionId\\\":\\\"TXN_123456789\\\"}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/payments/process",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "payments", "process"]
+        }
+      }
+    },
+    {
+      "name": "5. Get Payment Details",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/payments/getPaymentByOrderId/{{orderId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "payments", "getPaymentByOrderId", "{{orderId}}"]
+        }
+      }
+    },
+    {
+      "name": "6. Process Order Disbursement (To Restaurant)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": 123,\n  \"orderNumber\": \"ORD-2024-001\",\n  \"paymentStatus\": \"PAID\",\n  \"finalAmount\": 260.00,\n  \"restaurant\": {\n    \"restaurantId\": 1,\n    \"restaurantName\": \"Test Restaurant\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/payments/momo/processOrderDisbursement",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "payments", "momo", "processOrderDisbursement"]
+        }
+      }
+    },
+    {
+      "name": "7. Check Disbursement Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/payments/momo/disbursement/status/{{disbursementReferenceId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "payments", "momo", "disbursement", "status", "{{disbursementReferenceId}}"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "123",
+      "type": "string"
+    },
+    {
+      "key": "referenceId",
+      "value": "MOMO_REF_123456",
+      "type": "string"
+    },
+    {
+      "key": "disbursementReferenceId",
+      "value": "DISB_789012",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// This script runs before each request",
+          "// You can add authentication logic here",
+          "// For example, to refresh JWT token if needed"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// This script runs after each request",
+          "// Common tests for API responses",
+          "",
+          "pm.test(\"Status code is successful\", function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+          "});",
+          "",
+          "pm.test(\"Response has valid JSON\", function () {",
+          "    pm.expect(pm.response.json()).to.be.an('object');",
+          "});",
+          "",
+          "// Debug: Log request details",
+          "if (pm.request.url.path.includes('/createOrder')) {",
+          "    console.log('Request Headers:', JSON.stringify(pm.request.headers, null, 2));",
+          "    console.log('Request Body:', pm.request.body.raw);",
+          "    console.log('Response Status:', pm.response.code);",
+          "    console.log('Response Body:', pm.response.text());",
+          "}",
+          "",
+          "// Save reference ID from MoMo payment response",
+          "if (pm.request.url.path.includes('/momo/request') && pm.response.code === 200) {",
+          "    const response = pm.response.json();",
+          "    if (response.referenceId) {",
+          "        pm.collectionVariables.set('referenceId', response.referenceId);",
+          "        console.log('Saved reference ID:', response.referenceId);",
+          "    }",
+          "}",
+          "",
+          "// Save order ID from create order response",
+          "if (pm.request.url.path.includes('/createOrder') && pm.response.code === 200) {",
+          "    const response = pm.response.json();",
+          "    if (response.length > 0 && response[0].orderId) {",
+          "        pm.collectionVariables.set('orderId', response[0].orderId);",
+          "        console.log('Saved order ID:', response[0].orderId);",
+          "    }",
+          "}"
+        ]
+      }
+    }
+  ]
+}
