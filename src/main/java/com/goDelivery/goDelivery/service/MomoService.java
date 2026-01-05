@@ -1,8 +1,12 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.config.MomoConfig;
-import com.goDelivery.goDelivery.dtos.momo.*;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementRequest;
+import com.goDelivery.goDelivery.config.MomoHealthCheckService;
+import com.goDelivery.goDelivery.config.OrderConfig;
+import com.goDelivery.goDelivery.dtos.momo.MomoPaymentRequest;
+import com.goDelivery.goDelivery.dtos.momo.MomoPaymentResponse;
+import com.goDelivery.goDelivery.model.*;
+import com.goDelivery.goDelivery.repository.*;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementResponse;
 import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementStatusResponse;
 import com.goDelivery.goDelivery.model.MomoTransaction;
@@ -61,6 +65,9 @@ public class MomoService {
     private OrderRepository orderRepository;
     
     @Autowired
+    private MomoHealthCheckService momoHealthCheckService;
+    
+    @Autowired
     private OrderConfig orderConfig;
     
     @Lazy
@@ -74,6 +81,13 @@ public class MomoService {
      * Request payment from a customer's mobile money account
      */
     public MomoPaymentResponse requestPayment(MomoPaymentRequest request) {
+        // Check if MoMo service is available before proceeding
+        if (!momoHealthCheckService.isMomoServiceAvailable()) {
+            throw new RuntimeException("Payment service is temporarily unavailable. Please try again later or use an alternative payment method.");
+        }
+        
+        log.info("Received MoMo payment request for external ID: {}", request.getExternalId());
+        
         // Check if MoMo is configured
         if (momoConfig.getUsername() == null || momoConfig.getUsername().isBlank()) {
             log.warn("MoMo payment is not configured. Please provide MoMo credentials in application.properties");
@@ -169,6 +183,22 @@ public class MomoService {
                 throw new RuntimeException("Failed to initiate payment: " + response.getBody());
             }
             
+        } catch (org.springframework.web.client.ResourceAccessException e) {
+            // Handle connection timeout specifically
+            if (e.getCause() instanceof java.net.ConnectException || 
+                e.getCause() instanceof java.net.SocketTimeoutException) {
+                log.error("MoMo API is not accessible. Connection timeout to: {}", momoConfig.getBaseUrl());
+                transaction.setStatus(TransactionStatus.FAILED);
+                transaction.setErrorReason("Payment service is temporarily unavailable. Please try again later.");
+                momoTransactionRepository.save(transaction);
+                throw new RuntimeException("Payment service is temporarily unavailable. Please try again later.");
+            } else {
+                log.error("Error requesting payment from MoMo API", e);
+                transaction.setStatus(TransactionStatus.FAILED);
+                transaction.setErrorReason(e.getMessage());
+                momoTransactionRepository.save(transaction);
+                throw new RuntimeException("Error processing payment request", e);
+            }
         } catch (Exception e) {
             log.error("Error requesting payment from MoMo API", e);
             transaction.setStatus(TransactionStatus.FAILED);
@@ -553,6 +583,27 @@ public class MomoService {
                 e.getStatusCode(), e.getResponseBodyAsString());
             throw new RuntimeException("Authentication request failed: " + e.getMessage(), e);
             
+        } catch (org.springframework.web.client.ResourceAccessException e) {
+            // Handle connection timeout specifically
+            if (e.getCause() instanceof java.net.ConnectException || 
+                e.getCause() instanceof java.net.SocketTimeoutException) {
+                String errorMsg = String.format("""
+                    Connection timeout to MoMo API.
+                    URL: %s
+                    The payment service appears to be down or unreachable.
+                    Please check:
+                    1. Network connectivity
+                    2. Firewall settings
+                    3. MoMo API service status
+                    """, 
+                    authUrl
+                );
+                log.error(errorMsg);
+                throw new RuntimeException("Authentication request failed: Payment service is temporarily unavailable", e);
+            } else {
+                log.error("Error during authentication request to {}", authUrl, e);
+                throw new RuntimeException("Authentication request failed: " + e.getMessage(), e);
+            }
         } catch (Exception e) {
             log.error("Error during authentication request to {}", authUrl, e);
             throw new RuntimeException("Authentication request failed: " + e.getMessage(), e);
