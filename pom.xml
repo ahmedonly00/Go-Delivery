@@ -102,6 +102,12 @@
 			</exclusions>
 		</dependency>
 
+		<!-- Apache HttpClient for RestTemplate -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+
 		<!-- Validation -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
