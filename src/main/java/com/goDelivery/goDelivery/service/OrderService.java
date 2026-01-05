@@ -165,6 +165,7 @@ public class OrderService {
         order.setBranch(branch);
         order.setOrderStatus(OrderStatus.PLACED);
         order.setPaymentStatus(PaymentStatus.PENDING);
+        order.setPaymentMethod(orderRequest.getPaymentMethod()); // Set payment method from request
         order.setDeliveryAddress(orderRequest.getDeliveryAddress());
         order.setSpecialInstructions(orderRequest.getSpecialInstructions());
         order.setCancellationReason(orderRequest.getCancellationReason());
@@ -174,6 +175,23 @@ public class OrderService {
         order.setSubTotal((float) totalAmount);
         order.setDiscountAmount(orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
         order.setDeliveryFee(orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f);
+        
+        // Initialize other nullable fields to avoid issues
+        order.setAcceptedAt(null);
+        order.setEstimatedPrepTimeMinutes(null);
+        order.setActualPrepCompletedAt(null);
+        order.setOrderConfirmedAt(null);
+        order.setOrderPreparedAt(null);
+        order.setPickedUpAt(null);
+        order.setDeliveredAt(null);
+        order.setCancelledAt(null);
+        order.setPaymentCompletedAt(null);
+        order.setPaymentFailureReason(null);
+        order.setDisbursementReference(null);
+        order.setDisbursementStatus(null);
+        order.setDisbursementCompletedAt(null);
+        order.setBikers(null);
+        order.setPromotion(null);
 
         // Calculate final amount: subtotal + delivery fee - discount
         float finalAmount = (float) totalAmount + (orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f) - (orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
