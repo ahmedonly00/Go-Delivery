@@ -151,6 +151,9 @@ public class OrderService {
                     orderItem.setSpecialRequests(item.getSpecialInstructions());
                     orderItem.setCreatedAt(LocalDate.now());
                     
+                    // Set the order reference (will be set after order is saved)
+                    // Note: We'll set this after saving the order
+                    
                     return orderItem;
                 })
                 .collect(Collectors.toList());
@@ -164,26 +167,37 @@ public class OrderService {
         order.setPaymentStatus(PaymentStatus.PENDING);
         order.setDeliveryAddress(orderRequest.getDeliveryAddress());
         order.setSpecialInstructions(orderRequest.getSpecialInstructions());
-        order.setPaymentMethod(orderRequest.getPaymentMethod());
+        order.setCancellationReason(orderRequest.getCancellationReason());
         order.setOrderPlacedAt(LocalDate.now());
+        order.setCreatedAt(LocalDate.now());
+        order.setUpdatedAt(LocalDate.now());
         order.setSubTotal((float) totalAmount);
         order.setDiscountAmount(orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
         order.setDeliveryFee(orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f);
-        
+
         // Calculate final amount: subtotal + delivery fee - discount
         float finalAmount = (float) totalAmount + (orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f) - (orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
         order.setFinalAmount(finalAmount);
         order.setOrderNumber(orderNumber);
-        
-        // Set order items before saving to avoid multiple saves
+
+        // Set order reference on each OrderItem before adding to order
+        orderItems.forEach(orderItem -> orderItem.setOrder(order));
+
+        // Set order items - cascade will save them
         order.setOrderItems(orderItems);
-        
-        // Save only once
+
+        // Save the order - cascade will save the order items
         Order savedOrder = orderRepository.save(order);
-        
+
         return orderMapper.toOrderResponse(savedOrder);
     }
 
+    /**
+     * Generates an order number based on the current date and order ID.
+     *
+     * @param orderId the order ID
+     * @return the generated order number
+     */
     private String generateOrderNumber(Long orderId) {
         LocalDate now = LocalDate.now();
         String datePart = String.format("%04d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
