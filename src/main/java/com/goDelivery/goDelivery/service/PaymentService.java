@@ -129,7 +129,7 @@ public class PaymentService {
             if (mpesaResponse != null && mpesaResponse.getTransactionId() != null) {
                 // Payment initiated successfully
                 payment.setTransactionId(mpesaResponse.getTransactionId());
-                payment.setPaymentStatus(PaymentStatus.PENDING);
+                payment.setPaymentStatus(PaymentStatus.PAID);
                 payment.setGateWayResponse("MPESA payment initiated. Transaction ID: " + mpesaResponse.getTransactionId());
                 
                 // Save payment with transaction ID for future reference
@@ -519,7 +519,7 @@ public class PaymentService {
             if (momoResponse != null && momoResponse.getReferenceId() != null) {
                 // Payment initiated successfully
                 payment.setTransactionId(momoResponse.getReferenceId());
-                payment.setPaymentStatus(PaymentStatus.PENDING);
+                payment.setPaymentStatus(PaymentStatus.PAID);
                 payment.setGateWayResponse("MoMo payment initiated. Reference ID: " + momoResponse.getReferenceId());
                 
                 // Save payment with transaction ID for future reference
