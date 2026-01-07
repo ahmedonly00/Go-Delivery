@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.config.RequestConfig;
-import java.util.concurrent.TimeUnit;
+import org.apache.hc.core5.util.Timeout;
 
 @Configuration
 public class RestTemplateConfig {
@@ -16,8 +16,8 @@ public class RestTemplateConfig {
     public RestTemplate restTemplate() {
         // Configure request timeouts using HttpClient 5.x API
         RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(10000, TimeUnit.MILLISECONDS) // 10 seconds connection timeout
-                .setResponseTimeout(30000, TimeUnit.MILLISECONDS)  // 30 seconds response timeout
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(10000)) // 10 seconds connection timeout
+                .setResponseTimeout(Timeout.ofMilliseconds(30000))  // 30 seconds response timeout
                 .build();
         
         // Create HTTP client with the configuration using HttpClient 5.x API

@@ -138,7 +138,9 @@ public class SecurityConfig {
                         "/api/v1/branches/**",
                         "/api/v1/branch-users/**",
                         "/api/v1/branch-registration/**",
-                        "/api/v1/branches/{branchId}/menu/**"
+                        "/api/v1/branches/{branchId}/menu/**",
+                        "/api/v1/branches/{branchId}/users/**",
+                        "/api/v1/branches/{branchId}/analytics/**"
                     ).hasRole("RESTAURANT_ADMIN")
                     
                     // Branch Manager endpoints
@@ -147,6 +149,8 @@ public class SecurityConfig {
                         "/api/v1/branches/getBranches/**",
                         "/api/v1/branches/updateBranch/**",
                         "/api/v1/branches/{branchId}/menu/**",
+                        "/api/v1/branches/{branchId}/orders/**",
+                        "/api/v1/branches/{branchId}/settings/**",
                         "/api/v1/branch-setup/**",
                         "/api/v1/branch-orders/**"
                     ).hasRole("BRANCH_MANAGER")

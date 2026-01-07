@@ -113,7 +113,7 @@ public class RestaurantController {
         try {
             // Store the logo file if provided
             if (logoFile != null && !logoFile.isEmpty()) {
-                String filePath = fileStorageService.storeFile(logoFile, "restaurants/updates/logo");
+                String filePath = fileStorageService.storeFile(logoFile, "restaurants/temp/logo");
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantDTO.setLogoUrl(fullUrl);
             }
@@ -121,7 +121,7 @@ public class RestaurantController {
             // Update Commercial Registration Certificate if provided
             if (commercialRegistrationCertificate != null && !commercialRegistrationCertificate.isEmpty()) {
                 String filePath = fileStorageService.storeFile(commercialRegistrationCertificate, 
-                    "restaurants/updates/documents/commercial-registration");
+                    "restaurants/temp/documents/commercial-registration");
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantDTO.setCommercialRegistrationCertificateUrl(fullUrl);
             }
@@ -129,7 +129,7 @@ public class RestaurantController {
             // Update Tax Identification Document if provided
             if (taxIdentificationDocument != null && !taxIdentificationDocument.isEmpty()) {
                 String filePath = fileStorageService.storeFile(taxIdentificationDocument, 
-                    "restaurants/updates/documents/tax-identification");
+                    "restaurants/temp/documents/tax-identification");
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantDTO.setTaxIdentificationDocumentUrl(fullUrl);
             }
