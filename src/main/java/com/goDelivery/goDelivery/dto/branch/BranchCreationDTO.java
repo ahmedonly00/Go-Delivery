@@ -70,11 +70,6 @@ public class BranchCreationDTO {
     private Float minimumOrderAmount;
     private Float deliveryFee;
     
-    // Social media
-    private String facebookUrl;
-    private String instagramUrl;
-    private String twitterUrl;
-    
     // Branch manager details
     @NotBlank(message = "Manager name is required")
     private String managerName;
@@ -93,12 +88,6 @@ public class BranchCreationDTO {
     
     // Tags for search
     private List<String> tags;
-    
-    // Special features
-    private Boolean hasParking;
-    private Boolean hasWifi;
-    private Boolean hasOutdoorSeating;
-    private Boolean acceptsReservations;
     
     // Average rating and review count (for display)
     private Double averageRating = 0.0;

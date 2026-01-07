@@ -2,7 +2,10 @@ package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
-import com.goDelivery.goDelivery.service.BranchCreationService;
+import com.goDelivery.goDelivery.service.BranchService;
+import com.goDelivery.goDelivery.service.BranchMenuService;
+import com.goDelivery.goDelivery.service.BranchSetupService;
+import com.goDelivery.goDelivery.service.BranchOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +29,10 @@ import java.util.List;
 @CrossOrigin("*")
 public class BranchController {
 
-    private final BranchCreationService branchCreationService;
+    private final BranchService branchService;
+    private final BranchMenuService branchMenuService;
+    private final BranchSetupService branchSetupService;
+    private final BranchOrderService branchOrderService;
 
     @PostMapping("/create/{restaurantId}")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
@@ -44,7 +50,7 @@ public class BranchController {
         
         log.info("Creating new branch for restaurant {} by user {}", restaurantId, userDetails.getUsername());
         
-        BranchesDTO createdBranch = branchCreationService.createBranch(
+        BranchesDTO createdBranch = branchService.createBranch(
                 restaurantId, creationDTO, logoFile, documentFiles);
         
         return ResponseEntity.ok(createdBranch);
@@ -65,7 +71,7 @@ public class BranchController {
         
         log.info("Updating branch {} by user {}", branchId, userDetails.getUsername());
         
-        BranchesDTO updatedBranch = branchCreationService.updateBranch(
+        BranchesDTO updatedBranch = branchService.updateBranchComprehensive(
                 branchId, updateDTO, logoFile);
         
         return ResponseEntity.ok(updatedBranch);
@@ -84,10 +90,9 @@ public class BranchController {
         
         log.info("Fetching branches for restaurant {} by user {}", restaurantId, userDetails.getUsername());
         
-        // This would use the existing BranchService to get branches
-        // List<BranchesDTO> branches = branchService.getBranchesByRestaurant(restaurantId);
+        List<BranchesDTO> branches = branchService.getBranchesByRestaurant(restaurantId);
         
-        return ResponseEntity.ok(null); // Placeholder
+        return ResponseEntity.ok(branches);
     }
 
     @GetMapping("/{branchId}")
@@ -103,10 +108,9 @@ public class BranchController {
         
         log.info("Fetching branch {} by user {}", branchId, userDetails.getUsername());
         
-        // This would use the existing BranchService to get branch details
-        // BranchesDTO branch = branchService.getBranchById(branchId);
+        BranchesDTO branch = branchService.getBranchById(branchId);
         
-        return ResponseEntity.ok(null); // Placeholder
+        return ResponseEntity.ok(branch);
     }
 
     @PostMapping("/{branchId}/activate")
@@ -122,8 +126,7 @@ public class BranchController {
         
         log.info("Activating branch {} by user {}", branchId, userDetails.getUsername());
         
-        // This would use the existing BranchService to activate branch
-        // branchService.activateBranch(branchId);
+        branchService.activateBranch(branchId);
         
         return ResponseEntity.ok().build();
     }
@@ -141,8 +144,7 @@ public class BranchController {
         
         log.info("Deactivating branch {} by user {}", branchId, userDetails.getUsername());
         
-        // This would use the existing BranchService to deactivate branch
-        // branchService.deactivateBranch(branchId);
+        branchService.deactivateBranch(branchId);
         
         return ResponseEntity.ok().build();
     }

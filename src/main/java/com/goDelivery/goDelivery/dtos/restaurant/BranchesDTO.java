@@ -42,13 +42,6 @@ public class BranchesDTO {
     private Float deliveryRadius;
     private Float minimumOrderAmount;
     private Float deliveryFee;
-    private String facebookUrl;
-    private String instagramUrl;
-    private String twitterUrl;
-    private Boolean hasParking;
-    private Boolean hasWifi;
-    private Boolean hasOutdoorSeating;
-    private Boolean acceptsReservations;
     private Double averageRating;
     private Integer reviewCount;
 }

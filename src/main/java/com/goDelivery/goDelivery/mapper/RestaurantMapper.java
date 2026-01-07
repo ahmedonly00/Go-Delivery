@@ -184,13 +184,6 @@ public class RestaurantMapper {
                 .deliveryRadius(branch.getDeliveryRadius())
                 .minimumOrderAmount(branch.getMinimumOrderAmount())
                 .deliveryFee(branch.getDeliveryFee())
-                .facebookUrl(branch.getFacebookUrl())
-                .instagramUrl(branch.getInstagramUrl())
-                .twitterUrl(branch.getTwitterUrl())
-                .hasParking(branch.getHasParking())
-                .hasWifi(branch.getHasWifi())
-                .hasOutdoorSeating(branch.getHasOutdoorSeating())
-                .acceptsReservations(branch.getAcceptsReservations())
                 .averageRating(branch.getAverageRating())
                 .reviewCount(branch.getReviewCount())
                 .build();

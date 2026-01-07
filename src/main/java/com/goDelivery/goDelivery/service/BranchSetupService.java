@@ -30,8 +30,6 @@ public class BranchSetupService {
     private final MenuItemRepository menuItemRepository;
     private final BranchUsersRepository branchUsersRepository;
     
-    private final String UPLOAD_DIR = "uploads/branch-setup/";
-
     @Transactional
     public BranchesDTO completeBranchSetup(Long branchId, BranchSetupDTO setupDTO) {
         // Get current authenticated user

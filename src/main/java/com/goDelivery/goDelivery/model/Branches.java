@@ -102,29 +102,6 @@ public class Branches {
     @Column(name = "delivery_fee")
     private Float deliveryFee;
     
-    // Social media
-    @Column(name = "facebook_url")
-    private String facebookUrl;
-    
-    @Column(name = "instagram_url")
-    private String instagramUrl;
-    
-    @Column(name = "twitter_url")
-    private String twitterUrl;
-    
-    // Features
-    @Column(name = "has_parking")
-    private Boolean hasParking;
-    
-    @Column(name = "has_wifi")
-    private Boolean hasWifi;
-    
-    @Column(name = "has_outdoor_seating")
-    private Boolean hasOutdoorSeating;
-    
-    @Column(name = "accepts_reservations")
-    private Boolean acceptsReservations;
-    
     // Ratings
     @Column(name = "average_rating")
     @Builder.Default

@@ -29,7 +29,7 @@ public class BranchDelegationService {
 
     private final RestaurantService restaurantService;
     private final OrderService orderService;
-    private final BranchesService branchService;
+    private final BranchService branchService;
     private final BranchUserService branchUserService;
     private final BranchesRepository branchesRepository;
     private final MenuItemRepository menuItemRepository;

@@ -135,8 +135,11 @@ public class SecurityConfig {
                         "/api/restaurants/deleteRestaurant/**",
                         "/api/v1/disbursements/restaurant/summary",
                         "/api/v1/disbursements/restaurant/transactions",
-                        "/api/v1/branches/**",
-                        "/api/v1/branch-users/**",
+                        "/api/v1/branches/create/**",
+                        "/api/v1/branches/update/**",
+                        "/api/v1/branches/restaurant/**",
+                        "/api/v1/branches/*/activate",
+                        "/api/v1/branches/*/deactivate",
                         "/api/v1/branch-registration/**",
                         "/api/v1/branches/{branchId}/menu/**",
                         "/api/v1/branches/{branchId}/users/**",
@@ -148,9 +151,10 @@ public class SecurityConfig {
                         "/api/v1/branches/my-branches/**",
                         "/api/v1/branches/getBranches/**",
                         "/api/v1/branches/updateBranch/**",
-                        "/api/v1/branches/{branchId}/menu/**",
-                        "/api/v1/branches/{branchId}/orders/**",
-                        "/api/v1/branches/{branchId}/settings/**",
+                        "/api/v1/branches/*/menu/**",
+                        "/api/v1/branches/*/orders/**",
+                        "/api/v1/branches/*/settings/**",
+                        "/api/v1/branches/**",
                         "/api/v1/branch-setup/**",
                         "/api/v1/branch-orders/**"
                     ).hasRole("BRANCH_MANAGER")
@@ -158,7 +162,7 @@ public class SecurityConfig {
                     // Shared endpoints
                     .requestMatchers(
                         "/api/orders/**"
-                    ).hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER", "BRANCH_MANAGER")
+                    ).hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER", "BRANCH_MANAGER", "SUPER_ADMIN")
                     
                     // Biker endpoints
                     .requestMatchers(
