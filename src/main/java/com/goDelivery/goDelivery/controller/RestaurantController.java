@@ -289,8 +289,7 @@ public class RestaurantController {
             @PathVariable Long restaurantId,
             @RequestParam(value = "commercialRegistrationCertificate", required = false) MultipartFile commercialRegistrationCertificate,
             @RequestParam(value = "taxIdentificationNumber", required = false) String taxIdentificationNumber,
-            @RequestParam(value = "taxIdentificationDocument", required = false) MultipartFile taxIdentificationDocument,
-            @RequestParam(value = "businessOperatingLicense", required = false) MultipartFile businessOperatingLicense) {
+            @RequestParam(value = "taxIdentificationDocument", required = false) MultipartFile taxIdentificationDocument) {
         try {
             Map<String, String> documentUrls = new HashMap<>();
             

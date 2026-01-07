@@ -32,7 +32,6 @@ public class RestaurantReviewDTO {
     private String commercialRegistrationCertificateUrl;
     private String taxIdentificationNumber;
     private String taxIdentificationDocumentUrl;
-    private String businessOperatingLicenseUrl;
     
     // Approval Information
     private Boolean isApproved;
@@ -49,7 +48,6 @@ public class RestaurantReviewDTO {
     public boolean hasAllDocuments() {
         return commercialRegistrationCertificateUrl != null &&
                taxIdentificationDocumentUrl != null &&
-               businessOperatingLicenseUrl != null &&
                taxIdentificationNumber != null;
     }
     
@@ -58,7 +56,6 @@ public class RestaurantReviewDTO {
         int count = 0;
         if (commercialRegistrationCertificateUrl != null) count++;
         if (taxIdentificationDocumentUrl != null) count++;
-        if (businessOperatingLicenseUrl != null) count++;
         return count;
     }
 }
