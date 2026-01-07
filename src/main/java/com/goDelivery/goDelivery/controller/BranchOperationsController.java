@@ -25,7 +25,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/branches/{branchId}")
+@RequestMapping("/api/v1/branches/{branchId}/operations")
 @RequiredArgsConstructor
 @Tag(name = "Branch Operations", description = "Branch-level operations for restaurant and branch managers")
 @CrossOrigin("*")
