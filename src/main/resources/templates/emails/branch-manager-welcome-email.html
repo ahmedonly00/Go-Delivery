@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to MozFood - Your Branch Manager Account is Ready!</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { max-width: 200px; margin-bottom: 20px; }
+        .content { background-color: #f9f9f9; padding: 25px; border-radius: 5px; }
+        .button {
+            display: inline-block; 
+            padding: 12px 24px; 
+            background-color: #4CAF50; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .credentials-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .credentials-box strong {
+            color: #856404;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 20px 0;
+            border-radius: 3px;
+        }
+        .footer { margin-top: 30px; font-size: 12px; color: #777; text-align: center; }
+        .steps { margin: 20px 0; padding-left: 20px; }
+        .steps li { margin-bottom: 10px; }
+        .branch-info {
+            background-color: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .branch-info strong {
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome to MozFood!</h1>
+        <p>Your Branch Manager Account is Ready</p>
+    </div>
+    
+    <div class="content">
+        <p>Hello <span th:text="${name}">Branch Manager</span>,</p>
+        
+        <p>Congratulations! You have been appointed as the Branch Manager for <strong th:text="${branchName}">Branch Name</strong> at <strong th:text="${restaurantName}">Restaurant Name</strong> on the MozFood platform.</p>
+        
+        <div class="branch-info">
+            <p><strong>Your Branch:</strong> <span th:text="${branchName}">Branch Name</span></p>
+            <p><strong>Restaurant:</strong> <span th:text="${restaurantName}">Restaurant Name</span></p>
+            <p><strong>Branch Status:</strong> 
+                <span th:if="${isAutoApproved}" style="color: #4CAF50; font-weight: bold;">✓ AUTO-APPROVED</span>
+                <span th:unless="${isAutoApproved}" style="color: #ff9800; font-weight: bold;">⏳ PENDING APPROVAL</span>
+            </p>
+        </div>
+        
+        <div th:if="${isAutoApproved}" class="credentials-box" style="background-color: #e8f5e9; border-color: #4caf50;">
+            <p style="color: #2e7d32; font-weight: bold;">🎉 Good News! Your branch is automatically approved and ready to use!</p>
+            <p>You can start managing your branch immediately after login.</p>
+        </div>
+        
+        <div th:unless="${isAutoApproved}" class="credentials-box" style="background-color: #fff3cd; border-color: #ffc107;">
+            <p style="color: #856404; font-weight: bold;">⏳ Your branch is pending approval</p>
+            <p>You'll receive another email once your branch is approved by the restaurant administrator.</p>
+        </div>
+        
+        <h3>Your Login Credentials:</h3>
+        <div class="credentials-box">
+            <p><strong>Email:</strong> <span th:text="${#strings.substring(managerEmail, 0, 3)} + '***' + ${#strings.substring(managerEmail, #strings.indexOf(managerEmail, '@'))}">email@example.com</span></p>
+            <p><strong>Temporary Password:</strong> <code th:text="${temporaryPassword}">temp-password</code></p>
+        </div>
+        
+        <p>Use your registered email address and the temporary password above to login to your branch manager dashboard.</p>
+        
+        <div class="warning">
+            <strong>⚠️ Important Security Notice:</strong><br>
+            Please change your password immediately after your first login for security purposes.
+        </div>
+        
+        <h3>Your Responsibilities as Branch Manager:</h3>
+        <ul class="steps">
+            <li><strong>Manage Daily Operations</strong> - Oversee branch activities and staff</li>
+            <li><strong>Process Orders</strong> - Handle customer orders and coordinate deliveries</li>
+            <li><strong>Menu Management</strong> - Update menu items, prices, and availability</li>
+            <li><strong>Staff Coordination</strong> - Manage branch employees and schedules</li>
+            <li><strong>Customer Service</strong> - Ensure excellent customer experience</li>
+            <li><strong>Inventory Control</strong> - Monitor stock levels and supplies</li>
+        </ul>
+        
+        <h3>Getting Started:</h3>
+        <ol class="steps">
+            <li><strong>Login to Your Account</strong> - Use the credentials provided above</li>
+            <li><strong>Change Your Password</strong> - Set a secure password for your account</li>
+            <li><strong>Complete Your Profile</strong> - Update your personal information</li>
+            <li><strong>Set Up Operating Hours</strong> - Configure your branch's working hours</li>
+            <li><strong>Configure Delivery Settings</strong> - Set delivery radius and fees</li>
+            <li><strong>Add Menu Items</strong> - Populate your branch menu with items</li>
+            <li><strong>Start Managing!</strong> - Begin handling orders and operations</li>
+        </ol>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a th:href="${loginUrl}" class="button">Login to Your Branch Dashboard</a>
+        </div>
+        
+        <p>If you have any questions or need assistance, please contact your restaurant administrator or our support team at <a href="mailto:support@mozfood.com">support@mozfood.com</a> or call us at +250 (782) 242-930.</p>
+        
+        <p>We're thrilled to have you as part of the <strong th:text="${restaurantName}">restaurant</strong> team!</p>
+        
+        <p>Best regards,<br>The MozFood Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 MozFood. All rights reserved.</p>
+        <p>You're receiving this email because a branch manager account was created for you on MozFood.</p>
+        <p><a href="https://mozfood.com/privacy">Privacy Policy</a> | <a href="https://mozfood.com/terms">Terms of Service</a></p>
+    </div>
+</body>
+</html>

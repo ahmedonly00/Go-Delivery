@@ -32,6 +32,20 @@ public class BranchUserService {
     private final RestaurantMapper restaurantMapper;
     private final PasswordEncoder passwordEncoder;
     private final UsersService usersService;
+    
+    @Transactional(readOnly = true)
+    public BranchUserDTO getCurrentUserBranch() {
+        // Get current authenticated user
+        RestaurantUsers currentUser = usersService.getCurrentUser();
+        
+        // Find the branch user
+        BranchUsers branchUser = branchUsersRepository.findByEmail(currentUser.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Branch user not found"));
+        
+        // Convert to DTO
+        BranchUserDTO dto = restaurantMapper.toBranchUserDTO(branchUser);
+        return dto;
+    }
 
     @Transactional
     public BranchUserDTO createBranchUser(Long branchId, BranchUserDTO branchUserDTO) {

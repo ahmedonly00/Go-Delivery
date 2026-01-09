@@ -20,6 +20,8 @@ public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Long
     // Branch support
     List<MenuCategory> findByBranch_BranchId(Long branchId);
     boolean existsByBranch_BranchIdAndCategoryName(Long branchId, String categoryName);
+    long countByBranch_BranchId(Long branchId);
+    List<MenuCategory> findByBranch_BranchIdAndCategoryNameContainingIgnoreCase(Long branchId, String categoryName);
     
     default List<MenuCategory> findByRestaurantId(Long restaurantId) {
         Restaurant restaurant = new Restaurant();

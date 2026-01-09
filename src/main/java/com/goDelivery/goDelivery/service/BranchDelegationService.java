@@ -229,9 +229,6 @@ public class BranchDelegationService {
         if (branchDTO.getPhoneNumber() != null) {
             existingBranch.setPhoneNumber(branchDTO.getPhoneNumber());
         }
-        if (branchDTO.getOperatingHours() != null) {
-            existingBranch.setOperatingHours(branchDTO.getOperatingHours());
-        }
         if (branchDTO.getDescription() != null) {
             existingBranch.setDescription(branchDTO.getDescription());
         }
@@ -266,9 +263,6 @@ public class BranchDelegationService {
         }
         if (update.getPhoneNumber() != null) {
             existing.setPhoneNumber(update.getPhoneNumber());
-        }
-        if (update.getOperatingHours() != null) {
-            existing.setOperatingHours(update.getOperatingHours());
         }
         if (update.getDescription() != null) {
             existing.setDescription(update.getDescription());

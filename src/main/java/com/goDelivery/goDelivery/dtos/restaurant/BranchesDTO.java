@@ -1,6 +1,8 @@
 package com.goDelivery.goDelivery.dtos.restaurant;
 
 import com.goDelivery.goDelivery.Enum.ApprovalStatus;
+import com.goDelivery.goDelivery.Enum.BranchSetupStatus;
+import com.goDelivery.goDelivery.Enum.DeliveryType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +24,9 @@ public class BranchesDTO {
     private String email;
     private String website;
     private String operatingHours;
+    private BranchSetupStatus setupStatus;
+    private DeliveryType deliveryType;
+    private Integer averagePreparationTime;
     private boolean isActive;
     private String logoUrl;
     private LocalDate createdAt;
@@ -39,7 +44,7 @@ public class BranchesDTO {
     
     // Additional fields for comprehensive branch info
     private Boolean deliveryAvailable;
-    private Float deliveryRadius;
+    private Double deliveryRadius;
     private Float minimumOrderAmount;
     private Float deliveryFee;
     private Double averageRating;

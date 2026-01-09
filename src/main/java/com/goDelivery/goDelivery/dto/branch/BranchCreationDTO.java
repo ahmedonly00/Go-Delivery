@@ -66,7 +66,7 @@ public class BranchCreationDTO {
     
     // Delivery settings
     private Boolean deliveryAvailable = false;
-    private Float deliveryRadius; // in km
+    private Double deliveryRadius; // in km
     private Float minimumOrderAmount;
     private Float deliveryFee;
     

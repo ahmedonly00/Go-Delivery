@@ -28,7 +28,11 @@ public class BranchSetupDTO {
     
     private String contactEmail;
     
-    private String deliveryRadius; // in km
+    // Delivery settings
+    private String deliveryType; // SYSTEM_DELIVERY, SELF_DELIVERY
+    private Double deliveryRadius; // in km
+    private Float minimumOrderAmount;
+    private Float deliveryFee;
     
     private String specialInstructions;
     

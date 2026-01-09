@@ -63,4 +63,8 @@ public class OperatingHours {
     @OneToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+    
+    @OneToOne
+    @JoinColumn(name = "branch_id")
+    private Branches branch;
 }

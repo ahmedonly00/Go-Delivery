@@ -1,5 +1,6 @@
 package com.goDelivery.goDelivery.service;
 
+import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
 import com.goDelivery.goDelivery.dto.branch.BranchRegistrationDTO;
 import com.goDelivery.goDelivery.dto.auth.BranchUserRegistrationDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
@@ -39,6 +40,7 @@ public class BranchRegistrationService {
     private final PasswordEncoder passwordEncoder;
     private final UsersService usersService;
     private final MenuCategoryService menuCategoryService;
+    private final BranchService branchService;
     
     private final String UPLOAD_DIR = "uploads/branch-docs/";
 
@@ -67,7 +69,7 @@ public class BranchRegistrationService {
         branch.setBusinessDocumentUrl(businessDocUrl);
         branch.setOperatingLicenseUrl(licenseUrl);
         branch.setApprovalStatus(ApprovalStatus.PENDING);
-        branch.setActive(false); // Inactive until approved
+        branch.setIsActive(false); // Inactive until approved
         branch.setDescription(registrationDTO.getDescription());
         
         Branches savedBranch = branchesRepository.save(branch);
@@ -88,12 +90,75 @@ public class BranchRegistrationService {
     }
     
     @Transactional
+    public BranchesDTO registerBranchComprehensive(Long restaurantId, BranchCreationDTO creationDTO,
+                                                  MultipartFile logoFile,
+                                                  MultipartFile[] documentFiles) {
+        log.info("Starting comprehensive branch registration for: {}", creationDTO.getBranchName());
+        
+        // Verify restaurant admin
+        RestaurantUsers restaurantAdmin = usersService.getCurrentUser();
+        if (restaurantAdmin.getRestaurant() == null || 
+            !restaurantAdmin.getRestaurant().getRestaurantId().equals(restaurantId)) {
+            throw new UnauthorizedException("You are not authorized to create branches for this restaurant");
+        }
+        
+        // Check if restaurant is approved, if so, auto-approve the branch
+        boolean autoApprove = restaurantAdmin.getRestaurant().getApprovalStatus() == ApprovalStatus.APPROVED;
+        
+        // Create basic branch using BranchService
+        BranchesDTO branchDTO = branchService.createBranch(restaurantId, creationDTO);
+        Branches branch = branchesRepository.findById(branchDTO.getBranchId())
+                .orElseThrow(() -> new ResourceNotFoundException("Branch not found after creation"));
+        
+        // Update branch with auto-approval status if needed
+        if (autoApprove && branch.getApprovalStatus() != ApprovalStatus.APPROVED) {
+            branch.setApprovalStatus(ApprovalStatus.APPROVED);
+            branch.setIsActive(true);
+            branch.setApprovedBy("System (Restaurant Approved)");
+            branch.setApprovedAt(LocalDate.now());
+            branchesRepository.save(branch);
+        }
+        
+        // Upload logo if provided
+        if (logoFile != null && !logoFile.isEmpty()) {
+            String logoUrl = uploadDocument(logoFile, "logo");
+            branch.setLogoUrl(logoUrl);
+        }
+        
+        // Upload documents if provided
+        if (documentFiles != null && documentFiles.length > 0) {
+            for (int i = 0; i < documentFiles.length; i++) {
+                String docUrl = uploadDocument(documentFiles[i], "document_" + i);
+                if (i == 0) {
+                    branch.setBusinessDocumentUrl(docUrl);
+                } else if (i == 1) {
+                    branch.setOperatingLicenseUrl(docUrl);
+                }
+            }
+        }
+        
+        // Create initial menu categories if provided
+        if (creationDTO.getInitialMenuCategories() != null && 
+            !creationDTO.getInitialMenuCategories().isEmpty()) {
+            createInitialMenuCategories(branch, creationDTO.getInitialMenuCategories());
+        }
+        
+        // Save all changes
+        Branches savedBranch = branchesRepository.save(branch);
+        
+        log.info("Comprehensive branch registration completed for: {} (ID: {})", 
+                savedBranch.getBranchName(), savedBranch.getBranchId());
+        
+        return restaurantMapper.toBranchDTO(savedBranch);
+    }
+    
+    @Transactional
     public BranchesDTO approveBranch(Long branchId, String approvedBy) {
         Branches branch = branchesRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
         
         branch.setApprovalStatus(ApprovalStatus.APPROVED);
-        branch.setActive(true);
+        branch.setIsActive(true);
         branch.setApprovedBy(approvedBy);
         branch.setApprovedAt(LocalDate.now());
         

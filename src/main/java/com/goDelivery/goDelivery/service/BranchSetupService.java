@@ -69,7 +69,7 @@ public class BranchSetupService {
         
         // Activate the branch if it was approved
         if (branch.getApprovalStatus() == ApprovalStatus.APPROVED) {
-            branch.setActive(true);
+            branch.setIsActive(true);
         }
         
         Branches savedBranch = branchesRepository.save(branch);
@@ -105,7 +105,7 @@ public class BranchSetupService {
         setupDTO.setLatitude(branch.getLatitude());
         setupDTO.setLongitude(branch.getLongitude());
         setupDTO.setPhoneNumber(branch.getPhoneNumber());
-        setupDTO.setOperatingHours(branch.getOperatingHours());
+        setupDTO.setOperatingHours(branch.getOperatingHours() != null ? branch.getOperatingHours().toString() : null);
         setupDTO.setDescription(branch.getDescription());
         
         return setupDTO;
@@ -138,7 +138,6 @@ public class BranchSetupService {
         branch.setLatitude(setupDTO.getLatitude());
         branch.setLongitude(setupDTO.getLongitude());
         branch.setPhoneNumber(setupDTO.getPhoneNumber());
-        branch.setOperatingHours(setupDTO.getOperatingHours());
         branch.setDescription(setupDTO.getDescription());
         branch.setUpdatedAt(LocalDate.now());
     }

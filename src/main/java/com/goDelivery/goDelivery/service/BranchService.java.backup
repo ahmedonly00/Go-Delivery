@@ -3,7 +3,6 @@ package com.goDelivery.goDelivery.service;
 import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.Enum.ApprovalStatus;
-import com.goDelivery.goDelivery.Enum.BranchSetupStatus;
 import com.goDelivery.goDelivery.Enum.Roles;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.exception.UnauthorizedException;
@@ -11,7 +10,6 @@ import com.goDelivery.goDelivery.exception.ValidationException;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.repository.*;
-import com.goDelivery.goDelivery.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.commons.util.StringUtils;
@@ -27,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -41,7 +40,6 @@ public class BranchService {
     private final RestaurantMapper restaurantMapper;
     private final UsersRepository usersRepository;
     private final UsersService usersService;
-    private final EmailService emailService;
     private final MenuCategoryRepository menuCategoryRepository;
     private final BranchUsersRepository branchUsersRepository;
     private final RestaurantUsersRepository restaurantUsersRepository;
@@ -75,7 +73,7 @@ public class BranchService {
         
         Branches branch = restaurantMapper.toBranch(branchDTO);
         branch.setRestaurant(restaurant);
-        branch.setIsActive(true); // New branches are active by default
+        branch.setActive(true); // New branches are active by default
         
         Branches savedBranch = branchesRepository.save(branch);
         log.info("Created new branch '{}' for restaurant '{}' by user '{}'", 
@@ -121,7 +119,8 @@ public class BranchService {
         existingBranch.setAddress(branchDTO.getAddress());
         existingBranch.setLatitude(branchDTO.getLatitude());
         existingBranch.setEmail(branchDTO.getEmail());
-        existingBranch.setIsActive(branchDTO.isActive());
+        existingBranch.setWebsite(branchDTO.getWebsite());
+        existingBranch.setActive(branchDTO.isActive());
         existingBranch.setUpdatedAt(LocalDate.now());
 
         Branches updatedBranch = branchesRepository.save(existingBranch);
@@ -146,7 +145,9 @@ public class BranchService {
     // ==================== Comprehensive Branch Creation ====================
 
     @Transactional
-    public BranchesDTO createBranch(Long restaurantId, BranchCreationDTO creationDTO) {
+    public BranchesDTO createBranch(Long restaurantId, BranchCreationDTO creationDTO,
+                                   MultipartFile logoFile,
+                                   MultipartFile[] documentFiles) {
         log.info("Creating new branch '{}' for restaurant {}", creationDTO.getBranchName(), restaurantId);
         
         // Verify restaurant admin
@@ -162,47 +163,33 @@ public class BranchService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
         
-        // Check if restaurant is approved, if so, auto-approve the branch
-        boolean autoApprove = restaurant.getApprovalStatus() == ApprovalStatus.APPROVED;
+        // Create branch
+        Branches branch = buildBranchFromDTO(creationDTO, restaurant);
         
-        // Create basic branch
-        Branches branch = Branches.builder()
-                .branchName(creationDTO.getBranchName())
-                .address(creationDTO.getAddress())
-                .latitude(creationDTO.getLatitude())
-                .longitude(creationDTO.getLongitude())
-                .phoneNumber(creationDTO.getPhoneNumber())
-                .email(creationDTO.getEmail())
-                .description(creationDTO.getDescription())
-                .deliveryAvailable(creationDTO.getDeliveryAvailable())
-                .deliveryRadius(creationDTO.getDeliveryRadius())
-                .minimumOrderAmount(creationDTO.getMinimumOrderAmount())
-                .deliveryFee(creationDTO.getDeliveryFee())
-                .approvalStatus(autoApprove ? ApprovalStatus.APPROVED : ApprovalStatus.PENDING)
-                .setupStatus(BranchSetupStatus.ACCOUNT_CREATED)
-                .restaurant(restaurant)
-                .createdAt(LocalDate.now())
-                .updatedAt(LocalDate.now())
-                .build();
+        // Upload logo if provided
+        if (logoFile != null && !logoFile.isEmpty()) {
+            String logoUrl = uploadFile(logoFile, "logo");
+            branch.setLogoUrl(logoUrl);
+        }
         
-        // Set branch active status based on approval
-        branch.setIsActive(autoApprove);
-        
-        // Set approval details if auto-approved
-        if (autoApprove) {
-            branch.setApprovedBy("System (Restaurant Approved)");
-            branch.setApprovedAt(LocalDate.now());
+        // Upload documents if provided
+        if (documentFiles != null && documentFiles.length > 0) {
+            uploadDocuments(branch, documentFiles);
         }
         
         // Save branch
         Branches savedBranch = branchesRepository.save(branch);
         
         // Create branch manager
-        createBranchManager(savedBranch, creationDTO, autoApprove);
+        createBranchManager(savedBranch, creationDTO);
         
-        log.info("Branch created successfully: {} (ID: {}) - Status: {}", 
-                savedBranch.getBranchName(), savedBranch.getBranchId(), 
-                savedBranch.getApprovalStatus());
+        // Create initial menu categories
+        if (creationDTO.getInitialMenuCategories() != null && 
+            !creationDTO.getInitialMenuCategories().isEmpty()) {
+            createInitialMenuCategories(savedBranch, creationDTO.getInitialMenuCategories());
+        }
+        
+        log.info("Branch created successfully: {} (ID: {})", savedBranch.getBranchName(), savedBranch.getBranchId());
         
         return restaurantMapper.toBranchDTO(savedBranch);
     }
@@ -242,7 +229,7 @@ public class BranchService {
         Branches branch = branchesRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
         
-        branch.setIsActive(true);
+        branch.setActive(true);
         Branches savedBranch = branchesRepository.save(branch);
         
         log.info("Branch activated: {}", branchId);
@@ -256,7 +243,7 @@ public class BranchService {
         Branches branch = branchesRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
         
-        branch.setIsActive(false);
+        branch.setActive(false);
         Branches savedBranch = branchesRepository.save(branch);
         
         log.info("Branch deactivated: {}", branchId);
@@ -266,7 +253,7 @@ public class BranchService {
     @Transactional
     public BranchesDTO toggleBranchStatus(Long branchId, boolean isActive) {
         Branches branch = getBranchWithPermissionCheck(branchId);
-        branch.setIsActive(isActive);
+        branch.setActive(isActive);
         Branches updatedBranch = branchesRepository.save(branch);
         log.info("{} branch {}", isActive ? "Activated" : "Deactivated", branchId);
         return restaurantMapper.toBranchDTO(updatedBranch);
@@ -338,6 +325,7 @@ public class BranchService {
                 .longitude(dto.getLongitude())
                 .phoneNumber(dto.getPhoneNumber())
                 .email(dto.getEmail())
+                .website(dto.getWebsite())
                 .description(dto.getDescription())
                 .deliveryAvailable(dto.getDeliveryAvailable())
                 .deliveryRadius(dto.getDeliveryRadius())
@@ -350,7 +338,7 @@ public class BranchService {
                 .updatedAt(LocalDate.now())
                 .build();
         
-        branch.setIsActive(false); // Inactive until approved
+        branch.setActive(false); // Inactive until approved
         return branch;
     }
     
@@ -361,6 +349,7 @@ public class BranchService {
         branch.setLongitude(dto.getLongitude());
         branch.setPhoneNumber(dto.getPhoneNumber());
         branch.setEmail(dto.getEmail());
+        branch.setWebsite(dto.getWebsite());
         branch.setDescription(dto.getDescription());
         branch.setDeliveryAvailable(dto.getDeliveryAvailable());
         branch.setDeliveryRadius(dto.getDeliveryRadius());
@@ -377,9 +366,20 @@ public class BranchService {
         }
         address.append(", ").append(dto.getCity());
         address.append(", ").append(dto.getState());
-        address.append(", ").append(dto.getPostalCode());
-        address.append(", ").append(dto.getCountry());
-        return address.toString();
+        manager.setEmail(dto.getManagerEmail());
+        manager.setPhoneNumber(dto.getManagerPhone());
+        manager.setPassword(hashedPassword);
+        manager.setRole(Roles.BRANCH_MANAGER);
+        manager.setPermissions("FULL_ACCESS");
+        manager.setBranch(branch);
+        manager.setRestaurant(branch.getRestaurant());
+        manager.setSetupComplete(false);
+        manager.setCreatedAt(LocalDate.now());
+        manager.setUpdatedAt(LocalDate.now());
+        
+        branchUsersRepository.save(manager);
+        
+        log.info("Branch manager created: {}", dto.getManagerEmail());
     }
     
     private void createInitialMenuCategories(Branches branch, List<String> categoryNames) {
@@ -506,40 +506,5 @@ public class BranchService {
         if (!branchDTO.getPhoneNumber().matches("^[+]?[0-9]{10,15}$")) {
             throw new ValidationException("Invalid phone number format");
         }
-    }
-    
-    private void createBranchManager(Branches branch, BranchCreationDTO creationDTO, boolean isAutoApproved) {
-        // Create branch manager account
-        BranchUsers manager = new BranchUsers();
-        manager.setFullName(creationDTO.getManagerName());
-        manager.setEmail(creationDTO.getManagerEmail());
-        manager.setPhoneNumber(creationDTO.getManagerPhone());
-        
-        // Hash the password
-        String hashedPassword = passwordEncoder.encode(creationDTO.getManagerPassword());
-        manager.setPassword(hashedPassword);
-        manager.setRole(Roles.BRANCH_MANAGER);
-        manager.setPermissions("FULL_ACCESS");
-        manager.setBranch(branch);
-        manager.setRestaurant(branch.getRestaurant());
-        manager.setSetupComplete(false);
-        manager.setCreatedAt(LocalDate.now());
-        manager.setUpdatedAt(LocalDate.now());
-        
-        branchUsersRepository.save(manager);
-        
-        // Send credentials to branch manager via email
-        emailService.sendBranchManagerCredentials(
-            creationDTO.getManagerEmail(),
-            creationDTO.getManagerName(),
-            branch.getBranchName(),
-            branch.getRestaurant().getRestaurantName(),
-            creationDTO.getManagerPassword(),
-            isAutoApproved
-        );
-        
-        log.info("Branch manager created: {} - Branch status: {}", 
-                creationDTO.getManagerEmail(), 
-                isAutoApproved ? "AUTO-APPROVED" : "PENDING APPROVAL");
     }
 }

@@ -1,5 +1,6 @@
 package com.goDelivery.goDelivery.controller;
 
+import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
 import com.goDelivery.goDelivery.dto.branch.BranchRegistrationDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.service.BranchRegistrationService;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -50,6 +52,28 @@ public class BranchRegistrationController {
         
         BranchesDTO registeredBranch = branchRegistrationService.registerBranch(
                 registrationDTO, businessDocument, operatingLicense);
+        
+        return new ResponseEntity<>(registeredBranch, HttpStatus.CREATED);
+    }
+    
+    @PostMapping("/register-comprehensive/{restaurantId}")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    @Operation(
+        summary = "Register a comprehensive branch",
+        description = "Create a branch with documents, logo, and manager details"
+    )
+    public ResponseEntity<BranchesDTO> registerBranchComprehensive(
+            @PathVariable Long restaurantId,
+            @RequestPart("branchData") @Valid BranchCreationDTO creationDTO,
+            @RequestPart(value = "logo", required = false) MultipartFile logoFile,
+            @RequestPart(value = "documents", required = false) MultipartFile[] documentFiles,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("Registering comprehensive branch for restaurant {} by user {}", 
+                restaurantId, userDetails.getUsername());
+        
+        BranchesDTO registeredBranch = branchRegistrationService.registerBranchComprehensive(
+                restaurantId, creationDTO, logoFile, documentFiles);
         
         return new ResponseEntity<>(registeredBranch, HttpStatus.CREATED);
     }

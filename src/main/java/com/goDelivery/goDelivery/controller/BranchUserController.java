@@ -38,6 +38,19 @@ public class BranchUserController {
     private final BranchUserService branchUserService;
     private final AuthenticationService authenticationService;
 
+    @GetMapping("/my-branch")
+    @PreAuthorize("hasRole('BRANCH_MANAGER')")
+    @Operation(
+        summary = "Get current branch manager's branch",
+        description = "Get the branch information for the currently logged in branch manager"
+    )
+    public ResponseEntity<BranchUserDTO> getMyBranch(@AuthenticationPrincipal UserDetails userDetails) {
+        log.info("Fetching branch for user: {}", userDetails.getUsername());
+        
+        BranchUserDTO branchUser = branchUserService.getCurrentUserBranch();
+        return ResponseEntity.ok(branchUser);
+    }
+
     @PostMapping("/branch/{branchId}")
     @Operation(
         summary = "Create branch user",

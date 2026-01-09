@@ -5,7 +5,6 @@ import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.service.BranchService;
 import com.goDelivery.goDelivery.service.BranchMenuService;
 import com.goDelivery.goDelivery.service.BranchSetupService;
-import com.goDelivery.goDelivery.service.BranchOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,26 +31,22 @@ public class BranchController {
     private final BranchService branchService;
     private final BranchMenuService branchMenuService;
     private final BranchSetupService branchSetupService;
-    private final BranchOrderService branchOrderService;
 
     @PostMapping("/create/{restaurantId}")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     @Operation(
         summary = "Create a new branch",
-        description = "Create a comprehensive branch with all details similar to restaurant creation"
+        description = "Create a basic branch with essential information"
     )
     public ResponseEntity<BranchesDTO> createBranch(
             @Parameter(description = "Restaurant ID") 
             @PathVariable Long restaurantId,
-            @RequestPart("branchData") @Valid BranchCreationDTO creationDTO,
-            @RequestPart(value = "logo", required = false) MultipartFile logoFile,
-            @RequestPart(value = "documents", required = false) MultipartFile[] documentFiles,
+            @RequestBody @Valid BranchCreationDTO creationDTO,
             @AuthenticationPrincipal UserDetails userDetails) {
         
         log.info("Creating new branch for restaurant {} by user {}", restaurantId, userDetails.getUsername());
         
-        BranchesDTO createdBranch = branchService.createBranch(
-                restaurantId, creationDTO, logoFile, documentFiles);
+        BranchesDTO createdBranch = branchService.createBranch(restaurantId, creationDTO);
         
         return ResponseEntity.ok(createdBranch);
     }

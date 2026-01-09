@@ -1,6 +1,8 @@
 package com.goDelivery.goDelivery.model;
 
 import com.goDelivery.goDelivery.Enum.ApprovalStatus;
+import com.goDelivery.goDelivery.Enum.BranchSetupStatus;
+import com.goDelivery.goDelivery.Enum.DeliveryType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -40,15 +43,38 @@ public class Branches {
     
     @Column(name = "email")
     private String email;
-    
-    @Column(name = "website")
-    private String website;
 
-    @Column(name = "operating_hours")
-    private String operatingHours;
+    // Setup status tracking
+    @Enumerated(EnumType.STRING)
+    @Column(name = "setup_status")
+    @Builder.Default
+    private BranchSetupStatus setupStatus = BranchSetupStatus.ACCOUNT_CREATED;
+    
+    // Delivery configuration
+    @Enumerated(EnumType.STRING)
+    @Column(name = "delivery_type", nullable = false)
+    @Builder.Default
+    private DeliveryType deliveryType = DeliveryType.SYSTEM_DELIVERY;
+    
+    @Column(name = "delivery_fee")
+    private Float deliveryFee;
+    
+    @Column(name = "delivery_radius")
+    private Double deliveryRadius;
+    
+    @Column(name = "minimum_order_amount")
+    private Float minimumOrderAmount;
+    
+    @Column(name = "average_preparation_time")
+    private Integer averagePreparationTime;
+    
+    @Column(name = "delivery_available")
+    @Builder.Default
+    private Boolean deliveryAvailable = false;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    @Builder.Default
+    private Boolean isActive = false;
     
     @Column(name = "logo_url")
     private String logoUrl;
@@ -64,6 +90,7 @@ public class Branches {
     @Builder.Default
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
     
+    // Business documents
     @Column(name = "business_document_url")
     private String businessDocumentUrl;
     
@@ -87,20 +114,6 @@ public class Branches {
     
     @Column(name = "rejection_reason", length = 500)
     private String rejectionReason;
-    
-    // Delivery settings
-    @Column(name = "delivery_available")
-    @Builder.Default
-    private Boolean deliveryAvailable = false;
-    
-    @Column(name = "delivery_radius")
-    private Float deliveryRadius;
-    
-    @Column(name = "minimum_order_amount")
-    private Float minimumOrderAmount;
-    
-    @Column(name = "delivery_fee")
-    private Float deliveryFee;
     
     // Ratings
     @Column(name = "average_rating")
@@ -127,7 +140,17 @@ public class Branches {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Order> orders;
+    
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Review> reviews;
+    
+    @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<BranchUsers> branchUsers = new ArrayList<>();
+    
+    @OneToOne(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private OperatingHours operatingHours;
 
 }

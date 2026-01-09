@@ -329,4 +329,36 @@ public class EmailService {
             throw new EmailSendingException("Failed to send restaurant under review email", e);
         }
     }
+    
+    @Async
+    public void sendBranchManagerCredentials(String managerEmail, String managerName, 
+                                           String branchName, String restaurantName, 
+                                           String temporaryPassword, boolean isAutoApproved) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom("MozFood <" + fromEmail + ">");
+            helper.setTo(managerEmail);
+            helper.setSubject("Welcome to MozFood - Your Branch Manager Account is Ready!");
+            
+            Context context = new Context();
+            context.setVariable("name", managerName);
+            context.setVariable("branchName", branchName);
+            context.setVariable("restaurantName", restaurantName);
+            context.setVariable("temporaryPassword", temporaryPassword);
+            context.setVariable("loginUrl", frontendUrl + "/Login");
+            context.setVariable("isAutoApproved", isAutoApproved);
+            
+            String htmlContent = templateEngine.process("branch-manager-welcome-email", context);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            log.info("Branch manager credentials email sent to: {}", managerEmail);
+            
+        } catch (MessagingException e) {
+            log.error("Failed to send branch manager credentials email to {}: {}", managerEmail, e.getMessage());
+            throw new EmailSendingException("Failed to send branch manager credentials email", e);
+        }
+    }
 }
