@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -11,6 +12,7 @@ import com.goDelivery.goDelivery.config.AsyncConfig;
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
+@EntityScan(basePackages = "com.goDelivery.goDelivery.model")
 @ComponentScan(basePackages = {
     "com.goDelivery.goDelivery",
     "com.goDelivery.goDelivery.config",
