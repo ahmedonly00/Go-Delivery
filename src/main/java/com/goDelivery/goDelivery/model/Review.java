@@ -69,6 +69,11 @@ public class Review {
     @JoinColumn(name = "biker_id")
     private Bikers bikers;
 
+    // Many Reviews for One Branch
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id", nullable = false)
+    private Branches branch;
+
     // One Review can get many Responses
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReviewResponse> responses;
