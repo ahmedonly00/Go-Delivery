@@ -12,7 +12,7 @@ import com.goDelivery.goDelivery.config.AsyncConfig;
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
-@EntityScan(basePackages = "com.goDelivery.goDelivery.model")
+@EntityScan(basePackages = {"com.goDelivery.goDelivery.model", "com.goDelivery.goDelivery.dtos.auth"})
 @ComponentScan(basePackages = {
     "com.goDelivery.goDelivery",
     "com.goDelivery.goDelivery.config",
