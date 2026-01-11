@@ -3,11 +3,11 @@ package com.goDelivery.goDelivery.config;
 import com.goDelivery.goDelivery.Enum.Roles;
 import com.goDelivery.goDelivery.model.SuperAdmin;
 import com.goDelivery.goDelivery.repository.SuperAdminRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,6 @@ import java.time.LocalDate;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@DependsOn("entityManagerFactory")
 public class SuperAdminInitializer {
 
     private final SuperAdminRepository superAdminRepository;
@@ -28,8 +27,9 @@ public class SuperAdminInitializer {
     @Value("${app.superadmin.password}")
     private String defaultAdminPassword;
 
-    @PostConstruct
-    public void init() {
+    @Bean
+    public ApplicationRunner initSuperAdmin() {
+        return args -> {
         // Check if any super admin exists
         if (superAdminRepository.count() == 0) {
             // Create default super admin
@@ -44,7 +44,10 @@ public class SuperAdminInitializer {
                     .build();
 
             superAdminRepository.save(superAdmin);
-            log.info("Default super admin created with email: {}", defaultAdminEmail);
+            log.info("Default super admin created: {}", defaultAdminEmail);
+        } else {
+            log.info("Super admin already exists");
         }
+        };
     }
 }

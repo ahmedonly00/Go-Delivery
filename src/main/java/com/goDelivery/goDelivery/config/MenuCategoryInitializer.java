@@ -4,11 +4,11 @@ import com.goDelivery.goDelivery.model.MenuCategory;
 import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +16,6 @@ import java.util.List;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-@DependsOn("entityManagerFactory")
 public class MenuCategoryInitializer {
     
     static {
@@ -26,10 +25,11 @@ public class MenuCategoryInitializer {
     private final MenuCategoryRepository menuCategoryRepository;
     private final RestaurantRepository restaurantRepository;
 
-    @PostConstruct
-    public void init() {
-        log.info("MenuCategoryInitializer.init() called");
-        if (menuCategoryRepository.count() == 0) {
+    @Bean
+    public ApplicationRunner initMenuCategories() {
+        return args -> {
+            log.info("MenuCategoryInitializer.init() called");
+            if (menuCategoryRepository.count() == 0) {
             log.info("Initializing default menu categories...");
             
             // Get all active restaurants to create default categories for each
@@ -58,6 +58,7 @@ public class MenuCategoryInitializer {
         } else {
             log.info("Menu categories already initialized");
         }
+        };
     }
 
     private int createDefaultCategories(Restaurant restaurant) {
