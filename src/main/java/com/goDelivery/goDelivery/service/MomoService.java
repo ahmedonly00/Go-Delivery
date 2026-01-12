@@ -651,9 +651,16 @@ public class MomoService {
      * Handle transaction updates and trigger related business logic
      */
     private void handleTransactionUpdate(MomoTransaction transaction) {
+        log.info("=== HANDLE TRANSACTION UPDATE CALLED ===");
         log.info("Handling transaction update for {} with status {}", 
                 transaction.getReferenceId(), 
                 transaction.getStatus());
+        
+        if (transaction.getOrder() != null) {
+            log.info("Transaction belongs to order ID: {}", transaction.getOrder().getOrderId());
+        } else {
+            log.warn("Transaction {} has no associated order!", transaction.getReferenceId());
+        }
         
         try {
             // 1. Update related payment status if payment exists
@@ -693,11 +700,17 @@ public class MomoService {
                         
                         // NEW: Trigger automatic disbursement for all paid orders
                         if (autoDisbursementEnabled) {
+                            log.info("=== AUTO-DISBURSEMENT CHECK ===");
                             log.info("Auto-disbursement enabled for order {}, triggering disbursement", 
                                     order.getOrderId());
+                            log.info("Order payment status: {}", order.getPaymentStatus());
+                            log.info("Order total amount: {}", order.getTotalAmount());
+                            
                             try {
-                                disbursementService.processOrderDisbursement(order);
+                                log.info("Calling disbursementService.processOrderDisbursement...");
+                                CollectionDisbursementResponse response = disbursementService.processOrderDisbursement(order);
                                 log.info("Automatic disbursement initiated for order {}", order.getOrderId());
+                                log.info("Disbursement reference ID: {}", response.getReferenceId());
                             } catch (Exception e) {
                                 log.error("Failed to initiate automatic disbursement for order {}: {}", 
                                         order.getOrderId(), e.getMessage(), e);
