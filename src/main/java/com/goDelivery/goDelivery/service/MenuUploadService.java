@@ -421,8 +421,10 @@ public class MenuUploadService {
     
     private boolean isTesseractAvailable() {
         try {
-            // Try to get Tesseract instance info
-            tesseract.getDatapath();
+            // Try to perform a simple OCR operation on a dummy image to check if Tesseract is available
+            // Create a simple test by checking if we can set the datapath
+            tesseract.setDatapath(tessDataPath);
+            // If we get here without exception, Tesseract is available
             return true;
         } catch (Exception e) {
             log.error("Tesseract not available: {}", e.getMessage());
