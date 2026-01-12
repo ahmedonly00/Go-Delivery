@@ -13,7 +13,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/file-upload/restaurants")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://delivery.ivas.rw", "https://delivery.apis.ivas.rw"}, 
+             allowedHeaders = "*", 
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+             allowCredentials = "true")
 @Tag(name = "File Upload", description = "File upload management")
 public class FileUploadController {
 

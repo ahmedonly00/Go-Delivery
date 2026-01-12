@@ -272,20 +272,27 @@ public class MenuUploadService {
     private List<MenuItemRequest> processImageFile(MultipartFile file, Long categoryId, Long restaurantId) throws IOException, TesseractException {
         List<MenuItemRequest> items = new ArrayList<>();
         
-        // Convert MultipartFile to File
-        Path tempFile = Files.createTempFile("img-", "." + getFileExtension(file.getOriginalFilename()));
         try {
-            Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
-            
-            // Set the path to the tessdata directory and configure Tesseract
-            tesseract.setDatapath(tessDataPath);
-            tesseract.setPageSegMode(4); // Assume a single column of text
-            tesseract.setVariable("preserve_interword_spaces", "1");
-            
-            // Perform OCR on the image
-            log.info("Starting OCR processing...");
-            String result = tesseract.doOCR(tempFile.toFile());
-            log.debug("OCR Result:\n" + result);
+            // Convert MultipartFile to File
+            Path tempFile = Files.createTempFile("img-", "." + getFileExtension(file.getOriginalFilename()));
+            try {
+                Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+                
+                // Check if Tesseract is available
+                if (!isTesseractAvailable()) {
+                    log.error("Tesseract OCR is not available on this server. Please install tesseract-ocr.");
+                    throw new RuntimeException("OCR service is not available. Please upload PDF or Excel files instead.");
+                }
+                
+                // Set the path to the tessdata directory and configure Tesseract
+                tesseract.setDatapath(tessDataPath);
+                tesseract.setPageSegMode(4); // Assume a single column of text
+                tesseract.setVariable("preserve_interword_spaces", "1");
+                
+                // Perform OCR on the image
+                log.info("Starting OCR processing...");
+                String result = tesseract.doOCR(tempFile.toFile());
+                log.debug("OCR Result:\n" + result);
             
             // Parse the OCR result
             String[] lines = result.split("\\r?\\n");
@@ -411,5 +418,16 @@ public class MenuUploadService {
             return "";
         }
         return filename.substring(filename.lastIndexOf(".") + 1);
+    }
+    
+    private boolean isTesseractAvailable() {
+        try {
+            // Try to get Tesseract instance info
+            tesseract.getDatapath();
+            return true;
+        } catch (Exception e) {
+            log.error("Tesseract not available: {}", e.getMessage());
+            return false;
+        }
     }
 }
