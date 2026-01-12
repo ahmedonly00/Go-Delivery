@@ -64,9 +64,6 @@ public class MomoService {
     private OrderRepository orderRepository;
     
     @Autowired
-    private MomoHealthCheckService momoHealthCheckService;
-    
-    @Autowired
     private OrderConfig orderConfig;
     
     @Lazy
@@ -80,11 +77,6 @@ public class MomoService {
      * Request payment from a customer's mobile money account
      */
     public MomoPaymentResponse requestPayment(MomoPaymentRequest request) {
-        // Check if MoMo service is available before proceeding
-        if (!momoHealthCheckService.isMomoServiceAvailable()) {
-            throw new RuntimeException("Payment service is temporarily unavailable. Please try again later or use an alternative payment method.");
-        }
-        
         log.info("Received MoMo payment request for external ID: {}", request.getExternalId());
         
         // Check if MoMo is configured

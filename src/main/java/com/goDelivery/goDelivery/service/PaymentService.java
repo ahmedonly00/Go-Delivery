@@ -543,7 +543,24 @@ public class PaymentService {
                 
                 throw new RuntimeException(errorMsg);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            // Check if it's a service unavailable error
+            if (e.getMessage() != null && e.getMessage().contains("temporarily unavailable")) {
+                log.warn("MoMo service is unavailable, suggesting alternative payment methods");
+                
+                // Don't fail the payment, just mark it as pending
+                payment.setPaymentStatus(PaymentStatus.PENDING);
+                payment.setGateWayResponse("MoMo service temporarily unavailable. Please try again later or use cash payment.");
+                payment = paymentRepository.save(payment);
+                
+                // Return response with alternative options
+                PaymentResponse response = paymentMapper.toDto(payment);
+                response.setMessage("MoMo service is temporarily unavailable. Please try again later or choose cash payment on delivery.");
+                response.setPaymentStatus(PaymentStatus.PENDING);
+                return response;
+            }
+            
+            // For other errors, fail the payment
             log.error("Error processing MoMo payment: {}", e.getMessage(), e);
             payment.setPaymentStatus(PaymentStatus.FAILED);
             payment.setGateWayResponse("Error processing MoMo payment: " + e.getMessage());
