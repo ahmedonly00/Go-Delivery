@@ -52,7 +52,7 @@ public class DebugController {
             log.info("Order found: {}", order.getOrderNumber());
             log.info("Order status: {}", order.getOrderStatus());
             log.info("Payment status: {}", order.getPaymentStatus());
-            log.info("Total amount: {}", order.getTotalAmount());
+            log.info("Total amount: {}", order.getFinalAmount());
             
             if (order.getPaymentStatus() != com.goDelivery.goDelivery.Enum.PaymentStatus.PAID) {
                 response.put("error", "Order is not paid. Current status: " + order.getPaymentStatus());
@@ -89,17 +89,15 @@ public class DebugController {
             response.put("orderNumber", order.getOrderNumber());
             response.put("orderStatus", order.getOrderStatus());
             response.put("paymentStatus", order.getPaymentStatus());
-            response.put("totalAmount", order.getTotalAmount());
+            response.put("totalAmount", order.getFinalAmount());
             response.put("updatedAt", order.getUpdatedAt());
             
             // Get restaurant details
-            if (order.getRestaurantOrders() != null) {
-                response.put("restaurantCount", order.getRestaurantOrders().size());
-                order.getRestaurantOrders().forEach(ro -> {
-                    log.info("Restaurant: {}, Phone: {}", 
-                            ro.getRestaurant().getRestaurantName(), 
-                            ro.getRestaurant().getPhoneNumber());
-                });
+            if (order.getOrderItems() != null) {
+                response.put("orderItemCount", order.getOrderItems().size());
+                log.info("Restaurant: {}, Phone: {}", 
+                        order.getRestaurant().getRestaurantName(), 
+                        order.getRestaurant().getPhoneNumber());
             }
             
         } catch (Exception e) {

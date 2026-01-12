@@ -704,7 +704,7 @@ public class MomoService {
                             log.info("Auto-disbursement enabled for order {}, triggering disbursement", 
                                     order.getOrderId());
                             log.info("Order payment status: {}", order.getPaymentStatus());
-                            log.info("Order total amount: {}", order.getTotalAmount());
+                            log.info("Order total amount: {}", order.getFinalAmount());
                             
                             try {
                                 log.info("Calling disbursementService.processOrderDisbursement...");

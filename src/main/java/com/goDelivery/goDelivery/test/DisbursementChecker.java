@@ -26,7 +26,7 @@ public class DisbursementChecker implements CommandLineRunner {
         log.info("=== Checking Recent Orders and Disbursements ===");
         
         // Get recent paid orders
-        List<Order> recentPaidOrders = orderRepository.findTop10ByOrderByUpdatedAtDesc();
+        List<Order> recentPaidOrders = orderRepository.findAll();
         
         for (Order order : recentPaidOrders) {
             log.info("Order ID: {}, Status: {}, Payment Status: {}, Updated: {}", 
