@@ -205,7 +205,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://delivery.ivas.rw", "https://delivery.ivas.rw", "http://localhost:3005","http://127.0.0.1:*", "http://localhost:58140"));
+        configuration.setAllowedOriginPatterns(List.of(
+            "http://delivery.ivas.rw", 
+            "https://delivery.ivas.rw", 
+            "http://localhost:3005",
+            "http://127.0.0.1:*", 
+            "http://localhost:58140",
+            "https://delivery.apis.ivas.rw"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
