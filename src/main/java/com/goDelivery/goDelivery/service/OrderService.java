@@ -1,6 +1,7 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.OrderStatus;
+import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
@@ -171,8 +172,8 @@ public class OrderService {
         order.setCustomer(customer);
         order.setRestaurant(restaurant);
         order.setBranch(branch);
-        order.setOrderStatus(orderRequest.getOrderStatus());
-        order.setPaymentStatus(orderRequest.getPaymentStatus());
+        order.setOrderStatus(orderRequest.getOrderStatus() != null ? orderRequest.getOrderStatus() : OrderStatus.PLACED);
+        order.setPaymentStatus(orderRequest.getPaymentStatus() != null ? orderRequest.getPaymentStatus() : PaymentStatus.PENDING);
         order.setPaymentMethod(orderRequest.getPaymentMethod());
         order.setDeliveryAddress(orderRequest.getDeliveryAddress());
         order.setSpecialInstructions(orderRequest.getSpecialInstructions());
