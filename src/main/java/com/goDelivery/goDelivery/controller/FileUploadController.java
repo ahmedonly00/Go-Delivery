@@ -5,6 +5,7 @@ import com.goDelivery.goDelivery.service.FileStorageService;
 import com.goDelivery.goDelivery.service.MenuUploadService;
 import com.goDelivery.goDelivery.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,9 @@ public class FileUploadController {
     
     @Autowired
     private MenuUploadService menuUploadService;
+    
+    @Value("${app.base-url:https://delivery.apis.ivas.rw}")
+    private String baseUrl;
 
     @PostMapping("/{restaurantId}/logo")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
@@ -49,8 +53,8 @@ public class FileUploadController {
             // Store the file
             String filePath = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/logo");
             
-            // Update restaurant logo URL
-            String fullUrl = "/api/files/" + filePath.replace("\\", "/");
+            // Update restaurant logo URL with full URL
+            String fullUrl = baseUrl + "/api/files/" + filePath.replace("\\", "/");
             restaurantService.updateRestaurantLogo(restaurantId, fullUrl);
             
             return ResponseEntity.ok().body("{\"filePath\": \"" + fullUrl + "\"}");
@@ -65,7 +69,8 @@ public class FileUploadController {
             @PathVariable Long restaurantId,
             @RequestParam("file") MultipartFile file) {
         String filePath = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/promotions");
-        return ResponseEntity.ok().body("{\"filePath\": \"" + filePath + "\"}");
+        String fullUrl = baseUrl + "/api/files/" + filePath.replace("\\", "/");
+        return ResponseEntity.ok().body("{\"filePath\": \"" + fullUrl + "\"}");
     }
     
     @PostMapping("/{restaurantId}/menu-upload")

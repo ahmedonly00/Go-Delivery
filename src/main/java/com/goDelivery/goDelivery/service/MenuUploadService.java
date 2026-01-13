@@ -48,6 +48,9 @@ public class MenuUploadService {
     
     @Value("${tess4j.data-path:./tessdata}")
     private String tessDataPath;
+    
+    @Value("${app.base-url:https://delivery.apis.ivas.rw}")
+    private String baseUrl;
 
     public FileUploadResponse processMenuUpload(MultipartFile file, Long restaurantId) {
         try {
@@ -121,6 +124,7 @@ public class MenuUploadService {
 
             // Save the file
             String fileUrl = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/menu-uploads");
+            String fullFileUrl = baseUrl + "/api/files/" + fileUrl.replace("\\", "/");
             
             // Send "Under Review" email after successful menu upload (NOT OTP)
             try {
@@ -154,7 +158,7 @@ public class MenuUploadService {
                     .success(true)
                     .message("File processed successfully. " + savedItems.size() + " items saved. Your restaurant is now under review. You will receive an email notification once approved.")
                     .menuItems(menuItems)
-                    .fileUrl(fileUrl)
+                    .fileUrl(fullFileUrl)
                     .build();
 
         } catch (Exception e) {
