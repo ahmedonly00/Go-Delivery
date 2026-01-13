@@ -1,6 +1,7 @@
 package com.goDelivery.goDelivery.dtos.payment;
 
 import com.goDelivery.goDelivery.Enum.PaymentMenthod;
+import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -30,7 +31,17 @@ public class PaymentRequest {
     
     @NotBlank(message = "Currency is required")
     private String currency;
+
+    @NotNull(message = "Payment status is required")
+    private PaymentStatus paymentStatus;
     
     @NotBlank(message = "Gateway response is required")
     private String gatewayResponse;
+    
+    @NotBlank(message = "Failure reason is required")
+    private String failureReason;
+
+
+
+
 }

@@ -78,6 +78,10 @@ public class OrderRequest {
         
         @NotEmpty(message = "At least one order item is required")
         private List<OrderItemRequest> orderItems;
+        
+        // Optional: Delivery fee specific to this restaurant order
+        // If not provided, will use restaurant's default delivery fee
+        private Float deliveryFee;
     }
     
     @Data

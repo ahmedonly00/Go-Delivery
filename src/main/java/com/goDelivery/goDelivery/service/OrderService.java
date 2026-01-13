@@ -1,7 +1,6 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.OrderStatus;
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
@@ -83,7 +82,7 @@ public class OrderService {
                 .collect(Collectors.toMap(MenuItem::getMenuItemId, item -> item));
 
         List<OrderResponse> createdOrders = new ArrayList<>();
-        String parentOrderNumber = generateOrderNumber(null); // Generate a common prefix for all related orders
+        String parentOrderNumber = generateParentOrderNumber(); // Generate a common prefix for all related orders
         log.info("Processing {} restaurant orders", orderRequest.getRestaurantOrders().size());
 
         for (int i = 0; i < orderRequest.getRestaurantOrders().size(); i++) {
@@ -116,6 +115,15 @@ public class OrderService {
         // Validate restaurant exists
         Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantOrder.getRestaurantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantOrder.getRestaurantId()));
+
+        // Get delivery fee from restaurant if not provided in request
+        Float deliveryFee = restaurantOrder.getDeliveryFee();
+        if (deliveryFee == null) {
+            deliveryFee = restaurant.getDeliveryFee();
+            if (deliveryFee == null) {
+                deliveryFee = 0.0f; // Default if restaurant has no delivery fee set
+            }
+        }
 
         // Validate branch exists (if provided)
         Branches branch = null;
@@ -163,9 +171,9 @@ public class OrderService {
         order.setCustomer(customer);
         order.setRestaurant(restaurant);
         order.setBranch(branch);
-        order.setOrderStatus(OrderStatus.PLACED);
-        order.setPaymentStatus(PaymentStatus.PENDING);
-        order.setPaymentMethod(orderRequest.getPaymentMethod()); // Set payment method from request
+        order.setOrderStatus(orderRequest.getOrderStatus());
+        order.setPaymentStatus(orderRequest.getPaymentStatus());
+        order.setPaymentMethod(orderRequest.getPaymentMethod());
         order.setDeliveryAddress(orderRequest.getDeliveryAddress());
         order.setSpecialInstructions(orderRequest.getSpecialInstructions());
         order.setCancellationReason(orderRequest.getCancellationReason());
@@ -174,7 +182,7 @@ public class OrderService {
         order.setUpdatedAt(LocalDate.now());
         order.setSubTotal((float) totalAmount);
         order.setDiscountAmount(orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
-        order.setDeliveryFee(orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f);
+        order.setDeliveryFee(deliveryFee); // Use the calculated delivery fee
         
         // Initialize other nullable fields to avoid issues
         order.setAcceptedAt(null);
@@ -194,7 +202,7 @@ public class OrderService {
         order.setPromotion(null);
 
         // Calculate final amount: subtotal + delivery fee - discount
-        float finalAmount = (float) totalAmount + (orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f) - (orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
+        float finalAmount = (float) totalAmount + deliveryFee - (orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f);
         order.setFinalAmount(finalAmount);
         order.setOrderNumber(orderNumber);
 
@@ -210,12 +218,17 @@ public class OrderService {
         return orderMapper.toOrderResponse(savedOrder);
     }
 
-    /**
-     * Generates an order number based on the current date and order ID.
-     *
-     * @param orderId the order ID
-     * @return the generated order number
-     */
+    
+    //Generates a parent order number for multi-restaurant orders
+    private String generateParentOrderNumber() {
+        LocalDate now = LocalDate.now();
+        String datePart = String.format("%04d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+        String randomPart = String.format("%04d", (int)(Math.random() * 10000));
+        return "BULK-" + datePart + "-" + randomPart;
+    }
+
+    
+    //Generates a unique order number
     private String generateOrderNumber(Long orderId) {
         LocalDate now = LocalDate.now();
         String datePart = String.format("%04d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());

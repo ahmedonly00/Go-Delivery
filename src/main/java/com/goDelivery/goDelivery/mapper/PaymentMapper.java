@@ -4,7 +4,6 @@ import com.goDelivery.goDelivery.dtos.payment.PaymentRequest;
 import com.goDelivery.goDelivery.dtos.payment.PaymentResponse;
 import com.goDelivery.goDelivery.model.Order;
 import com.goDelivery.goDelivery.model.Payment;
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -26,9 +25,9 @@ public class PaymentMapper {
                 .referenceNumber(request.getReferenceNumber())
                 .amount(request.getAmount())
                 .currency(request.getCurrency())
-                .paymentStatus(PaymentStatus.PENDING) // Default status
+                .paymentStatus(request.getPaymentStatus())
                 .gateWayResponse(request.getGatewayResponse())
-                .failureReason("") // Initialize empty failure reason
+                .failureReason(request.getFailureReason())
                 .paymentDate(LocalDate.now())
                 .order(order)
                 .build();
