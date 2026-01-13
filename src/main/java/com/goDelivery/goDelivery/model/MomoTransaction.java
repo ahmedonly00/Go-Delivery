@@ -25,13 +25,13 @@ public class MomoTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 100)
     private String referenceId;
     
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 100)
     private String externalId;
     
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String msisdn;
     
     @Column(nullable = false, precision = 10, scale = 2)
@@ -45,20 +45,20 @@ public class MomoTransaction {
     @Column(nullable = false)
     private TransactionStatus status;
     
-    @Column(name = "financial_transaction_id")
+    @Column(name = "financial_transaction_id", length = 100)
     private String financialTransactionId;
     
     @Column(nullable = false, length = 3)
     @Builder.Default
     private String currency = "RWF";
     
-    @Column(name = "error_reason", length = 1000)
+    @Column(name = "error_reason", length = 2000)
     private String errorReason;
     
-    @Column(name = "callback_url")
+    @Column(name = "callback_url", length = 500)
     private String callbackUrl;
     
-    @Column(name = "payer_message")
+    @Column(name = "payer_message", length = 500)
     private String payerMessage;
     
     @Column(name = "payment_method")
@@ -69,7 +69,7 @@ public class MomoTransaction {
     @Builder.Default
     private Boolean isRefunded = false;
     
-    @Column(name = "refund_reason")
+    @Column(name = "refund_reason", length = 500)
     private String refundReason;
     
     @Column(name = "refunded_at")
