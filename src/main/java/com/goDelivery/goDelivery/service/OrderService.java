@@ -296,7 +296,7 @@ public class OrderService {
         
         if (paymentStatus == PaymentStatus.PAID) {
             order.setPaymentStatus(PaymentStatus.PAID);
-            order.setPaymentCompletedAt(LocalDate.now());
+            order.setPaymentCompletedAt(java.time.LocalDateTime.now());
             order.setPaymentFailureReason(null);
             log.info("Order {} payment marked as PAID", orderId);
         } else if (paymentStatus == PaymentStatus.FAILED) {
