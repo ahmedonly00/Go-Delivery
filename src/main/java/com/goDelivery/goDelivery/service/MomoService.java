@@ -100,6 +100,11 @@ public class MomoService {
         transaction.setStatus(TransactionStatus.PENDING);
         transaction.setCallbackUrl(request.getCallback());
         
+        // Associate transaction with order
+        Order order = orderRepository.findByOrderId(request.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + request.getOrderId()));
+        transaction.setOrder(order);
+        
         try {
             // Generate JWT auth token
             String authToken = generateAuthToken();

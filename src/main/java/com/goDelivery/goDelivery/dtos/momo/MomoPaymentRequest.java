@@ -14,6 +14,9 @@ public class MomoPaymentRequest {
     @NotBlank(message = "External ID is required")
     private String externalId;
     
+    @NotNull(message = "Order ID is required")
+    private Long orderId;
+    
     @Pattern(regexp = "^250\\d{9}$", message = "Invalid phone number format. Must be 250XXXXXXXXX")
     private String msisdn;
     
