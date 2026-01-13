@@ -285,6 +285,38 @@ public class OrderService {
     }
 
     @Transactional
+    public OrderResponse updatePaymentStatus(Long orderId, PaymentStatus paymentStatus, String failureReason) {
+        Order order = orderRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+        
+        // Validate payment status transition
+        if (paymentStatus == PaymentStatus.PAID && order.getPaymentStatus() == PaymentStatus.PAID) {
+            log.warn("Order {} is already marked as PAID", orderId);
+        }
+        
+        if (paymentStatus == PaymentStatus.PAID) {
+            order.setPaymentStatus(PaymentStatus.PAID);
+            order.setPaymentCompletedAt(LocalDate.now());
+            order.setPaymentFailureReason(null);
+            log.info("Order {} payment marked as PAID", orderId);
+        } else if (paymentStatus == PaymentStatus.FAILED) {
+            order.setPaymentStatus(PaymentStatus.FAILED);
+            order.setPaymentFailureReason(failureReason != null ? failureReason : "Payment failed");
+            log.info("Order {} payment marked as FAILED. Reason: {}", orderId, failureReason);
+        } else if (paymentStatus == PaymentStatus.REFUNDED) {
+            order.setPaymentStatus(PaymentStatus.REFUNDED);
+            log.info("Order {} payment marked as REFUNDED", orderId);
+        } else if (paymentStatus == PaymentStatus.CANCELLED) {
+            order.setPaymentStatus(PaymentStatus.CANCELLED);
+            log.info("Order {} payment marked as CANCELLED", orderId);
+        }
+        
+        order.setUpdatedAt(LocalDate.now());
+        Order updatedOrder = orderRepository.save(order);
+        return orderMapper.toOrderResponse(updatedOrder);
+    }
+
+    @Transactional
     public OrderResponse cancelOrder(Long orderId, String cancellationReason) {
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));

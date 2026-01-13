@@ -1,5 +1,6 @@
 package com.goDelivery.goDelivery.controller;
 
+import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
@@ -8,6 +9,7 @@ import com.goDelivery.goDelivery.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -78,6 +80,16 @@ public class OrderController {
             @PathVariable Long orderId,
             @RequestParam(required = false) String cancellationReason) {
         return ResponseEntity.ok(orderService.cancelOrder(orderId, cancellationReason));
+    }
+
+    @PutMapping("/{orderId}/payment-status")
+    @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+    public ResponseEntity<OrderResponse> updatePaymentStatus(
+            @PathVariable Long orderId,
+            @RequestParam PaymentStatus paymentStatus,
+            @RequestParam(required = false) String failureReason) {
+        log.info("Updating payment status for order {} to {}", orderId, paymentStatus);
+        return ResponseEntity.ok(orderService.updatePaymentStatus(orderId, paymentStatus, failureReason));
     }
 
     @GetMapping("/restaurant/{restaurantId}/total")
