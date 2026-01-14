@@ -26,13 +26,13 @@ public class OrderRequest {
     
     private Long promotionId;
     
-    @NotNull(message = "Order status is required")
+    // Optional: Will default to PENDING if not provided
     private OrderStatus orderStatus;
 
     @NotNull(message = "Delivery address is required")
     private String deliveryAddress;
     
-    @NotNull(message = "Payment status is required")
+    // Optional: Will default to UNPAID if not provided
     private PaymentStatus paymentStatus;
     
     @NotNull(message = "Subtotal is required")
