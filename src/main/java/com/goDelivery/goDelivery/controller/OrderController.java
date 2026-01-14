@@ -28,6 +28,13 @@ public class OrderController {
     @PostMapping("/createOrder")
     public ResponseEntity<List<OrderResponse>> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
         try {
+            log.info("=== ORDER REQUEST RECEIVED ===");
+            log.info("Customer ID: {}", orderRequest.getCustomerId());
+            log.info("Restaurant Orders: {}", orderRequest.getRestaurantOrders());
+            log.info("Restaurant Orders is null: {}", orderRequest.getRestaurantOrders() == null);
+            if (orderRequest.getRestaurantOrders() != null) {
+                log.info("Restaurant Orders size: {}", orderRequest.getRestaurantOrders().size());
+            }
             log.info("Creating order for customer: {}", orderRequest.getCustomerId());
             
             // Check if restaurantOrders is null
