@@ -201,7 +201,7 @@ public class BranchSetupService {
         updateOrCreateOperatingHours(branch, setupDTO);
         
         // Mark setup as complete and auto-activate
-        branch.setSetupStatus(BranchSetupStatus.SETUP_COMPLETE);
+        branch.setSetupStatus(BranchSetupStatus.COMPLETED);
         branch.setApprovalStatus(ApprovalStatus.APPROVED);  // Auto-approve since parent restaurant is already approved
         branch.setIsActive(true);  // Auto-activate the branch
         branch.setApprovedAt(LocalDate.now());
