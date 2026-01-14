@@ -1,9 +1,11 @@
 package com.goDelivery.goDelivery.controller;
 
+import com.goDelivery.goDelivery.dto.branch.BranchManagerSetupDTO;
 import com.goDelivery.goDelivery.dto.branch.BranchSetupDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.service.BranchSetupService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -105,5 +107,49 @@ public class BranchSetupController {
                 branchId, setupDTO);
         
         return ResponseEntity.ok(result);
+    }
+
+    // ==================== SINGLE API BRANCH MANAGER SETUP ====================
+
+    @PostMapping("/{branchId}/manager-setup")
+    @PreAuthorize("hasRole('BRANCH_MANAGER')")
+    @Operation(
+        summary = "Complete branch manager setup (Single API)",
+        description = "Branch manager completes all remaining setup in a single API call. " +
+                      "Only provide fields that need to be set - null fields are ignored. " +
+                      "This allows the branch manager to fill in only what the restaurant admin didn't set."
+    )
+    public ResponseEntity<BranchesDTO> completeBranchManagerSetup(
+            @Parameter(description = "Branch ID") 
+            @PathVariable Long branchId,
+            @RequestBody @Valid BranchManagerSetupDTO setupDTO,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("Branch manager completing setup for branch {} by user {}", 
+                branchId, userDetails.getUsername());
+        
+        BranchesDTO result = branchSetupService.completeBranchManagerSetup(branchId, setupDTO);
+        
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{branchId}/manager-setup")
+    @PreAuthorize("hasRole('BRANCH_MANAGER')")
+    @Operation(
+        summary = "Get current branch setup status",
+        description = "Returns the current state of the branch so the frontend can show which fields are already set " +
+                      "and which ones the branch manager still needs to fill in."
+    )
+    public ResponseEntity<BranchManagerSetupDTO> getBranchManagerSetupStatus(
+            @Parameter(description = "Branch ID") 
+            @PathVariable Long branchId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("Fetching branch manager setup status for branch {} by user {}", 
+                branchId, userDetails.getUsername());
+        
+        BranchManagerSetupDTO status = branchSetupService.getBranchManagerSetupStatus(branchId);
+        
+        return ResponseEntity.ok(status);
     }
 }
