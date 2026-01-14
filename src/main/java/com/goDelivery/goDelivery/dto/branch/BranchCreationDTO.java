@@ -6,9 +6,6 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 
-import java.time.LocalTime;
-import java.util.List;
-
 @Data
 public class BranchCreationDTO {
     
@@ -27,48 +24,17 @@ public class BranchCreationDTO {
     @NotBlank(message = "State/Province is required")
     private String state;
     
-    @NotBlank(message = "Postal code is required")
-    private String postalCode;
-    
     @NotBlank(message = "Country is required")
     private String country;
-    
-    private Float latitude;
-    
-    private Float longitude;
-    
+        
     @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Phone number must be valid")
     private String phoneNumber;
     
     @Email(message = "Email must be valid")
     private String email;
-    
-    private String website;
-    
+        
     private String description;
-    
-    // Operating hours
-    private LocalTime mondayOpen;
-    private LocalTime mondayClose;
-    private LocalTime tuesdayOpen;
-    private LocalTime tuesdayClose;
-    private LocalTime wednesdayOpen;
-    private LocalTime wednesdayClose;
-    private LocalTime thursdayOpen;
-    private LocalTime thursdayClose;
-    private LocalTime fridayOpen;
-    private LocalTime fridayClose;
-    private LocalTime saturdayOpen;
-    private LocalTime saturdayClose;
-    private LocalTime sundayOpen;
-    private LocalTime sundayClose;
-    
-    // Delivery settings
-    private Boolean deliveryAvailable = false;
-    private Double deliveryRadius; // in km
-    private Float minimumOrderAmount;
-    private Float deliveryFee;
     
     // Branch manager details
     @NotBlank(message = "Manager name is required")
@@ -82,14 +48,4 @@ public class BranchCreationDTO {
     private String managerPhone;
     
     private String managerPassword;
-    
-    // Initial menu categories
-    private List<String> initialMenuCategories;
-    
-    // Tags for search
-    private List<String> tags;
-    
-    // Average rating and review count (for display)
-    private Double averageRating = 0.0;
-    private Integer reviewCount = 0;
 }

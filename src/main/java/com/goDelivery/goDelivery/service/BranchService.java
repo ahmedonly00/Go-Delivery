@@ -4,6 +4,7 @@ import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.Enum.ApprovalStatus;
 import com.goDelivery.goDelivery.Enum.BranchSetupStatus;
+import com.goDelivery.goDelivery.Enum.DeliveryType;
 import com.goDelivery.goDelivery.Enum.Roles;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.exception.UnauthorizedException;
@@ -165,19 +166,16 @@ public class BranchService {
         // Check if restaurant is approved, if so, auto-approve the branch
         boolean autoApprove = restaurant.getApprovalStatus() == ApprovalStatus.APPROVED;
         
-        // Create basic branch
+        // Create basic branch with essential fields only
+        // Delivery settings and other details configured by Branch Manager during setup
         Branches branch = Branches.builder()
                 .branchName(creationDTO.getBranchName())
-                .address(creationDTO.getAddress())
-                .latitude(creationDTO.getLatitude())
-                .longitude(creationDTO.getLongitude())
+                .address(formatAddress(creationDTO))
                 .phoneNumber(creationDTO.getPhoneNumber())
                 .email(creationDTO.getEmail())
                 .description(creationDTO.getDescription())
-                .deliveryAvailable(creationDTO.getDeliveryAvailable())
-                .deliveryRadius(creationDTO.getDeliveryRadius())
-                .minimumOrderAmount(creationDTO.getMinimumOrderAmount())
-                .deliveryFee(creationDTO.getDeliveryFee())
+                .deliveryType(DeliveryType.SYSTEM_DELIVERY)
+                .deliveryAvailable(false)
                 .approvalStatus(autoApprove ? ApprovalStatus.APPROVED : ApprovalStatus.PENDING)
                 .setupStatus(BranchSetupStatus.ACCOUNT_CREATED)
                 .restaurant(restaurant)
@@ -334,15 +332,9 @@ public class BranchService {
         Branches branch = Branches.builder()
                 .branchName(dto.getBranchName())
                 .address(formatAddress(dto))
-                .latitude(dto.getLatitude())
-                .longitude(dto.getLongitude())
                 .phoneNumber(dto.getPhoneNumber())
                 .email(dto.getEmail())
                 .description(dto.getDescription())
-                .deliveryAvailable(dto.getDeliveryAvailable())
-                .deliveryRadius(dto.getDeliveryRadius())
-                .minimumOrderAmount(dto.getMinimumOrderAmount())
-                .deliveryFee(dto.getDeliveryFee())
                 .approvalStatus(ApprovalStatus.PENDING)
                 .setupStatus(BranchSetupStatus.ACCOUNT_CREATED)
                 .restaurant(restaurant)
@@ -357,15 +349,9 @@ public class BranchService {
     private void updateBranchFromDTO(Branches branch, BranchCreationDTO dto) {
         branch.setBranchName(dto.getBranchName());
         branch.setAddress(formatAddress(dto));
-        branch.setLatitude(dto.getLatitude());
-        branch.setLongitude(dto.getLongitude());
         branch.setPhoneNumber(dto.getPhoneNumber());
         branch.setEmail(dto.getEmail());
         branch.setDescription(dto.getDescription());
-        branch.setDeliveryAvailable(dto.getDeliveryAvailable());
-        branch.setDeliveryRadius(dto.getDeliveryRadius());
-        branch.setMinimumOrderAmount(dto.getMinimumOrderAmount());
-        branch.setDeliveryFee(dto.getDeliveryFee());
         branch.setUpdatedAt(LocalDate.now());
     }
     
@@ -377,7 +363,6 @@ public class BranchService {
         }
         address.append(", ").append(dto.getCity());
         address.append(", ").append(dto.getState());
-        address.append(", ").append(dto.getPostalCode());
         address.append(", ").append(dto.getCountry());
         return address.toString();
     }

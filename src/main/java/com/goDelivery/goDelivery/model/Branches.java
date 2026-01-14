@@ -100,6 +100,12 @@ public class Branches {
     @Column(name = "description", length = 1000)
     private String description;
     
+    @Column(name = "cuisine_type")
+    private String cuisineType;
+    
+    @Column(name = "tax_identification_number")
+    private String taxIdentificationNumber;
+    
     @Column(name = "approved_by")
     private String approvedBy;
     
