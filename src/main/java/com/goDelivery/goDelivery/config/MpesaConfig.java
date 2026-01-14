@@ -42,7 +42,6 @@ public class MpesaConfig {
         if (apiKey != null) {
             log.info("MPESA API Key is configured (last 4 chars): {}", 
                     apiKey.length() > 4 ? "****" + apiKey.substring(apiKey.length() - 4) : "****");
-            log.debug("Full API Key: {}", apiKey);  // Debug log of the full key
             
             if (apiKey.trim().isEmpty()) {
                 log.error("MPESA API Key is empty or contains only whitespace!");
@@ -52,8 +51,8 @@ public class MpesaConfig {
         }
         
         // Log environment variables for debugging
-        log.debug("Environment MPESA_API_KEY: {}", System.getenv("MPESA_API_KEY"));
-        log.debug("System property mpesa.api-key: {}", System.getProperty("mpesa.api-key"));
+        log.debug("Environment MPESA_API_KEY is {}", System.getenv("MPESA_API_KEY") != null ? "set" : "not set");
+        log.debug("System property mpesa.api-key is {}", System.getProperty("mpesa.api-key") != null ? "set" : "not set");
     }
 
     @Bean
@@ -66,7 +65,6 @@ public class MpesaConfig {
             "[NULL]";
             
         log.info("Creating WebClient with API Key: {}", maskedKey);
-        log.debug("Full API Key being used: {}", apiKey);
         
         return webClientBuilder
                 .baseUrl(apiBaseUrl)

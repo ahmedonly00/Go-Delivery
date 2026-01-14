@@ -8,6 +8,7 @@ import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/createOrder")
-    public ResponseEntity<List<OrderResponse>> createOrder(@RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<List<OrderResponse>> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
         try {
             log.info("Creating order for customer: {}", orderRequest.getCustomerId());
             

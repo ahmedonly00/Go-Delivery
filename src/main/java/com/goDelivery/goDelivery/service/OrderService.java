@@ -128,9 +128,12 @@ public class OrderService {
 
         // Validate branch exists (if provided)
         Branches branch = null;
-        if (restaurantOrder.getBranchId() != null) {
-            branch = branchesRepository.findByBranchId(restaurantOrder.getBranchId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + restaurantOrder.getBranchId()));
+        Long branchId = restaurantOrder.getBranchId();
+        if (branchId != null && branchId > 0) {
+            branch = branchesRepository.findByBranchId(branchId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
+        } else if (branchId != null && branchId <= 0) {
+            log.warn("Ignoring invalid branchId {} in order request for restaurantId {}", branchId, restaurantOrder.getRestaurantId());
         }
 
         // Calculate total amount using pre-fetched menu items
