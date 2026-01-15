@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -17,12 +18,15 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
                 description = "OpenApi documentation for Moz Food System",
                 title = "Moz Food System",
                 version = "1.0"
-
         ),
-        security = {
-                @SecurityRequirement(
-                        name = "bearerAuth"
+        servers = {
+                @Server(
+                        url = "https://delivery.apis.ivas.rw",
+                        description = "Production server"
                 )
+        },
+        security = {
+                @SecurityRequirement(name = "bearerAuth")
         }
 )
 @SecurityScheme(
@@ -34,5 +38,4 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
         in = SecuritySchemeIn.HEADER
 )
 public class OpenApiConfig {
-
 }
