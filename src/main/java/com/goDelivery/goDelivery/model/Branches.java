@@ -53,8 +53,7 @@ public class Branches {
     // Delivery configuration
     @Enumerated(EnumType.STRING)
     @Column(name = "delivery_type", nullable = false)
-    @Builder.Default
-    private DeliveryType deliveryType = DeliveryType.SYSTEM_DELIVERY;
+    private DeliveryType deliveryType ;
     
     @Column(name = "delivery_fee")
     private Float deliveryFee;
@@ -69,12 +68,10 @@ public class Branches {
     private Integer averagePreparationTime;
     
     @Column(name = "delivery_available")
-    @Builder.Default
-    private Boolean deliveryAvailable = false;
+    private Boolean deliveryAvailable;
 
     @Column(name = "is_active", nullable = false)
-    @Builder.Default
-    private Boolean isActive = false;
+    private Boolean isActive;
     
     @Column(name = "logo_url")
     private String logoUrl;
@@ -87,8 +84,7 @@ public class Branches {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status", nullable = false)
-    @Builder.Default
-    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
+    private ApprovalStatus approvalStatus;
     
     // Business documents
     @Column(name = "business_document_url")
@@ -97,7 +93,7 @@ public class Branches {
     @Column(name = "operating_license_url")
     private String operatingLicenseUrl;
     
-    @Column(name = "description", length = 1000)
+    @Column(name = "description", length = 500)
     private String description;
     
     @Column(name = "cuisine_type")
@@ -123,12 +119,10 @@ public class Branches {
     
     // Ratings
     @Column(name = "average_rating")
-    @Builder.Default
-    private Double averageRating = 0.0;
+    private Double averageRating;
     
     @Column(name = "review_count")
-    @Builder.Default
-    private Integer reviewCount = 0;
+    private Integer reviewCount;
 
     @PrePersist
     protected void onCreate() {

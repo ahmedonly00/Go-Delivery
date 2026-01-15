@@ -77,7 +77,7 @@ public class BranchUserService {
         branchUser.setRestaurant(branch.getRestaurant());
         branchUser.setPassword(passwordEncoder.encode(branchUserDTO.getPassword()));
         branchUser.setActive(true);
-        branchUser.setEmailVerified(false);
+        branchUser.setEmailVerified(true);
         
         // Set role based on input or default to BRANCH_MANAGER
         if (branchUserDTO.getRole() != null) {
