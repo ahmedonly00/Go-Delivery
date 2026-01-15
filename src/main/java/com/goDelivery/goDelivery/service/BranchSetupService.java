@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -27,23 +26,8 @@ public class BranchSetupService {
 
     private final BranchesRepository branchesRepository;
     private final RestaurantMapper restaurantMapper;
-    private final MenuCategoryRepository menuCategoryRepository;
     private final BranchUsersRepository branchUsersRepository;
     private final OperatingHoursRepository operatingHoursRepository;
-    
-    private void createInitialMenuCategories(Branches branch, List<String> categoryNames) {
-        for (int i = 0; i < categoryNames.size(); i++) {
-            String categoryName = categoryNames.get(i);
-            
-            // Create menu category
-            MenuCategory category = new MenuCategory();
-            category.setCategoryName(categoryName);
-            category.setBranch(branch);
-            
-            menuCategoryRepository.save(category);
-            log.info("Created initial menu category '{}' for branch {}", categoryName, branch.getBranchId());
-        }
-    }
     
     private void verifyBranchAccess(Long branchId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

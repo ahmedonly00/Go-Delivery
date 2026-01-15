@@ -7,7 +7,6 @@ import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchUserDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.service.BranchDelegationService;
-import com.goDelivery.goDelivery.service.BranchSecurityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +31,6 @@ import java.util.List;
 public class BranchOperationsController {
 
     private final BranchDelegationService delegationService;
-    private final BranchSecurityService branchSecurity;
 
     // Branch Information Operations
     @GetMapping("")

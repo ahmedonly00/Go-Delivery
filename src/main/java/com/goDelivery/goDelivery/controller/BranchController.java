@@ -3,8 +3,6 @@ package com.goDelivery.goDelivery.controller;
 import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.service.BranchService;
-import com.goDelivery.goDelivery.service.BranchMenuService;
-import com.goDelivery.goDelivery.service.BranchSetupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,8 +27,6 @@ import java.util.List;
 public class BranchController {
 
     private final BranchService branchService;
-    private final BranchMenuService branchMenuService;
-    private final BranchSetupService branchSetupService;
 
     @PostMapping("/create/{restaurantId}")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")

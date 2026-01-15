@@ -11,7 +11,6 @@ import com.goDelivery.goDelivery.model.BranchUsers;
 import com.goDelivery.goDelivery.model.Branches;
 import com.goDelivery.goDelivery.model.MenuCategory;
 import com.goDelivery.goDelivery.model.MenuItem;
-import com.goDelivery.goDelivery.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.repository.BranchesRepository;
 import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
 import com.goDelivery.goDelivery.repository.MenuItemRepository;
@@ -37,7 +36,6 @@ public class BranchMenuService {
     private final MenuCategoryRepository menuCategoryRepository;
     private final MenuItemRepository menuItemRepository;
     private final BranchesRepository branchesRepository;
-    private final BranchUsersRepository branchUsersRepository;
     private final MenuItemMapper menuItemMapper;
     private final MenuCategoryMapper menuCategoryMapper;
     private final UsersService usersService;

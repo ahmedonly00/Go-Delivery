@@ -24,13 +24,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BranchEnabledRestaurantService {
 
-    private final RestaurantService restaurantService;
     private final OrderService orderService;
     private final BranchesRepository branchesRepository;
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
-    private final MenuCategoryRepository menuCategoryRepository;
-    private final RestaurantUsersRepository restaurantUsersRepository;
     private final BranchSecurityService branchSecurity;
     private final OrderMapper orderMapper;
     private final RestaurantMapper restaurantMapper;
@@ -211,21 +208,5 @@ public class BranchEnabledRestaurantService {
     private BranchesDTO convertToBranchDTO(Branches branch) {
         // Use the existing RestaurantMapper
         return restaurantMapper.toBranchDTO(branch);
-    }
-
-    // Validation Methods
-    private Branches validateBranchAccess(Long branchId) {
-        Branches branch = branchesRepository.findById(branchId)
-                .orElseThrow(() -> new ResourceNotFoundException("Branch not found: " + branchId));
-        
-        // Additional validation can be added here
-        return branch;
-    }
-
-    private void validateRestaurantAccess(Long restaurantId) {
-        RestaurantUsers currentUser = branchSecurity.getCurrentRestaurantUser();
-        if (!currentUser.getRestaurant().getRestaurantId().equals(restaurantId)) {
-            throw new UnauthorizedException("Access denied to restaurant: " + restaurantId);
-        }
     }
 }

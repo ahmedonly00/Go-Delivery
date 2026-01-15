@@ -27,13 +27,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BranchDelegationService {
 
-    private final RestaurantService restaurantService;
     private final OrderService orderService;
-    private final BranchService branchService;
     private final BranchUserService branchUserService;
     private final BranchesRepository branchesRepository;
     private final MenuItemRepository menuItemRepository;
-    private final MenuCategoryRepository menuCategoryRepository;
     private final OrderRepository orderRepository;
     private final BranchSecurityService branchSecurity;
     private final MenuItemMapper menuItemMapper;
@@ -252,27 +249,6 @@ public class BranchDelegationService {
         
         return (item.getBranch() != null && item.getBranch().getBranchId().equals(branchId)) ||
                (item.getBranch() == null && item.getRestaurant().getRestaurantId().equals(restaurantId));
-    }
-
-    private void updateBranchFields(Branches existing, BranchesDTO update) {
-        if (update.getBranchName() != null) {
-            existing.setBranchName(update.getBranchName());
-        }
-        if (update.getAddress() != null) {
-            existing.setAddress(update.getAddress());
-        }
-        if (update.getPhoneNumber() != null) {
-            existing.setPhoneNumber(update.getPhoneNumber());
-        }
-        if (update.getDescription() != null) {
-            existing.setDescription(update.getDescription());
-        }
-        if (update.getLatitude() != null) {
-            existing.setLatitude(update.getLatitude());
-        }
-        if (update.getLongitude() != null) {
-            existing.setLongitude(update.getLongitude());
-        }
     }
 
     private void saveOrderWithBranch(List<OrderResponse> orders, Branches branch) {

@@ -36,8 +36,6 @@ import com.goDelivery.goDelivery.model.Order;
 import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.repository.DisbursementTransactionRepository;
 import com.goDelivery.goDelivery.repository.OrderRepository;
-import com.goDelivery.goDelivery.repository.PaymentRepository;
-import com.goDelivery.goDelivery.repository.RestaurantRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,13 +50,7 @@ public class DisbursementService {
     private OrderRepository orderRepository;
     
     @Autowired
-    private RestaurantRepository restaurantRepository;
-    
-    @Autowired
     private DisbursementTransactionRepository transactionRepository;
-    
-    @Autowired
-    private PaymentRepository paymentRepository;
     
     @Autowired
     private MomoConfig momoConfig;

@@ -40,10 +40,8 @@ public class BranchService {
     private final BranchesRepository branchesRepository;
     private final RestaurantRepository restaurantRepository;
     private final RestaurantMapper restaurantMapper;
-    private final UsersRepository usersRepository;
     private final UsersService usersService;
     private final EmailService emailService;
-    private final MenuCategoryRepository menuCategoryRepository;
     private final BranchUsersRepository branchUsersRepository;
     private final RestaurantUsersRepository restaurantUsersRepository;
     private final PasswordEncoder passwordEncoder;
@@ -327,24 +325,6 @@ public class BranchService {
     }
 
     // ==================== Private Helper Methods ====================
-
-    private Branches buildBranchFromDTO(BranchCreationDTO dto, Restaurant restaurant) {
-        Branches branch = Branches.builder()
-                .branchName(dto.getBranchName())
-                .address(formatAddress(dto))
-                .phoneNumber(dto.getPhoneNumber())
-                .email(dto.getEmail())
-                .description(dto.getDescription())
-                .approvalStatus(ApprovalStatus.PENDING)
-                .setupStatus(BranchSetupStatus.ACCOUNT_CREATED)
-                .restaurant(restaurant)
-                .createdAt(LocalDate.now())
-                .updatedAt(LocalDate.now())
-                .build();
-        
-        branch.setIsActive(false); // Inactive until approved
-        return branch;
-    }
     
     private void updateBranchFromDTO(Branches branch, BranchCreationDTO dto) {
         branch.setBranchName(dto.getBranchName());
@@ -365,31 +345,6 @@ public class BranchService {
         address.append(", ").append(dto.getState());
         address.append(", ").append(dto.getCountry());
         return address.toString();
-    }
-    
-    private void createInitialMenuCategories(Branches branch, List<String> categoryNames) {
-        for (String categoryName : categoryNames) {
-            // Create menu category
-            MenuCategory category = new MenuCategory();
-            category.setCategoryName(categoryName);
-            category.setBranch(branch);
-            
-            menuCategoryRepository.save(category);
-            log.info("Created initial menu category: {} for branch: {}", categoryName, branch.getBranchId());
-        }
-    }
-    
-    private void uploadDocuments(Branches branch, MultipartFile[] documents) {
-        for (int i = 0; i < documents.length; i++) {
-            if (documents[i] != null && !documents[i].isEmpty()) {
-                String docUrl = uploadFile(documents[i], "document_" + i);
-                if (i == 0) {
-                    branch.setBusinessDocumentUrl(docUrl);
-                } else if (i == 1) {
-                    branch.setOperatingLicenseUrl(docUrl);
-                }
-            }
-        }
     }
     
     private String uploadFile(MultipartFile file, String prefix) {
@@ -442,9 +397,7 @@ public class BranchService {
                 return; // Restaurant admin has access
             }
         }
-        
-        // TODO: Add branch user verification if needed
-        
+                
         throw new UnauthorizedException("You do not have permission to access this branch");
     }
 
@@ -486,8 +439,6 @@ public class BranchService {
         if (branchDTO.getLatitude() == null || branchDTO.getLongitude() == null) {
             throw new ValidationException("Branch coordinates (latitude and longitude) are required");
         }
-        // Operating hours are now optional since they're handled via OperatingHours entity
-        // Validate phone number format (basic validation)
         if (!branchDTO.getPhoneNumber().matches("^[+]?[0-9]{10,15}$")) {
             throw new ValidationException("Invalid phone number format");
         }

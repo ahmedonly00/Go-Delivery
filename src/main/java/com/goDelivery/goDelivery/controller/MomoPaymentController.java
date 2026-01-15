@@ -9,7 +9,6 @@ import com.goDelivery.goDelivery.model.DisbursementTransaction;
 import com.goDelivery.goDelivery.model.Order;
 import com.goDelivery.goDelivery.repository.DisbursementTransactionRepository;
 import com.goDelivery.goDelivery.repository.OrderRepository;
-import com.goDelivery.goDelivery.repository.TransactionRepository;
 import com.goDelivery.goDelivery.service.DisbursementService;
 import com.goDelivery.goDelivery.service.MomoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,10 +44,9 @@ public class MomoPaymentController {
     private final MomoService momoService;
     private final DisbursementService disbursementService;
     private final OrderRepository orderRepository;
-    private final TransactionRepository transactionRepository;
     private final DisbursementTransactionRepository disbursementTransactionRepository;
 
-    @PostMapping(value = "/request")
+    @PostMapping(value = "/request", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
         summary = "Initiate MoMo payment",
         description = "Initiates a payment request via MoMo mobile money",
@@ -113,7 +112,7 @@ public class MomoPaymentController {
         }
     }
 
-    @PostMapping(value = "/webhook")
+    @PostMapping(value = "/webhook", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
         summary = "MoMo Payment Webhook",
         description = "Webhook endpoint for MoMo payment callbacks",
@@ -137,7 +136,7 @@ public class MomoPaymentController {
         }
     }
 
-   @PostMapping("/processOrderDisbursement")
+   @PostMapping(value = "/processOrderDisbursement", consumes = MediaType.APPLICATION_JSON_VALUE)
    @Operation(
         summary = "Process order disbursement",
         description = "Processes disbursement for a completed order to the respective restaurants",
@@ -267,7 +266,7 @@ public class MomoPaymentController {
     }
 
     
-    @PostMapping("/disbursement")
+    @PostMapping(value = "/disbursement", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
         summary = "MoMo Disbursement Callback",
         description = "Webhook endpoint for MoMo disbursement callbacks",

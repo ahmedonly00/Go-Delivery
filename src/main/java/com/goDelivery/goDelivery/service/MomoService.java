@@ -781,9 +781,7 @@ public class MomoService {
         }
     }
 
-    /**
-     * Map TransactionStatus to PaymentStatus
-     */
+    //Map TransactionStatus to PaymentStatus
     private PaymentStatus mapToPaymentStatus(TransactionStatus status) {
         return switch (status) {
             case SUCCESS -> PaymentStatus.PAID;
@@ -793,26 +791,8 @@ public class MomoService {
             default -> PaymentStatus.PENDING;
         };
     }
-
-    /**
-     * Check if an order contains items from multiple restaurants
-     */
-    private boolean hasMultipleRestaurants(Order order) {
-        if (order == null || order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
-            return false;
-        }
-        
-        long distinctRestaurantCount = order.getOrderItems().stream()
-            .map(item -> item.getMenuItem().getRestaurant())
-            .distinct()
-            .count();
-            
-        return distinctRestaurantCount > 1;
-    }
-
-    /**
-     * Send transaction notifications to customer
-     */
+    
+    //Send transaction notifications to customer
     private void sendTransactionNotifications(MomoTransaction transaction) {
         if (transaction.getOrder() == null || transaction.getOrder().getCustomer() == null) {
             return;

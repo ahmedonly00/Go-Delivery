@@ -25,9 +25,7 @@ public class MenuItemDTO {
     private Long branchId;
     
     private boolean available = true;
-    
-    private boolean isAvailable = true;  // Added this field
-    
+        
     @Positive(message = "Preparation time must be a positive number")
     private Integer preparationTime; // in minutes
 }

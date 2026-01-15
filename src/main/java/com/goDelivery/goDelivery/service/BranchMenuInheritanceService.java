@@ -7,8 +7,6 @@ import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.dtos.menu.UpdateMenuItemRequest;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.exception.ValidationException;
-import com.goDelivery.goDelivery.mapper.MenuCategoryMapper;
-import com.goDelivery.goDelivery.mapper.MenuItemMapper;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.repository.*;
 
@@ -30,8 +28,6 @@ public class BranchMenuInheritanceService {
     private final BranchesRepository branchesRepository;
     private final MenuCategoryRepository menuCategoryRepository;
     private final MenuItemRepository menuItemRepository;
-    private final MenuCategoryMapper menuCategoryMapper;
-    private final MenuItemMapper menuItemMapper;
     private final MenuAuditService menuAuditService;
     private final MenuRealtimeService menuRealtimeService;
 

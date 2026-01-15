@@ -45,7 +45,6 @@ public class BranchMenuUploadService {
     private final MenuItemRepository menuItemRepository;
     private final BranchUsersRepository branchUsersRepository;
     private final Tesseract tesseract;
-    private final BranchMenuService branchMenuService;
     
     @Value("${tess4j.data-path:./tessdata}")
     private String tessDataPath;

@@ -228,16 +228,7 @@ public class OrderService {
         LocalDate now = LocalDate.now();
         String datePart = String.format("%04d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
         String randomPart = String.format("%04d", (int)(Math.random() * 10000));
-        return "BULK-" + datePart + "-" + randomPart;
-    }
-
-    
-    //Generates a unique order number
-    private String generateOrderNumber(Long orderId) {
-        LocalDate now = LocalDate.now();
-        String datePart = String.format("%04d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
-        String orderIdPart = String.format("%05d", orderId);
-        return "ORD-" + datePart + "-" + orderIdPart;
+        return "ORD-" + datePart + "-" + randomPart;
     }
 
     public OrderResponse getOrderById(Long orderId) {

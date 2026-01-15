@@ -20,7 +20,6 @@ import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.model.RestaurantUsers;
 import com.goDelivery.goDelivery.service.DisbursementService;
 import com.goDelivery.goDelivery.service.MomoService;
-import com.goDelivery.goDelivery.service.RestaurantService;
 import com.goDelivery.goDelivery.service.UsersService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +38,6 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Disbursement", description = "Disbursement management")
 public class DisbursementController {
     private final DisbursementService disbursementService;
-    private final RestaurantService restaurantService;
     private final UsersService userService;
     private final MomoService momoService;
 
