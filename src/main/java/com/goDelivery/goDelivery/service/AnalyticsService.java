@@ -33,11 +33,14 @@ public class AnalyticsService {
     private final CustomerTrendsMapper customerTrendsMapper;
 
     public Page<OrderResponse> getOrderHistory(Long restaurantId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay() : LocalDateTime.of(2000, 1, 1, 0, 0);
-        LocalDateTime endDateTime = endDate != null ? endDate.atTime(LocalTime.MAX) : LocalDateTime.now();
+        LocalDate start = startDate != null ? startDate : LocalDate.of(2000, 1, 1);
+        LocalDate end = endDate != null ? endDate : LocalDate.now();
         
         return orderAnalyticsRepository.findByRestaurant_RestaurantIdAndOrderPlacedAtBetween(
-                restaurantId, startDateTime, endDateTime, pageable)
+                restaurantId, 
+                start.atStartOfDay(), 
+                end.atTime(LocalTime.MAX), 
+                pageable)
                 .map(orderMapper::toOrderResponse);
     }
 
