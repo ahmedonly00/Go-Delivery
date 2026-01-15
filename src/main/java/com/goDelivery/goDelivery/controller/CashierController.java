@@ -3,6 +3,8 @@ package com.goDelivery.goDelivery.controller;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
 import com.goDelivery.goDelivery.service.CashierService;
+import com.goDelivery.goDelivery.repository.OrderRepository;
+import com.goDelivery.goDelivery.mapper.OrderMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +32,8 @@ import org.springframework.web.bind.annotation.*;
 public class CashierController {
 
     private final CashierService cashierService;
+    private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
     @GetMapping(value = "/getPendingOrders")
     public ResponseEntity<Page<OrderResponse>> getPendingOrders(
@@ -36,6 +41,16 @@ public class CashierController {
             @PageableDefault(size = 20) Pageable pageable) {
         log.info("Fetching pending orders");
         return ResponseEntity.ok(cashierService.getPendingOrders(pageable));
+    }
+
+    @Transactional(readOnly = true)
+    @GetMapping(value = "/getAllOrders")
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PageableDefault(size = 20) Pageable pageable) {
+        log.info("Fetching all orders with pagination");
+        return ResponseEntity.ok(orderRepository.findAll(pageable)
+                .map(orderMapper::toOrderResponse));
     }
 
     @PostMapping(value = "/acceptOrder/{orderId}")
