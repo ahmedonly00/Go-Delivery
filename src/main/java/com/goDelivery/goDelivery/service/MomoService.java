@@ -73,9 +73,7 @@ public class MomoService {
     @Value("${app.payment.auto-disbursement.enabled:true}")
     private boolean autoDisbursementEnabled;
 
-    /**
-     * Request payment from a customer's mobile money account
-     */
+    //Request payment from a customer's mobile money account
     public MomoPaymentResponse requestPayment(MomoPaymentRequest request) {
         log.info("Received MoMo payment request for external ID: {}", request.getExternalId());
         
@@ -162,6 +160,7 @@ public class MomoService {
                     transaction.setReferenceId((String) responseBody.get("referenceId"));
                 }
                 
+                transaction.setStatus(TransactionStatus.PENDING);
                 momoTransactionRepository.save(transaction);
                 
                 // Start polling
@@ -173,10 +172,12 @@ public class MomoService {
                     request.getAmount().floatValue()
                 );
             } else {
+                // Request initiation failed
+                log.error("Failed to initiate MoMo payment: {}", response.getStatusCode());
                 transaction.setStatus(TransactionStatus.FAILED);
                 transaction.setErrorReason("Failed to initiate payment: " + response.getStatusCode());
                 momoTransactionRepository.save(transaction);
-                throw new RuntimeException("Failed to initiate payment: " + response.getBody());
+                return MomoPaymentResponse.error("Failed to initiate payment: " + response.getStatusCode());
             }
             
         } catch (org.springframework.web.client.ResourceAccessException e) {
@@ -187,26 +188,25 @@ public class MomoService {
                 transaction.setStatus(TransactionStatus.FAILED);
                 transaction.setErrorReason("Payment service is temporarily unavailable. Please try again later.");
                 momoTransactionRepository.save(transaction);
-                throw new RuntimeException("Payment service is temporarily unavailable. Please try again later.");
+                return MomoPaymentResponse.error("Payment service is temporarily unavailable. Please try again later.");
+
             } else {
                 log.error("Error requesting payment from MoMo API", e);
                 transaction.setStatus(TransactionStatus.FAILED);
                 transaction.setErrorReason(e.getMessage());
                 momoTransactionRepository.save(transaction);
-                throw new RuntimeException("Error processing payment request", e);
+                return MomoPaymentResponse.error("Error processing payment request: " + e.getMessage());
             }
         } catch (Exception e) {
             log.error("Error requesting payment from MoMo API", e);
             transaction.setStatus(TransactionStatus.FAILED);
             transaction.setErrorReason(e.getMessage());
             momoTransactionRepository.save(transaction);
-            throw new RuntimeException("Error processing payment request", e);
+            return MomoPaymentResponse.error("Error processing payment request: " + e.getMessage());
         }
     }
 
-    /**
-     * Poll for collection-disbursement status updates
-     */
+    //Poll for collection-disbursement status updates
     @Async
     public CompletableFuture<Void> pollCollectionDisbursementStatus(String referenceId) {
         return CompletableFuture.runAsync(() -> {
@@ -263,11 +263,7 @@ public class MomoService {
         });
     }
 
-    /**
-     * Initiate a disbursement transaction
-     * @param request the disbursement request
-     * @return the response
-     */
+    //Initiate a disbursement transaction
     public CollectionDisbursementResponse initiateCollectionDisbursement(CollectionDisbursementRequest request) {
         try {
             String authToken = generateAuthToken();
@@ -343,18 +339,14 @@ public class MomoService {
         return digits;
     }
 
-    /**
-     * Check the status of a transaction
-     */
+    //Check the status of a transaction
     public MomoTransactionStatus checkTransactionStatus(String referenceId) {
         return momoTransactionRepository.findByReferenceId(referenceId)
                 .map(this::mapToTransactionStatus)
                 .orElseThrow(() -> new RuntimeException("Transaction not found: " + referenceId));
     }
 
-    /**
-     * Handle webhook callbacks from MoMo
-     */
+    //Handle webhook callbacks from MoMo
     public void handleWebhook(MomoWebhookRequest webhookRequest) {
         momoTransactionRepository.findByReferenceId(webhookRequest.getReferenceId())
                 .ifPresent(transaction -> {
@@ -376,9 +368,7 @@ public class MomoService {
                 });
     }
 
-    /**
-     * Poll for transaction status updates
-     */
+    //Poll for transaction status updates
     @Async
     public CompletableFuture<Void> pollTransactionStatus(String referenceId) {
         return momoTransactionRepository.findByReferenceId(referenceId)
@@ -477,9 +467,7 @@ public class MomoService {
             .orElse(CompletableFuture.completedFuture(null));
     }
 
-    /**
-     * Generate an authentication token from MoMo API using username and password
-     */
+    //Generate an authentication token from MoMo API using username and password
     private String generateAuthToken() {
         // Check if credentials are provided
         if (momoConfig.getUsername() == null || momoConfig.getUsername().isBlank()) {
@@ -606,9 +594,7 @@ public class MomoService {
         }
     }
 
-    /**
-     * Update transaction status based on API response
-     */
+    //Update transaction status based on API response
     private void updateTransactionStatus(MomoTransaction transaction, String status, 
                                         Map<String, Object> statusResponse) {
         TransactionStatus newStatus = mapToTransactionStatus(status);
@@ -643,18 +629,14 @@ public class MomoService {
         handleTransactionUpdate(transaction);
     }
     
-    /**
-     * Check if status is final (no more polling needed)
-     */
+    //Check if status is final (no more polling needed)
     private boolean isFinalStatus(String status) {
         return "SUCCESSFUL".equalsIgnoreCase(status) || 
                "FAILED".equalsIgnoreCase(status) || 
                "CANCELLED".equalsIgnoreCase(status);
     }
     
-    /**
-     * Handle transaction updates and trigger related business logic
-     */
+    //Handle transaction updates and trigger related business logic
     private void handleTransactionUpdate(MomoTransaction transaction) {
         log.info("=== HANDLE TRANSACTION UPDATE CALLED ===");
         log.info("Handling transaction update for {} with status {}", 
@@ -753,9 +735,7 @@ public class MomoService {
         }
     }
 
-    /**
-     * Map transaction status from MoMo to internal transaction status
-     */
+    //Map transaction status from MoMo to internal transaction status
     private MomoTransactionStatus mapToTransactionStatus(MomoTransaction transaction) {
         MomoTransactionStatus status = new MomoTransactionStatus();
         status.setReferenceId(transaction.getReferenceId());
@@ -769,9 +749,8 @@ public class MomoService {
         return status;
     }
 
-    /**
-     * Map string status to TransactionStatus enum
-     */
+    
+    //Map string status to TransactionStatus enum
     private TransactionStatus mapToTransactionStatus(String status) {
         try {
             return TransactionStatus.valueOf(status.toUpperCase());

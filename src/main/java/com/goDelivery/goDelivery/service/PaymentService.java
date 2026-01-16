@@ -55,7 +55,7 @@ public class PaymentService {
         log.info("Processing payment for order ID: {}", paymentRequest.getOrderId());
         
         // Find the order
-        Order order = orderRepository.findById(paymentRequest.getOrderId())
+        Order order = orderRepository.findByOrderId(paymentRequest.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + paymentRequest.getOrderId()));
         
         // Create and save payment
