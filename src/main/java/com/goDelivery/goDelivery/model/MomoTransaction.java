@@ -114,7 +114,7 @@ public class MomoTransaction {
         updatedAt = LocalDateTime.now();
         
         // If status changed to a final state, set completedAt
-        if (status != null && (status == TransactionStatus.SUCCESS || 
+        if (status != null && (status == TransactionStatus.SUCCESSFUL || 
                               status == TransactionStatus.FAILED || 
                               status == TransactionStatus.CANCELLED) && 
             completedAt == null) {
@@ -124,7 +124,7 @@ public class MomoTransaction {
     
     // Helper methods for status management
     public void markAsSuccessful(String financialTransactionId) {
-        this.status = TransactionStatus.SUCCESS;
+        this.status = TransactionStatus.SUCCESSFUL;
         this.financialTransactionId = financialTransactionId;
         this.completedAt = LocalDateTime.now();
         if (this.payment != null) {
@@ -151,12 +151,12 @@ public class MomoTransaction {
     }
     
     public boolean isFinalState() {
-        return status == TransactionStatus.SUCCESS || 
+        return status == TransactionStatus.SUCCESSFUL || 
                status == TransactionStatus.FAILED || 
                status == TransactionStatus.CANCELLED;
     }
     
     public boolean isSuccessful() {
-        return status == TransactionStatus.SUCCESS;
+        return status == TransactionStatus.SUCCESSFUL;
     }
 }

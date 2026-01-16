@@ -238,7 +238,7 @@ public class PaymentService {
                 
                 // Check if this is a duplicate webhook for a successful payment
                 if (payment.getPaymentStatus() == PaymentStatus.PAID && 
-                    webhookRequest.getTransactionStatus().equalsIgnoreCase("SUCCESS")) {
+                    webhookRequest.getTransactionStatus().equalsIgnoreCase("SUCCESSFUL")) {
                     log.info("Duplicate webhook received for paid transaction: {}", 
                             webhookRequest.getTransactionId());
                     return;
@@ -246,7 +246,13 @@ public class PaymentService {
                 
                 // Update payment status based on webhook
                 switch (webhookRequest.getTransactionStatus().toUpperCase()) {
-                    case "SUCCESS":
+                    // case "SUCCESSFUL":
+                    //     payment.setPaymentStatus(PaymentStatus.PAID);
+                    //     payment.setGateWayResponse("Payment successful: " + webhookRequest.getDescription());
+                    //     break;
+
+                    case "SUCCESSFUL":
+                    case "SUCCESS":    
                         handleSuccessfulPayment(webhookRequest, payment);
                         break;
                         

@@ -112,7 +112,7 @@ public class Order {
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
@@ -187,7 +187,7 @@ public class Order {
         // Update order status based on transaction status if needed
         if (transaction.getStatus() != null) {
             switch (transaction.getStatus()) {
-                case SUCCESS:
+                case SUCCESSFUL:
                     this.setPaymentStatus(PaymentStatus.PAID);
                     break;
                 case FAILED:

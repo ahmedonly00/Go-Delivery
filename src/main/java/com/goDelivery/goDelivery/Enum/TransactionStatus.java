@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.Enum;
 
 public enum TransactionStatus {
     PENDING,
-    SUCCESS,
+    SUCCESSFUL,
     FAILED,
     CANCELLED
 }

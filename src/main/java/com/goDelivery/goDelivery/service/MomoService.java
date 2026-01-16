@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -302,6 +303,7 @@ public class MomoService {
             throw new RuntimeException("Failed to process collection-disbursement: " + e.getMessage());
         }
     }
+
     public DisbursementStatusResponse checkDisbursementStatus(String referenceId) {
         try {
             String authToken = generateAuthToken();
@@ -454,7 +456,7 @@ public class MomoService {
                 }
                 
                 // If we've exhausted all attempts
-                if (transaction.getStatus() != TransactionStatus.SUCCESS) {
+                if (transaction.getStatus() != TransactionStatus.SUCCESSFUL) {
                     transaction.setStatus(TransactionStatus.FAILED);
                     transaction.setErrorReason("Max polling attempts reached without final status");
                     momoTransactionRepository.save(transaction);
@@ -637,6 +639,7 @@ public class MomoService {
     }
     
     //Handle transaction updates and trigger related business logic
+    @Transactional
     private void handleTransactionUpdate(MomoTransaction transaction) {
         log.info("=== HANDLE TRANSACTION UPDATE CALLED ===");
         log.info("Handling transaction update for {} with status {}", 
@@ -656,7 +659,7 @@ public class MomoService {
                 payment.setPaymentStatus(mapToPaymentStatus(transaction.getStatus()));
                 payment.setGateWayResponse("Transaction status: " + transaction.getStatus());
                 
-                if (transaction.getStatus() == TransactionStatus.SUCCESS) {
+                if (transaction.getStatus() == TransactionStatus.SUCCESSFUL) {
                     payment.setPaymentDate(LocalDate.now());
                     payment.setFailureReason(null);
                 } else if (transaction.getStatus() == TransactionStatus.FAILED) {
@@ -670,7 +673,7 @@ public class MomoService {
             if (transaction.getOrder() != null) {
                 Order order = transaction.getOrder();
                 
-                if (transaction.getStatus() == TransactionStatus.SUCCESS) {
+                if (transaction.getStatus() == TransactionStatus.SUCCESSFUL) {
                     order.setPaymentStatus(PaymentStatus.PAID);
                     order.setOrderStatus(OrderStatus.CONFIRMED);
                     order.setOrderConfirmedAt(LocalDate.now());
@@ -763,7 +766,7 @@ public class MomoService {
     //Map TransactionStatus to PaymentStatus
     private PaymentStatus mapToPaymentStatus(TransactionStatus status) {
         return switch (status) {
-            case SUCCESS -> PaymentStatus.PAID;
+            case SUCCESSFUL -> PaymentStatus.PAID;
             case FAILED -> PaymentStatus.FAILED;
             case PENDING -> PaymentStatus.PENDING;
             case CANCELLED -> PaymentStatus.CANCELLED;
@@ -781,7 +784,7 @@ public class MomoService {
         String orderId = transaction.getOrder().getOrderId().toString();
         
         switch (transaction.getStatus()) {
-            case SUCCESS:
+            case SUCCESSFUL:
                 notificationService.sendPaymentConfirmation(
                     customerEmail,
                     Long.parseLong(orderId),
