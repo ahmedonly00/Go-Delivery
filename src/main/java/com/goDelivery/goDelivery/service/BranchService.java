@@ -118,8 +118,7 @@ public class BranchService {
         // Update fields from DTO
         existingBranch.setBranchName(branchDTO.getBranchName());
         existingBranch.setAddress(branchDTO.getAddress());
-        existingBranch.setLatitude(branchDTO.getLatitude());
-        existingBranch.setEmail(branchDTO.getEmail());
+        existingBranch.setPhoneNumber(branchDTO.getPhoneNumber());
         existingBranch.setIsActive(branchDTO.isActive());
         existingBranch.setUpdatedAt(LocalDate.now());
 
@@ -338,13 +337,11 @@ public class BranchService {
     
     private String formatAddress(BranchCreationDTO dto) {
         StringBuilder address = new StringBuilder();
-        address.append(dto.getAddress());
-        if (dto.getAddressLine2() != null && !dto.getAddressLine2().isEmpty()) {
-            address.append(", ").append(dto.getAddressLine2());
+        if (dto.getLocation() != null) {
+            address.append(dto.getLocation());
         }
         address.append(", ").append(dto.getCity());
         address.append(", ").append(dto.getState());
-        address.append(", ").append(dto.getCountry());
         return address.toString();
     }
     

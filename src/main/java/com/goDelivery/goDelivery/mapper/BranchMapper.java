@@ -88,7 +88,7 @@ public class BranchMapper {
 
         // Basic info - only update if provided
         if (dto.getBranchName() != null) branch.setBranchName(dto.getBranchName());
-        if (dto.getLocation() != null) branch.setAddress(dto.getLocation());
+        if (dto.getLocation() != null) branch.setLocation(dto.getLocation());
         if (dto.getCuisineType() != null) branch.setCuisineType(dto.getCuisineType());
         if (dto.getEmail() != null) branch.setEmail(dto.getEmail());
         if (dto.getPhoneNumber() != null) branch.setPhoneNumber(dto.getPhoneNumber());
@@ -143,13 +143,8 @@ public class BranchMapper {
     private String buildFullAddress(BranchCreationDTO dto) {
         StringBuilder address = new StringBuilder();
         
-        if (dto.getAddress() != null) {
-            address.append(dto.getAddress());
-        }
-        
-        if (dto.getAddressLine2() != null && !dto.getAddressLine2().isEmpty()) {
-            if (address.length() > 0) address.append(", ");
-            address.append(dto.getAddressLine2());
+        if (dto.getLocation() != null) {
+            address.append(dto.getLocation());
         }
         
         if (dto.getCity() != null) {
@@ -160,11 +155,6 @@ public class BranchMapper {
         if (dto.getState() != null) {
             if (address.length() > 0) address.append(", ");
             address.append(dto.getState());
-        }
-        
-        if (dto.getCountry() != null) {
-            if (address.length() > 0) address.append(", ");
-            address.append(dto.getCountry());
         }
         
         return address.toString();

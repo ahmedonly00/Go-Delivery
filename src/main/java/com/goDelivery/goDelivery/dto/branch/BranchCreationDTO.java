@@ -14,18 +14,13 @@ public class BranchCreationDTO {
     private String branchName;
     
     @NotBlank(message = "Address is required")
-    private String address;
-    
-    private String addressLine2;
-    
+    private String location;
+        
     @NotBlank(message = "City is required")
     private String city;
     
     @NotBlank(message = "State/Province is required")
     private String state;
-    
-    @NotBlank(message = "Country is required")
-    private String country;
         
     @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Phone number must be valid")
