@@ -337,8 +337,8 @@ public class BranchService {
     
     private String formatAddress(BranchCreationDTO dto) {
         StringBuilder address = new StringBuilder();
-        if (dto.getLocation() != null) {
-            address.append(dto.getLocation());
+        if (dto.getAddress() != null) {
+            address.append(dto.getAddress());
         }
         address.append(", ").append(dto.getCity());
         address.append(", ").append(dto.getState());

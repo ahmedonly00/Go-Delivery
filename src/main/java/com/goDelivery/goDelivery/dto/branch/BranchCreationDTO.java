@@ -14,7 +14,7 @@ public class BranchCreationDTO {
     private String branchName;
     
     @NotBlank(message = "Address is required")
-    private String location;
+    private String Address;
         
     @NotBlank(message = "City is required")
     private String city;

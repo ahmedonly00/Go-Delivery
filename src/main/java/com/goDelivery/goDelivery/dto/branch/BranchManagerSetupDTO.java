@@ -24,7 +24,7 @@ public class BranchManagerSetupDTO {
     
     private String branchName;
     
-    private String location;
+    private String address;
     
     private String cuisineType;
     

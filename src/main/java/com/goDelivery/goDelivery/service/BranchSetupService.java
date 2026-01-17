@@ -121,7 +121,7 @@ public class BranchSetupService {
         
         // Basic info (mirrors RestaurantDTO)
         dto.setBranchName(branch.getBranchName());
-        dto.setLocation(branch.getAddress());
+        dto.setAddress(branch.getAddress());
         dto.setCuisineType(branch.getCuisineType());
         dto.setEmail(branch.getEmail());
         dto.setPhoneNumber(branch.getPhoneNumber());
@@ -156,7 +156,7 @@ public class BranchSetupService {
     private void updateBranchFromManagerSetup(Branches branch, BranchManagerSetupDTO dto) {
         // Basic info - only update if provided (mirrors RestaurantDTO structure)
         if (dto.getBranchName() != null) branch.setBranchName(dto.getBranchName());
-        if (dto.getLocation() != null) branch.setAddress(dto.getLocation());
+        if (dto.getAddress() != null) branch.setAddress(dto.getAddress());
         if (dto.getCuisineType() != null) branch.setCuisineType(dto.getCuisineType());
         if (dto.getEmail() != null) branch.setEmail(dto.getEmail());
         if (dto.getPhoneNumber() != null) branch.setPhoneNumber(dto.getPhoneNumber());
