@@ -28,6 +28,7 @@ public class BranchMapper {
         return Branches.builder()
                 .branchName(dto.getBranchName())
                 .address(fullAddress)
+                .location(dto.getLocation())
                 .phoneNumber(dto.getPhoneNumber())
                 .email(dto.getEmail())
                 .description(dto.getDescription())
@@ -53,6 +54,7 @@ public class BranchMapper {
         BranchManagerSetupDTO dto = BranchManagerSetupDTO.builder()
                 .branchName(branch.getBranchName())
                 .address(branch.getAddress())
+                .location(branch.getLocation())
                 .cuisineType(branch.getCuisineType())
                 .email(branch.getEmail())
                 .phoneNumber(branch.getPhoneNumber())
@@ -144,6 +146,11 @@ public class BranchMapper {
         
         if (dto.getAddress() != null) {
             address.append(dto.getAddress());
+        }
+        
+        if (dto.getLocation() != null) {
+            if (address.length() > 0) address.append(", ");
+            address.append(dto.getLocation());
         }
         
         if (dto.getCity() != null) {

@@ -122,6 +122,7 @@ public class BranchSetupService {
         // Basic info (mirrors RestaurantDTO)
         dto.setBranchName(branch.getBranchName());
         dto.setAddress(branch.getAddress());
+        dto.setLocation(branch.getLocation());
         dto.setCuisineType(branch.getCuisineType());
         dto.setEmail(branch.getEmail());
         dto.setPhoneNumber(branch.getPhoneNumber());

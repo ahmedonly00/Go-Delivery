@@ -434,9 +434,6 @@ public class BranchService {
         if (StringUtils.isBlank(branchDTO.getPhoneNumber())) {
             throw new ValidationException("Phone number is required");
         }
-        if (branchDTO.getLatitude() == null || branchDTO.getLongitude() == null) {
-            throw new ValidationException("Branch coordinates (latitude and longitude) are required");
-        }
         if (!branchDTO.getPhoneNumber().matches("^[+]?[0-9]{10,15}$")) {
             throw new ValidationException("Invalid phone number format");
         }

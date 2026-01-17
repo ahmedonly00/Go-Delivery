@@ -26,6 +26,8 @@ public class BranchManagerSetupDTO {
     
     private String address;
     
+    private String location;
+    
     private String cuisineType;
     
     @Email(message = "Email must be valid")

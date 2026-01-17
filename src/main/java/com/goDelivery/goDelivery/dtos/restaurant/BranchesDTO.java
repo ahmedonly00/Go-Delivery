@@ -18,8 +18,7 @@ public class BranchesDTO {
     private Long branchId;
     private String branchName;
     private String address;
-    private Float latitude;
-    private Float longitude;
+    private String location;
     private String phoneNumber;
     private String email;
     private String website;
