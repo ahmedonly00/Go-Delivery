@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 
@@ -37,14 +38,18 @@ public class BranchSetupController {
                       "This allows the branch manager to fill in only what the restaurant admin didn't set."
     )
     public ResponseEntity<BranchesDTO> completeBranchManagerSetup(
-            @Parameter(description = "Branch ID") 
             @PathVariable Long branchId,
-            @RequestBody @Valid BranchManagerSetupDTO setupDTO,
+            @RequestPart("setup") @Valid BranchManagerSetupDTO setupDTO,
+            @RequestPart(value = "commercialRegistrationFile", required = false) MultipartFile commercialRegistrationFile,
+            @RequestPart(value = "taxIdentificationFile", required = false) MultipartFile taxIdentificationFile,
             @AuthenticationPrincipal UserDetails userDetails) {
         
         log.info("Branch manager completing setup for branch {} by user {}", 
                 branchId, userDetails.getUsername());
-        
+
+        setupDTO.setCommercialRegistrationFile(commercialRegistrationFile);
+        setupDTO.setTaxIdentificationFile(taxIdentificationFile);
+
         BranchesDTO result = branchSetupService.completeBranchManagerSetup(branchId, setupDTO);
         
         return ResponseEntity.ok(result);

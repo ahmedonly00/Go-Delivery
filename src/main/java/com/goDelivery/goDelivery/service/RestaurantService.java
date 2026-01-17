@@ -264,11 +264,11 @@ public class RestaurantService {
                 .collect(Collectors.toList());
     }
 
-    public List<com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO> getPendingRestaurantsForReview() {
+    public List<RestaurantReviewDTO> getPendingRestaurantsForReview() {
         return restaurantMapper.toRestaurantReviewDTOList(restaurantRepository.findPendingRestaurants());
     }
 
-    public com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO getRestaurantForReview(Long restaurantId) {
+    public RestaurantReviewDTO getRestaurantForReview(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
         return restaurantMapper.toRestaurantReviewDTO(restaurant);

@@ -32,8 +32,9 @@ public class BranchesDTO {
     private LocalDate createdAt;
     private LocalDate updatedAt;
     private ApprovalStatus approvalStatus;
-    private String businessDocumentUrl;
-    private String operatingLicenseUrl;
+    private String  commercialRegistrationCertificateUrl;
+    private String  taxIdentificationDocumentUrl;
+    private String taxIdentificationNumber;
     private String description;
     private String approvedBy;
     private LocalDate approvedAt;

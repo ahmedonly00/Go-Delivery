@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -32,17 +33,20 @@ public class Branches {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "latitude")
-    private Float latitude;
+    @Column(name = "location", nullable = false)
+    private String location;
 
-    @Column(name = "longitude")
-    private Float longitude;
+    @Column(name = "cuisine_type", nullable = false)
+    private String cuisineType;
+
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
-    
-    @Column(name = "email")
-    private String email;
+
+    @Column(name = "logo_url")
+    private String logoUrl;
 
     // Setup status tracking
     @Enumerated(EnumType.STRING)
@@ -72,9 +76,6 @@ public class Branches {
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
-    
-    @Column(name = "logo_url")
-    private String logoUrl;
 
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
@@ -85,22 +86,19 @@ public class Branches {
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status", nullable = false)
     private ApprovalStatus approvalStatus;
-    
-    // Business documents
-    @Column(name = "business_document_url")
-    private String businessDocumentUrl;
-    
-    @Column(name = "operating_license_url")
-    private String operatingLicenseUrl;
+
+    // Business Documents
+    @Column(name = "commercial_registration_certificate_url")
+    private String  commercialRegistrationCertificateUrl;
+
+    @Column(name = "tax_identification_number")
+    private String taxIdentificationNumber;
+
+    @Column(name = "tax_identification_document_url")
+    private String  taxIdentificationDocumentUrl;
     
     @Column(name = "description", length = 500)
     private String description;
-    
-    @Column(name = "cuisine_type")
-    private String cuisineType;
-    
-    @Column(name = "tax_identification_number")
-    private String taxIdentificationNumber;
     
     @Column(name = "approved_by")
     private String approvedBy;

@@ -63,9 +63,9 @@ public class BranchMapper {
                 .deliveryRadius(branch.getDeliveryRadius())
                 .averagePreparationTime(branch.getAveragePreparationTime())
                 .minimumOrderAmount(branch.getMinimumOrderAmount())
-                .commercialRegistrationCertificateUrl(branch.getBusinessDocumentUrl())
+                .commercialRegistrationCertificateUrl(branch.getCommercialRegistrationCertificateUrl())
                 .taxIdentificationNumber(branch.getTaxIdentificationNumber())
-                .taxIdentificationDocumentUrl(branch.getOperatingLicenseUrl())
+                .taxIdentificationDocumentUrl(branch.getTaxIdentificationDocumentUrl())
                 .build();
 
         // Map operating hours
@@ -103,9 +103,7 @@ public class BranchMapper {
         if (dto.getMinimumOrderAmount() != null) branch.setMinimumOrderAmount(dto.getMinimumOrderAmount());
 
         // Documents
-        if (dto.getCommercialRegistrationCertificateUrl() != null) branch.setBusinessDocumentUrl(dto.getCommercialRegistrationCertificateUrl());
         if (dto.getTaxIdentificationNumber() != null) branch.setTaxIdentificationNumber(dto.getTaxIdentificationNumber());
-        if (dto.getTaxIdentificationDocumentUrl() != null) branch.setOperatingLicenseUrl(dto.getTaxIdentificationDocumentUrl());
 
         branch.setUpdatedAt(LocalDate.now());
     }

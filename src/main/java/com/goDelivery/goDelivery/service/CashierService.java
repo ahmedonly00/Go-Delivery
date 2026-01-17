@@ -94,6 +94,13 @@ public class CashierService {
                 .map(orderMapper::toOrderResponse);
     }
 
+    @Transactional(readOnly = true)
+    public Page<OrderResponse> getAllOrders(Pageable pageable) {
+        log.info("Fetching all orders with pagination");
+        return orderRepository.findAll(pageable)
+                .map(orderMapper::toOrderResponse);
+    }
+
     @Transactional
     public OrderResponse updateOrderStatus(OrderStatusUpdate statusUpdate) {
         log.info("Updating status for order ID: {} to {}", statusUpdate.getOrderId(), statusUpdate.getStatus());

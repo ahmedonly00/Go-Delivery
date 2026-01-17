@@ -229,12 +229,6 @@ public class BranchDelegationService {
         if (branchDTO.getDescription() != null) {
             existingBranch.setDescription(branchDTO.getDescription());
         }
-        if (branchDTO.getLatitude() != null) {
-            existingBranch.setLatitude(branchDTO.getLatitude());
-        }
-        if (branchDTO.getLongitude() != null) {
-            existingBranch.setLongitude(branchDTO.getLongitude());
-        }
         
         Branches savedBranch = branchesRepository.save(existingBranch);
         return restaurantMapper.toBranchDTO(savedBranch);

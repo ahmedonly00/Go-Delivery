@@ -11,6 +11,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
+
+import com.goDelivery.goDelivery.Enum.ApprovalStatus;
 import com.goDelivery.goDelivery.Enum.DeliveryType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -79,7 +81,7 @@ public class RestaurantDTO {
     @Builder.Default
     private Boolean isApproved = false;
     
-    private com.goDelivery.goDelivery.Enum.ApprovalStatus approvalStatus;
+    private ApprovalStatus approvalStatus;
     
     private String rejectionReason;
     

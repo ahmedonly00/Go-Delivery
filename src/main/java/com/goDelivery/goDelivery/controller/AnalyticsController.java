@@ -5,6 +5,9 @@ import com.goDelivery.goDelivery.dtos.analytics.SalesReportDTO;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +32,12 @@ public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
 
+    @Operation(summary = "Get order history", description = "Retrieves paginated order history for a restaurant")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved order history"),
+    @ApiResponse(responseCode = "400", description = "Invalid parameters"),
+    @ApiResponse(responseCode = "404", description = "Restaurant not found")
+    })
     @GetMapping(value = "/getOrdersHistory")
     public ResponseEntity<Page<OrderResponse>> getOrderHistory(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -46,6 +55,7 @@ public class AnalyticsController {
         return ResponseEntity.ok(orders);
     }
 
+    @Operation(summary = "Generate sales report", description = "Generates a sales report with time series data")
     @GetMapping(value = "/getSalesReport")
     public ResponseEntity<SalesReportDTO> generateSalesReport(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -63,6 +73,7 @@ public class AnalyticsController {
         return ResponseEntity.ok(report);
     }
 
+    @Operation(summary = "Analyze customer trends", description = "Analyzes customer ordering patterns")
     @GetMapping(value = "/getCustomerTrends")
     public ResponseEntity<List<CustomerTrendsDTO>> analyzeCustomerTrends(
             @AuthenticationPrincipal UserDetails userDetails,

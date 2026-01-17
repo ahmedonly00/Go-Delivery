@@ -1,5 +1,7 @@
 package com.goDelivery.goDelivery.dto.branch;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.goDelivery.goDelivery.Enum.DeliveryType;
 import com.goDelivery.goDelivery.dtos.restaurant.OperatingHoursDTO;
 import lombok.AllArgsConstructor;
@@ -41,15 +43,17 @@ public class BranchManagerSetupDTO {
     
     @PositiveOrZero(message = "Average preparation time must be zero or positive")
     private Integer averagePreparationTime;
+
+    private Boolean deliveryAvailable;
     
     @PositiveOrZero(message = "Minimum order amount must be zero or positive")
     private Float minimumOrderAmount;
     
-    private String commercialRegistrationCertificateUrl;
+    private MultipartFile  commercialRegistrationCertificateUrl;
+
+    private MultipartFile  taxIdentificationDocumentUrl;
     
     private String taxIdentificationNumber;
-    
-    private String taxIdentificationDocumentUrl;
     
     private OperatingHoursDTO operatingHours;
 }

@@ -168,27 +168,42 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurant);
     }
 
-
-    @GetMapping(value = "/getRestaurantsByLocation/{location}")
+    @GetMapping(value = "/searchByLocation")
     public ResponseEntity<List<RestaurantDTO>> getRestaurantsByLocation(
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable String location) {
-        List<RestaurantDTO> restaurants = restaurantService.getRestaurantsByLocation(location);
+            @RequestParam(required = true) String location) {
+        RestaurantSearchRequest searchRequest = new RestaurantSearchRequest();
+        searchRequest.setLocation(location);
+        List<RestaurantDTO> restaurants = restaurantService.searchRestaurants(searchRequest);
         return ResponseEntity.ok(restaurants);
     }
 
-    @GetMapping(value = "/getRestaurantsByCuisineType/{cuisineType}")
+    @GetMapping(value = "/searchByCuisine")
     public ResponseEntity<List<RestaurantDTO>> getRestaurantsByCuisineType(
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable String cuisineType) {
-        List<RestaurantDTO> restaurants = restaurantService.getRestaurantsByCuisineType(cuisineType);
+            @RequestParam(required = true) String cuisineType) {
+        RestaurantSearchRequest searchRequest = new RestaurantSearchRequest();
+        searchRequest.setCuisineType(cuisineType);
+        List<RestaurantDTO> restaurants = restaurantService.searchRestaurants(searchRequest);
         return ResponseEntity.ok(restaurants);
     }
 
-    @GetMapping(value = "/searchRestaurants")
+    @GetMapping(value = "/search")
     public ResponseEntity<List<RestaurantDTO>> searchRestaurants(
             @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody RestaurantSearchRequest searchRequest) {
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String restaurantName,
+            @RequestParam(required = false) String cuisineType,
+            @RequestParam(required = false) Double minRating,
+            @RequestParam(required = false) String sortBy) {
+        
+        RestaurantSearchRequest searchRequest = new RestaurantSearchRequest();
+        searchRequest.setLocation(location);
+        searchRequest.setRestaurantName(restaurantName);
+        searchRequest.setCuisineType(cuisineType);
+        searchRequest.setMinRating(minRating);
+        searchRequest.setSortBy(sortBy);
+        
         List<RestaurantDTO> restaurants = restaurantService.searchRestaurants(searchRequest);
         return ResponseEntity.ok(restaurants);
     }

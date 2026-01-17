@@ -10,6 +10,8 @@ import com.goDelivery.goDelivery.exception.UnauthorizedException;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.repository.*;
+
+import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -28,6 +30,7 @@ public class BranchSetupService {
     private final RestaurantMapper restaurantMapper;
     private final BranchUsersRepository branchUsersRepository;
     private final OperatingHoursRepository operatingHoursRepository;
+    private final FileStorageService fileStorageService;
     
     private void verifyBranchAccess(Long branchId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -43,11 +46,7 @@ public class BranchSetupService {
         }
     }
     
-    /**
-     * Comprehensive branch setup - single API for branch manager to complete all remaining setup.
-     * Only updates fields that are provided (not null) in the DTO.
-     * Structure mirrors RestaurantDTO for consistency.
-     */
+    //Comprehensive branch setup - single API for branch manager to complete all remaining setup.
     @Transactional
     public BranchesDTO completeBranchManagerSetup(Long branchId, BranchManagerSetupDTO setupDTO) {
         // Verify branch access
@@ -63,6 +62,28 @@ public class BranchSetupService {
         
         Branches branch = branchesRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
+        
+        // Handle file uploads
+    try {
+        if (setupDTO.getCommercialRegistrationFile() != null && !setupDTO.getCommercialRegistrationFile().isEmpty()) {
+            String filePath = fileStorageService.storeFile(
+                setupDTO.getCommercialRegistrationFile(), 
+                "branches/" + branchId + "/documents/commercialRegistration"
+            );
+            branch.setCommercialRegistrationCertificateUrl("/api/files/" + filePath.replace("\\", "/"));
+        }
+        
+        if (setupDTO.getTaxIdentificationFile() != null && !setupDTO.getTaxIdentificationFile().isEmpty()) {
+            String filePath = fileStorageService.storeFile(
+                setupDTO.getTaxIdentificationFile(), 
+                "branches/" + branchId + "/documents/taxDocument"
+            );
+            branch.setTaxIdentificationDocumentUrl("/api/files/" + filePath.replace("\\", "/"));
+        }
+        
+    } catch (IOException e) {
+        throw new RuntimeException("Failed to store files: " + e.getMessage());
+    }                   
         
         // Update only non-null fields (what branch manager provides)
         updateBranchFromManagerSetup(branch, setupDTO);
@@ -87,11 +108,8 @@ public class BranchSetupService {
         return restaurantMapper.toBranchDTO(savedBranch);
     }
     
-    /**
-     * Get what fields still need to be set up by the branch manager.
-     * Returns the current branch state so frontend can show which fields are missing.
-     * Structure mirrors RestaurantDTO for consistency.
-     */
+
+    //Get what fields still need to be set up by the branch manager.
     @Transactional(readOnly = true)
     public BranchManagerSetupDTO getBranchManagerSetupStatus(Long branchId) {
         verifyBranchAccess(branchId);
@@ -118,9 +136,9 @@ public class BranchSetupService {
         dto.setMinimumOrderAmount(branch.getMinimumOrderAmount());
         
         // Documents
-        dto.setCommercialRegistrationCertificateUrl(branch.getBusinessDocumentUrl());
+        dto.setCommercialRegistrationCertificateUrl(branch.getCommercialRegistrationCertificateUrl());
+        dto.setTaxIdentificationDocumentUrl(branch.getTaxIdentificationDocumentUrl());
         dto.setTaxIdentificationNumber(branch.getTaxIdentificationNumber());
-        dto.setTaxIdentificationDocumentUrl(branch.getOperatingLicenseUrl());
         
         // Operating hours (as nested DTO like RestaurantDTO)
         OperatingHours hours = branch.getOperatingHours();
@@ -153,9 +171,7 @@ public class BranchSetupService {
         if (dto.getMinimumOrderAmount() != null) branch.setMinimumOrderAmount(dto.getMinimumOrderAmount());
         
         // Documents
-        if (dto.getCommercialRegistrationCertificateUrl() != null) branch.setBusinessDocumentUrl(dto.getCommercialRegistrationCertificateUrl());
         if (dto.getTaxIdentificationNumber() != null) branch.setTaxIdentificationNumber(dto.getTaxIdentificationNumber());
-        if (dto.getTaxIdentificationDocumentUrl() != null) branch.setOperatingLicenseUrl(dto.getTaxIdentificationDocumentUrl());
         
         branch.setUpdatedAt(LocalDate.now());
     }
