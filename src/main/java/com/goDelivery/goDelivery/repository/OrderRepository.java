@@ -1,13 +1,17 @@
 package com.goDelivery.goDelivery.repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.goDelivery.goDelivery.Enum.OrderStatus;
+import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.model.Order;
 
 import org.springframework.stereotype.Repository;
@@ -38,5 +42,21 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     // Find orders by status and where biker is not assigned
     List<Order> findByOrderStatusAndBikersIsNull(OrderStatus status);
+
+    @Query("SELECT o FROM Order o WHERE o.restaurant.restaurantId = :restaurantId AND o.paymentStatus = :paymentStatus")
+    List<Order> findByRestaurant_RestaurantIdAndPaymentStatus(
+        @Param("restaurantId") Long restaurantId, 
+        @Param("paymentStatus") PaymentStatus paymentStatus
+    );
+
+    @Query("SELECT " +
+       "COUNT(o) as total, " +
+       "SUM(CASE WHEN o.orderStatus = 'PLACED' THEN 1 ELSE 0 END) as placed, " +
+       "SUM(CASE WHEN o.orderStatus = 'CONFIRMED' THEN 1 ELSE 0 END) as confirmed, " +
+       "SUM(CASE WHEN o.paymentStatus = 'PAID' THEN 1 ELSE 0 END) as paid, " +
+       "SUM(CASE WHEN o.orderStatus = 'DELIVERED' THEN 1 ELSE 0 END) as delivered, " +
+       "SUM(CASE WHEN o.orderStatus = 'CANCELLED' THEN 1 ELSE 0 END) as cancelled " +
+       "FROM Order o WHERE o.restaurant.restaurantId = :restaurantId")
+    Map<String, Long> getOrderStatusCounts(@Param("restaurantId") Long restaurantId);
     
 }

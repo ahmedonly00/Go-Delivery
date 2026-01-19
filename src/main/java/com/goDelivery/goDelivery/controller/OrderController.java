@@ -3,7 +3,9 @@ package com.goDelivery.goDelivery.controller;
 import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
+import com.goDelivery.goDelivery.dtos.order.OrderStatusCountsDTO;
 import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantRevenueDTO;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -72,25 +76,29 @@ public class OrderController {
     }
 
     @GetMapping("/getOrdersByRestaurant/{restaurantId}")
-    public ResponseEntity<List<OrderResponse>> getOrdersByRestaurant(@PathVariable Long restaurantId) {
+    public ResponseEntity<List<OrderResponse>> getOrdersByRestaurant(
+        @PathVariable Long restaurantId,
+        @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(orderService.getOrdersByRestaurant(restaurantId));
     }
 
     @PutMapping("/updateOrderStatus/{orderId}")
     public ResponseEntity<OrderResponse> updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestBody OrderStatusUpdate statusUpdate) {
+            @RequestBody OrderStatusUpdate statusUpdate,
+            @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(orderService.updateOrderStatus(orderId, statusUpdate));
     }
 
     @PostMapping("/cancelOrder/{orderId}")
     public ResponseEntity<OrderResponse> cancelOrder(
             @PathVariable Long orderId,
-            @RequestParam(required = false) String cancellationReason) {
+            @RequestParam(required = false) String cancellationReason,
+            @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(orderService.cancelOrder(orderId, cancellationReason));
     }
 
-    @PutMapping("/{orderId}/payment-status")
+    @PutMapping("/{orderId}/updatePaymentStatus")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     public ResponseEntity<OrderResponse> updatePaymentStatus(
             @PathVariable Long orderId,
@@ -100,23 +108,47 @@ public class OrderController {
         return ResponseEntity.ok(orderService.updatePaymentStatus(orderId, paymentStatus, failureReason));
     }
 
-    @GetMapping("/restaurant/{restaurantId}/total")
+    @GetMapping("/getTotalOrdersByRestaurant/{restaurantId}/total")
     public ResponseEntity<Long> getTotalOrdersByRestaurant(@PathVariable Long restaurantId) {
         return ResponseEntity.ok(orderService.getTotalOrdersByRestaurant(restaurantId));
     }
 
-    @GetMapping("/restaurant/{restaurantId}/stats")
-    public ResponseEntity<OrderService.RestaurantOrderStats> getRestaurantOrderStats(@PathVariable Long restaurantId) {
+    @GetMapping("/getRestaurantOrderStats/{restaurantId}/stats")
+    public ResponseEntity<OrderService.RestaurantOrderStats> getRestaurantOrderStats(
+        @PathVariable Long restaurantId,
+        @AuthenticationPrincipal UserDetails userDetails
+
+    ) {
         return ResponseEntity.ok(orderService.getRestaurantOrderStats(restaurantId));
     }
     
-    @GetMapping("/branch/{branchId}")
-    public ResponseEntity<List<OrderResponse>> getOrdersByBranch(@PathVariable Long branchId) {
+    @GetMapping("/getOrdersByBranch/{branchId}")
+    public ResponseEntity<List<OrderResponse>> getOrdersByBranch(
+        @PathVariable Long branchId,
+        @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(orderService.getOrdersByBranch(branchId));
     }
     
-    @GetMapping("/branch/{branchId}/total")
-    public ResponseEntity<Long> getTotalOrdersByBranch(@PathVariable Long branchId) {
+    @GetMapping("/getTotalOrdersByBranch/{branchId}/total")
+    public ResponseEntity<Long> getTotalOrdersByBranch(
+        @PathVariable Long branchId,
+        @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(orderService.getTotalOrdersByBranch(branchId));
+    }
+
+    @GetMapping("/{restaurantId}/revenue")
+    @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
+    public ResponseEntity<RestaurantRevenueDTO> getRestaurantRevenue(
+            @PathVariable Long restaurantId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(orderService.getRestaurantRevenue(restaurantId));
+    }
+
+    @GetMapping("/restaurant/{restaurantId}/status-counts")
+    @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
+    public ResponseEntity<OrderStatusCountsDTO> getOrderStatusCountsByRestaurant(
+            @PathVariable Long restaurantId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(orderService.getOrderStatusCountsByRestaurant(restaurantId));
     }
 }

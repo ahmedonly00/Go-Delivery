@@ -132,7 +132,7 @@ public class Order {
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderItem> orderItems;
 
     // One Order has One Payment

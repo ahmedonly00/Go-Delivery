@@ -4,11 +4,13 @@ import com.goDelivery.goDelivery.Enum.OrderStatus;
 import com.goDelivery.goDelivery.Enum.PaymentStatus;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
+import com.goDelivery.goDelivery.dtos.order.OrderStatusCountsDTO;
 import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.mapper.OrderMapper;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.dtos.order.OrderTrackingResponse;
+import com.goDelivery.goDelivery.dtos.restaurant.RestaurantRevenueDTO;
 import com.goDelivery.goDelivery.repository.BikersRepository;
 import com.goDelivery.goDelivery.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.repository.BranchesRepository;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 
@@ -509,7 +512,122 @@ public class OrderService {
         
         return new RestaurantOrderStats(totalOrders, completedOrders, cancelledOrders, pendingOrders);
     }
-    
+
+    @Transactional(readOnly = true)
+    public RestaurantRevenueDTO getRestaurantRevenue(Long restaurantId) {
+        // Verify access
+        verifyRestaurantAccess(restaurantId);
+        
+        // Get all delivered or completed orders for the restaurant
+        List<Order> orders = orderRepository.findByRestaurant_RestaurantIdAndPaymentStatus(
+            restaurantId, 
+            PaymentStatus.PAID
+        );
+        
+        // Filter only orders that are either DELIVERED or CONFIRMED
+        List<Order> validOrders = orders.stream()
+            .filter(order -> order.getOrderStatus() == OrderStatus.DELIVERED || 
+                            order.getOrderStatus() == OrderStatus.CONFIRMED)
+            .collect(Collectors.toList());
+        
+        // Calculate different revenue metrics
+        LocalDate today = LocalDate.now();
+        LocalDate weekStart = today.minusDays(today.getDayOfWeek().getValue() - 1); // Start of current week (Monday)
+        LocalDate monthStart = today.withDayOfMonth(1); // Start of current month
+        LocalDate thirtyDaysAgo = today.minusDays(30); // For 30-day history
+        
+        double totalRevenue = validOrders.stream()
+            .mapToDouble(Order::getFinalAmount)
+            .sum();
+        
+        double todayRevenue = validOrders.stream()
+            .filter(order -> order.getDeliveredAt() != null && 
+                            order.getDeliveredAt().isEqual(today) || 
+                            (order.getOrderStatus() == OrderStatus.CONFIRMED && 
+                            order.getOrderConfirmedAt() != null && 
+                            order.getOrderConfirmedAt().isEqual(today)))
+            .mapToDouble(Order::getFinalAmount)
+            .sum();
+        
+        double thisWeekRevenue = validOrders.stream()
+            .filter(order -> {
+                LocalDate orderDate = order.getDeliveredAt() != null ? 
+                                    order.getDeliveredAt() : 
+                                    order.getOrderConfirmedAt();
+                return orderDate != null && 
+                    !orderDate.isBefore(weekStart) && 
+                    !orderDate.isAfter(today);
+            })
+            .mapToDouble(Order::getFinalAmount)
+            .sum();
+        
+        double thisMonthRevenue = validOrders.stream()
+            .filter(order -> {
+                LocalDate orderDate = order.getDeliveredAt() != null ? 
+                                    order.getDeliveredAt() : 
+                                    order.getOrderConfirmedAt();
+                return orderDate != null && 
+                    !orderDate.isBefore(monthStart) && 
+                    !orderDate.isAfter(today);
+            })
+            .mapToDouble(Order::getFinalAmount)
+            .sum();
+        
+        // Calculate daily revenue for last 30 days
+        Map<LocalDate, Double> dailyRevenue = validOrders.stream()
+            .filter(order -> {
+                LocalDate orderDate = order.getDeliveredAt() != null ? 
+                                    order.getDeliveredAt() : 
+                                    order.getOrderConfirmedAt();
+                return orderDate != null && 
+                    !orderDate.isBefore(thirtyDaysAgo) && 
+                    !orderDate.isAfter(today);
+            })
+            .collect(Collectors.groupingBy(
+                order -> order.getDeliveredAt() != null ? 
+                    order.getDeliveredAt() : 
+                    order.getOrderConfirmedAt(),
+                TreeMap::new,
+                Collectors.summingDouble(Order::getFinalAmount)
+            ));
+        
+        // Calculate revenue by payment method
+        Map<String, Double> revenueByPaymentMethod = validOrders.stream()
+            .collect(Collectors.groupingBy(
+                order -> order.getPaymentMethod().name(),
+                Collectors.summingDouble(Order::getFinalAmount)
+            ));
+        
+        return RestaurantRevenueDTO.builder()
+            .totalRevenue(roundToTwoDecimals(totalRevenue))
+            .todayRevenue(roundToTwoDecimals(todayRevenue))
+            .thisWeekRevenue(roundToTwoDecimals(thisWeekRevenue))
+            .thisMonthRevenue(roundToTwoDecimals(thisMonthRevenue))
+            .dailyRevenue(dailyRevenue)
+            .revenueByPaymentMethod(revenueByPaymentMethod)
+            .build();
+    }
+
+    private double roundToTwoDecimals(double value) {
+        return Math.round(value * 100.0) / 100.0;
+    }
+
+
+    public OrderStatusCountsDTO getOrderStatusCountsByRestaurant(Long restaurantId) {
+        verifyRestaurantAccess(restaurantId);
+        Map<String, Long> counts = orderRepository.getOrderStatusCounts(restaurantId);
+        
+        return OrderStatusCountsDTO.builder()
+            .totalOrders(counts.getOrDefault("total", 0L))
+            .placedOrders(counts.getOrDefault("placed", 0L))
+            .confirmedOrders(counts.getOrDefault("confirmed", 0L))
+            .paidOrders(counts.getOrDefault("paid", 0L))
+            .deliveredOrders(counts.getOrDefault("delivered", 0L))
+            .cancelledOrders(counts.getOrDefault("cancelled", 0L))
+            .pendingOrders(counts.getOrDefault("placed", 0L) + counts.getOrDefault("confirmed", 0L))
+            .build();
+    }
+   
     private void verifyRestaurantAccess(Long restaurantId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         
