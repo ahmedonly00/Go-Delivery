@@ -14,6 +14,15 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     boolean existsByEmail(String email);
     Optional<Restaurant> findByRestaurantId(Long restaurantId);
     Optional<Restaurant> findByEmail(String email);
+    
+    @Query("SELECT r FROM Restaurant r WHERE r.isApproved = true AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL")
+    List<Restaurant> findByIsApprovedTrueAndLatitudeIsNotNullAndLongitudeIsNotNull();
+    
+    @Query("SELECT r FROM Restaurant r WHERE LOWER(r.restaurantName) LIKE LOWER(concat('%', :name, '%')) " +
+           "AND r.isApproved = true AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL")
+    List<Restaurant> findByRestaurantNameContainingIgnoreCaseAndIsApprovedTrueAndLatitudeIsNotNullAndLongitudeIsNotNull(
+        @Param("name") String name
+    );
     boolean existsByRestaurantIdAndEmail(Long restaurantId, String email);
     List<Restaurant> findByLocation(String location);
     List<Restaurant> findByCuisineType(String cuisineType);

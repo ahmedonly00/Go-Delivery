@@ -1,0 +1,44 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+*.class
+.settings/
+.project
+.classpath
+
+# Logs
+logs/
+*.log
+
+# Environment files (except .env.example)
+.env
+!*.example
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Build files
+mvnw
+mvnw.cmd
+
+# Test files
+*.test
+
+# Uploads directory (handled by volume)
+uploads/
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+*.txt

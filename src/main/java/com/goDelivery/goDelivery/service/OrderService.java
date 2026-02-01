@@ -612,7 +612,7 @@ public class OrderService {
         return Math.round(value * 100.0) / 100.0;
     }
 
-
+    @Transactional(readOnly = true)
     public OrderStatusCountsDTO getOrderStatusCountsByRestaurant(Long restaurantId) {
         verifyRestaurantAccess(restaurantId);
         Map<String, Long> counts = orderRepository.getOrderStatusCounts(restaurantId);

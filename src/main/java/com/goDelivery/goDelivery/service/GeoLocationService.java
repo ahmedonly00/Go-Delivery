@@ -2,7 +2,9 @@ package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.model.Bikers;
 import com.goDelivery.goDelivery.model.Coordinates;
+import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,8 +25,9 @@ public class GeoLocationService {
     private final GeocodingService geocodingService;
     private final DistanceCalculationService distanceService;
     private final BikersRepository bikersRepository;
+    private final RestaurantRepository restaurantRepository;
 
-   
+   //Find nearest bikers
     public List<Bikers> findNearestBikers(String pickupAddress, double maxDistanceKm) {
         try {
             // Get coordinates for the pickup address
@@ -62,5 +65,54 @@ public class GeoLocationService {
         double distance = distanceService.calculateDistance(originLat, originLng, destLat, destLng);
         double averageSpeedKmh = 30.0; // Average speed in km/h
         return (int) Math.ceil((distance / averageSpeedKmh) * 60); // Convert to minutes
+    }
+
+    
+    //Finds restaurants within a specified radius of the given coordinates
+   
+    public List<Restaurant> findNearbyRestaurants(double latitude, double longitude, double radiusKm) {
+        // First, get all approved restaurants with coordinates
+        List<Restaurant> allRestaurants = restaurantRepository.findByIsApprovedTrueAndLatitudeIsNotNullAndLongitudeIsNotNull();
+        
+        // Calculate distance for each restaurant and filter by radius
+        return allRestaurants.parallelStream()
+            .map(restaurant -> {
+                double distance = distanceService.calculateDistance(
+                    latitude, 
+                    longitude,
+                    restaurant.getLatitude(),
+                    restaurant.getLongitude()
+                );
+                restaurant.setDistanceFromUser(distance); // Assuming we'll add this method to Restaurant
+                return restaurant;
+            })
+            .filter(restaurant -> restaurant.getDistanceFromUser() <= radiusKm)
+            .sorted(Comparator.comparingDouble(Restaurant::getDistanceFromUser))
+            .collect(Collectors.toList());
+    }
+    
+
+    //Finds restaurants by name within a specified radius of the given coordinates
+   
+    public List<Restaurant> findNearbyRestaurantsByName(String restaurantName, double latitude, double longitude, double radiusKm) {
+        // First, get all approved restaurants with coordinates and matching name
+        List<Restaurant> matchingRestaurants = restaurantRepository
+            .findByRestaurantNameContainingIgnoreCaseAndIsApprovedTrueAndLatitudeIsNotNullAndLongitudeIsNotNull(restaurantName);
+        
+        // Calculate distance for each restaurant and filter by radius
+        return matchingRestaurants.parallelStream()
+            .map(restaurant -> {
+                double distance = distanceService.calculateDistance(
+                    latitude, 
+                    longitude,
+                    restaurant.getLatitude(),
+                    restaurant.getLongitude()
+                );
+                restaurant.setDistanceFromUser(distance);
+                return restaurant;
+            })
+            .filter(restaurant -> restaurant.getDistanceFromUser() <= radiusKm)
+            .sorted(Comparator.comparingDouble(Restaurant::getDistanceFromUser))
+            .collect(Collectors.toList());
     }
 }

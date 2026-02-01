@@ -33,6 +33,12 @@ public class Restaurant {
     @Column(name = "location", nullable = false)
     private String location;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     @Column(name = "cuisine_type", nullable = false)
     private String cuisineType;
 
@@ -97,6 +103,9 @@ public class Restaurant {
     @Column(name = "rejection_reason")
     private String rejectionReason;
 
+    @Transient
+    private Double distanceFromUser;
+    
     @Column(name = "reviewed_by")
     private String reviewedBy; // Super admin email who reviewed
 
