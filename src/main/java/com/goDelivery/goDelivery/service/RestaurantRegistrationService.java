@@ -27,12 +27,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class RestaurantRegistrationService {
-    
+
     private final RestaurantUsersRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final PasswordEncoder passwordEncoder;
@@ -41,32 +40,30 @@ public class RestaurantRegistrationService {
     private final EmailService emailService;
     private final RestaurantMapper restaurantMapper;
 
-
     @Transactional
     public RestaurantDTO completeRestaurantRegistration(String username, RestaurantDTO restaurantDTO) {
         // Get the admin user
         RestaurantUsers admin = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Admin user not found"));
-                
+
         // Check if admin already has a restaurant
         if (admin.getRestaurant() != null) {
             throw new ResourceAlreadyExistsException("Admin already has a registered restaurant");
         }
-        
+
         // Create and save the restaurant using mapper
         Restaurant restaurant = restaurantMapper.toRestaurantForCreate(restaurantDTO);
         restaurant.setSetupStatus(RestaurantSetupStatus.COMPLETED);
-        
+
         // Convert and set operating hours if present
         if (restaurantDTO.getOperatingHours() != null) {
             OperatingHours operatingHours = operatingHoursMapper.toEntity(restaurantDTO.getOperatingHours());
             restaurant.setOperatingHours(operatingHours);
         }
-        
 
         // Save the restaurant first to generate an ID
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
-        
+
         // Update admin's restaurant reference and mark setup as complete
         admin.setRestaurant(savedRestaurant);
         admin.setSetupComplete(true);
@@ -79,25 +76,24 @@ public class RestaurantRegistrationService {
         // Save the updated admin and restaurant
         userRepository.save(admin);
         restaurantRepository.save(savedRestaurant);
-    
+
         // Send "under review" email instead of OTP
         // Email is now verified, so send the "under review" notification
         try {
             log.info("Sending 'under review' email to restaurant admin: {}", admin.getEmail());
             emailService.sendRestaurantUnderReviewEmail(
-                admin.getEmail(), 
-                admin.getFullName(), 
-                savedRestaurant.getRestaurantName()
-            );
+                    admin.getEmail(),
+                    admin.getFullName(),
+                    savedRestaurant.getRestaurantName());
             log.info("✅ Under review email successfully sent to: {}", admin.getEmail());
         } catch (Exception e) {
             log.error("❌ Failed to send under review email to {}: {}", admin.getEmail(), e.getMessage(), e);
         }
-        
+
         // Convert to DTO using mapper and return
         return restaurantMapper.toRestaurantDTO(savedRestaurant);
     }
-    
+
     @Transactional
     public RestaurantAdminResponseDTO registerRestaurantAdmin(RestaurantAdminRegistrationDTO registrationDTO) {
         // Check if email already exists
@@ -105,16 +101,17 @@ public class RestaurantRegistrationService {
             throw new ResourceAlreadyExistsException("Email already in use");
         }
 
-        //Check if password is strong
+        // Check if password is strong
         if (!registrationDTO.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$")) {
-            throw new IllegalArgumentException("Password must contain at least one uppercase letter, one lowercase letter, and one number");
+            throw new IllegalArgumentException(
+                    "Password must contain at least one uppercase letter, one lowercase letter, and one number");
         }
 
-        //Check if phone number is valid
-        if (!registrationDTO.getPhoneNumber().matches("^\\d{10,15}$")) {
-            throw new IllegalArgumentException("Invalid phone number format");
+        // Check if phone number is valid
+        if (!com.goDelivery.goDelivery.util.PhoneNumberValidator.isValid(registrationDTO.getPhoneNumber())) {
+            throw new IllegalArgumentException(com.goDelivery.goDelivery.util.PhoneNumberValidator.getErrorMessage());
         }
-        
+
         // Create admin user without restaurant association
         RestaurantUsers admin = RestaurantUsers.builder()
                 .fullName(registrationDTO.getFullName())
@@ -127,11 +124,11 @@ public class RestaurantRegistrationService {
                 .role(Roles.RESTAURANT_ADMIN) // Set the role
                 .permissions("RESTAURANT:READ,RESTAURANT:WRITE") // Basic permissions
                 .build();
-        
+
         admin = userRepository.save(admin);
         log.info("New restaurant admin registered: {}", admin.getEmail());
-        
+
         return userMapper.toAdminResponseDTO(admin);
     }
-    
+
 }

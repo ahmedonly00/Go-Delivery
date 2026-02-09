@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -26,17 +27,30 @@ public class DeliveryTracking {
     @Enumerated(EnumType.STRING)
     private DeliveryStatus deliveryStatus;
 
-    @Column(name = "latitude", nullable = false)
-    private Float latitude;
+    @Column(name = "latitude")
+    private Double latitude;
 
-    @Column(name = "longitude", nullable = false)
-    private Float longitude;
+    @Column(name = "longitude")
+    private Double longitude;
 
-    @Column(name = "notes", nullable = false)
+    @Column(name = "notes")
     private String notes;
 
     @Column(name = "time_stamp", nullable = false)
     private Timestamp timestamp;
+
+    // New fields for live tracking
+    @Column(name = "estimated_arrival_time")
+    private LocalDateTime estimatedArrivalTime;
+
+    @Column(name = "current_status_message")
+    private String currentStatusMessage;
+
+    @Column(name = "distance_to_destination_km")
+    private Double distanceToDestinationKm;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     // Many Tracking records belong to One Order
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,6 +61,5 @@ public class DeliveryTracking {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "biker_id", nullable = false)
     private Bikers bikers;
-
 
 }

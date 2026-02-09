@@ -7,12 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.goDelivery.goDelivery.Enum.DeliveryType;
+import com.goDelivery.goDelivery.Enum.DistanceUnit;
 import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
-
 
 @Data
 @Builder(toBuilder = true)
@@ -62,17 +63,38 @@ public class Restaurant {
     @Column(name = "total_reviews")
     @Builder.Default
     private Integer totalReviews = 0;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "delivery_type", nullable = false)
     @Builder.Default
     private DeliveryType deliveryType = DeliveryType.SYSTEM_DELIVERY; // Default to system delivery
 
     @Column(name = "delivery_fee")
-    private Float deliveryFee;  // Only applicable if deliveryType is SELF_DELIVERY
-    
+    private Float deliveryFee; // Only applicable if deliveryType is SELF_DELIVERY
+
     @Column(name = "delivery_radius")
-    private Double deliveryRadius;  // In kilometers, only applicable if deliveryType is SELF_DELIVERY
+    private Double deliveryRadius; // Delivery radius value, unit specified by radiusUnit
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "radius_unit")
+    @Builder.Default
+    private DistanceUnit radiusUnit = DistanceUnit.KILOMETERS; // Unit for delivery radius
+
+    @Column(name = "base_delivery_fee")
+    private Float baseDeliveryFee; // Base fee for SELF_DELIVERY
+
+    @Column(name = "per_km_fee")
+    private Float perKmFee; // Additional fee per km for SELF_DELIVERY
+
+    @Column(name = "system_delivery_agreement_accepted")
+    @Builder.Default
+    private Boolean systemDeliveryAgreementAccepted = false; // For SYSTEM_DELIVERY
+
+    @Column(name = "system_delivery_agreement_date")
+    private LocalDateTime systemDeliveryAgreementDate;
+
+    @Column(name = "system_delivery_agreement_version")
+    private String systemDeliveryAgreementVersion; // Track which version was accepted
 
     @Column(name = "description")
     private String description;
@@ -105,7 +127,7 @@ public class Restaurant {
 
     @Transient
     private Double distanceFromUser;
-    
+
     @Column(name = "reviewed_by")
     private String reviewedBy; // Super admin email who reviewed
 
@@ -121,7 +143,7 @@ public class Restaurant {
 
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
-    
+
     @Column(name = "updated_at", nullable = false)
     private LocalDate updatedAt;
 
@@ -139,17 +161,16 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews;
-    
+
     @Builder.Default
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
     private List<RestaurantUsers> restaurantUsers = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderAnalytics> orderAnalytics;
-    
+
     @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private OperatingHours operatingHours;
-    
 
     @PrePersist
     protected void onCreate() {

@@ -13,50 +13,55 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Component
 public class RestaurantMapper {
 
-    //Convert List of Restaurants to List of RestaurantDTO
+    // Convert List of Restaurants to List of RestaurantDTO
     public List<RestaurantDTO> toRestaurantDTO(List<Restaurant> restaurants) {
         if (restaurants == null) {
             return null;
         }
-       
+
         return restaurants.stream()
                 .map(restaurant -> RestaurantDTO.builder()
-                .restaurantId(restaurant.getRestaurantId())
-                .restaurantName(restaurant.getRestaurantName())
-                .location(restaurant.getLocation())
-                .cuisineType(restaurant.getCuisineType())
-                .email(restaurant.getEmail())
-                .phoneNumber(restaurant.getPhoneNumber())
-                .logoUrl(restaurant.getLogoUrl())
-                .description(restaurant.getDescription())
-                .rating(restaurant.getRating())
-                .totalReviews(restaurant.getTotalReviews())
-                .averagePreparationTime(restaurant.getAveragePreparationTime())
-                .deliveryFee(restaurant.getDeliveryFee())
-                .minimumOrderAmount(restaurant.getMinimumOrderAmount())
-                .commercialRegistrationCertificateUrl(restaurant.getCommercialRegistrationCertificateUrl())
-                .taxIdentificationNumber(restaurant.getTaxIdentificationNumber())
-                .taxIdentificationDocumentUrl(restaurant.getTaxIdentificationDocumentUrl())
-                .isApproved(restaurant.getIsApproved())
-                .approvalStatus(restaurant.getApprovalStatus())
-                .rejectionReason(restaurant.getRejectionReason())
-                .reviewedBy(restaurant.getReviewedBy())
-                .reviewedAt(restaurant.getReviewedAt())
-                .isActive(restaurant.getIsActive())
-                .build())
+                        .restaurantId(restaurant.getRestaurantId())
+                        .restaurantName(restaurant.getRestaurantName())
+                        .location(restaurant.getLocation())
+                        .cuisineType(restaurant.getCuisineType())
+                        .email(restaurant.getEmail())
+                        .phoneNumber(restaurant.getPhoneNumber())
+                        .logoUrl(restaurant.getLogoUrl())
+                        .description(restaurant.getDescription())
+                        .rating(restaurant.getRating())
+                        .totalReviews(restaurant.getTotalReviews())
+                        .averagePreparationTime(restaurant.getAveragePreparationTime())
+                        .deliveryFee(restaurant.getDeliveryFee())
+                        .minimumOrderAmount(restaurant.getMinimumOrderAmount())
+                        .commercialRegistrationCertificateUrl(restaurant.getCommercialRegistrationCertificateUrl())
+                        .taxIdentificationNumber(restaurant.getTaxIdentificationNumber())
+                        .taxIdentificationDocumentUrl(restaurant.getTaxIdentificationDocumentUrl())
+                        .isApproved(restaurant.getIsApproved())
+                        .approvalStatus(restaurant.getApprovalStatus())
+                        .rejectionReason(restaurant.getRejectionReason())
+                        .reviewedBy(restaurant.getReviewedBy())
+                        .reviewedAt(restaurant.getReviewedAt())
+                        .isActive(restaurant.getIsActive())
+                        .distanceFromUser(restaurant.getDistanceFromUser())
+                        .distanceDisplay(restaurant.getDistanceFromUser() != null
+                                ? formatDistance(restaurant.getDistanceFromUser())
+                                : null)
+                        .estimatedDeliveryMinutes(
+                                restaurant.getDistanceFromUser() != null ? calculateEta(restaurant) : null)
+                        .build())
                 .collect(Collectors.toList());
     }
-    
-    //Convert Restaurant to RestaurantDTO
+
+    // Convert Restaurant to RestaurantDTO
     public RestaurantDTO toRestaurantDTO(Restaurant restaurant) {
         if (restaurant == null) {
             return null;
         }
-        
+
         return RestaurantDTO.builder()
                 .restaurantId(restaurant.getRestaurantId())
                 .restaurantName(restaurant.getRestaurantName())
@@ -80,10 +85,15 @@ public class RestaurantMapper {
                 .reviewedBy(restaurant.getReviewedBy())
                 .reviewedAt(restaurant.getReviewedAt())
                 .isActive(restaurant.getIsActive())
+                .distanceFromUser(restaurant.getDistanceFromUser())
+                .distanceDisplay(
+                        restaurant.getDistanceFromUser() != null ? formatDistance(restaurant.getDistanceFromUser())
+                                : null)
+                .estimatedDeliveryMinutes(restaurant.getDistanceFromUser() != null ? calculateEta(restaurant) : null)
                 .build();
     }
 
-    //Convert RestaurantDTO to Restaurant
+    // Convert RestaurantDTO to Restaurant
     // For CREATING new restaurants(no ID mapping)
     public Restaurant toRestaurantForCreate(RestaurantDTO restaurantDTO) {
         if (restaurantDTO == null) {
@@ -91,7 +101,7 @@ public class RestaurantMapper {
         }
 
         return Restaurant.builder()
-                //.restaurantId(restaurantDTO.getRestaurantId())
+                // .restaurantId(restaurantDTO.getRestaurantId())
                 .restaurantName(restaurantDTO.getRestaurantName())
                 .location(restaurantDTO.getLocation())
                 .cuisineType(restaurantDTO.getCuisineType())
@@ -101,16 +111,18 @@ public class RestaurantMapper {
                 .description(restaurantDTO.getDescription())
                 .rating(restaurantDTO.getRating() != null ? restaurantDTO.getRating() : 0.0f)
                 .totalReviews(restaurantDTO.getTotalReviews() != null ? restaurantDTO.getTotalReviews() : 0)
-                .averagePreparationTime(restaurantDTO.getAveragePreparationTime() != null ? 
-                    restaurantDTO.getAveragePreparationTime() : 30) // Default to 30 minutes
+                .averagePreparationTime(
+                        restaurantDTO.getAveragePreparationTime() != null ? restaurantDTO.getAveragePreparationTime()
+                                : 30) // Default to 30 minutes
                 .deliveryFee(restaurantDTO.getDeliveryFee() != null ? restaurantDTO.getDeliveryFee() : 0.0f)
-                .minimumOrderAmount(restaurantDTO.getMinimumOrderAmount() != null ? 
-                    restaurantDTO.getMinimumOrderAmount() : 0.0f)
+                .minimumOrderAmount(
+                        restaurantDTO.getMinimumOrderAmount() != null ? restaurantDTO.getMinimumOrderAmount() : 0.0f)
                 .commercialRegistrationCertificateUrl(restaurantDTO.getCommercialRegistrationCertificateUrl())
                 .taxIdentificationNumber(restaurantDTO.getTaxIdentificationNumber())
                 .taxIdentificationDocumentUrl(restaurantDTO.getTaxIdentificationDocumentUrl())
                 .isApproved(restaurantDTO.getIsApproved() != null ? restaurantDTO.getIsApproved() : false)
-                .approvalStatus(restaurantDTO.getApprovalStatus() != null ? restaurantDTO.getApprovalStatus() : com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING)
+                .approvalStatus(restaurantDTO.getApprovalStatus() != null ? restaurantDTO.getApprovalStatus()
+                        : com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING)
                 .rejectionReason(restaurantDTO.getRejectionReason())
                 .reviewedBy(restaurantDTO.getReviewedBy())
                 .reviewedAt(restaurantDTO.getReviewedAt())
@@ -133,14 +145,15 @@ public class RestaurantMapper {
         existingRestaurant.setAveragePreparationTime(restaurantDTO.getAveragePreparationTime());
         existingRestaurant.setDeliveryFee(restaurantDTO.getDeliveryFee());
         existingRestaurant.setMinimumOrderAmount(restaurantDTO.getMinimumOrderAmount());
-        existingRestaurant.setCommercialRegistrationCertificateUrl(restaurantDTO.getCommercialRegistrationCertificateUrl());
+        existingRestaurant
+                .setCommercialRegistrationCertificateUrl(restaurantDTO.getCommercialRegistrationCertificateUrl());
         existingRestaurant.setTaxIdentificationNumber(restaurantDTO.getTaxIdentificationNumber());
         existingRestaurant.setTaxIdentificationDocumentUrl(restaurantDTO.getTaxIdentificationDocumentUrl());
         existingRestaurant.setIsActive(restaurantDTO.isActive());
         existingRestaurant.setUpdatedAt(LocalDate.now());
     }
 
-    //Branches
+    // Branches
     public List<BranchesDTO> mapBranchesToDTOs(List<Branches> branches) {
         if (branches == null) {
             return null;
@@ -150,7 +163,7 @@ public class RestaurantMapper {
                 .collect(Collectors.toList());
     }
 
-    //Convert Branches to BranchesDTO
+    // Convert Branches to BranchesDTO
     public BranchesDTO toBranchDTO(Branches branch) {
         if (branch == null) {
             return null;
@@ -190,7 +203,7 @@ public class RestaurantMapper {
                 .build();
     }
 
-    //Convert BranchesDTO to Branches
+    // Convert BranchesDTO to Branches
     public Branches toBranch(BranchesDTO branchDTO) {
         if (branchDTO == null) {
             return null;
@@ -202,13 +215,16 @@ public class RestaurantMapper {
                 .address(branchDTO.getAddress())
                 .phoneNumber(branchDTO.getPhoneNumber())
                 .email(branchDTO.getEmail())
-                .setupStatus(branchDTO.getSetupStatus() != null ? branchDTO.getSetupStatus() : com.goDelivery.goDelivery.Enum.BranchSetupStatus.ACCOUNT_CREATED)
-                .deliveryType(branchDTO.getDeliveryType() != null ? branchDTO.getDeliveryType() : com.goDelivery.goDelivery.Enum.DeliveryType.SYSTEM_DELIVERY)
+                .setupStatus(branchDTO.getSetupStatus() != null ? branchDTO.getSetupStatus()
+                        : com.goDelivery.goDelivery.Enum.BranchSetupStatus.ACCOUNT_CREATED)
+                .deliveryType(branchDTO.getDeliveryType() != null ? branchDTO.getDeliveryType()
+                        : com.goDelivery.goDelivery.Enum.DeliveryType.SYSTEM_DELIVERY)
                 .averagePreparationTime(branchDTO.getAveragePreparationTime())
                 .isActive(branchDTO.isActive())
                 .createdAt(branchDTO.getCreatedAt() != null ? branchDTO.getCreatedAt() : LocalDate.now())
                 .updatedAt(branchDTO.getUpdatedAt() != null ? branchDTO.getUpdatedAt() : LocalDate.now())
-                .approvalStatus(branchDTO.getApprovalStatus() != null ? branchDTO.getApprovalStatus() : com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING)
+                .approvalStatus(branchDTO.getApprovalStatus() != null ? branchDTO.getApprovalStatus()
+                        : com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING)
                 .commercialRegistrationCertificateUrl(branchDTO.getCommercialRegistrationCertificateUrl())
                 .taxIdentificationDocumentUrl(branchDTO.getTaxIdentificationDocumentUrl())
                 .taxIdentificationNumber(branchDTO.getTaxIdentificationNumber())
@@ -260,7 +276,7 @@ public class RestaurantMapper {
                 .map(this::toRestaurantReviewDTO)
                 .collect(Collectors.toList());
     }
-    
+
     // BranchUsers mapping methods
     public BranchUserDTO toBranchUserDTO(BranchUsers branchUser) {
         if (branchUser == null) {
@@ -280,7 +296,8 @@ public class RestaurantMapper {
                 .branchId(branchUser.getBranch() != null ? branchUser.getBranch().getBranchId() : null)
                 .branchName(branchUser.getBranch() != null ? branchUser.getBranch().getBranchName() : null)
                 .restaurantId(branchUser.getRestaurant() != null ? branchUser.getRestaurant().getRestaurantId() : null)
-                .restaurantName(branchUser.getRestaurant() != null ? branchUser.getRestaurant().getRestaurantName() : null)
+                .restaurantName(
+                        branchUser.getRestaurant() != null ? branchUser.getRestaurant().getRestaurantName() : null)
                 .build();
     }
 
@@ -303,5 +320,29 @@ public class RestaurantMapper {
                 .createdAt(LocalDate.now())
                 .updatedAt(LocalDate.now())
                 .build();
+    }
+
+    /**
+     * Format distance for display
+     */
+    private String formatDistance(double distanceKm) {
+        if (distanceKm < 1.0) {
+            return String.format("%.0f m", distanceKm * 1000);
+        }
+        return String.format("%.1f km", distanceKm);
+    }
+
+    /**
+     * Calculate estimated delivery time
+     */
+    private Integer calculateEta(Restaurant restaurant) {
+        int prepTime = restaurant.getAveragePreparationTime() != null
+                ? restaurant.getAveragePreparationTime()
+                : 20; // default 20 minutes
+
+        double distance = restaurant.getDistanceFromUser();
+        int deliveryTime = (int) Math.ceil((distance / 30.0) * 60); // 30 km/h average
+
+        return prepTime + deliveryTime;
     }
 }

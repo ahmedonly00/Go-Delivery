@@ -1,65 +1,108 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to MozFood - Get Started with Your Restaurant</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .logo { max-width: 200px; margin-bottom: 20px; }
-        .content { background-color: #f9f9f9; padding: 25px; border-radius: 5px; }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 5px;
+        }
+
         .button {
-            display: inline-block; 
-            padding: 12px 24px; 
-            background-color: #4CAF50; 
-            color: white; 
-            text-decoration: none; 
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
             border-radius: 5px;
             margin: 15px 0;
             font-weight: bold;
         }
-        .footer { margin-top: 30px; font-size: 12px; color: #777; text-align: center; }
-        .steps { margin: 20px 0; padding-left: 20px; }
-        .steps li { margin-bottom: 10px; }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+
+        .steps {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+
+        .steps li {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>Welcome to MozFood!</h1>
         <p>Your Restaurant Management Platform</p>
     </div>
-    
+
     <div class="content">
         <p>Hello <span th:text="${name}">Restaurant Owner</span>,</p>
-        
-        <p>Thank you for joining MozFood! We're excited to have you on board. Your account has been successfully created and you can now start setting up your restaurant profile.</p>
-        
+
+        <p>Thank you for joining MozFood! We're excited to have you on board. Your account has been successfully created
+            and you can now start setting up your restaurant profile.</p>
+
         <h3>Getting Started:</h3>
         <p>To make the most of MozFood, please complete your restaurant setup by following these simple steps:</p>
-        
+
         <ol class="steps">
-            <li><strong>Complete Your Profile</strong> - Add your restaurant's basic information, contact details, and operating hours</li>
-            <li><strong>Set Up Your Menu</strong> - Add your delicious menu items, prices, and mouth-watering descriptions</li>
-            <li><strong>Configure Delivery Settings</strong> - Set your delivery areas, fees, and minimum order values</li>
+            <li><strong>Complete Your Profile</strong> - Add your restaurant's basic information, contact details, and
+                operating hours</li>
+            <li><strong>Set Up Your Menu</strong> - Add your delicious menu items, prices, and mouth-watering
+                descriptions</li>
+            <li><strong>Configure Delivery Settings</strong> - Set your delivery areas, fees, and minimum order values
+            </li>
             <li><strong>Go Live!</strong> - Once you're ready, make your restaurant visible to customers</li>
         </ol>
-        
+
         <div style="text-align: center; margin: 30px 0;">
             <a th:href="${dashboardUrl}" class="button">Login to Start Setup</a>
         </div>
-        
-        <p>If you have any questions or need assistance, our support team is here to help at <a href="mailto:support@mozfood.com">support@mozfood.com</a> or call us at +250 (782) 242-930.</p>
-        
+
+        <p>If you have any questions or need assistance, our support team is here to help at <a
+                href="mailto:support@mozfood.com">support@mozfood.com</a> or call us at +250 (782) 242-930.</p>
+
         <p>We're thrilled to be part of your restaurant's success story!</p>
-        
+
         <p>Best regards,<br>The MozFood Team</p>
     </div>
-    
+
     <div class="footer">
-        <p>© 2025 MozFood. All rights reserved.</p>
+        <p>© 2026 MozFood. All rights reserved.</p>
         <p>You're receiving this email because you registered an account with MozFood.</p>
-        <p><a href="https://mozfood.com/privacy">Privacy Policy</a> | <a href="https://mozfood.com/terms">Terms of Service</a></p>
+        <p><a href="https://mozfood.com/privacy">Privacy Policy</a> | <a href="https://mozfood.com/terms">Terms of
+                Service</a></p>
     </div>
 </body>
+
 </html>
