@@ -14,22 +14,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/file-upload/restaurants")
-@CrossOrigin(origins = {"https://delivery.ivas.rw", "https://delivery.apis.ivas.rw"}, 
-             allowedHeaders = "*", 
-             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-             allowCredentials = "true")
+@CrossOrigin(origins = { "https://delivery.ivas.rw",
+        "https://delivery.apis.ivas.rw" }, allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST,
+                RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS }, allowCredentials = "true")
 @Tag(name = "File Upload", description = "File upload management")
 public class FileUploadController {
 
     @Autowired
     private FileStorageService fileStorageService;
-    
+
     @Autowired
     private RestaurantService restaurantService;
-    
+
     @Autowired
     private MenuUploadService menuUploadService;
-    
+
     @Value("${app.base-url:https://delivery.apis.ivas.rw}")
     private String baseUrl;
 
@@ -43,23 +42,24 @@ public class FileUploadController {
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("{\"error\": \"Please select a file to upload\"}");
             }
-            
+
             // Check file type
             String contentType = file.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
                 return ResponseEntity.badRequest().body("{\"error\": \"Only image files are allowed\"}");
             }
-            
+
             // Store the file
             String filePath = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/logo");
-            
+
             // Update restaurant logo URL with full URL
             String fullUrl = baseUrl + "/api/files/" + filePath.replace("\\", "/");
             restaurantService.updateRestaurantLogo(restaurantId, fullUrl);
-            
+
             return ResponseEntity.ok().body("{\"filePath\": \"" + fullUrl + "\"}");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("{\"error\": \"Failed to upload file: " + e.getMessage() + "\"}");
+            return ResponseEntity.internalServerError()
+                    .body("{\"error\": \"Failed to upload file: " + e.getMessage() + "\"}");
         }
     }
 
@@ -72,7 +72,7 @@ public class FileUploadController {
         String fullUrl = baseUrl + "/api/files/" + filePath.replace("\\", "/");
         return ResponseEntity.ok().body("{\"filePath\": \"" + fullUrl + "\"}");
     }
-    
+
     @PostMapping("/{restaurantId}/menu-upload")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     public ResponseEntity<FileUploadResponse> uploadMenu(

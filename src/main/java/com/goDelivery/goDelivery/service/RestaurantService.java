@@ -35,6 +35,7 @@ public class RestaurantService {
     private final RestaurantUsersRepository restaurantUsersRepository;
     private final OrderRepository orderRepository;
     private final GeocodingService geocodingService;
+    private final GeoLocationService geoLocationService;
 
     public RestaurantDTO registerRestaurant(RestaurantDTO restaurantDTO) {
         Restaurant restaurant = restaurantMapper.toRestaurantForCreate(restaurantDTO);
@@ -230,6 +231,16 @@ public class RestaurantService {
 
         return restaurantMapper.toRestaurantDTO(restaurant);
 
+    }
+
+    /**
+     * Find nearby approved restaurants based on customer location
+     * Uses GeoLocationService to filter by distance and delivery radius
+     */
+    public List<Restaurant> findNearbyApprovedRestaurants(double latitude, double longitude, double radiusKm) {
+        log.info("Finding nearby approved restaurants for location ({}, {}) within {} km",
+                latitude, longitude, radiusKm);
+        return geoLocationService.findNearbyRestaurants(latitude, longitude, radiusKm);
     }
 
     public List<RestaurantDTO> getAllActiveRestaurants() {

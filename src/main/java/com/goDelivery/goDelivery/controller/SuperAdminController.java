@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import io.swagger.v3.oas.annotations.tags.Tag;  
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.net.URI;
 import java.util.List;
@@ -31,46 +31,45 @@ import java.util.List;
 public class SuperAdminController {
 
     private final SuperAdminService superAdminService;
-    
 
     @PostMapping(value = "/registerSuperAdmin")
     public ResponseEntity<SuperAdmin> registerSuperAdmin(
             @Valid @RequestBody CreateSuperAdminRequest request) {
-        
+
         SuperAdmin superAdmin = superAdminService.createSuperAdmin(request);
-        
+
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(superAdmin.getAdminId())
                 .toUri();
-                
+
         return ResponseEntity.created(location).body(superAdmin);
     }
 
-    @GetMapping(value = "/all")
+    @GetMapping(value = "/getAllSuperAdmins")
     public ResponseEntity<List<SuperAdmin>> getAllSuperAdmins() {
         return ResponseEntity.ok(superAdminService.getAllSuperAdmins());
     }
-    
+
     @GetMapping(value = "/getAllBikers")
     public ResponseEntity<List<BikerDetailsResponse>> getAllBikers() {
         List<BikerDetailsResponse> bikers = superAdminService.getAllBikers();
         return ResponseEntity.ok(bikers);
     }
-    
+
     @GetMapping(value = "/getActiveBikers")
     public ResponseEntity<List<BikerDetailsResponse>> getActiveBikers() {
         List<BikerDetailsResponse> activeBikers = superAdminService.getActiveBikers();
         return ResponseEntity.ok(activeBikers);
     }
-    
+
     @GetMapping(value = "/getBikerById/{bikerId}")
     public ResponseEntity<BikerDetailsResponse> getBikerById(@PathVariable Long bikerId) {
         BikerDetailsResponse biker = superAdminService.getBikerById(bikerId);
         return ResponseEntity.ok(biker);
     }
-    
+
     @PutMapping(value = "/updateBiker/{bikerId}")
     public ResponseEntity<BikerDetailsResponse> updateBiker(
             @PathVariable Long bikerId,
@@ -78,19 +77,19 @@ public class SuperAdminController {
         BikerDetailsResponse updatedBiker = superAdminService.updateBiker(bikerId, updateRequest);
         return ResponseEntity.ok(updatedBiker);
     }
-    
+
     @DeleteMapping(value = "/deleteBiker/{bikerId}")
     public ResponseEntity<Void> deleteBiker(@PathVariable Long bikerId) {
         superAdminService.deleteBiker(bikerId);
         return ResponseEntity.noContent().build();
     }
-    
+
     @PutMapping(value = "/activateBiker/{bikerId}")
     public ResponseEntity<Void> activateBiker(@PathVariable Long bikerId) {
         superAdminService.activateBiker(bikerId, true);
         return ResponseEntity.ok().build();
     }
-    
+
     @PutMapping(value = "/deactivateBiker/{bikerId}")
     public ResponseEntity<Void> deactivateBiker(@PathVariable Long bikerId) {
         superAdminService.activateBiker(bikerId, false);
@@ -111,7 +110,6 @@ public class SuperAdminController {
     public ResponseEntity<Void> deleteSuperAdmin(@PathVariable Long id) {
         superAdminService.deleteSuperAdmin(id);
         return ResponseEntity.ok().build();
-    }  
+    }
 
-    
 }

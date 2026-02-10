@@ -24,6 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -37,18 +38,17 @@ public class RestaurantController {
     private final RestaurantRegistrationService registrationService;
     private final FileStorageService fileStorageService;
     private final ReportService reportService;
-
+    private final com.goDelivery.goDelivery.mapper.RestaurantMapper restaurantMapper;
 
     @PostMapping("/registerAdmin")
     public ResponseEntity<RestaurantAdminResponseDTO> registerAdmin(
             @Valid @RequestBody RestaurantAdminRegistrationDTO registrationDTO) {
         return new ResponseEntity<>(
                 registrationService.registerRestaurantAdmin(registrationDTO),
-                HttpStatus.CREATED
-        );
+                HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/registerRestaurant", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/registerRestaurant", consumes = { "multipart/form-data" })
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     public ResponseEntity<?> registerRestaurant(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -63,45 +63,45 @@ public class RestaurantController {
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantDTO.setLogoUrl(fullUrl);
             }
-            
+
             // Store Commercial Registration Certificate
             if (commercialRegistrationCertificate != null && !commercialRegistrationCertificate.isEmpty()) {
-                String filePath = fileStorageService.storeFile(commercialRegistrationCertificate, 
-                    "restaurants/temp/documents/commercial-registration");
+                String filePath = fileStorageService.storeFile(commercialRegistrationCertificate,
+                        "restaurants/temp/documents/commercial-registration");
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantDTO.setCommercialRegistrationCertificateUrl(fullUrl);
             }
-            
+
             // Store Tax Identification Document (NUIT PDF)
             if (taxIdentificationDocument != null && !taxIdentificationDocument.isEmpty()) {
-                String filePath = fileStorageService.storeFile(taxIdentificationDocument, 
-                    "restaurants/temp/documents/tax-identification");
+                String filePath = fileStorageService.storeFile(taxIdentificationDocument,
+                        "restaurants/temp/documents/tax-identification");
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantDTO.setTaxIdentificationDocumentUrl(fullUrl);
             }
-            
+
             RestaurantDTO createdRestaurant = registrationService.completeRestaurantRegistration(
-                userDetails.getUsername(), 
-                restaurantDTO
-            );
-            
+                    userDetails.getUsername(),
+                    restaurantDTO);
+
             // Create success response with message
             Map<String, Object> successResponse = new HashMap<>();
-            successResponse.put("message", "Restaurant registered successfully! Your application is now under review. You will receive an email notification once it's approved.");
+            successResponse.put("message",
+                    "Restaurant registered successfully! Your application is now under review. You will receive an email notification once it's approved.");
             successResponse.put("restaurant", createdRestaurant);
             successResponse.put("emailSent", true);
             successResponse.put("emailType", "under_review");
-            
+
             return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Failed to register restaurant: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(errorResponse);
+                    .body(errorResponse);
         }
     }
 
-    @PutMapping(value = "/updateRestaurant/{restaurantId}", consumes = {"multipart/form-data"})
+    @PutMapping(value = "/updateRestaurant/{restaurantId}", consumes = { "multipart/form-data" })
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     public ResponseEntity<?> updateRestaurant(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -117,27 +117,27 @@ public class RestaurantController {
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantDTO.setLogoUrl(fullUrl);
             }
-            
+
             // Update Commercial Registration Certificate if provided
             if (commercialRegistrationCertificate != null && !commercialRegistrationCertificate.isEmpty()) {
-                String filePath = fileStorageService.storeFile(commercialRegistrationCertificate, 
-                    "restaurants/temp/documents/commercial-registration");
+                String filePath = fileStorageService.storeFile(commercialRegistrationCertificate,
+                        "restaurants/temp/documents/commercial-registration");
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantDTO.setCommercialRegistrationCertificateUrl(fullUrl);
             }
-            
+
             // Update Tax Identification Document if provided
             if (taxIdentificationDocument != null && !taxIdentificationDocument.isEmpty()) {
-                String filePath = fileStorageService.storeFile(taxIdentificationDocument, 
-                    "restaurants/temp/documents/tax-identification");
+                String filePath = fileStorageService.storeFile(taxIdentificationDocument,
+                        "restaurants/temp/documents/tax-identification");
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantDTO.setTaxIdentificationDocumentUrl(fullUrl);
             }
-            
+
             // Verify the authenticated user is the admin of this restaurant
             if (!restaurantService.isUserRestaurantAdmin(userDetails.getUsername(), restaurantId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("error", "You don't have permission to update this restaurant"));
+                        .body(Map.of("error", "You don't have permission to update this restaurant"));
             }
 
             RestaurantDTO updatedRestaurant = restaurantService.updateRestaurant(restaurantId, restaurantDTO);
@@ -146,10 +146,10 @@ public class RestaurantController {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Failed to update restaurant: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(errorResponse);
+                    .body(errorResponse);
         }
     }
-    
+
     @PutMapping(value = "/{restaurantId}/operating-hours")
     public ResponseEntity<RestaurantDTO> updateOperatingHours(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -163,7 +163,7 @@ public class RestaurantController {
     public ResponseEntity<RestaurantDTO> getRestaurantById(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long restaurantId) {
-        
+
         RestaurantDTO restaurant = restaurantService.getRestaurantById(restaurantId);
         return ResponseEntity.ok(restaurant);
     }
@@ -196,18 +196,18 @@ public class RestaurantController {
             @RequestParam(required = false) String cuisineType,
             @RequestParam(required = false) Double minRating,
             @RequestParam(required = false) String sortBy) {
-        
+
         RestaurantSearchRequest searchRequest = new RestaurantSearchRequest();
         searchRequest.setLocation(location);
         searchRequest.setRestaurantName(restaurantName);
         searchRequest.setCuisineType(cuisineType);
         searchRequest.setMinRating(minRating);
         searchRequest.setSortBy(sortBy);
-        
+
         List<RestaurantDTO> restaurants = restaurantService.searchRestaurants(searchRequest);
         return ResponseEntity.ok(restaurants);
     }
-    
+
     @GetMapping(value = "/getAllActiveRestaurants")
     public ResponseEntity<List<RestaurantDTO>> getAllActiveRestaurants(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -220,8 +220,8 @@ public class RestaurantController {
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO>> getPendingRestaurants(
             @AuthenticationPrincipal UserDetails userDetails) {
-        List<com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO> pendingRestaurants = 
-            restaurantService.getPendingRestaurantsForReview();
+        List<com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO> pendingRestaurants = restaurantService
+                .getPendingRestaurantsForReview();
         return ResponseEntity.ok(pendingRestaurants);
     }
 
@@ -231,8 +231,8 @@ public class RestaurantController {
     public ResponseEntity<com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO> getRestaurantForReview(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long restaurantId) {
-        com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO restaurant = 
-            restaurantService.getRestaurantForReview(restaurantId);
+        com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO restaurant = restaurantService
+                .getRestaurantForReview(restaurantId);
         return ResponseEntity.ok(restaurant);
     }
 
@@ -256,12 +256,12 @@ public class RestaurantController {
         try {
             RestaurantDTO reviewedRestaurant;
             String message;
-            
+
             if (request.getApproved()) {
                 // Approve restaurant
                 reviewedRestaurant = restaurantService.approveRestaurant(restaurantId, userDetails.getUsername());
                 message = "Restaurant approved successfully! Notification email has been sent to the restaurant admin.";
-                
+
             } else {
                 // Reject restaurant
                 if (request.getRejectionReason() == null || request.getRejectionReason().trim().isEmpty()) {
@@ -269,19 +269,18 @@ public class RestaurantController {
                     errorResponse.put("error", "Rejection reason is required when rejecting a restaurant");
                     return ResponseEntity.badRequest().body(errorResponse);
                 }
-                
+
                 reviewedRestaurant = restaurantService.rejectRestaurant(
-                    restaurantId, 
-                    request.getRejectionReason(), 
-                    userDetails.getUsername()
-                );
+                        restaurantId,
+                        request.getRejectionReason(),
+                        userDetails.getUsername());
                 message = "Restaurant rejected. Notification email has been sent to the restaurant admin.";
             }
-            
+
             Map<String, Object> response = new HashMap<>();
             response.put("message", message);
             response.put("restaurant", reviewedRestaurant);
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
@@ -290,11 +289,101 @@ public class RestaurantController {
         }
     }
 
-    // Customer: Get only approved restaurants
+    // Customer: Get approved restaurants near their location
     @GetMapping(value = "/approved")
-    public ResponseEntity<List<RestaurantDTO>> getApprovedRestaurants() {
-        List<RestaurantDTO> approvedRestaurants = restaurantService.getApprovedRestaurants();
-        return ResponseEntity.ok(approvedRestaurants);
+    @Operation(summary = "Get approved restaurants near customer location", description = "Returns approved restaurants within the specified radius of the customer's location. "
+            +
+            "Includes distance information, ETA, and supports filtering by cuisine, rating, and delivery fee. " +
+            "Only shows restaurants that will actually deliver to the customer location.")
+    public ResponseEntity<?> getApprovedRestaurants(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam(defaultValue = "10.0") double radiusKm,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "distance") String sortBy,
+            @RequestParam(required = false) String cuisineType,
+            @RequestParam(required = false) Double minRating,
+            @RequestParam(required = false) Float maxDeliveryFee) {
+
+        // Validate coordinates
+        if (latitude < -90 || latitude > 90) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Latitude must be between -90 and 90"));
+        }
+
+        if (longitude < -180 || longitude > 180) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Longitude must be between -180 and 180"));
+        }
+
+        if (radiusKm <= 0 || radiusKm > 50) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Radius must be between 0 and 50 km"));
+        }
+
+        // Get nearby approved restaurants using GeoLocationService
+        List<com.goDelivery.goDelivery.model.Restaurant> restaurants = restaurantService
+                .findNearbyApprovedRestaurants(latitude, longitude, radiusKm);
+
+        // Apply additional filters
+        java.util.stream.Stream<com.goDelivery.goDelivery.model.Restaurant> stream = restaurants.stream();
+
+        if (cuisineType != null && !cuisineType.isEmpty()) {
+            stream = stream.filter(r -> r.getCuisineType().equalsIgnoreCase(cuisineType));
+        }
+
+        if (minRating != null) {
+            stream = stream.filter(r -> r.getRating() != null && r.getRating() >= minRating);
+        }
+
+        if (maxDeliveryFee != null) {
+            stream = stream.filter(r -> r.getDeliveryFee() != null && r.getDeliveryFee() <= maxDeliveryFee);
+        }
+
+        List<com.goDelivery.goDelivery.model.Restaurant> filtered = stream
+                .collect(java.util.stream.Collectors.toList());
+
+        // Apply sorting
+        switch (sortBy.toLowerCase()) {
+            case "rating":
+                filtered.sort(java.util.Comparator
+                        .comparingDouble(com.goDelivery.goDelivery.model.Restaurant::getRating).reversed());
+                break;
+            case "popularity":
+                filtered.sort(java.util.Comparator
+                        .comparingInt(com.goDelivery.goDelivery.model.Restaurant::getTotalReviews).reversed());
+                break;
+            case "distance":
+            default:
+                // Already sorted by distance from service
+                break;
+        }
+
+        // Convert to DTOs using RestaurantMapper
+        List<RestaurantDTO> dtos = filtered.stream()
+                .map(restaurantMapper::toRestaurantDTO)
+                .collect(java.util.stream.Collectors.toList());
+
+        // Paginate
+        int start = page * size;
+        int end = Math.min(start + size, dtos.size());
+
+        if (start >= dtos.size()) {
+            return ResponseEntity.ok(new org.springframework.data.domain.PageImpl<>(
+                    java.util.Collections.emptyList(),
+                    org.springframework.data.domain.PageRequest.of(page, size),
+                    dtos.size()));
+        }
+
+        List<RestaurantDTO> pageContent = dtos.subList(start, end);
+
+        org.springframework.data.domain.Page<RestaurantDTO> pageResult = new org.springframework.data.domain.PageImpl<>(
+                pageContent,
+                org.springframework.data.domain.PageRequest.of(page, size),
+                dtos.size());
+
+        return ResponseEntity.ok(pageResult);
     }
 
     @PostMapping(value = "/{restaurantId}/uploadBusinessDocuments")
@@ -307,31 +396,31 @@ public class RestaurantController {
             @RequestParam(value = "taxIdentificationDocument", required = false) MultipartFile taxIdentificationDocument) {
         try {
             Map<String, String> documentUrls = new HashMap<>();
-            
+
             // Upload Commercial Registration Certificate
             if (commercialRegistrationCertificate != null && !commercialRegistrationCertificate.isEmpty()) {
-                String filePath = fileStorageService.storeFile(commercialRegistrationCertificate, 
-                    "restaurants/" + restaurantId + "/documents/commercial-registration");
+                String filePath = fileStorageService.storeFile(commercialRegistrationCertificate,
+                        "restaurants/" + restaurantId + "/documents/commercial-registration");
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantService.updateCommercialRegistrationCertificate(restaurantId, fullUrl);
                 documentUrls.put("commercialRegistrationCertificateUrl", fullUrl);
             }
-            
+
             // Update Tax Identification Number (text)
             if (taxIdentificationNumber != null && !taxIdentificationNumber.trim().isEmpty()) {
                 restaurantService.updateTaxIdentificationNumber(restaurantId, taxIdentificationNumber);
                 documentUrls.put("taxIdentificationNumber", taxIdentificationNumber);
             }
-            
+
             // Upload Tax Identification Document (NUIT PDF)
             if (taxIdentificationDocument != null && !taxIdentificationDocument.isEmpty()) {
-                String filePath = fileStorageService.storeFile(taxIdentificationDocument, 
-                    "restaurants/" + restaurantId + "/documents/tax-identification");
+                String filePath = fileStorageService.storeFile(taxIdentificationDocument,
+                        "restaurants/" + restaurantId + "/documents/tax-identification");
                 String fullUrl = "/api/files/" + filePath.replace("\\", "/");
                 restaurantService.updateTaxIdentificationDocument(restaurantId, fullUrl);
                 documentUrls.put("taxIdentificationDocumentUrl", fullUrl);
             }
-            
+
             return ResponseEntity.ok(documentUrls);
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
@@ -347,25 +436,25 @@ public class RestaurantController {
             @PathVariable Long restaurantId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        
+
         // Set default date range if not provided (last 30 days)
         LocalDate end = endDate != null ? endDate : LocalDate.now();
         LocalDate start = startDate != null ? startDate : end.minusDays(30);
-        
+
         // Ensure start date is before or equal to end date
         if (start.isAfter(end)) {
             throw new IllegalArgumentException("Start date must be before or equal to end date");
         }
-        
+
         // Verify the authenticated user is the admin of this restaurant
         if (!restaurantService.isUserRestaurantAdmin(userDetails.getUsername(), restaurantId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        
+
         SalesReportDTO report = reportService.generateSalesReport(restaurantId, start, end);
         return ResponseEntity.ok(report);
     }
-    
+
     @GetMapping("/{restaurantId}/reports/orders")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     public ResponseEntity<OrderReportDTO> getOrderReport(
@@ -373,23 +462,23 @@ public class RestaurantController {
             @PathVariable Long restaurantId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        
+
         // Set default date range if not provided (last 30 days)
         LocalDate end = endDate != null ? endDate : LocalDate.now();
         LocalDate start = startDate != null ? startDate : end.minusDays(30);
-        
+
         // Ensure start date is before or equal to end date
         if (start.isAfter(end)) {
             throw new IllegalArgumentException("Start date must be before or equal to end date");
         }
-        
+
         // Verify the authenticated user is the admin of this restaurant
         if (!restaurantService.isUserRestaurantAdmin(userDetails.getUsername(), restaurantId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        
+
         OrderReportDTO report = reportService.generateOrderReport(restaurantId, start, end);
         return ResponseEntity.ok(report);
     }
-    
+
 }
