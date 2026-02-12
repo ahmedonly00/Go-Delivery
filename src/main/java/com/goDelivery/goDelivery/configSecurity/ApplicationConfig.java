@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.goDelivery.goDelivery.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
 import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.repository.SuperAdminRepository;
@@ -18,8 +19,9 @@ import com.goDelivery.goDelivery.repository.SuperAdminRepository;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
-    
+
     private final RestaurantUsersRepository restaurantUsersRepository;
+    private final BranchUsersRepository branchUsersRepository;
     private final SuperAdminRepository superAdminRepository;
     private final CustomerRepository customerRepository;
 
@@ -30,7 +32,8 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new CustomUserDetailsService(restaurantUsersRepository, superAdminRepository, customerRepository, passwordEncoder());
+        return new CustomUserDetailsService(restaurantUsersRepository, branchUsersRepository, superAdminRepository,
+                customerRepository, passwordEncoder());
     }
 
     @Bean

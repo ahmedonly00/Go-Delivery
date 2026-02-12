@@ -9,8 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-
 
 @Data
 @Builder
@@ -35,20 +35,20 @@ public class OrderResponse {
     private LocalDate pickedUpAt;
     private LocalDate deliveredAt;
     private LocalDate cancelledAt;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String cancellationReason;
-    
+
     // Related entity IDs
     private Long customerId;
     private Long restaurantId;
     private Long bikerId;
-    
+
     // Related entity names
     private String customerName;
     private String restaurantName;
-    
+
     // Order items
     private List<OrderItemResponse> items;
-    
+
 }

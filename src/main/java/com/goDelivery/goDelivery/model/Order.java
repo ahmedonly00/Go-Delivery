@@ -92,7 +92,7 @@ public class Order {
 
     @Column(name = "payment_completed_at", nullable = true)
     private LocalDateTime PaymentCompletedAt;
-    
+
     @Column(name = "payment_failure_reason", nullable = true)
     private String paymentFailureReason;
 
@@ -102,15 +102,15 @@ public class Order {
     @Enumerated(EnumType.STRING)
     @Column(name = "disbursement_status")
     private DisbursementStatus disbursementStatus;
-    
+
     @Column(name = "disbursement_completed_at")
     private LocalDateTime disbursementCompletedAt;
 
     @Column(name = "created_at")
-    private LocalDate createdAt;
-    
+    private LocalDateTime createdAt;
+
     @Column(name = "updated_at")
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", nullable = false)
@@ -151,12 +151,18 @@ public class Order {
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     private List<WalletTransaction> walletTransactions;
 
+    @PrePersist
+    public void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
 
     @PreUpdate
     public void preUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.updatedAt = LocalDateTime.now();
     }
-    
+
     // Helper method to add a payment to this order
     public void addPayment(Payment payment) {
         if (payment == null) {
@@ -164,26 +170,26 @@ public class Order {
         }
         this.payment = payment;
         payment.setOrder(this);
-        
+
         // Update payment status if needed
         if (payment.getPaymentStatus() != null) {
             this.setPaymentStatus(payment.getPaymentStatus());
         }
     }
-    
+
     // Helper method to add a transaction to this order
     public void addTransaction(MomoTransaction transaction) {
         if (transaction == null) {
             return;
         }
         transaction.setOrder(this);
-        
+
         // Link transaction with payment if not already linked
         if (this.payment != null && transaction.getPayment() == null) {
             transaction.setPayment(this.payment);
             this.payment.setMomoTransaction(transaction);
         }
-        
+
         // Update order status based on transaction status if needed
         if (transaction.getStatus() != null) {
             switch (transaction.getStatus()) {
@@ -201,12 +207,12 @@ public class Order {
             }
         }
     }
-    
+
     // Helper method to check if order is paid
     public boolean isPaid() {
         return this.paymentStatus == PaymentStatus.PAID;
     }
-    
+
     // Helper method to check if order can be processed
     public boolean canBeProcessed() {
         return this.isPaid() && this.orderStatus != OrderStatus.CANCELLED;

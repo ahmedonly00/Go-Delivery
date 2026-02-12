@@ -1,8 +1,10 @@
 package com.goDelivery.goDelivery.configSecurity;
 
+import com.goDelivery.goDelivery.model.BranchUsers;
 import com.goDelivery.goDelivery.model.Customer;
 import com.goDelivery.goDelivery.model.RestaurantUsers;
 import com.goDelivery.goDelivery.model.SuperAdmin;
+import com.goDelivery.goDelivery.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
 import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.repository.SuperAdminRepository;
@@ -26,6 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     private final RestaurantUsersRepository restaurantUsersRepository;
+    private final BranchUsersRepository branchUsersRepository;
     private final SuperAdminRepository superAdminRepository;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
@@ -39,6 +42,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (restaurantUser.isPresent()) {
             RestaurantUsers user = restaurantUser.get();
             log.info("Found restaurant user: {}, Role: {}, Active: {}", user.getEmail(), user.getRole(), user.isActive());
+            return user;
+        }
+        
+        // If not found, try to find in BranchUsers
+        Optional<BranchUsers> branchUser = branchUsersRepository.findByEmail(username);
+        if (branchUser.isPresent()) {
+            BranchUsers user = branchUser.get();
+            log.info("Found branch user: {}, Role: {}, Active: {}", user.getEmail(), user.getRole(), user.isActive());
             return user;
         }
         
@@ -80,6 +91,12 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .ifPresent(u -> {
                     u.setPassword(encodedPassword);
                     restaurantUsersRepository.save(u);
+                });
+        
+        branchUsersRepository.findByEmail(user.getUsername())
+                .ifPresent(u -> {
+                    u.setPassword(encodedPassword);
+                    branchUsersRepository.save(u);
                 });
         
         superAdminRepository.findByEmail(user.getUsername())
