@@ -1,7 +1,6 @@
 package com.goDelivery.goDelivery.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -155,7 +154,7 @@ public class DisbursementService {
                                 .collectionAmount(totalAmount)
                                 .collectionPayerMessageTitle("MozFood Order #" + parentOrderNumber)
                                 .collectionPayerMessageDescription("Payment for your order")
-                                .callback(momoConfig.getCollectionDisbursementUrl() + "/api/webhooks/momo/disbursement")
+                                .callback(momoConfig.getCallbackHost() + "/api/webhooks/momo/disbursement")
                                 .disbursementRecipients(recipients)
                                 .build();
 
