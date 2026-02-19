@@ -16,6 +16,7 @@ import com.goDelivery.goDelivery.model.Restaurant;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,7 +77,7 @@ public class OrderMapper {
         }
 
         MenuItem menuItem = orderItem.getMenuItem();
-        
+
         return OrderItemResponse.builder()
                 .orderItemId(orderItem.getOrderItemId())
                 .quantity(orderItem.getQuantity())
@@ -106,20 +107,21 @@ public class OrderMapper {
         }
 
         return Order.builder()
-            .customer(customer)
-            .restaurant(restaurant)
-            .branch(branch)
-            .orderStatus(OrderStatus.PLACED)
-            .paymentStatus(PaymentStatus.PENDING)
-            .deliveryAddress(orderRequest.getDeliveryAddress())
-            .specialInstructions(orderRequest.getSpecialInstructions())
-            .paymentMethod(orderRequest.getPaymentMethod() != null ? orderRequest.getPaymentMethod() : PaymentMenthod.CASH)
-            .subTotal(orderRequest.getSubTotal())
-            .discountAmount(orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f)
-            .deliveryFee(orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f)
-            .finalAmount(orderRequest.getFinalAmount())
-            .orderPlacedAt(LocalDate.now())
-            .build();
+                .customer(customer)
+                .restaurant(restaurant)
+                .branch(branch)
+                .orderStatus(OrderStatus.PLACED)
+                .paymentStatus(PaymentStatus.PENDING)
+                .deliveryAddress(orderRequest.getDeliveryAddress())
+                .specialInstructions(orderRequest.getSpecialInstructions())
+                .paymentMethod(
+                        orderRequest.getPaymentMethod() != null ? orderRequest.getPaymentMethod() : PaymentMenthod.CASH)
+                .subTotal(orderRequest.getSubTotal())
+                .discountAmount(orderRequest.getDiscountAmount() != null ? orderRequest.getDiscountAmount() : 0.0f)
+                .deliveryFee(orderRequest.getDeliveryFee() != null ? orderRequest.getDeliveryFee() : 0.0f)
+                .finalAmount(orderRequest.getFinalAmount())
+                .orderPlacedAt(LocalDateTime.now())
+                .build();
     }
 
 }

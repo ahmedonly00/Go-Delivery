@@ -70,7 +70,7 @@ public class Order {
     private String specialInstructions;
 
     @Column(name = "order_placed_at", nullable = false)
-    private LocalDate orderPlacedAt;
+    private LocalDateTime orderPlacedAt;
 
     @Column(name = "order_confirmed_at", nullable = true)
     private LocalDate orderConfirmedAt;

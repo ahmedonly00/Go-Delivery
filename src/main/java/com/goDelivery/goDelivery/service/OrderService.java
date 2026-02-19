@@ -188,7 +188,7 @@ public class OrderService {
         order.setDeliveryAddress(orderRequest.getDeliveryAddress());
         order.setSpecialInstructions(orderRequest.getSpecialInstructions());
         order.setCancellationReason(orderRequest.getCancellationReason());
-        order.setOrderPlacedAt(LocalDate.now());
+        order.setOrderPlacedAt(LocalDateTime.now());
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
         order.setSubTotal((float) totalAmount);
@@ -384,7 +384,8 @@ public class OrderService {
         List<OrderTrackingResponse.StatusUpdate> history = new java.util.ArrayList<>();
 
         // Add order placed
-        history.add(createStatusUpdate(OrderStatus.PLACED, "Order has been placed", order.getOrderPlacedAt()));
+        history.add(createStatusUpdate(OrderStatus.PLACED, "Order has been placed",
+                order.getOrderPlacedAt() != null ? order.getOrderPlacedAt().toLocalDate() : null));
 
         // Add other statuses based on current status
         if (order.getOrderStatus().ordinal() >= OrderStatus.CONFIRMED.ordinal()) {

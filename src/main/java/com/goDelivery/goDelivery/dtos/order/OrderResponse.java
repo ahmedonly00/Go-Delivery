@@ -29,7 +29,7 @@ public class OrderResponse {
     private Float finalAmount;
     private PaymentMenthod paymentMethod;
     private PaymentStatus paymentStatus;
-    private LocalDate orderPlacedAt;
+    private LocalDateTime orderPlacedAt;
     private LocalDate orderConfirmedAt;
     private LocalDate OrderPreparedAt;
     private LocalDate pickedUpAt;
