@@ -76,15 +76,7 @@ public class DeliverySettingsValidator implements ConstraintValidator<ValidDeliv
     }
 
     private boolean validateSystemDelivery(DeliverySettingsRequest request, ConstraintValidatorContext context) {
-        // For SYSTEM_DELIVERY, agreement must be accepted
-        if (request.getAcceptSystemDeliveryAgreement() == null || !request.getAcceptSystemDeliveryAgreement()) {
-            context.buildConstraintViolationWithTemplate(
-                    "System delivery agreement must be accepted for system delivery")
-                    .addPropertyNode("acceptSystemDeliveryAgreement")
-                    .addConstraintViolation();
-            return false;
-        }
-
+        // No additional validation required for SYSTEM_DELIVERY
         return true;
     }
 }

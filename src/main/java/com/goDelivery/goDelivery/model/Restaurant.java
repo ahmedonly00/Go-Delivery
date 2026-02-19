@@ -86,16 +86,6 @@ public class Restaurant {
     @Column(name = "per_km_fee")
     private Float perKmFee; // Additional fee per km for SELF_DELIVERY
 
-    @Column(name = "system_delivery_agreement_accepted")
-    @Builder.Default
-    private Boolean systemDeliveryAgreementAccepted = false; // For SYSTEM_DELIVERY
-
-    @Column(name = "system_delivery_agreement_date")
-    private LocalDateTime systemDeliveryAgreementDate;
-
-    @Column(name = "system_delivery_agreement_version")
-    private String systemDeliveryAgreementVersion; // Track which version was accepted
-
     @Column(name = "description")
     private String description;
 

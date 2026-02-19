@@ -24,7 +24,4 @@ public class DeliverySettingsRequest {
 
     @Positive(message = "Delivery radius must be a positive number")
     private Double deliveryRadius; // Radius value, unit specified by radiusUnit
-
-    // Only for SYSTEM_DELIVERY
-    private Boolean acceptSystemDeliveryAgreement;
 }

@@ -406,11 +406,6 @@ public class RestaurantService {
 
             // Keep old deliveryFee for backward compatibility
             restaurant.setDeliveryFee(request.getBaseDeliveryFee());
-
-            // Clear system delivery agreement fields
-            restaurant.setSystemDeliveryAgreementAccepted(false);
-            restaurant.setSystemDeliveryAgreementDate(null);
-            restaurant.setSystemDeliveryAgreementVersion(null);
         } else if (request.getDeliveryType() == DeliveryType.SYSTEM_DELIVERY) {
             // Validation is handled by @ValidDeliverySettings annotation
             // Clear self-delivery fields
@@ -418,14 +413,6 @@ public class RestaurantService {
             restaurant.setBaseDeliveryFee(null);
             restaurant.setPerKmFee(null);
             restaurant.setDeliveryRadius(null);
-            restaurant.setDeliveryFee(null);
-
-            // Set system delivery agreement
-            if (request.getAcceptSystemDeliveryAgreement() != null && request.getAcceptSystemDeliveryAgreement()) {
-                restaurant.setSystemDeliveryAgreementAccepted(true);
-                restaurant.setSystemDeliveryAgreementDate(java.time.LocalDateTime.now());
-                restaurant.setSystemDeliveryAgreementVersion("1.0"); // TODO: Get from system config
-            }
         }
 
         restaurant.setUpdatedAt(LocalDate.now());

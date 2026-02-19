@@ -65,8 +65,6 @@ public class RestaurantDTO {
 
     private Float perKmFee;
 
-    private Boolean systemDeliveryAgreementAccepted;
-
     // Location-based fields (populated when searching by location)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double distanceFromUser; // In kilometers

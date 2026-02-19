@@ -96,17 +96,17 @@ public class SuperAdminController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/getSuperAdminById/{id}")
     public ResponseEntity<SuperAdmin> getSuperAdminById(@PathVariable Long id) {
         return ResponseEntity.ok(superAdminService.getSuperAdminById(id));
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/updateSuperAdmin/{id}")
     public ResponseEntity<SuperAdmin> updateSuperAdmin(@PathVariable Long id, @RequestBody SuperAdmin superAdmin) {
         return ResponseEntity.ok(superAdminService.updateSuperAdmin(id, superAdmin));
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/deleteSuperAdmin/{id}")
     public ResponseEntity<Void> deleteSuperAdmin(@PathVariable Long id) {
         superAdminService.deleteSuperAdmin(id);
         return ResponseEntity.ok().build();

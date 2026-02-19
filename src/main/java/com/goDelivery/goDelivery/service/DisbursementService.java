@@ -88,13 +88,24 @@ public class DisbursementService {
                                 .flatMap(o -> o.getOrderItems().stream())
                                 .collect(Collectors.toList());
 
-                // Calculate restaurant amounts from ALL items
+                // Calculate restaurant amounts from ALL items (food subtotals only — used for
+                // disbursement splits)
                 Map<Restaurant, Double> restaurantAmounts = calculateRestaurantAmounts(allOrderItems);
-                double totalAmount = restaurantAmounts.values().stream()
+
+                // Use the sum of each order's finalAmount as the collection total.
+                // finalAmount = subTotal + deliveryFee - discount, which is what the
+                // customer actually agreed to pay at checkout.
+                // Do NOT re-sum item prices here, as that would drop delivery fees & discounts.
+                double totalCollectionAmount = relatedOrders.stream()
+                                .mapToDouble(o -> o.getFinalAmount())
+                                .sum();
+
+                // Food-only subtotal used when splitting disbursements between restaurants
+                double totalFoodAmount = restaurantAmounts.values().stream()
                                 .mapToDouble(Double::doubleValue).sum();
 
-                log.info("Disbursing to {} restaurants, total amount: {}",
-                                restaurantAmounts.size(), totalAmount);
+                log.info("Disbursing to {} restaurants, collection (customer charge): {}, food subtotal: {}",
+                                restaurantAmounts.size(), totalCollectionAmount, totalFoodAmount);
 
                 // Prepare disbursement recipients for ALL restaurants
                 List<DisbursementRecipient> recipients = new ArrayList<>();
@@ -102,7 +113,7 @@ public class DisbursementService {
 
                 for (Map.Entry<Restaurant, Double> entry : restaurantAmounts.entrySet()) {
                         Restaurant restaurant = entry.getKey();
-                        Double amount = entry.getValue();
+                        Double amount = entry.getValue(); // food subtotal for this restaurant
 
                         if (restaurant.getPhoneNumber() == null) {
                                 throw new IllegalStateException(
@@ -110,7 +121,25 @@ public class DisbursementService {
                                                                 restaurant.getRestaurantName()));
                         }
 
-                        // Calculate amount after commission
+                        // Find the sub-order for this restaurant to access its delivery fee
+                        Order restaurantOrder = findOrderForRestaurant(relatedOrders, restaurant);
+                        float deliveryFee = restaurantOrder.getDeliveryFee() != null
+                                        ? restaurantOrder.getDeliveryFee()
+                                        : 0f;
+
+                        // Route delivery fee based on the restaurant's delivery type:
+                        // SELF_DELIVERY → restaurant keeps the delivery fee (included in payout)
+                        // SYSTEM_DELIVERY → delivery fee stays with platform/biker (excluded)
+                        if (restaurant.getDeliveryType() == com.goDelivery.goDelivery.Enum.DeliveryType.SELF_DELIVERY) {
+                                amount += deliveryFee;
+                                log.info("Restaurant {} — SELF_DELIVERY: adding deliveryFee {} to disbursement amount",
+                                                restaurant.getRestaurantName(), deliveryFee);
+                        } else {
+                                log.info("Restaurant {} — SYSTEM_DELIVERY: delivery fee {} stays with platform",
+                                                restaurant.getRestaurantName(), deliveryFee);
+                        }
+
+                        // Calculate commission on the final amount (food ± delivery fee)
                         double commission = calculateCommission(amount);
                         double amountToDisburse = amount - commission;
 
@@ -125,9 +154,6 @@ public class DisbursementService {
                                         .build();
 
                         recipients.add(recipient);
-
-                        // Find the order for this specific restaurant
-                        Order restaurantOrder = findOrderForRestaurant(relatedOrders, restaurant);
 
                         // Create disbursement transaction record for EACH restaurant
                         DisbursementTransaction transaction = DisbursementTransaction.builder()
@@ -151,7 +177,7 @@ public class DisbursementService {
                 CollectionDisbursementRequest request = CollectionDisbursementRequest.builder()
                                 .collectionExternalId("COLL_" + parentOrderNumber)
                                 .collectionMsisdn(order.getCustomer().getPhoneNumber())
-                                .collectionAmount(totalAmount)
+                                .collectionAmount(totalCollectionAmount) // Full amount: food + delivery - discount
                                 .collectionPayerMessageTitle("MozFood Order #" + parentOrderNumber)
                                 .collectionPayerMessageDescription("Payment for your order")
                                 .callback(momoConfig.getCallbackHost() + "/api/webhooks/momo/disbursement")
