@@ -455,6 +455,8 @@ public class BranchService {
         manager.setBranch(branch);
         manager.setRestaurant(branch.getRestaurant());
         manager.setSetupComplete(false);
+        manager.setActive(true); // Required: isEnabled() returns isActive; without this, login fails
+        manager.setEmailVerified(true); // Credentials are set by admin, no email verification needed
         manager.setCreatedAt(LocalDate.now());
         manager.setUpdatedAt(LocalDate.now());
 

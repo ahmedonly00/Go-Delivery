@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -40,84 +39,86 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final RestaurantRepository restaurantRepository;
     private final TemplateEngine templateEngine;
-    
+
     @Value("${app.notifications.sms.enabled:false}")
     private boolean smsEnabled;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
-    
+
     @Value("${app.notifications.sms.test-mode:true}")
     private boolean smsTestMode;
 
     private final JavaMailSender emailSender;
-    
+
     @Value("${app.notifications.email.payment-received.subject:Payment Received}")
     private String paymentReceivedEmailSubject;
-    
+
     @Value("${app.notifications.push.payment-received.title:Payment Received}")
     private String paymentReceivedPushTitle;
 
-    //Sends a welcome notification to a newly registered biker
+    // Sends a welcome notification to a newly registered biker
     @Async
     public void sendBikerWelcomeNotification(Bikers biker) {
         try {
             log.info("Sending welcome notification to biker: {} ({})", biker.getFullNames(), biker.getEmail());
-            
+
             // Prepare the evaluation context with variables for the template
             Context context = new Context();
             context.setVariable("bikerName", biker.getFullNames());
             context.setVariable("currentYear", LocalDate.now().getYear());
-            
+
             // Process the template with the context
-            String emailContent = templateEngine.process("emails/biker-welcome", context);
-            
+            String emailContent = templateEngine.process("biker-welcome", context);
+
             // Prepare email using MimeMessage
             MimeMessage mimeMessage = emailSender.createMimeMessage();
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
-            
+
             message.setFrom(fromEmail);
             message.setTo(biker.getEmail());
             message.setSubject("Welcome to MozFood Delivery!");
             message.setText(emailContent, true); // true = isHtml
-            
+
             // Send the email
             emailSender.send(mimeMessage);
-            
+
             log.info("Welcome email sent to biker: {}", biker.getEmail());
-            
+
             // Optionally, you could also send a push notification
-            // sendPushNotification(biker.getUserId(), "Welcome to MozFood Delivery!", 
-            //     "Your account has been activated. Start accepting delivery requests now!");
-            
+            // sendPushNotification(biker.getUserId(), "Welcome to MozFood Delivery!",
+            // "Your account has been activated. Start accepting delivery requests now!");
+
         } catch (MessagingException e) {
             log.error("Failed to create welcome email for biker {}: {}", biker.getId(), e.getMessage(), e);
         } catch (MailException e) {
             log.error("Failed to send welcome email to biker {}: {}", biker.getId(), e.getMessage(), e);
         } catch (Exception e) {
-            log.error("Unexpected error sending welcome email to biker {}: {}", 
+            log.error("Unexpected error sending welcome email to biker {}: {}",
                     biker.getId(), e.getMessage(), e);
         }
     }
 
     @Async
-    public CompletableFuture<Boolean> sendEmail(String toEmail, String subject, String templateName, Map<String, Object> templateData) {
+    public CompletableFuture<Boolean> sendEmail(String toEmail, String subject, String templateName,
+            Map<String, Object> templateData) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
             message.setTo(toEmail);
             message.setSubject(subject);
-            
-            // In a real implementation, you would use a template engine like Thymeleaf or Freemarker
+
+            // In a real implementation, you would use a template engine like Thymeleaf or
+            // Freemarker
             String textContent = String.valueOf(templateData.getOrDefault("message", ""));
             message.setText(textContent);
-            
+
             emailSender.send(message);
-            
+
             log.info("Email sent successfully to: {}", toEmail);
-            log.debug("Email details - Subject: {}, Template: {}, Data: {}", 
+            log.debug("Email details - Subject: {}, Template: {}, Data: {}",
                     subject, templateName, templateData);
-                    
+
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
             log.error("Failed to send email to {}: {}", toEmail, e.getMessage(), e);
@@ -134,19 +135,20 @@ public class NotificationService {
                 log.info("[TEST MODE] Message: {}", message);
                 return CompletableFuture.completedFuture(true);
             }
-            
+
             if (!smsEnabled) {
                 log.warn("SMS notifications are disabled. Message to {} not sent.", phoneNumber);
                 return CompletableFuture.completedFuture(false);
             }
-            
-            // In a real implementation, this would integrate with an SMS gateway like Twilio, AWS SNS, etc.
+
+            // In a real implementation, this would integrate with an SMS gateway like
+            // Twilio, AWS SNS, etc.
             // Example with a hypothetical SmsService:
             // smsService.send(phoneNumber, message);
-            
+
             log.info("SMS sent to {}: {}", phoneNumber, message);
             return CompletableFuture.completedFuture(true);
-            
+
         } catch (Exception e) {
             log.error("Failed to send SMS to {}: {}", phoneNumber, e.getMessage(), e);
             return CompletableFuture.completedFuture(false);
@@ -154,7 +156,8 @@ public class NotificationService {
     }
 
     public void sendPushNotification(Long userId, String title, String message, Map<String, String> data) {
-        // In a real implementation, this would send a push notification using Firebase Cloud Messaging, etc.
+        // In a real implementation, this would send a push notification using Firebase
+        // Cloud Messaging, etc.
         log.info("Sending push notification to user: {}", userId);
         log.info("Title: {}", title);
         log.info("Message: {}", message);
@@ -163,21 +166,21 @@ public class NotificationService {
         }
     }
 
-    public void notifyBikerNewOrder(Long bikerId, String bikerEmail, String bikerPhone, 
-                                     String orderNumber, String restaurantName, 
-                                     String pickupAddress, String deliveryAddress) {
+    public void notifyBikerNewOrder(Long bikerId, String bikerEmail, String bikerPhone,
+            String orderNumber, String restaurantName,
+            String pickupAddress, String deliveryAddress) {
         // In a real implementation, this would send notifications via multiple channels
-        
+
         String title = "New Order Available!";
         String message = String.format("""
-            New order #%s is ready for pickup!
-            Restaurant: %s
-            Pickup: %s
-            Delivery: %s
-            
-            Please confirm acceptance in the app.
-            """, orderNumber, restaurantName, pickupAddress, deliveryAddress);
-        
+                New order #%s is ready for pickup!
+                Restaurant: %s
+                Pickup: %s
+                Delivery: %s
+
+                Please confirm acceptance in the app.
+                """, orderNumber, restaurantName, pickupAddress, deliveryAddress);
+
         // Send push notification
         Map<String, String> pushData = new HashMap<>();
         pushData.put("orderNumber", orderNumber);
@@ -185,14 +188,14 @@ public class NotificationService {
         pushData.put("pickupAddress", pickupAddress);
         pushData.put("deliveryAddress", deliveryAddress);
         pushData.put("type", "NEW_ORDER");
-        
+
         sendPushNotification(bikerId, title, message, pushData);
-        
+
         // Send SMS notification
-        String smsMessage = String.format("New order #%s ready at %s. Check app for details.", 
+        String smsMessage = String.format("New order #%s ready at %s. Check app for details.",
                 orderNumber, restaurantName);
         sendSms(bikerPhone, smsMessage);
-        
+
         // Send email notification
         Map<String, Object> emailData = new HashMap<>();
         emailData.put("orderNumber", orderNumber);
@@ -200,43 +203,43 @@ public class NotificationService {
         emailData.put("pickupAddress", pickupAddress);
         emailData.put("deliveryAddress", deliveryAddress);
         emailData.put("message", message);
-        
+
         sendEmail(bikerEmail, "New Delivery Order #" + orderNumber, "biker-new-order", emailData);
-        
+
         log.info("Sent new order notification to biker {} for order {}", bikerId, orderNumber);
     }
 
     @Async
-    public void notifyAvailableBikersForOrder(String orderNumber, String restaurantName, 
-                                           String pickupAddress, String deliveryAddress) {
+    public void notifyAvailableBikersForOrder(String orderNumber, String restaurantName,
+            String pickupAddress, String deliveryAddress) {
         log.info("Notifying available bikers for order: {}", orderNumber);
-        
+
         try {
             // 1. Find nearest available bikers within a reasonable distance (e.g., 10km)
             List<Bikers> availableBikers = geoLocationService.findNearestBikers(pickupAddress, 10.0);
-            
+
             if (availableBikers.isEmpty()) {
                 log.warn("No available bikers found within range for order: {}", orderNumber);
                 return;
             }
-            
+
             log.info("Found {} available bikers for order: {}", availableBikers.size(), orderNumber);
-            
+
             // 2. Select the best biker based on criteria (nearest, highest rating, etc.)
             Bikers assignedBiker = selectBestBiker(availableBikers);
-    
-            sendOrderAssignmentNotification(assignedBiker, orderNumber, restaurantName, 
-                                        pickupAddress, deliveryAddress);
-            
-            log.info("Assigned order {} to biker: {} (ID: {})", 
+
+            sendOrderAssignmentNotification(assignedBiker, orderNumber, restaurantName,
+                    pickupAddress, deliveryAddress);
+
+            log.info("Assigned order {} to biker: {} (ID: {})",
                     orderNumber, assignedBiker.getFullNames(), assignedBiker.getBikerId());
-                    
+
         } catch (Exception e) {
             log.error("Error notifying bikers for order: " + orderNumber, e);
             // Consider implementing a retry mechanism or fallback strategy
         }
     }
-    
+
     /**
      * Selects the best biker from the available ones based on criteria
      */
@@ -246,371 +249,365 @@ public class NotificationService {
         // 2. Biker rating
         // 3. Number of current deliveries
         // 4. Biker's preferred areas
-        
+
         // For now, we'll just return the first available biker (nearest one)
         return availableBikers.get(0);
     }
-    
+
     /**
      * Sends an order assignment notification to a specific biker
      */
     @Async
-    protected void sendOrderAssignmentNotification(Bikers biker, String orderNumber, 
-                                                 String restaurantName, String pickupAddress, 
-                                                 String deliveryAddress) {
+    protected void sendOrderAssignmentNotification(Bikers biker, String orderNumber,
+            String restaurantName, String pickupAddress,
+            String deliveryAddress) {
         String title = "New Order #" + orderNumber;
         String message = String.format(
-            "You have been assigned a new order!\n" +
-            "Restaurant: %s\n" +
-            "Pickup: %s\n" +
-            "Delivery: %s\n" +
-            "Please proceed to the restaurant to pick up the order.",
-            restaurantName, pickupAddress, deliveryAddress
-        );
-        
-        log.info("Sending order notification to biker {}: {} - {}", 
+                "You have been assigned a new order!\n" +
+                        "Restaurant: %s\n" +
+                        "Pickup: %s\n" +
+                        "Delivery: %s\n" +
+                        "Please proceed to the restaurant to pick up the order.",
+                restaurantName, pickupAddress, deliveryAddress);
+
+        log.info("Sending order notification to biker {}: {} - {}",
                 biker.getBikerId(), title, message);
-                
+
         // In a real implementation, you would:
         // 1. Send push notification to the biker's mobile app
         // 2. Optionally send an SMS if push notification is not available
         // 3. Log the notification in the database
-        
+
         // For now, we'll just log it
-        log.info("Order notification sent to biker {} for order {}", 
+        log.info("Order notification sent to biker {} for order {}",
                 biker.getBikerId(), orderNumber);
     }
-    
+
     public void sendPaymentConfirmation(String customerEmail, Long orderId, Float amount, String transactionId) {
         log.info("Sending payment confirmation for order {} to {}", orderId, customerEmail);
-        
+
         String subject = String.format("Payment Confirmation - Order #%d", orderId);
-        
+
         String message = String.format("""
-            Thank you for your payment!
-            
-            Order #: %d
-            Amount: MZN %,.2f
-            Transaction ID: %s
-            Status: Paid
-            
-            Your order is being processed. You will receive another email once your order is confirmed.
-            
-            If you have any questions about your order, please contact our support team.
-            """, orderId, amount, transactionId);
-        
+                Thank you for your payment!
+
+                Order #: %d
+                Amount: MZN %,.2f
+                Transaction ID: %s
+                Status: Paid
+
+                Your order is being processed. You will receive another email once your order is confirmed.
+
+                If you have any questions about your order, please contact our support team.
+                """, orderId, amount, transactionId);
+
         Map<String, Object> templateData = new HashMap<>();
         templateData.put("orderId", orderId);
         templateData.put("amount", amount);
         templateData.put("transactionId", transactionId);
         templateData.put("message", message);
-        
+
         // Send email notification
         sendEmail(customerEmail, subject, "payment-confirmation", templateData);
-        
+
         log.info("Payment confirmation sent for order {}", orderId);
     }
-    
-    public void notifyDeliveryAccepted(com.goDelivery.goDelivery.model.Order order, 
-                                        com.goDelivery.goDelivery.model.Bikers biker, 
-                                        Integer estimatedDeliveryMinutes) {
+
+    public void notifyDeliveryAccepted(com.goDelivery.goDelivery.model.Order order,
+            com.goDelivery.goDelivery.model.Bikers biker,
+            Integer estimatedDeliveryMinutes) {
         // Notify customer that biker accepted delivery
         if (order.getCustomer() != null) {
             String customerEmail = order.getCustomer().getEmail();
             String customerMessage = String.format("""
-                Good news! Your order #%s has been accepted by %s.
-                
-                Delivery Person: %s
-                Rating: %.1f
-                Phone: %s
-                Estimated Delivery: %d minutes
-                
-                You can track your order in real-time through the app.
-                """, 
-                order.getOrderNumber(), 
-                biker.getFullName(),
-                biker.getFullName(),
-                biker.getRating() != null ? biker.getRating() : 4.5,
-                biker.getPhoneNumber(),
-                estimatedDeliveryMinutes != null ? estimatedDeliveryMinutes : 30
-            );
-            
+                    Good news! Your order #%s has been accepted by %s.
+
+                    Delivery Person: %s
+                    Rating: %.1f
+                    Phone: %s
+                    Estimated Delivery: %d minutes
+
+                    You can track your order in real-time through the app.
+                    """,
+                    order.getOrderNumber(),
+                    biker.getFullName(),
+                    biker.getFullName(),
+                    biker.getRating() != null ? biker.getRating() : 4.5,
+                    biker.getPhoneNumber(),
+                    estimatedDeliveryMinutes != null ? estimatedDeliveryMinutes : 30);
+
             Map<String, Object> emailData = new HashMap<>();
             emailData.put("orderNumber", order.getOrderNumber());
             emailData.put("bikerName", biker.getFullName());
             emailData.put("bikerPhone", biker.getPhoneNumber());
             emailData.put("estimatedMinutes", estimatedDeliveryMinutes);
             emailData.put("message", customerMessage);
-            
+
             sendEmail(customerEmail, "Your Delivery is On The Way!", "delivery-accepted", emailData);
-            
-            log.info("Notified customer {} that biker {} accepted order {}", 
+
+            log.info("Notified customer {} that biker {} accepted order {}",
                     order.getCustomer().getEmail(), biker.getBikerId(), order.getOrderNumber());
         }
-        
+
         // Notify restaurant that biker accepted
         if (order.getRestaurant() != null && order.getRestaurant().getEmail() != null) {
             String restaurantMessage = String.format("""
-                Biker %s has accepted delivery for order #%s.
-                
-                Biker Details:
-                Name: %s
-                Phone: %s
-                Vehicle: %s - %s
-                
-                Order should be ready for pickup soon.
-                """,
-                biker.getFullName(),
-                order.getOrderNumber(),
-                biker.getFullName(),
-                biker.getPhoneNumber(),
-                biker.getVehicleType(),
-                biker.getVehiclePlate()
-            );
-            
+                    Biker %s has accepted delivery for order #%s.
+
+                    Biker Details:
+                    Name: %s
+                    Phone: %s
+                    Vehicle: %s - %s
+
+                    Order should be ready for pickup soon.
+                    """,
+                    biker.getFullName(),
+                    order.getOrderNumber(),
+                    biker.getFullName(),
+                    biker.getPhoneNumber(),
+                    biker.getVehicleType(),
+                    biker.getVehiclePlate());
+
             Map<String, Object> emailData = new HashMap<>();
             emailData.put("orderNumber", order.getOrderNumber());
             emailData.put("bikerName", biker.getFullName());
             emailData.put("message", restaurantMessage);
-            
-            sendEmail(order.getRestaurant().getEmail(), 
-                    "Biker Assigned - Order #" + order.getOrderNumber(), 
+
+            sendEmail(order.getRestaurant().getEmail(),
+                    "Biker Assigned - Order #" + order.getOrderNumber(),
                     "biker-assigned", emailData);
         }
-        
+
         log.info("Sent delivery acceptance notifications for order {}", order.getOrderNumber());
     }
-    
-    public void notifyDeliveryRejected(com.goDelivery.goDelivery.model.Order order, 
-                                        com.goDelivery.goDelivery.model.Bikers biker, 
-                                        String reason) {
+
+    public void notifyDeliveryRejected(com.goDelivery.goDelivery.model.Order order,
+            com.goDelivery.goDelivery.model.Bikers biker,
+            String reason) {
         // Notify restaurant that biker rejected delivery
         if (order.getRestaurant() != null && order.getRestaurant().getEmail() != null) {
             String message = String.format("""
-                Biker %s has declined delivery for order #%s.
-                Reason: %s
-                
-                The order has been broadcast to other available bikers.
-                """,
-                biker.getFullName(),
-                order.getOrderNumber(),
-                reason
-            );
-            
+                    Biker %s has declined delivery for order #%s.
+                    Reason: %s
+
+                    The order has been broadcast to other available bikers.
+                    """,
+                    biker.getFullName(),
+                    order.getOrderNumber(),
+                    reason);
+
             Map<String, Object> emailData = new HashMap<>();
             emailData.put("orderNumber", order.getOrderNumber());
             emailData.put("bikerName", biker.getFullName());
             emailData.put("reason", reason);
             emailData.put("message", message);
-            
-            sendEmail(order.getRestaurant().getEmail(), 
-                    "Delivery Declined - Order #" + order.getOrderNumber(), 
+
+            sendEmail(order.getRestaurant().getEmail(),
+                    "Delivery Declined - Order #" + order.getOrderNumber(),
                     "delivery-rejected", emailData);
-            
-            log.info("Notified restaurant that biker {} rejected order {} - Reason: {}", 
+
+            log.info("Notified restaurant that biker {} rejected order {} - Reason: {}",
                     biker.getBikerId(), order.getOrderNumber(), reason);
         }
     }
-    
-    public void notifyPickupConfirmed(com.goDelivery.goDelivery.model.Order order, 
-                                       com.goDelivery.goDelivery.model.Bikers biker) {
+
+    public void notifyPickupConfirmed(com.goDelivery.goDelivery.model.Order order,
+            com.goDelivery.goDelivery.model.Bikers biker) {
         // Notify customer that order is picked up and on the way
         if (order.getCustomer() != null) {
             String customerEmail = order.getCustomer().getEmail();
             String customerMessage = String.format("""
-                Great news! Your order #%s has been picked up and is on its way!
-                
-                Delivery Person: %s
-                Phone: %s
-                Vehicle: %s - %s
-                Estimated Arrival: 15-20 minutes
-                
-                You can track your order in real-time through the app.
-                Your food will arrive hot and fresh!
-                """, 
-                order.getOrderNumber(),
-                biker.getFullName(),
-                biker.getPhoneNumber(),
-                biker.getVehicleType(),
-                biker.getVehiclePlate()
-            );
-            
+                    Great news! Your order #%s has been picked up and is on its way!
+
+                    Delivery Person: %s
+                    Phone: %s
+                    Vehicle: %s - %s
+                    Estimated Arrival: 15-20 minutes
+
+                    You can track your order in real-time through the app.
+                    Your food will arrive hot and fresh!
+                    """,
+                    order.getOrderNumber(),
+                    biker.getFullName(),
+                    biker.getPhoneNumber(),
+                    biker.getVehicleType(),
+                    biker.getVehiclePlate());
+
             Map<String, Object> emailData = new HashMap<>();
             emailData.put("orderNumber", order.getOrderNumber());
             emailData.put("bikerName", biker.getFullName());
             emailData.put("bikerPhone", biker.getPhoneNumber());
             emailData.put("vehicleInfo", biker.getVehicleType() + " - " + biker.getVehiclePlate());
             emailData.put("message", customerMessage);
-            
+
             sendEmail(customerEmail, "Your Order is On The Way!", "order-picked-up", emailData);
-            
+
             // Send SMS for immediate notification
-            String smsMessage = String.format("Your order #%s has been picked up by %s and is on its way! ETA: 15-20 min. Track: [app link]", 
+            String smsMessage = String.format(
+                    "Your order #%s has been picked up by %s and is on its way! ETA: 15-20 min. Track: [app link]",
                     order.getOrderNumber(), biker.getFullName());
             sendSms(order.getCustomer().getPhoneNumber(), smsMessage);
-            
+
             // Send push notification
             Map<String, String> pushData = new HashMap<>();
             pushData.put("orderNumber", order.getOrderNumber());
             pushData.put("orderId", order.getOrderId().toString());
             pushData.put("bikerName", biker.getFullName());
             pushData.put("type", "ORDER_PICKED_UP");
-            
+
             sendPushNotification(
-                order.getCustomer().getCustomerId(),
-                "Order Picked Up!",
-                "Your order is on its way. Estimated arrival: 15-20 minutes.",
-                pushData
-            );
-            
-            log.info("Notified customer {} that order {} was picked up by biker {}", 
+                    order.getCustomer().getCustomerId(),
+                    "Order Picked Up!",
+                    "Your order is on its way. Estimated arrival: 15-20 minutes.",
+                    pushData);
+
+            log.info("Notified customer {} that order {} was picked up by biker {}",
                     order.getCustomer().getEmail(), order.getOrderNumber(), biker.getBikerId());
         }
-        
+
         // Notify restaurant that order was successfully picked up
         if (order.getRestaurant() != null && order.getRestaurant().getEmail() != null) {
             String restaurantMessage = String.format("""
-                Order #%s has been picked up by %s.
-                
-                Biker: %s
-                Pickup Time: %s
-                Customer: %s
-                Delivery Address: %s
-                
-                The order is now en route to the customer.
-                """,
-                order.getOrderNumber(),
-                biker.getFullName(),
-                biker.getFullName(),
-                java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a")),
-                order.getCustomer() != null ? order.getCustomer().getFullName() : "Customer",
-                order.getDeliveryAddress()
-            );
-            
+                    Order #%s has been picked up by %s.
+
+                    Biker: %s
+                    Pickup Time: %s
+                    Customer: %s
+                    Delivery Address: %s
+
+                    The order is now en route to the customer.
+                    """,
+                    order.getOrderNumber(),
+                    biker.getFullName(),
+                    biker.getFullName(),
+                    java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a")),
+                    order.getCustomer() != null ? order.getCustomer().getFullName() : "Customer",
+                    order.getDeliveryAddress());
+
             Map<String, Object> emailData = new HashMap<>();
             emailData.put("orderNumber", order.getOrderNumber());
             emailData.put("bikerName", biker.getFullName());
             emailData.put("message", restaurantMessage);
-            
-            sendEmail(order.getRestaurant().getEmail(), 
-                    "Order Picked Up - #" + order.getOrderNumber(), 
+
+            sendEmail(order.getRestaurant().getEmail(),
+                    "Order Picked Up - #" + order.getOrderNumber(),
                     "order-dispatched", emailData);
         }
-        
+
         log.info("Sent pickup confirmation notifications for order {}", order.getOrderNumber());
     }
-    
-    public void notifyCustomerLocationUpdate(com.goDelivery.goDelivery.model.Order order, 
-                                              com.goDelivery.goDelivery.model.Bikers biker,
-                                              com.goDelivery.goDelivery.dtos.delivery.LocationUpdateRequest locationUpdate) {
-        // In production, this would send real-time location updates to customer via WebSocket
+
+    public void notifyCustomerLocationUpdate(com.goDelivery.goDelivery.model.Order order,
+            com.goDelivery.goDelivery.model.Bikers biker,
+            com.goDelivery.goDelivery.dtos.delivery.LocationUpdateRequest locationUpdate) {
+        // In production, this would send real-time location updates to customer via
+        // WebSocket
         // For now, log the location update
-        
-        log.info("Biker {} location update for order {}: lat={}, lon={}", 
-                biker.getBikerId(), order.getOrderNumber(), 
+
+        log.info("Biker {} location update for order {}: lat={}, lon={}",
+                biker.getBikerId(), order.getOrderNumber(),
                 locationUpdate.getLatitude(), locationUpdate.getLongitude());
-        
+
         // Calculate ETA based on distance and speed
         // Send push notification to customer with updated ETA if significant change
-        
+
         log.info("Customer tracking update sent for order {}", order.getOrderNumber());
     }
-    
-    public void notifyDeliveryCompleted(com.goDelivery.goDelivery.model.Order order, 
-                                         com.goDelivery.goDelivery.model.Bikers biker,
-                                         com.goDelivery.goDelivery.dtos.delivery.DeliveryConfirmationRequest confirmation) {
+
+    public void notifyDeliveryCompleted(com.goDelivery.goDelivery.model.Order order,
+            com.goDelivery.goDelivery.model.Bikers biker,
+            com.goDelivery.goDelivery.dtos.delivery.DeliveryConfirmationRequest confirmation) {
         // Notify customer that delivery is complete
         if (order.getCustomer() != null) {
             String customerEmail = order.getCustomer().getEmail();
             String customerMessage = String.format("""
-                Your order #%s has been successfully delivered!
-                
-                Delivered by: %s
-                Delivery Time: %s
-                %s
-                
-                We hope you enjoy your meal!
-                Please rate your delivery experience in the app.
-                """, 
-                order.getOrderNumber(),
-                biker.getFullName(),
-                java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a")),
-                confirmation.getContactlessDelivery() != null && confirmation.getContactlessDelivery() 
-                    ? "Contactless delivery completed" 
-                    : "Received by: " + (confirmation.getRecipientName() != null ? confirmation.getRecipientName() : "Customer")
-            );
-            
+                    Your order #%s has been successfully delivered!
+
+                    Delivered by: %s
+                    Delivery Time: %s
+                    %s
+
+                    We hope you enjoy your meal!
+                    Please rate your delivery experience in the app.
+                    """,
+                    order.getOrderNumber(),
+                    biker.getFullName(),
+                    java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a")),
+                    confirmation.getContactlessDelivery() != null && confirmation.getContactlessDelivery()
+                            ? "Contactless delivery completed"
+                            : "Received by: "
+                                    + (confirmation.getRecipientName() != null ? confirmation.getRecipientName()
+                                            : "Customer"));
+
             Map<String, Object> emailData = new HashMap<>();
             emailData.put("orderNumber", order.getOrderNumber());
             emailData.put("bikerName", biker.getFullName());
             emailData.put("deliveryTime", java.time.LocalDateTime.now().toString());
             emailData.put("message", customerMessage);
-            
+
             sendEmail(customerEmail, "Order Delivered - #" + order.getOrderNumber(), "order-delivered", emailData);
-            
+
             // Send push notification
             Map<String, String> pushData = new HashMap<>();
             pushData.put("orderNumber", order.getOrderNumber());
             pushData.put("orderId", order.getOrderId().toString());
             pushData.put("type", "ORDER_DELIVERED");
-            
+
             sendPushNotification(
-                order.getCustomer().getCustomerId(),
-                "Order Delivered!",
-                "Your order has been successfully delivered. Enjoy your meal!",
-                pushData
-            );
-            
-            log.info("Notified customer {} that order {} was delivered", 
+                    order.getCustomer().getCustomerId(),
+                    "Order Delivered!",
+                    "Your order has been successfully delivered. Enjoy your meal!",
+                    pushData);
+
+            log.info("Notified customer {} that order {} was delivered",
                     order.getCustomer().getEmail(), order.getOrderNumber());
         }
-        
+
         // Notify restaurant of successful delivery
         if (order.getRestaurant() != null && order.getRestaurant().getEmail() != null) {
             String restaurantMessage = String.format("""
-                Order #%s has been successfully delivered.
-                
-                Biker: %s
-                Customer: %s
-                Delivery Address: %s
-                Delivery Time: %s
-                Order Amount: $%.2f
-                
-                Order completed successfully.
-                """,
-                order.getOrderNumber(),
-                biker.getFullName(),
-                order.getCustomer() != null ? order.getCustomer().getFullName() : "Customer",
-                order.getDeliveryAddress(),
-                java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a")),
-                order.getFinalAmount() != null ? order.getFinalAmount().doubleValue() : 0.0
-            );
-            
+                    Order #%s has been successfully delivered.
+
+                    Biker: %s
+                    Customer: %s
+                    Delivery Address: %s
+                    Delivery Time: %s
+                    Order Amount: $%.2f
+
+                    Order completed successfully.
+                    """,
+                    order.getOrderNumber(),
+                    biker.getFullName(),
+                    order.getCustomer() != null ? order.getCustomer().getFullName() : "Customer",
+                    order.getDeliveryAddress(),
+                    java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a")),
+                    order.getFinalAmount() != null ? order.getFinalAmount().doubleValue() : 0.0);
+
             Map<String, Object> emailData = new HashMap<>();
             emailData.put("orderNumber", order.getOrderNumber());
             emailData.put("bikerName", biker.getFullName());
             emailData.put("message", restaurantMessage);
-            
-            sendEmail(order.getRestaurant().getEmail(), 
-                    "Order Completed - #" + order.getOrderNumber(), 
+
+            sendEmail(order.getRestaurant().getEmail(),
+                    "Order Completed - #" + order.getOrderNumber(),
                     "order-completed", emailData);
         }
-        
+
         log.info("Sent delivery completion notifications for order {}", order.getOrderNumber());
     }
 
-    //Sends a payment notification to a restaurant
+    // Sends a payment notification to a restaurant
     @Async
     public void sendPaymentNotification(Long restaurantId, Double amount, String orderReference, String paymentMethod) {
         try {
             // Format the amount with 2 decimal places
             String formattedAmount = String.format("%.2f", amount);
-            
+
             // Create the notification message
             String message = String.format("You have received a payment of %s MZN for order %s via %s. " +
-                    "The amount will be credited to your account within 1-2 business days.", 
+                    "The amount will be credited to your account within 1-2 business days.",
                     formattedAmount, orderReference, paymentMethod);
-            
+
             // Create and save the notification
             Notification notification = Notification.builder()
                     .recipientType(RecipientType.RESTAURANT)
@@ -622,33 +619,34 @@ public class NotificationService {
                     .sentAt(LocalDate.now())
                     .createdAt(LocalDate.now())
                     .build();
-            
+
             // In a real implementation, you would save this to the database
             notificationRepository.save(notification);
-            
+
             // Send email notification
             sendRestaurantPaymentEmail(restaurantId, formattedAmount, orderReference, paymentMethod);
-            
+
             // Log the notification
             log.info("Payment notification sent to restaurant {} for order {}", restaurantId, orderReference);
-            
+
         } catch (Exception e) {
             log.error("Error sending payment notification to restaurant {}: {}", restaurantId, e.getMessage(), e);
         }
     }
-    
-    //Sends an email notification to a restaurant about a received payment          
+
+    // Sends an email notification to a restaurant about a received payment
     @Async
-    protected void sendRestaurantPaymentEmail(Long restaurantId, String amount, String orderReference, String paymentMethod) {
+    protected void sendRestaurantPaymentEmail(Long restaurantId, String amount, String orderReference,
+            String paymentMethod) {
         try {
             // Fetch the restaurant's email and name from the database
             Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                    "Restaurant not found with id: " + restaurantId));
-            
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Restaurant not found with id: " + restaurantId));
+
             String restaurantEmail = restaurant.getEmail();
             String restaurantName = restaurant.getRestaurantName();
-            
+
             // Validate email
             if (restaurantEmail == null || restaurantEmail.trim().isEmpty()) {
                 log.warn("No email found for restaurant ID: {}. Email notification not sent.", restaurantId);
@@ -662,22 +660,22 @@ public class NotificationService {
             context.setVariable("paymentMethod", paymentMethod);
             context.setVariable("processingDate", LocalDateTime.now());
             // Process the template with the context
-            String emailContent = templateEngine.process("emails/restaurant-payment-notification", context);
+            String emailContent = templateEngine.process("restaurant-payment-notification", context);
             // Prepare email using MimeMessage
             MimeMessage mimeMessage = emailSender.createMimeMessage();
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
-            
+
             message.setFrom(fromEmail);
             message.setTo(restaurantEmail);
             message.setSubject(paymentReceivedEmailSubject);
             message.setText(emailContent, true); // true = isHtml
-            
+
             // Send the email
             emailSender.send(mimeMessage);
-            
-            log.info("Payment email sent to restaurant {} ({}) for order {}", 
+
+            log.info("Payment email sent to restaurant {} ({}) for order {}",
                     restaurantId, restaurantEmail, orderReference);
-                
+
         } catch (ResourceNotFoundException e) {
             log.error("Failed to send payment email: Restaurant not found with ID: {}", restaurantId, e);
         } catch (MessagingException e) {
@@ -685,7 +683,7 @@ public class NotificationService {
         } catch (MailException e) {
             log.error("Failed to send payment email to restaurant {}: {}", restaurantId, e.getMessage(), e);
         } catch (Exception e) {
-            log.error("Unexpected error sending payment email to restaurant {}: {}", 
+            log.error("Unexpected error sending payment email to restaurant {}: {}",
                     restaurantId, e.getMessage(), e);
         }
     }

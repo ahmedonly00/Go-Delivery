@@ -99,7 +99,7 @@ public class Bikers implements CustomUserDetails {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDate updatedAt;
-    
+
     @Transient
     private Double distanceFromPickup; // Transient field to store calculated distance
 
@@ -172,7 +172,7 @@ public class Bikers implements CustomUserDetails {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        updatedAt = LocalDate.now();
     }
-
 
 }
