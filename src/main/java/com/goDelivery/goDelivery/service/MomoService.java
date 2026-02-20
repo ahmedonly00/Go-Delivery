@@ -67,13 +67,6 @@ public class MomoService {
     @Autowired
     private OrderConfig orderConfig;
 
-    @Lazy
-    @Autowired
-    private DisbursementService disbursementService;
-
-    @Value("${app.payment.auto-disbursement.enabled:true}")
-    private boolean autoDisbursementEnabled;
-
     // Request payment from a customer's mobile money account
     public MomoPaymentResponse requestPayment(MomoPaymentRequest request) {
         log.info("Received MoMo payment request for external ID: {}", request.getExternalId());
@@ -711,31 +704,12 @@ public class MomoService {
                                 estimatedPrepTimeMinutes, order.getOrderId());
 
                         cashierService.acceptOrder(order.getOrderId(), estimatedPrepTimeMinutes);
-                        log.info("Order {} successfully processed after payment", order.getOrderId());
+                        log.info("Order {} successfully accepted after payment confirmation", order.getOrderId());
 
-                        // NEW: Trigger automatic disbursement for all paid orders
-                        if (autoDisbursementEnabled) {
-                            log.info("=== AUTO-DISBURSEMENT CHECK ===");
-                            log.info("Auto-disbursement enabled for order {}, triggering disbursement",
-                                    order.getOrderId());
-                            log.info("Order payment status: {}", order.getPaymentStatus());
-                            log.info("Order total amount: {}", order.getFinalAmount());
-
-                            try {
-                                log.info("Calling disbursementService.processOrderDisbursement...");
-                                CollectionDisbursementResponse response = disbursementService
-                                        .processOrderDisbursement(order);
-                                log.info("Automatic disbursement initiated for order {}", order.getOrderId());
-                                log.info("Disbursement reference ID: {}", response.getReferenceId());
-                            } catch (Exception e) {
-                                log.error("Failed to initiate automatic disbursement for order {}: {}",
-                                        order.getOrderId(), e.getMessage(), e);
-                                // Don't fail the order, just log the error
-                            }
-                        } else {
-                            log.info("Auto-disbursement is disabled for order {}",
-                                    order.getOrderId());
-                        }
+                        // NOTE: Disbursement is handled via the collection-disbursement API.
+                        // The payment was initiated as a collection-disbursement request which
+                        // automatically distributes to all restaurants upon collection success.
+                        // No separate disbursement trigger needed here.
 
                     } catch (Exception e) {
                         log.error("Failed to process order {} after payment: {}",

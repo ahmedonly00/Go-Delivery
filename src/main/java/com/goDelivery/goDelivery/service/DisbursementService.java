@@ -66,9 +66,14 @@ public class DisbursementService {
 
         @Transactional
         public CollectionDisbursementResponse processOrderDisbursement(Order order) {
-                // Validate order
-                if (order.getPaymentStatus() != PaymentStatus.PAID) {
-                        throw new IllegalStateException("Order is not paid");
+                return processOrderDisbursement(order, null);
+        }
+
+        @Transactional
+        public CollectionDisbursementResponse processOrderDisbursement(Order order, String overrideMsisdn) {
+                // Validate order is not already paid
+                if (order.getPaymentStatus() == PaymentStatus.PAID) {
+                        throw new IllegalStateException("Order is already paid");
                 }
 
                 // Extract parent order number (remove -1, -2, etc. suffix for child orders)
@@ -173,10 +178,21 @@ public class DisbursementService {
                                         restaurant.getRestaurantName(), amountToDisburse, commission);
                 }
 
+                // Determine which MSISDN to collect from:
+                // Use the overrideMsisdn if the customer wants to pay from a different number,
+                // otherwise fall back to their registered phone number.
+                String collectionMsisdn = (overrideMsisdn != null && !overrideMsisdn.isBlank())
+                                ? overrideMsisdn
+                                : order.getCustomer().getPhoneNumber();
+
+                log.info("Collecting from MSISDN: {} ({})",
+                                collectionMsisdn,
+                                overrideMsisdn != null ? "customer-specified" : "registered number");
+
                 // Prepare and send collection-disbursement request
                 CollectionDisbursementRequest request = CollectionDisbursementRequest.builder()
                                 .collectionExternalId("COLL_" + parentOrderNumber)
-                                .collectionMsisdn(order.getCustomer().getPhoneNumber())
+                                .collectionMsisdn(collectionMsisdn)
                                 .collectionAmount(totalCollectionAmount) // Full amount: food + delivery - discount
                                 .collectionPayerMessageTitle("MozFood Order #" + parentOrderNumber)
                                 .collectionPayerMessageDescription("Payment for your order")

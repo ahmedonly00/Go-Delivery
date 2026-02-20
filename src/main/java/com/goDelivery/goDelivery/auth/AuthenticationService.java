@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery.auth;
 
 import com.goDelivery.goDelivery.dtos.auth.*;
 import com.goDelivery.goDelivery.model.*;
+import com.goDelivery.goDelivery.repository.BikersRepository;
 import com.goDelivery.goDelivery.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
 import com.goDelivery.goDelivery.repository.PasswordResetTokenRepository;
@@ -25,6 +26,7 @@ import java.util.Optional;
 @Slf4j
 public class AuthenticationService {
 
+    private final BikersRepository bikersRepository;
     private final BranchUsersRepository branchUsersRepository;
     private final RestaurantUsersRepository restaurantUsersRepository;
     private final SuperAdminRepository superAdminRepository;
@@ -132,6 +134,14 @@ public class AuthenticationService {
         log.info("Searching for user with email: {}", email);
 
         try {
+            // Check Bikers
+            log.debug("Checking bikers table...");
+            Optional<Bikers> biker = bikersRepository.findByEmail(email);
+            if (biker.isPresent()) {
+                log.info("Found user in bikers table");
+                return biker.get();
+            }
+
             // Check Branch Users
             log.debug("Checking branch_users table...");
             Optional<BranchUsers> branchUser = branchUsersRepository.findByEmail(email);
