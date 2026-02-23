@@ -182,4 +182,62 @@ public class GeoLocationService {
                 .sorted(Comparator.comparingDouble(Restaurant::getDistanceFromUser))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Returns ALL approved restaurants, with nearby ones (within radiusKm) first,
+     * followed by all other approved restaurants, both groups sorted by distance.
+     */
+    public List<Restaurant> findAllApprovedRestaurantsNearbyFirst(double latitude, double longitude, double radiusKm) {
+        // Validate coordinates
+        validateCoordinates(latitude, longitude, radiusKm);
+
+        log.debug("Finding all approved restaurants near ({}, {}), prioritizing within {} km", latitude, longitude,
+                radiusKm);
+
+        // Get all approved and active restaurants with coordinates
+        List<Restaurant> withCoords = restaurantRepository
+                .findByIsApprovedTrueAndLatitudeIsNotNullAndLongitudeIsNotNull();
+
+        // Calculate distance for every restaurant
+        withCoords.forEach(restaurant -> {
+            double distance = distanceService.calculateDistance(
+                    latitude, longitude,
+                    restaurant.getLatitude(), restaurant.getLongitude());
+            restaurant.setDistanceFromUser(distance);
+        });
+
+        // Partition into nearby (within radius & available) and the rest
+        List<Restaurant> nearby = new java.util.ArrayList<>();
+        List<Restaurant> farther = new java.util.ArrayList<>();
+
+        for (Restaurant r : withCoords) {
+            if (isRestaurantAvailable(r, radiusKm)) {
+                nearby.add(r);
+            } else {
+                farther.add(r);
+            }
+        }
+
+        // Sort each group by distance
+        nearby.sort(Comparator.comparingDouble(Restaurant::getDistanceFromUser));
+        farther.sort(Comparator.comparingDouble(Restaurant::getDistanceFromUser));
+
+        // Also include approved restaurants that have no coordinates (append at the
+        // end)
+        List<Restaurant> noCoords = restaurantRepository.findByIsApprovedTrueAndIsActiveTrue()
+                .stream()
+                .filter(r -> r.getLatitude() == null || r.getLongitude() == null)
+                .collect(Collectors.toList());
+
+        // Merge: nearby first, then farther, then those without coordinates
+        List<Restaurant> result = new java.util.ArrayList<>(nearby.size() + farther.size() + noCoords.size());
+        result.addAll(nearby);
+        result.addAll(farther);
+        result.addAll(noCoords);
+
+        log.debug("Returning {} total restaurants ({} nearby, {} farther, {} without coordinates)",
+                result.size(), nearby.size(), farther.size(), noCoords.size());
+
+        return result;
+    }
 }

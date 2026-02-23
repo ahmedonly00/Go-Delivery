@@ -1,0 +1,90 @@
+{
+    "info": {
+        "name": "MoMo Payment API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "https://delivery.apis.ivas.rw:8085"
+        },
+        {
+            "key": "token",
+            "value": "YOUR_JWT_TOKEN_HERE"
+        },
+        {
+            "key": "referenceId",
+            "value": ""
+        }
+    ],
+    "item": [
+        {
+            "name": "1. Initiate Payment (registered number)",
+            "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/payments/momo/request",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"orderId\": 1\n}"
+                }
+            }
+        },
+        {
+            "name": "2. Initiate Payment (different phone number)",
+            "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/payments/momo/request",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"orderId\": 1,\n  \"msisdn\": \"250788999999\"\n}"
+                }
+            }
+        },
+        {
+            "name": "3. Check Payment Status",
+            "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/v1/payments/momo/status/{{referenceId}}",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "4. Get Order Disbursements",
+            "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/v1/payments/momo/order/1/disbursements",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ]
+            }
+        }
+    ]
+}

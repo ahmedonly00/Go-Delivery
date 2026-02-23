@@ -234,13 +234,14 @@ public class RestaurantService {
     }
 
     /**
-     * Find nearby approved restaurants based on customer location
-     * Uses GeoLocationService to filter by distance and delivery radius
+     * Find all approved restaurants, with nearby ones appearing first.
+     * Nearby restaurants (within radiusKm) are sorted by distance first,
+     * followed by all other approved restaurants also sorted by distance.
      */
     public List<Restaurant> findNearbyApprovedRestaurants(double latitude, double longitude, double radiusKm) {
-        log.info("Finding nearby approved restaurants for location ({}, {}) within {} km",
+        log.info("Finding all approved restaurants for location ({}, {}), prioritizing within {} km",
                 latitude, longitude, radiusKm);
-        return geoLocationService.findNearbyRestaurants(latitude, longitude, radiusKm);
+        return geoLocationService.findAllApprovedRestaurantsNearbyFirst(latitude, longitude, radiusKm);
     }
 
     public List<RestaurantDTO> getAllActiveRestaurants() {

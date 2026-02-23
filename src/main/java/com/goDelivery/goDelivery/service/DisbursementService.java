@@ -1,11 +1,13 @@
 package com.goDelivery.goDelivery.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,8 +147,8 @@ public class DisbursementService {
                         }
 
                         // Calculate commission on the final amount (food ± delivery fee)
-                        double commission = calculateCommission(amount);
-                        double amountToDisburse = amount - commission;
+                        double commission = round2(calculateCommission(amount));
+                        double amountToDisburse = round2(amount - commission);
 
                         // Create recipient
                         DisbursementRecipient recipient = DisbursementRecipient.builder()
@@ -189,11 +191,18 @@ public class DisbursementService {
                                 collectionMsisdn,
                                 overrideMsisdn != null ? "customer-specified" : "registered number");
 
+                // Round total collection amount to 2 decimal places
+                double roundedCollectionAmount = round2(totalCollectionAmount);
+
+                // Generate a unique attempt suffix to prevent duplicate external ID errors
+                // if the same order is retried (MoMo rejects duplicate externalIds).
+                String attemptSuffix = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
                 // Prepare and send collection-disbursement request
                 CollectionDisbursementRequest request = CollectionDisbursementRequest.builder()
-                                .collectionExternalId("COLL_" + parentOrderNumber)
+                                .collectionExternalId("COLL_" + parentOrderNumber + "_" + attemptSuffix)
                                 .collectionMsisdn(collectionMsisdn)
-                                .collectionAmount(totalCollectionAmount) // Full amount: food + delivery - discount
+                                .collectionAmount(roundedCollectionAmount)
                                 .collectionPayerMessageTitle("MozFood Order #" + parentOrderNumber)
                                 .collectionPayerMessageDescription("Payment for your order")
                                 .callback(momoConfig.getCallbackHost() + "/api/webhooks/momo/disbursement")
@@ -262,7 +271,17 @@ public class DisbursementService {
                                                                 item -> item.getUnitPrice() * item.getQuantity())));
         }
 
+        /**
+         * Round a monetary value to 2 decimal places (MoMo API requirement)
+         */
+        private double round2(double value) {
+                return BigDecimal.valueOf(value)
+                                .setScale(2, RoundingMode.HALF_UP)
+                                .doubleValue();
+        }
+
         private double calculateCommission(double amount) {
+
                 // Use configured commission rate
                 double commission = amount * commissionConfig.getDefaultRate();
 
