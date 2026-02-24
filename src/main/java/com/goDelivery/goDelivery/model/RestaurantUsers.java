@@ -52,20 +52,20 @@ public class RestaurantUsers implements CustomUserDetails {
 
     @Builder.Default
     @Column(name = "setup_complete")
-    private boolean setupComplete = false;  
-    
+    private boolean setupComplete = false;
+
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
-    
+
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
     @Column(name = "last_login")
     private LocalDate lastLogin;
-    
+
     @Column(name = "otp")
     private String otp;
-    
+
     @Column(name = "otp_expiry_time")
     private LocalDateTime otpExpiryTime;
 
@@ -83,18 +83,22 @@ public class RestaurantUsers implements CustomUserDetails {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Restaurant restaurant;
 
     @OneToMany(mappedBy = "restaurantUser", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ReviewResponse> reviewResponses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        
+
         // Add role-based authority
         authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
-        
+
         // Add permission-based authorities if permissions exist
         if (permissions != null && !permissions.trim().isEmpty()) {
             // Split permissions by comma or semicolon
@@ -106,7 +110,7 @@ public class RestaurantUsers implements CustomUserDetails {
                 }
             }
         }
-        
+
         return authorities;
     }
 
@@ -146,8 +150,8 @@ public class RestaurantUsers implements CustomUserDetails {
     }
 
     @Override
-   public String getFullName() {
-       return this.fullName;
-   }
+    public String getFullName() {
+        return this.fullName;
+    }
 
 }

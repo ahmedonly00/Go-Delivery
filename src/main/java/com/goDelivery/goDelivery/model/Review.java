@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -52,30 +54,42 @@ public class Review {
     // One Review belongs to One Order
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Order order;
 
     // Many Reviews written by One Customer
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Customer customer;
 
     // Many Reviews received by One Restaurant
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Restaurant restaurant;
 
     // Many Reviews about One Biker (optional)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "biker_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Bikers bikers;
 
     // Many Reviews for One Branch
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Branches branch;
 
     // One Review can get many Responses
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ReviewResponse> responses;
 
     @PrePersist

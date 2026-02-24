@@ -1306,3 +1306,492 @@ Caused by: org.postgresql.util.PSQLException: FATAL: password authentication fai
 	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess.obtainConnection(JdbcEnvironmentInitiator.java:485)
 	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:46)
 	... 111 common frames omitted
+2026-02-24 10:56:14 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Starting GoDeliveryApplication using Java 22.0.2 with PID 22852 (D:\Desktop\Moz-Food Project\goDelivery\target\classes started by ahmed in D:\Desktop\Moz-Food Project\goDelivery)
+2026-02-24 10:56:14 [main] DEBUG c.g.goDelivery.GoDeliveryApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2026-02-24 10:56:14 [main] INFO  c.g.goDelivery.GoDeliveryApplication - The following 1 profile is active: "dev"
+2026-02-24 10:56:16 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-24 10:56:16 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 347 ms. Found 34 JPA repository interfaces.
+2026-02-24 10:56:16 [main] INFO  c.g.g.config.MenuCategoryInitializer - MenuCategoryInitializer class loaded
+2026-02-24 10:56:17 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2026-02-24 10:56:17 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-02-24 10:56:17 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2026-02-24 10:56:17 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-02-24 10:56:17 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3414 ms
+2026-02-24 10:56:18 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-24 10:56:18 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2026-02-24 10:56:18 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-02-24 10:56:18 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-24 10:56:18 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-02-24 10:56:22 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7c8f803d
+2026-02-24 10:56:22 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-02-24 10:56:22 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-02-24 10:56:23 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 17.7
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-24 10:56:26 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-24 10:57:26 [HikariPool-1:housekeeper] WARN  c.zaxxer.hikari.pool.ProxyLeakTask - Connection leak detection triggered for org.postgresql.jdbc.PgConnection@7c8f803d on thread main, stack trace follows
+java.lang.Exception: Apparent connection leak detected
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:127)
+	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:126)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess.obtainConnection(JdbcEnvironmentInitiator.java:485)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:46)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:39)
+	at org.hibernate.tool.schema.internal.exec.ImprovedExtractionContextImpl.getJdbcConnection(ImprovedExtractionContextImpl.java:63)
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43)
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39)
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66)
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60)
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93)
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280)
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144)
+	at java.base/java.util.HashMap.forEach(HashMap.java:1429)
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141)
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37)
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35)
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324)
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517)
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:691)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:513)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1375)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1205)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1725)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1474)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:606)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1752)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1635)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:230)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:184)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:179)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:164)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:96)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:271)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:245)
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4464)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749)
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:772)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749)
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:203)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:412)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:870)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:438)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:128)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:107)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:517)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:219)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:193)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:167)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:621)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.goDelivery.goDelivery.GoDeliveryApplication.main(GoDeliveryApplication.java:27)
+2026-02-24 10:57:29 [main] INFO  c.zaxxer.hikari.pool.ProxyLeakTask - Previously reported leaked connection org.postgresql.jdbc.PgConnection@7c8f803d on thread main was returned to the pool (unleaked)
+2026-02-24 10:57:29 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-24 10:57:30 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-24 10:57:31 [main] DEBUG c.g.g.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-02-24 10:57:31 [main] DEBUG c.g.g.c.EmailVerificationFilter - Filter 'emailVerificationFilter' configured for use
+2026-02-24 10:57:31 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2026-02-24 10:57:31 [main] INFO  c.g.g.service.email.EmailService - 📧 EMAIL CONFIGURATION LOADED
+2026-02-24 10:57:31 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2026-02-24 10:57:31 [main] INFO  c.g.g.service.email.EmailService - From Email: ahmedndayizeye45@gmail.com
+2026-02-24 10:57:31 [main] INFO  c.g.g.service.email.EmailService - SMTP Host: smtp.gmail.com
+2026-02-24 10:57:31 [main] INFO  c.g.g.service.email.EmailService - SMTP Port: 587
+2026-02-24 10:57:31 [main] INFO  c.g.g.service.email.EmailService - Frontend URL: https://delivery.ivas.rw
+2026-02-24 10:57:31 [main] INFO  c.g.g.service.email.EmailService - Base URL: https://delivery.apis.ivas.rw:8085
+2026-02-24 10:57:31 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2026-02-24 10:57:32 [main] INFO  c.g.goDelivery.config.MpesaConfig - MPESA API Base URL: http://143.198.225.193:8077
+2026-02-24 10:57:32 [main] INFO  c.g.goDelivery.config.MpesaConfig - MPESA Payment Endpoint: /api/v1/transactions
+2026-02-24 10:57:32 [main] INFO  c.g.goDelivery.config.MpesaConfig - MPESA Status Endpoint: /api/v1/transactions/status
+2026-02-24 10:57:32 [main] INFO  c.g.goDelivery.config.MpesaConfig - MPESA API Key is configured (last 4 chars): ****-123
+2026-02-24 10:57:32 [main] DEBUG c.g.goDelivery.config.MpesaConfig - Environment MPESA_API_KEY is not set
+2026-02-24 10:57:32 [main] DEBUG c.g.goDelivery.config.MpesaConfig - System property mpesa.api-key is not set
+2026-02-24 10:57:32 [main] INFO  c.g.goDelivery.config.TimezoneConfig - Application timezone set to: Africa/Kigali
+2026-02-24 10:57:32 [main] INFO  c.g.goDelivery.config.TimezoneConfig - Current time in CAT: 2026-02-24T10:57:32.312345600+02:00[Africa/Kigali]
+2026-02-24 10:57:33 [main] INFO  c.g.goDelivery.config.MpesaConfig - Creating WebClient with API Key: ****-123
+2026-02-24 10:57:35 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-02-24 10:57:35 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-24 10:57:36 [main] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - Starting...
+2026-02-24 10:57:36 [main] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@4f71393]]
+2026-02-24 10:57:36 [main] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - Started.
+2026-02-24 10:57:36 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2026-02-24 10:57:36 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Started GoDeliveryApplication in 83.191 seconds (process running for 84.402)
+2026-02-24 10:57:36 [main] INFO  c.g.g.config.MenuCategoryInitializer - MenuCategoryInitializer.init() called
+2026-02-24 10:57:37 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-02-24 10:57:37 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-02-24 10:57:38 [main] INFO  c.g.g.config.MenuCategoryInitializer - Menu categories already initialized
+2026-02-24 10:57:38 [main] INFO  c.g.g.test.DisbursementChecker - === Checking Recent Orders and Disbursements ===
+2026-02-24 10:58:38 [HikariPool-1:housekeeper] WARN  c.zaxxer.hikari.pool.ProxyLeakTask - Connection leak detection triggered for org.postgresql.jdbc.PgConnection@7c8f803d on thread main, stack trace follows
+java.lang.Exception: Apparent connection leak detected
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:127)
+	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:126)
+	at org.hibernate.internal.NonContextualJdbcConnectionAccess.obtainConnection(NonContextualJdbcConnectionAccess.java:46)
+	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.acquireConnectionIfNeeded(LogicalConnectionManagedImpl.java:126)
+	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.getPhysicalConnection(LogicalConnectionManagedImpl.java:156)
+	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.beginTransaction(HibernateJpaDialect.java:164)
+	at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:420)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.startTransaction(AbstractPlatformTransactionManager.java:532)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransaction(AbstractPlatformTransactionManager.java:405)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.createTransactionIfNecessary(TransactionAspectSupport.java:639)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:374)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:165)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:223)
+	at jdk.proxy2/jdk.proxy2.$Proxy199.findAll(Unknown Source)
+	at com.goDelivery.goDelivery.test.DisbursementChecker.run(DisbursementChecker.java:29)
+	at org.springframework.boot.SpringApplication.lambda$callRunner$5(SpringApplication.java:788)
+	at org.springframework.util.function.ThrowingConsumer$1.acceptWithException(ThrowingConsumer.java:82)
+	at org.springframework.util.function.ThrowingConsumer.accept(ThrowingConsumer.java:60)
+	at org.springframework.util.function.ThrowingConsumer$1.accept(ThrowingConsumer.java:86)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:796)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:787)
+	at org.springframework.boot.SpringApplication.lambda$callRunners$3(SpringApplication.java:772)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.base/java.util.stream.SortedOps$SizedRefSortingSink.end(SortedOps.java:357)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:557)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:546)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:265)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:611)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:772)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:325)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.goDelivery.goDelivery.GoDeliveryApplication.main(GoDeliveryApplication.java:27)
+2026-02-24 11:00:21 [main] INFO  c.zaxxer.hikari.pool.ProxyLeakTask - Previously reported leaked connection org.postgresql.jdbc.PgConnection@7c8f803d on thread main was returned to the pool (unleaked)
+2026-02-24 11:00:21 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-02-24 11:00:21 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:21 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 3, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-02-24 11:00:22 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:22 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 52, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-02-24 11:00:22 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:22 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 53, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-02-24 11:00:22 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:22 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 54, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-02-24 11:00:23 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:23 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 102, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-02-24 11:00:23 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:23 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 103, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-02-24 11:00:24 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:24 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 153, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-02-24 11:00:24 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:24 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 252, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-02-24 11:00:25 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:25 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 253, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-02-24 11:00:25 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:25 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 302, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-02-24 11:00:25 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:25 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 303, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-02-24 11:00:26 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:26 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 352, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-02-24 11:00:26 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:26 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 453, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:27 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:27 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 454, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:27 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:27 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 455, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:28 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:28 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 456, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:28 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:28 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 502, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:29 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:29 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 503, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:29 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:29 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 504, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:29 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:29 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 505, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:30 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:30 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 506, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:30 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:30 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 507, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:31 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:31 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 552, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:31 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:31 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 553, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:31 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:31 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 554, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:32 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:32 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 555, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-02-24 11:00:32 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:32 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 556, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-02-24 11:00:32 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:32 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 557, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-02-24 11:00:33 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:33 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 558, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-02-24 11:00:34 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:34 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 559, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-02-24 11:00:34 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:34 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 560, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-02-24 11:00:35 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:35 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 561, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-02-24 11:00:36 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:36 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 403, Status: PICKED_UP, Payment Status: PENDING, Updated: 2026-01-16T00:00
+2026-02-24 11:00:37 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:37 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 402, Status: PREPARING, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:37 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:37 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 2, Status: PREPARING, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:38 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:38 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 404, Status: READY, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:38 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:38 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 452, Status: PREPARING, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:39 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:39 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 562, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-02-24 11:00:39 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:39 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 602, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-15T00:00
+2026-02-24 11:00:40 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:40 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 652, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-15T00:00
+2026-02-24 11:00:40 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:40 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 702, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-15T00:00
+2026-02-24 11:00:40 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:40 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 703, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-15T00:00
+2026-02-24 11:00:41 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:41 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 752, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-15T00:00
+2026-02-24 11:00:41 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:41 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 753, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-15T00:00
+2026-02-24 11:00:42 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:42 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 802, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-16T00:00
+2026-02-24 11:00:42 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:42 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 803, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-16T00:00
+2026-02-24 11:00:42 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:42 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 804, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-02-24 11:00:43 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:43 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 805, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-16T00:00
+2026-02-24 11:00:43 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:43 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 806, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-02-24 11:00:43 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:43 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 852, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-16T00:00
+2026-02-24 11:00:44 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:44 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 853, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-02-24 11:00:44 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:44 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 854, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-02-24 11:00:45 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:45 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 855, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-02-24 11:00:45 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:45 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 856, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-02-24 11:00:46 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:46 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 857, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-16T00:00
+2026-02-24 11:00:47 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:47 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 902, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-18T00:00
+2026-02-24 11:00:47 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:47 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 904, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-18T00:00
+2026-02-24 11:00:48 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:48 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 903, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-18T00:00
+2026-02-24 11:00:48 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:48 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 907, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-18T00:00
+2026-02-24 11:00:49 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:49 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 905, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-18T00:00
+2026-02-24 11:00:49 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:49 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 911, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:00:50 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:50 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 908, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-18T00:00
+2026-02-24 11:00:50 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:50 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 910, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-18T00:00
+2026-02-24 11:00:50 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:50 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 906, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-18T00:00
+2026-02-24 11:00:51 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:51 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 909, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-18T00:00
+2026-02-24 11:00:51 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:51 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 914, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:52 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:52 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 916, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:52 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:52 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 915, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-02-24 11:00:52 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:52 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 918, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:53 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:53 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 919, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:53 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:53 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 917, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-02-24 11:00:53 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:53 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 913, Status: CANCELLED, Payment Status: PAID, Updated: 2026-02-18T11:32:53.207743
+2026-02-24 11:00:54 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:54 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 920, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:00:54 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:54 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 922, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:55 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:55 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 923, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:55 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:55 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 921, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-02-24 11:00:55 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:55 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 924, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:00:56 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:56 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 925, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:00:56 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:56 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 926, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:00:56 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:56 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 927, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:00:57 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:57 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 928, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:00:57 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:57 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 929, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:00:58 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:58 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 930, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-02-24 11:00:58 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:58 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 912, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:58 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:58 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 932, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:00:59 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:59 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 934, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:00:59 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:59 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 931, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:00:59 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:00:59 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 933, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:01:00 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:00 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 952, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-02-24 11:01:00 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:00 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 953, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-02-24 11:01:01 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:01 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 959, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-02-24 11:01:01 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:01 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 954, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-02-24 11:01:01 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:01 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 955, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:01:02 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:02 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 956, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:01:03 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:03 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 957, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-02-24 11:01:03 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:03 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 958, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-02-24 11:01:04 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:04 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 961, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-02-24 11:01:04 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:04 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 960, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-02-24 11:01:04 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:04 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 962, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-02-24 11:01:05 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:05 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 964, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-02-24 11:01:05 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:05 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 963, Status: PREPARING, Payment Status: PENDING, Updated: 2026-01-21T00:00
+2026-02-24 11:01:06 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:06 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 965, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-06T00:00
+2026-02-24 11:01:06 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:06 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 966, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-07T00:00
+2026-02-24 11:01:07 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:07 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 967, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-07T00:00
+2026-02-24 11:01:07 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:07 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1002, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-09T00:00
+2026-02-24 11:01:08 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:08 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1003, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-09T00:00
+2026-02-24 11:01:08 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:08 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1005, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-10T00:00
+2026-02-24 11:01:08 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:08 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1004, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-10T00:00
+2026-02-24 11:01:09 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:09 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1006, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-11T00:00
+2026-02-24 11:01:09 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:09 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1007, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-11T00:00
+2026-02-24 11:01:10 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:10 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1008, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-11T00:00
+2026-02-24 11:01:10 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:10 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1010, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-11T00:00
+2026-02-24 11:01:10 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:10 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1009, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-11T00:00
+2026-02-24 11:01:11 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:11 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1012, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-11T00:00
+2026-02-24 11:01:11 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:11 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1011, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-11T00:00
+2026-02-24 11:01:12 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:12 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1053, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-12T11:54:14.298139
+2026-02-24 11:01:13 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:13 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1102, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-12T15:14:30.891963
+2026-02-24 11:01:13 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:13 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1103, Status: PREPARING, Payment Status: PENDING, Updated: 2026-02-18T11:26:19.662188
+2026-02-24 11:01:13 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:13 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1052, Status: CANCELLED, Payment Status: PAID, Updated: 2026-02-18T14:33:46.659435
+2026-02-24 11:01:14 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:14 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1153, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-19T13:29:42.496095
+2026-02-24 11:01:14 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:14 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1152, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-19T13:31:55.170969
+2026-02-24 11:01:15 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:15 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1154, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-19T13:42:21.807538
+2026-02-24 11:01:15 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-02-24 11:01:15 [main] INFO  c.g.g.test.DisbursementChecker - === End of Check ===
+2026-02-24 11:01:16 [main] INFO  c.g.g.config.SuperAdminInitializer - Super admin already exists
+2026-02-24 11:01:17 [main] INFO  c.g.g.config.LocationDataInitializer - Location data already exists, skipping initialization
+2026-02-24 11:02:37 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-02-24 11:02:37 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-02-24 11:07:21 [http-nio-8085-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-24 11:07:37 [MessageBroker-2] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-02-24 11:07:37 [MessageBroker-2] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-02-24 11:07:46 [http-nio-8085-exec-9] INFO  o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 22768 ms
+2026-02-24 11:10:28 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@7c8f803d (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2026-02-24 11:12:37 [MessageBroker-2] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-02-24 11:12:37 [MessageBroker-2] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-02-24 11:14:40 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-24 11:14:40 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-02-24 11:14:41 [SpringApplicationShutdownHook] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - Stopping...
+2026-02-24 11:14:41 [SpringApplicationShutdownHook] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@4f71393]]
+2026-02-24 11:14:41 [SpringApplicationShutdownHook] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - Stopped.
+2026-02-24 11:14:43 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-24 11:14:43 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-02-24 11:14:45 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

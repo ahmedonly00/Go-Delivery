@@ -51,20 +51,20 @@ public class BranchUsers implements CustomUserDetails {
 
     @Builder.Default
     @Column(name = "setup_complete")
-    private boolean setupComplete = false;  
-    
+    private boolean setupComplete = false;
+
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
-    
+
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
     @Column(name = "last_login")
     private LocalDate lastLogin;
-    
+
     @Column(name = "otp")
     private String otp;
-    
+
     @Column(name = "otp_expiry_time")
     private LocalDateTime otpExpiryTime;
 
@@ -82,10 +82,14 @@ public class BranchUsers implements CustomUserDetails {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Restaurant restaurant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Branches branch;
 
     @Override
@@ -121,12 +125,12 @@ public class BranchUsers implements CustomUserDetails {
     public boolean isEnabled() {
         return this.isActive;
     }
-    
+
     @Override
     public Long getId() {
         return this.userId;
     }
-    
+
     @Override
     public String getFullName() {
         return this.fullName;
