@@ -55,9 +55,9 @@ public class BranchService {
         // Get current user and verify they are a restaurant admin for this restaurant
         RestaurantUsers currentUser = usersService.getCurrentUser();
 
-        // Verify the user belongs to the specified restaurant
-        if (currentUser.getRestaurant() == null ||
-                !currentUser.getRestaurant().getRestaurantId().equals(restaurantId)) {
+        // Verify the user belongs to the specified restaurant (unless Super Admin)
+        if (currentUser.getRole() != Roles.SUPER_ADMIN && (currentUser.getRestaurant() == null ||
+                !currentUser.getRestaurant().getRestaurantId().equals(restaurantId))) {
             throw new UnauthorizedException("You don't have permission to add branches to this restaurant");
         }
 
@@ -373,7 +373,13 @@ public class BranchService {
         RestaurantUsers restaurantUser = restaurantUsersRepository.findByEmail(username)
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
 
-        if (!restaurantUser.getRestaurant().getRestaurantId().equals(restaurantId)) {
+        // Super Admin has access to everything
+        if (restaurantUser.getRole() == Roles.SUPER_ADMIN) {
+            return;
+        }
+
+        if (restaurantUser.getRestaurant() == null ||
+                !restaurantUser.getRestaurant().getRestaurantId().equals(restaurantId)) {
             throw new UnauthorizedException("You do not have permission to access this restaurant");
         }
     }
@@ -386,14 +392,20 @@ public class BranchService {
 
         String username = authentication.getName();
 
-        // Check if restaurant admin
+        // Check user
         RestaurantUsers restaurantUser = restaurantUsersRepository.findByEmail(username).orElse(null);
         if (restaurantUser != null) {
+            // Super Admin has access to everything
+            if (restaurantUser.getRole() == Roles.SUPER_ADMIN) {
+                return;
+            }
+
             Branches branch = branchesRepository.findById(branchId)
                     .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
 
-            if (restaurantUser.getRestaurant().getRestaurantId().equals(branch.getRestaurant().getRestaurantId())) {
-                return; // Restaurant admin has access
+            if (restaurantUser.getRestaurant() != null &&
+                    restaurantUser.getRestaurant().getRestaurantId().equals(branch.getRestaurant().getRestaurantId())) {
+                return; // Has access
             }
         }
 
@@ -410,7 +422,12 @@ public class BranchService {
         RestaurantUsers admin = restaurantUsersRepository.findByEmail(username)
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
 
-        if (!admin.getRestaurant().getRestaurantId().equals(restaurantId)) {
+        // Super Admin has access to everything
+        if (admin.getRole() == Roles.SUPER_ADMIN) {
+            return;
+        }
+
+        if (admin.getRestaurant() == null || !admin.getRestaurant().getRestaurantId().equals(restaurantId)) {
             throw new UnauthorizedException("You are not an admin for this restaurant");
         }
     }
