@@ -4,11 +4,14 @@ import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchUserDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.BranchSettingsDTO;
+import com.goDelivery.goDelivery.dtos.restaurant.OperatingHoursDTO;
 import com.goDelivery.goDelivery.model.Branches;
 import com.goDelivery.goDelivery.model.BranchUsers;
 import com.goDelivery.goDelivery.model.Restaurant;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -235,6 +238,52 @@ public class RestaurantMapper {
                 .reviewedAt(branchDTO.getReviewedAt())
                 .rejectionReason(branchDTO.getRejectionReason())
                 .build();
+    }
+
+    public BranchSettingsDTO toBranchSettingsDTO(Branches branch) {
+        if (branch == null) {
+            return null;
+        }
+
+        return BranchSettingsDTO.builder()
+                .deliveryType(branch.getDeliveryType())
+                .deliveryFee(branch.getDeliveryFee() != null ? BigDecimal.valueOf(branch.getDeliveryFee()) : null)
+                .minimumOrderAmount(
+                        branch.getMinimumOrderAmount() != null ? BigDecimal.valueOf(branch.getMinimumOrderAmount())
+                                : null)
+                .averagePreparationTime(branch.getAveragePreparationTime())
+                .deliveryAvailable(branch.getDeliveryAvailable())
+                .deliveryRadius(branch.getDeliveryRadius())
+                .isActive(branch.getIsActive())
+                .build();
+    }
+
+    public void updateBranchFromSettings(Branches branch, BranchSettingsDTO settings) {
+        if (settings == null || branch == null) {
+            return;
+        }
+
+        if (settings.getDeliveryType() != null) {
+            branch.setDeliveryType(settings.getDeliveryType());
+        }
+        if (settings.getDeliveryFee() != null) {
+            branch.setDeliveryFee(settings.getDeliveryFee().floatValue());
+        }
+        if (settings.getMinimumOrderAmount() != null) {
+            branch.setMinimumOrderAmount(settings.getMinimumOrderAmount().floatValue());
+        }
+        if (settings.getAveragePreparationTime() != null) {
+            branch.setAveragePreparationTime(settings.getAveragePreparationTime());
+        }
+        if (settings.getDeliveryAvailable() != null) {
+            branch.setDeliveryAvailable(settings.getDeliveryAvailable());
+        }
+        if (settings.getDeliveryRadius() != null) {
+            branch.setDeliveryRadius(settings.getDeliveryRadius());
+        }
+        if (settings.getIsActive() != null) {
+            branch.setIsActive(settings.getIsActive());
+        }
     }
 
     // Convert Restaurant to RestaurantReviewDTO (for Super Admin review)

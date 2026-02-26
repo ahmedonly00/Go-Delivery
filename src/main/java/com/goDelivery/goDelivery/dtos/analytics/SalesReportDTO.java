@@ -18,17 +18,19 @@ public class SalesReportDTO {
     // Report metadata
     private Long restaurantId;
     private String restaurantName;
+    private Long branchId;
+    private String branchName;
     private LocalDate startDate;
     private LocalDate endDate;
-    
+
     // Summary metrics
     private Long totalOrders;
     private BigDecimal totalRevenue;
     private Map<String, Long> ordersByStatus;
-    
+
     // Time series data
     private List<TimeSeriesDataPoint> timeSeriesData;
-    
+
     // Time series data point
     @Data
     @Builder
@@ -40,34 +42,33 @@ public class SalesReportDTO {
         private BigDecimal totalRevenue;
         private String period;
     }
-    
+
     // Getters and setters for backward compatibility
     public LocalDate getDate() {
         return startDate;
     }
-    
+
     public void setDate(LocalDate date) {
         this.startDate = date;
     }
-    
+
     public BigDecimal getAverageOrderValue() {
-        return totalOrders > 0 ? 
-            totalRevenue.divide(BigDecimal.valueOf(totalOrders), 2, java.math.RoundingMode.HALF_UP) : 
-            BigDecimal.ZERO;
+        return totalOrders > 0 ? totalRevenue.divide(BigDecimal.valueOf(totalOrders), 2, java.math.RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
     }
-    
+
     public String getPeriod() {
         return "CUSTOM";
     }
-    
+
     // Static builder method for time series data points
     public static TimeSeriesDataPoint buildTimeSeriesDataPoint(
             LocalDate date, Long totalOrders, BigDecimal totalRevenue, String period) {
         return TimeSeriesDataPoint.builder()
-            .date(date)
-            .totalOrders(totalOrders)
-            .totalRevenue(totalRevenue)
-            .period(period)
-            .build();
+                .date(date)
+                .totalOrders(totalOrders)
+                .totalRevenue(totalRevenue)
+                .period(period)
+                .build();
     }
 }

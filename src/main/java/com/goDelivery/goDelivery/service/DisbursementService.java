@@ -147,8 +147,8 @@ public class DisbursementService {
                         }
 
                         // Calculate commission on the final amount (food ± delivery fee)
-                        double commission = round2(calculateCommission(amount));
-                        double amountToDisburse = round2(amount - commission);
+                        double commission = roundMoney(calculateCommission(amount));
+                        double amountToDisburse = roundMoney(amount - commission);
 
                         // Create recipient
                         DisbursementRecipient recipient = DisbursementRecipient.builder()
@@ -191,8 +191,8 @@ public class DisbursementService {
                                 collectionMsisdn,
                                 overrideMsisdn != null ? "customer-specified" : "registered number");
 
-                // Round total collection amount to 2 decimal places
-                double roundedCollectionAmount = round2(totalCollectionAmount);
+                // Round total collection amount to 0 decimal places (MoMo RWF requirement)
+                double roundedCollectionAmount = roundMoney(totalCollectionAmount);
 
                 // Generate a unique attempt suffix to prevent duplicate external ID errors
                 // if the same order is retried (MoMo rejects duplicate externalIds).
@@ -272,11 +272,12 @@ public class DisbursementService {
         }
 
         /**
-         * Round a monetary value to 2 decimal places (MoMo API requirement)
+         * Round a monetary value to the appropriate decimal places.
+         * For RWF, this must be 0 (integers).
          */
-        private double round2(double value) {
+        private double roundMoney(double value) {
                 return BigDecimal.valueOf(value)
-                                .setScale(2, RoundingMode.HALF_UP)
+                                .setScale(0, RoundingMode.HALF_UP)
                                 .doubleValue();
         }
 

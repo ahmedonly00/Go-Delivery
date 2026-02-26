@@ -6,7 +6,6 @@ import com.goDelivery.goDelivery.dtos.tracking.DeliveryTrackingResponse;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.model.Bikers;
 import com.goDelivery.goDelivery.model.DeliveryTracking;
-import com.goDelivery.goDelivery.model.Order;
 import com.goDelivery.goDelivery.repository.DeliveryTrackingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -33,6 +33,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +118,9 @@ public class MomoService {
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("externalId", transaction.getExternalId());
             requestBody.put("msisdn", formattedMsisdn);
-            requestBody.put("amount", transaction.getAmount().doubleValue());
+            // Round to integer for RWF
+            double roundedAmount = transaction.getAmount().setScale(0, RoundingMode.HALF_UP).doubleValue();
+            requestBody.put("amount", roundedAmount);
             requestBody.put("callback", transaction.getCallbackUrl());
             requestBody.put("payerMessageTitle", request.getPayerMessageTitle());
             requestBody.put("payerMessageDescription", request.getPayerMessageDescription());
