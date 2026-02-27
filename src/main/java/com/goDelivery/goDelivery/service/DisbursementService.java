@@ -198,6 +198,36 @@ public class DisbursementService {
                 // if the same order is retried (MoMo rejects duplicate externalIds).
                 String attemptSuffix = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
+                log.info("Successfully calculated {} restaurant disbursements", recipients.size());
+
+                // Calculate the Platform Share (Commission + Delivery Fees) to balance the
+                // request.
+                // MoMo collection-disbursement requires sum(disbursements) == collectionAmount.
+                double totalDisbursedToRestaurants = recipients.stream()
+                                .mapToDouble(DisbursementRecipient::getAmount)
+                                .sum();
+
+                double platformShare = roundedCollectionAmount - totalDisbursedToRestaurants;
+
+                if (platformShare > 0) {
+                        String platformMsisdn = momoConfig.getPlatformMsisdn();
+                        if (platformMsisdn != null && !platformMsisdn.isBlank()) {
+                                log.info("Adding Platform Share recipient: {} RWF to MSISDN: {}", platformShare,
+                                                platformMsisdn);
+                                recipients.add(DisbursementRecipient.builder()
+                                                .externalId("PLAT_" + parentOrderNumber + "_" + attemptSuffix)
+                                                .msisdn(platformMsisdn)
+                                                .amount(platformShare)
+                                                .payerMessageTitle("MozFood Platform Share")
+                                                .payerMessageDescription(
+                                                                "Commission and fees for Order #" + parentOrderNumber)
+                                                .build());
+                        } else {
+                                log.warn("Platform share is {} but momo.platform-msisdn is not configured!",
+                                                platformShare);
+                        }
+                }
+
                 // Prepare and send collection-disbursement request
                 CollectionDisbursementRequest request = CollectionDisbursementRequest.builder()
                                 .collectionExternalId("COLL_" + parentOrderNumber + "_" + attemptSuffix)

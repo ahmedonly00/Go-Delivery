@@ -17,25 +17,27 @@ import lombok.Data;
 public class MomoConfig {
     @NotBlank(message = "MoMo base URL is required")
     private String baseUrl;
-    
+
     private String username;
-    
-    private String password;  
-    
+
+    private String password;
+
     private String callbackHost;
+
+    private String platformMsisdn;
 
     public String getAuthUrl() {
         return baseUrl + "/api/v1/auth/login";
     }
-    
+
     public String getCollectionUrl() {
         return baseUrl + "/api/v1/collection/request-payment";
     }
-    
+
     public String getCollectionStatusUrl(String referenceId) {
         return baseUrl + "/api/v1/collection/status/" + referenceId;
     }
-    
+
     public String getDisbursementUrl() {
         return baseUrl + "/api/v1/disbursement/single";
     }
@@ -43,19 +45,19 @@ public class MomoConfig {
     public String getCollectionDisbursementUrl() {
         return baseUrl + "/api/v1/disbursement/collection-disbursement";
     }
-    
+
     public String getDisbursementStatusUrl(String referenceId) {
         return baseUrl + "/api/v1/disbursement/status/" + referenceId;
-    } 
-    
+    }
+
     public String getTransactionsUrl() {
         return baseUrl + "/api/v1/transactions";
     }
-    
+
     public String getTransactionSearchUrl() {
         return baseUrl + "/api/v1/transactions/search";
     }
-    
+
     public String getTransactionStatusUrl(String referenceId) {
         return baseUrl + "/api/v1/transactions/status/" + referenceId;
     }
