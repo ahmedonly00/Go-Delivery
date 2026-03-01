@@ -22,8 +22,6 @@ import com.goDelivery.goDelivery.repository.PaymentRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -278,7 +276,8 @@ public class MomoService {
             HttpEntity<CollectionDisbursementRequest> entity = new HttpEntity<>(request, headers);
 
             // Log the request details for debugging
-            log.info("Initiating collection-disbursement request to MoMo API");
+            log.info("Initiating collection-disbursement request to MoMo API: {}",
+                    momoConfig.getCollectionDisbursementUrl());
             log.info("Collection External ID: {}", request.getCollectionExternalId());
             log.info("Collection MSISDN: {}", request.getCollectionMsisdn());
             log.info("Collection Amount: {}", request.getCollectionAmount());
@@ -292,7 +291,7 @@ public class MomoService {
             }
 
             ResponseEntity<CollectionDisbursementResponse> response = restTemplate.exchange(
-                    momoConfig.getBaseUrl() + "/disbursement/collection-disbursement",
+                    momoConfig.getCollectionDisbursementUrl(),
                     HttpMethod.POST,
                     entity,
                     CollectionDisbursementResponse.class);
