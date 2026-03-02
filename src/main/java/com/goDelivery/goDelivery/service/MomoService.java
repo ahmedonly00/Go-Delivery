@@ -262,6 +262,10 @@ public class MomoService {
         try {
             String authToken = generateAuthToken();
 
+            if (authToken == null) {
+                throw new RuntimeException("Failed to authenticate with MoMo API: No token received. Check MoMo credentials configuration.");
+            }
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Authorization", "Bearer " + authToken);

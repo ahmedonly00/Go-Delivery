@@ -418,3 +418,8 @@ java.lang.Exception: Apparent connection leak detected
 2026-03-02 14:33:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
 2026-03-02 14:38:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
 2026-03-02 14:38:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 14:40:23 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-03-02 14:40:23 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-03-02 14:40:24 [SpringApplicationShutdownHook] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - Stopping...
+2026-03-02 14:40:24 [SpringApplicationShutdownHook] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@7a6ba56]]
+2026-03-02 14:40:24 [SpringApplicationShutdownHook] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - Stopped.
