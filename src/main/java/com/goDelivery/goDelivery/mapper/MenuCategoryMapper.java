@@ -60,9 +60,15 @@ public class MenuCategoryMapper {
         return MenuCategoryResponseDTO.builder()
             .categoryId(menuCategory.getCategoryId())
             .categoryName(menuCategory.getCategoryName())
-            .createdAt(menuCategory.getCreatedAt())
-            .restaurantId(menuCategory.getRestaurant() != null ? 
-                menuCategory.getRestaurant().getRestaurantId() : null)
             .build();
+    }
+
+    public List<MenuCategoryResponseDTO> toMenuCategoryResponseDTOList(List<MenuCategory> menuCategories) {
+        if (menuCategories == null) {
+            return null;
+        }
+        return menuCategories.stream()
+                .map(this::toMenuCategoryResponseDTO)
+                .collect(Collectors.toList());
     }
 }

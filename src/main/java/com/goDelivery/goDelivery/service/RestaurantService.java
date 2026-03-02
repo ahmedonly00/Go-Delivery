@@ -390,6 +390,24 @@ public class RestaurantService {
                 .collect(Collectors.toList());
     }
 
+    public RestaurantDTO deactivateRestaurant(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        restaurant.setIsActive(false);
+        restaurant.setUpdatedAt(LocalDate.now());
+        log.info("Restaurant {} deactivated", restaurantId);
+        return restaurantMapper.toRestaurantDTO(restaurantRepository.save(restaurant));
+    }
+
+    public RestaurantDTO activateRestaurant(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+        restaurant.setIsActive(true);
+        restaurant.setUpdatedAt(LocalDate.now());
+        log.info("Restaurant {} activated", restaurantId);
+        return restaurantMapper.toRestaurantDTO(restaurantRepository.save(restaurant));
+    }
+
     public RestaurantDTO updateDeliverySettings(Long restaurantId, DeliverySettingsRequest request) {
         Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));

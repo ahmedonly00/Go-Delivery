@@ -215,6 +215,22 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurants);
     }
 
+    // Super Admin: Deactivate a restaurant
+    @PutMapping(value = "/{restaurantId}/deactivate")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<RestaurantDTO> deactivateRestaurant(
+            @PathVariable Long restaurantId) {
+        return ResponseEntity.ok(restaurantService.deactivateRestaurant(restaurantId));
+    }
+
+    // Super Admin: Activate a restaurant
+    @PutMapping(value = "/{restaurantId}/activate")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<RestaurantDTO> activateRestaurant(
+            @PathVariable Long restaurantId) {
+        return ResponseEntity.ok(restaurantService.activateRestaurant(restaurantId));
+    }
+
     // Super Admin: Get pending restaurants for review (with documents)
     @GetMapping(value = "/pending")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
