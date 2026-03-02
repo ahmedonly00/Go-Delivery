@@ -96,6 +96,20 @@ public class RestaurantMapper {
                 .build();
     }
 
+    // Convert Restaurant to RestaurantDTO with active+approved branches
+    public RestaurantDTO toRestaurantDTOWithBranches(Restaurant restaurant, List<Branches> branches) {
+        RestaurantDTO dto = toRestaurantDTO(restaurant);
+        if (dto != null && branches != null) {
+            List<BranchesDTO> branchDTOs = branches.stream()
+                    .filter(b -> Boolean.TRUE.equals(b.getIsActive())
+                            && com.goDelivery.goDelivery.Enum.ApprovalStatus.APPROVED.equals(b.getApprovalStatus()))
+                    .map(this::toBranchDTO)
+                    .collect(Collectors.toList());
+            dto.setBranches(branchDTOs);
+        }
+        return dto;
+    }
+
     // Convert RestaurantDTO to Restaurant
     // For CREATING new restaurants(no ID mapping)
     public Restaurant toRestaurantForCreate(RestaurantDTO restaurantDTO) {

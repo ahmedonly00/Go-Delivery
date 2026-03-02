@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class MenuCategoryResponseDTO {
     private Long categoryId;
     private String categoryName;
+    private Boolean isActive;
 }

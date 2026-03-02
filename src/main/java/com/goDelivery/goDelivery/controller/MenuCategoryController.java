@@ -92,6 +92,13 @@ public class MenuCategoryController {
         return ResponseEntity.ok(menuCategoryService.updateMenuCategory(categoryId, menuCategoryDTO));
     }
 
+    @PutMapping("/{restaurantId}/toggle-category/{categoryId}")
+    public ResponseEntity<MenuCategoryResponseDTO> toggleMenuCategory(
+            @PathVariable Long restaurantId,
+            @PathVariable Long categoryId) {
+        return ResponseEntity.ok(menuCategoryService.toggleMenuCategory(categoryId));
+    }
+
     @DeleteMapping("/{categoryId}/delete-menu-category")
     public ResponseEntity<Void> deleteMenuCategory(@PathVariable Long categoryId){
         menuCategoryService.deleteMenuCategory(categoryId);

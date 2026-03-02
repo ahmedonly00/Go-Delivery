@@ -21,6 +21,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -114,5 +116,8 @@ public class RestaurantDTO {
 
     private LocalDate createdAt;
     private LocalDate updatedAt;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<BranchesDTO> branches;
 
 }

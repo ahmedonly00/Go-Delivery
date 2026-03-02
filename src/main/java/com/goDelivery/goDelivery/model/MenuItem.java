@@ -45,7 +45,7 @@ public class MenuItem {
     @Column(name = "preparation_time", nullable = false)
     private Integer preparationTime;
 
-    @Column(name = "preparation_score", nullable = false)
+    @Column(name = "preparation_score")
     private Integer preparationScore;
 
     @Column(name = "created_at", nullable = false)

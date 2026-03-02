@@ -60,6 +60,7 @@ public class MenuCategoryMapper {
         return MenuCategoryResponseDTO.builder()
             .categoryId(menuCategory.getCategoryId())
             .categoryName(menuCategory.getCategoryName())
+            .isActive(menuCategory.getIsActive())
             .build();
     }
 

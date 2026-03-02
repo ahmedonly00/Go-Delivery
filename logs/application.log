@@ -1,0 +1,420 @@
+2026-03-02 13:06:57 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Starting GoDeliveryApplication using Java 22.0.2 with PID 33912 (D:\Desktop\Moz-Food Project\goDelivery\target\classes started by ahmed in D:\Desktop\Moz-Food Project\goDelivery)
+2026-03-02 13:06:57 [main] DEBUG c.g.goDelivery.GoDeliveryApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2026-03-02 13:06:57 [main] INFO  c.g.goDelivery.GoDeliveryApplication - The following 1 profile is active: "dev"
+2026-03-02 13:06:59 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-02 13:06:59 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 583 ms. Found 34 JPA repository interfaces.
+2026-03-02 13:07:00 [main] INFO  c.g.g.config.MenuCategoryInitializer - MenuCategoryInitializer class loaded
+2026-03-02 13:07:00 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2026-03-02 13:07:00 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-03-02 13:07:00 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2026-03-02 13:07:01 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-03-02 13:07:01 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4351 ms
+2026-03-02 13:07:01 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-02 13:07:01 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2026-03-02 13:07:01 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-03-02 13:07:02 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-02 13:07:02 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-03-02 13:07:05 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@69a294d8
+2026-03-02 13:07:05 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-03-02 13:07:05 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-02 13:07:06 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 17.7
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-02 13:07:09 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-02 13:08:00 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-02 13:08:01 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-02 13:08:02 [main] DEBUG c.g.g.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-03-02 13:08:02 [main] DEBUG c.g.g.c.EmailVerificationFilter - Filter 'emailVerificationFilter' configured for use
+2026-03-02 13:08:02 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2026-03-02 13:08:02 [main] INFO  c.g.g.service.email.EmailService - 📧 EMAIL CONFIGURATION LOADED
+2026-03-02 13:08:02 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2026-03-02 13:08:02 [main] INFO  c.g.g.service.email.EmailService - From Email: ahmedndayizeye45@gmail.com
+2026-03-02 13:08:02 [main] INFO  c.g.g.service.email.EmailService - SMTP Host: smtp.gmail.com
+2026-03-02 13:08:02 [main] INFO  c.g.g.service.email.EmailService - SMTP Port: 587
+2026-03-02 13:08:02 [main] INFO  c.g.g.service.email.EmailService - Frontend URL: https://delivery.ivas.rw
+2026-03-02 13:08:02 [main] INFO  c.g.g.service.email.EmailService - Base URL: https://delivery.apis.ivas.rw:8085
+2026-03-02 13:08:02 [main] INFO  c.g.g.service.email.EmailService - ============================================================
+2026-03-02 13:08:03 [main] INFO  c.g.goDelivery.config.MpesaConfig - MPESA API Base URL: http://143.198.225.193:8077
+2026-03-02 13:08:04 [main] INFO  c.g.goDelivery.config.MpesaConfig - MPESA Payment Endpoint: /api/v1/transactions
+2026-03-02 13:08:04 [main] INFO  c.g.goDelivery.config.MpesaConfig - MPESA Status Endpoint: /api/v1/transactions/status
+2026-03-02 13:08:04 [main] INFO  c.g.goDelivery.config.MpesaConfig - MPESA API Key is configured (last 4 chars): ****-123
+2026-03-02 13:08:04 [main] DEBUG c.g.goDelivery.config.MpesaConfig - Environment MPESA_API_KEY is not set
+2026-03-02 13:08:04 [main] DEBUG c.g.goDelivery.config.MpesaConfig - System property mpesa.api-key is not set
+2026-03-02 13:08:04 [main] INFO  c.g.goDelivery.config.TimezoneConfig - Application timezone set to: Africa/Kigali
+2026-03-02 13:08:04 [main] INFO  c.g.goDelivery.config.TimezoneConfig - Current time in CAT: 2026-03-02T13:08:04.128457900+02:00[Africa/Kigali]
+2026-03-02 13:08:06 [main] INFO  c.g.goDelivery.config.MpesaConfig - Creating WebClient with API Key: ****-123
+2026-03-02 13:08:07 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-03-02 13:08:07 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-02 13:08:08 [main] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - Starting...
+2026-03-02 13:08:08 [main] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@7a6ba56]]
+2026-03-02 13:08:08 [main] INFO  o.s.m.s.b.SimpleBrokerMessageHandler - Started.
+2026-03-02 13:08:08 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2026-03-02 13:08:08 [main] INFO  c.g.goDelivery.GoDeliveryApplication - Started GoDeliveryApplication in 72.635 seconds (process running for 73.76)
+2026-03-02 13:08:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:08:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 13:08:09 [main] INFO  c.g.g.config.LocationDataInitializer - Location data already exists, skipping initialization
+2026-03-02 13:08:10 [main] INFO  c.g.g.config.SuperAdminInitializer - Super admin already exists
+2026-03-02 13:08:10 [main] INFO  c.g.g.test.DisbursementChecker - === Checking Recent Orders and Disbursements ===
+2026-03-02 13:09:10 [HikariPool-1:housekeeper] WARN  c.zaxxer.hikari.pool.ProxyLeakTask - Connection leak detection triggered for org.postgresql.jdbc.PgConnection@69a294d8 on thread main, stack trace follows
+java.lang.Exception: Apparent connection leak detected
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:127)
+	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:126)
+	at org.hibernate.internal.NonContextualJdbcConnectionAccess.obtainConnection(NonContextualJdbcConnectionAccess.java:46)
+	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.acquireConnectionIfNeeded(LogicalConnectionManagedImpl.java:126)
+	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.getPhysicalConnection(LogicalConnectionManagedImpl.java:156)
+	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.beginTransaction(HibernateJpaDialect.java:164)
+	at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:420)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.startTransaction(AbstractPlatformTransactionManager.java:532)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransaction(AbstractPlatformTransactionManager.java:405)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.createTransactionIfNecessary(TransactionAspectSupport.java:639)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:374)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:165)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:223)
+	at jdk.proxy2/jdk.proxy2.$Proxy200.findAll(Unknown Source)
+	at com.goDelivery.goDelivery.test.DisbursementChecker.run(DisbursementChecker.java:29)
+	at org.springframework.boot.SpringApplication.lambda$callRunner$5(SpringApplication.java:788)
+	at org.springframework.util.function.ThrowingConsumer$1.acceptWithException(ThrowingConsumer.java:82)
+	at org.springframework.util.function.ThrowingConsumer.accept(ThrowingConsumer.java:60)
+	at org.springframework.util.function.ThrowingConsumer$1.accept(ThrowingConsumer.java:86)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:796)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:787)
+	at org.springframework.boot.SpringApplication.lambda$callRunners$3(SpringApplication.java:772)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.base/java.util.stream.SortedOps$SizedRefSortingSink.end(SortedOps.java:357)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:557)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:546)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:265)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:611)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:772)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:325)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.goDelivery.goDelivery.GoDeliveryApplication.main(GoDeliveryApplication.java:27)
+2026-03-02 13:10:24 [main] INFO  c.zaxxer.hikari.pool.ProxyLeakTask - Previously reported leaked connection org.postgresql.jdbc.PgConnection@69a294d8 on thread main was returned to the pool (unleaked)
+2026-03-02 13:10:24 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-03-02 13:10:24 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:24 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 3, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-03-02 13:10:25 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:25 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 52, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-03-02 13:10:25 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:25 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 53, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-03-02 13:10:25 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:25 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 54, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-03-02 13:10:26 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:26 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 102, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-03-02 13:10:26 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:26 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 103, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-12T00:00
+2026-03-02 13:10:26 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:26 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 153, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-03-02 13:10:26 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:26 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 252, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-03-02 13:10:27 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:27 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 253, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-03-02 13:10:27 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:27 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 302, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-03-02 13:10:27 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:27 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 303, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-03-02 13:10:28 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:28 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 352, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-13T00:00
+2026-03-02 13:10:28 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:28 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 453, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:28 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:28 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 454, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:29 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:29 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 455, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:29 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:29 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 456, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:29 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:29 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 502, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:30 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:30 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 503, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:30 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:30 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 504, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:30 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:30 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 505, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:31 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:31 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 506, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:31 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:31 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 507, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:31 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:31 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 552, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:32 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:32 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 553, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:32 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:32 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 554, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:32 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:32 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 555, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-03-02 13:10:33 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:33 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 556, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-03-02 13:10:33 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:33 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 557, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-03-02 13:10:33 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:33 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 558, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-03-02 13:10:33 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:33 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 559, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-03-02 13:10:34 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:34 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 560, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-03-02 13:10:34 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:34 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 561, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-14T00:00
+2026-03-02 13:10:34 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:34 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 403, Status: PICKED_UP, Payment Status: PENDING, Updated: 2026-01-16T00:00
+2026-03-02 13:10:35 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:35 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 402, Status: PREPARING, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:35 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:35 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 2, Status: PREPARING, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:35 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:35 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 404, Status: READY, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:36 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:36 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 452, Status: PREPARING, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:36 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:36 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 562, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-14T00:00
+2026-03-02 13:10:36 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:36 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 602, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-15T00:00
+2026-03-02 13:10:37 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:37 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 652, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-15T00:00
+2026-03-02 13:10:37 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:37 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 702, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-15T00:00
+2026-03-02 13:10:37 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:37 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 703, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-15T00:00
+2026-03-02 13:10:38 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:38 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 752, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-15T00:00
+2026-03-02 13:10:38 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:38 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 753, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-15T00:00
+2026-03-02 13:10:38 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:38 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 802, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-16T00:00
+2026-03-02 13:10:38 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:38 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 803, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-16T00:00
+2026-03-02 13:10:39 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:39 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 804, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-03-02 13:10:39 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:39 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 805, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-16T00:00
+2026-03-02 13:10:39 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:39 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 806, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-03-02 13:10:40 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:40 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 852, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-16T00:00
+2026-03-02 13:10:40 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:40 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 853, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-03-02 13:10:40 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:40 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 854, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-03-02 13:10:41 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:41 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 855, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-03-02 13:10:41 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:41 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 856, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-16T00:00
+2026-03-02 13:10:42 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:42 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 857, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-16T00:00
+2026-03-02 13:10:42 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:42 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 902, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-18T00:00
+2026-03-02 13:10:42 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:42 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 904, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-18T00:00
+2026-03-02 13:10:43 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:43 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 903, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-18T00:00
+2026-03-02 13:10:43 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:43 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 907, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-18T00:00
+2026-03-02 13:10:43 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:43 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 905, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-18T00:00
+2026-03-02 13:10:43 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:43 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 911, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:44 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:44 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 908, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-18T00:00
+2026-03-02 13:10:44 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:44 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 910, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-18T00:00
+2026-03-02 13:10:44 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:44 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 906, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-18T00:00
+2026-03-02 13:10:45 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:45 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 909, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-18T00:00
+2026-03-02 13:10:45 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:45 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 914, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:45 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:45 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 916, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:46 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:46 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 915, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-03-02 13:10:46 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:46 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 918, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:46 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:46 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 919, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:47 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:47 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 917, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-03-02 13:10:47 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:47 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 913, Status: CANCELLED, Payment Status: PAID, Updated: 2026-02-18T11:32:53.207743
+2026-03-02 13:10:47 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:47 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 920, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:48 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:48 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 922, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:48 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:48 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 923, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:48 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:48 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 921, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-03-02 13:10:49 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:49 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 924, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:49 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:49 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 925, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:49 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:49 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 926, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:49 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:49 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 927, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:50 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:50 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 928, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:50 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:50 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 929, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:50 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:50 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 930, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-03-02 13:10:51 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:51 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 912, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:51 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:51 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 932, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:51 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:51 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 934, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:52 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:52 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 931, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:52 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:52 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 933, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:52 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:52 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 952, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-03-02 13:10:53 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:53 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 953, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-19T00:00
+2026-03-02 13:10:53 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:53 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 959, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-03-02 13:10:54 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:54 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 954, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-01-19T00:00
+2026-03-02 13:10:54 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:54 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 955, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:54 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:54 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 956, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:55 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:55 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 957, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-01-19T00:00
+2026-03-02 13:10:55 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:55 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 958, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-03-02 13:10:55 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:55 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 961, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-03-02 13:10:56 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:56 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 960, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-03-02 13:10:56 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:56 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 962, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-03-02 13:10:56 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:56 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 964, Status: PLACED, Payment Status: PENDING, Updated: 2026-01-20T00:00
+2026-03-02 13:10:57 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:57 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 963, Status: PREPARING, Payment Status: PENDING, Updated: 2026-01-21T00:00
+2026-03-02 13:10:57 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:57 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 965, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-06T00:00
+2026-03-02 13:10:58 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:58 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 966, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-07T00:00
+2026-03-02 13:10:58 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:58 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 967, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-07T00:00
+2026-03-02 13:10:58 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:58 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1002, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-09T00:00
+2026-03-02 13:10:58 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:58 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1003, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-09T00:00
+2026-03-02 13:10:59 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:59 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1005, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-10T00:00
+2026-03-02 13:10:59 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:59 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1004, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-10T00:00
+2026-03-02 13:10:59 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:10:59 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1006, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-11T00:00
+2026-03-02 13:11:00 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:00 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1007, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-11T00:00
+2026-03-02 13:11:01 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:01 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1008, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-11T00:00
+2026-03-02 13:11:01 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:01 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1010, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-11T00:00
+2026-03-02 13:11:02 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:02 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1009, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-11T00:00
+2026-03-02 13:11:02 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:02 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1012, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-11T00:00
+2026-03-02 13:11:02 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:02 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1011, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-11T00:00
+2026-03-02 13:11:03 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:03 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1053, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-12T11:54:14.298139
+2026-03-02 13:11:03 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:03 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1102, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-12T15:14:30.891963
+2026-03-02 13:11:03 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:03 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1103, Status: PREPARING, Payment Status: PENDING, Updated: 2026-02-18T11:26:19.662188
+2026-03-02 13:11:04 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:04 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1052, Status: CANCELLED, Payment Status: PAID, Updated: 2026-02-18T14:33:46.659435
+2026-03-02 13:11:04 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:04 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1153, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-19T13:29:42.496095
+2026-03-02 13:11:04 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:04 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1152, Status: CONFIRMED, Payment Status: PAID, Updated: 2026-02-19T13:31:55.170969
+2026-03-02 13:11:04 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:04 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1154, Status: CANCELLED, Payment Status: FAILED, Updated: 2026-02-19T13:42:21.807538
+2026-03-02 13:11:05 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:05 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1202, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-24T11:50:01.607307
+2026-03-02 13:11:05 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:05 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1203, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-24T11:50:01.623551
+2026-03-02 13:11:05 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:05 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1204, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-26T11:09:57.933052
+2026-03-02 13:11:06 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:06 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1205, Status: PLACED, Payment Status: PENDING, Updated: 2026-02-26T11:09:57.937466
+2026-03-02 13:11:06 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:06 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1252, Status: PLACED, Payment Status: PENDING, Updated: 2026-03-01T18:41:06.658121
+2026-03-02 13:11:06 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:06 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1253, Status: PLACED, Payment Status: PENDING, Updated: 2026-03-01T19:54:12.544122
+2026-03-02 13:11:07 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:07 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1254, Status: PLACED, Payment Status: PENDING, Updated: 2026-03-01T20:20:44.266383
+2026-03-02 13:11:07 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:07 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1255, Status: PLACED, Payment Status: PENDING, Updated: 2026-03-01T21:01:33.063884
+2026-03-02 13:11:07 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:07 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1256, Status: PLACED, Payment Status: PENDING, Updated: 2026-03-01T21:42:20.786510
+2026-03-02 13:11:08 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:08 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1257, Status: PLACED, Payment Status: PENDING, Updated: 2026-03-01T22:30:16.160931
+2026-03-02 13:11:08 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:08 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1258, Status: PLACED, Payment Status: PENDING, Updated: 2026-03-01T22:31:12.642492
+2026-03-02 13:11:08 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:08 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1303, Status: PLACED, Payment Status: PENDING, Updated: 2026-03-02T11:55:53.868445
+2026-03-02 13:11:09 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:09 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1302, Status: CANCELLED, Payment Status: PENDING, Updated: 2026-03-02T11:56:25.087732
+2026-03-02 13:11:09 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:09 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1304, Status: PLACED, Payment Status: PENDING, Updated: 2026-03-02T11:57:59.906179
+2026-03-02 13:11:09 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:09 [main] INFO  c.g.g.test.DisbursementChecker - Order ID: 1305, Status: PLACED, Payment Status: PENDING, Updated: 2026-03-02T11:57:59.910901
+2026-03-02 13:11:10 [main] INFO  c.g.g.test.DisbursementChecker -   - Number of disbursements: 0
+2026-03-02 13:11:10 [main] INFO  c.g.g.test.DisbursementChecker - === End of Check ===
+2026-03-02 13:11:10 [main] INFO  c.g.g.config.MenuCategoryInitializer - MenuCategoryInitializer.init() called
+2026-03-02 13:11:10 [main] INFO  c.g.g.config.MenuCategoryInitializer - Menu categories already initialized
+2026-03-02 13:13:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:13:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 13:18:09 [MessageBroker-2] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:18:09 [MessageBroker-2] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 13:23:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:23:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 13:28:09 [MessageBroker-3] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:28:09 [MessageBroker-3] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 13:33:09 [MessageBroker-2] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:33:09 [MessageBroker-2] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 13:38:09 [MessageBroker-4] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:38:09 [MessageBroker-4] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 13:43:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:43:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 13:48:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:48:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 13:53:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:53:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 13:58:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 13:58:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 14:03:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 14:03:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 14:08:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 14:08:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 14:13:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 14:13:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 14:18:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 14:18:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 14:23:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 14:23:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 14:28:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 14:28:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 14:33:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 14:33:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found
+2026-03-02 14:38:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - Starting scheduled task to update pending disbursements
+2026-03-02 14:38:09 [MessageBroker-1] INFO  c.g.g.service.DisbursementService - No pending disbursement transactions found

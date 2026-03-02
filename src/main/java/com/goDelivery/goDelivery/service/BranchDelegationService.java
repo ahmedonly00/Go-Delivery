@@ -3,6 +3,7 @@ package com.goDelivery.goDelivery.service;
 import com.goDelivery.goDelivery.Enum.OrderStatus;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
+import org.springframework.web.multipart.MultipartFile;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchSettingsDTO;
@@ -42,6 +43,8 @@ public class BranchDelegationService {
     private final MenuItemMapper menuItemMapper;
     private final OrderMapper orderMapper;
     private final RestaurantMapper restaurantMapper;
+    private final FileStorageService fileStorageService;
+    private final com.goDelivery.goDelivery.repository.MenuCategoryRepository menuCategoryRepository;
 
     // Menu Operations
     @Transactional(readOnly = true)
@@ -73,24 +76,37 @@ public class BranchDelegationService {
     }
 
     @Transactional
-    public MenuItemResponse addBranchMenuItem(Long branchId, MenuItemRequest menuItemRequest) {
+    public MenuItemResponse addBranchMenuItem(Long branchId, MenuItemRequest menuItemRequest, MultipartFile imageFile) {
         log.info("Adding menu item {} to branch {}", menuItemRequest.getMenuItemName(), branchId);
 
         Branches branch = branchesRepository.findByBranchId(branchId)
                 .orElseThrow(() -> new RuntimeException("Branch not found: " + branchId));
 
-        // Convert MenuItemRequest to MenuItem entity
+        com.goDelivery.goDelivery.model.MenuCategory category = menuCategoryRepository
+                .findById(menuItemRequest.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + menuItemRequest.getCategoryId()));
+
+        // Upload image if provided
+        String imageUrl = null;
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String filePath = fileStorageService.storeFile(imageFile, "menu-items/branches/" + branchId + "/images");
+            imageUrl = "/api/files/" + filePath.replace("\\", "/");
+        }
+
         MenuItem menuItem = new MenuItem();
         menuItem.setMenuItemName(menuItemRequest.getMenuItemName());
         menuItem.setDescription(menuItemRequest.getDescription());
         menuItem.setPrice(menuItemRequest.getPrice());
-        menuItem.setImage(menuItemRequest.getImage());
+        menuItem.setImage(imageUrl);
         menuItem.setIngredients(menuItemRequest.getIngredients());
         menuItem.setPreparationTime(menuItemRequest.getPreparationTime());
+        menuItem.setPreparationScore(0);
+        menuItem.setAvailable(menuItemRequest.isAvailable());
+        menuItem.setCategory(category);
         menuItem.setRestaurant(branch.getRestaurant());
         menuItem.setBranch(branch);
-        menuItem.setCreatedAt(java.time.LocalDate.now());
-        menuItem.setUpdatedAt(java.time.LocalDate.now());
+        menuItem.setCreatedAt(LocalDate.now());
+        menuItem.setUpdatedAt(LocalDate.now());
 
         MenuItem savedItem = menuItemRepository.save(menuItem);
         log.info("Successfully added menu item to branch {}", branchId);

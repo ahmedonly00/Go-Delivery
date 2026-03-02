@@ -97,6 +97,7 @@ public class BranchMenuService {
         menuItem.setImage(imageUrl);
         menuItem.setAvailable(menuItemRequest.isAvailable());
         menuItem.setPreparationTime(menuItemRequest.getPreparationTime());
+        menuItem.setPreparationScore(0);
         menuItem.setBranch(category.getBranch());
         menuItem.setRestaurant(category.getBranch().getRestaurant()); // Set the restaurant from branch
         

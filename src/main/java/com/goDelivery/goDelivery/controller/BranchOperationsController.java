@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery.controller;
 
 import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
+import org.springframework.web.multipart.MultipartFile;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchSettingsDTO;
@@ -78,18 +79,19 @@ public class BranchOperationsController {
                 return ResponseEntity.ok(menu);
         }
 
-        @PostMapping("/menu/items")
+        @PostMapping(value = "/menu/items", consumes = {"multipart/form-data"})
         @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
                         +
                         "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
         @Operation(summary = "Add menu item to branch", description = "Add a new menu item specific to this branch")
         public ResponseEntity<MenuItemResponse> addMenuItem(
                         @PathVariable Long branchId,
-                        @RequestBody @Valid MenuItemRequest menuItemRequest,
+                        @RequestPart("menuItem") @Valid MenuItemRequest menuItemRequest,
+                        @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
                         @AuthenticationPrincipal UserDetails userDetails) {
 
                 log.info("Adding menu item to branch {} by user {}", branchId, userDetails.getUsername());
-                MenuItemResponse created = delegationService.addBranchMenuItem(branchId, menuItemRequest);
+                MenuItemResponse created = delegationService.addBranchMenuItem(branchId, menuItemRequest, imageFile);
                 return new ResponseEntity<>(created, HttpStatus.CREATED);
         }
 

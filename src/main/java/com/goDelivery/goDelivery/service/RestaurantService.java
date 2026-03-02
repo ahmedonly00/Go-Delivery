@@ -8,6 +8,8 @@ import com.goDelivery.goDelivery.mapper.RestaurantMapper;
 import com.goDelivery.goDelivery.model.OperatingHours;
 import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.model.RestaurantUsers;
+import com.goDelivery.goDelivery.model.Branches;
+import com.goDelivery.goDelivery.repository.BranchesRepository;
 import com.goDelivery.goDelivery.repository.OperatingHoursRepository;
 import com.goDelivery.goDelivery.repository.OrderRepository;
 import com.goDelivery.goDelivery.repository.RestaurantRepository;
@@ -36,6 +38,7 @@ public class RestaurantService {
     private final OrderRepository orderRepository;
     private final GeocodingService geocodingService;
     private final GeoLocationService geoLocationService;
+    private final BranchesRepository branchesRepository;
 
     public RestaurantDTO registerRestaurant(RestaurantDTO restaurantDTO) {
         Restaurant restaurant = restaurantMapper.toRestaurantForCreate(restaurantDTO);
@@ -388,6 +391,11 @@ public class RestaurantService {
         return restaurants.stream()
                 .map(restaurantMapper::toRestaurantDTO)
                 .collect(Collectors.toList());
+    }
+
+    public RestaurantDTO toRestaurantDTOWithBranches(Restaurant restaurant) {
+        List<Branches> branches = branchesRepository.findByRestaurant_RestaurantId(restaurant.getRestaurantId());
+        return restaurantMapper.toRestaurantDTOWithBranches(restaurant, branches);
     }
 
     public RestaurantDTO deactivateRestaurant(Long restaurantId) {

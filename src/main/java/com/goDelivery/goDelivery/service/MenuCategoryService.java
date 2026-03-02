@@ -81,6 +81,13 @@ public class MenuCategoryService {
         
     }
 
+    public MenuCategoryResponseDTO toggleMenuCategory(Long categoryId) {
+        MenuCategory menuCategory = menuCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("MenuCategory not found"));
+        menuCategory.setIsActive(!Boolean.TRUE.equals(menuCategory.getIsActive()));
+        return menuCategoryMapper.toMenuCategoryResponseDTO(menuCategoryRepository.save(menuCategory));
+    }
+
     public void deleteMenuCategory(Long categoryId){
         MenuCategory menuCategory = menuCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("MenuCategory not found"));

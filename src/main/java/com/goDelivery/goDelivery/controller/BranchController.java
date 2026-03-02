@@ -88,7 +88,7 @@ public class BranchController {
         return ResponseEntity.ok(branch);
     }
 
-    @PostMapping("/{branchId}/activate")
+    @PutMapping("/{branchId}/activate")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     @Operation(summary = "Activate a branch", description = "Activate a branch that has been approved")
     public ResponseEntity<Void> activateBranch(
@@ -102,7 +102,7 @@ public class BranchController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{branchId}/deactivate")
+    @PutMapping("/{branchId}/deactivate")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
     @Operation(summary = "Deactivate a branch", description = "Deactivate a branch temporarily")
     public ResponseEntity<Void> deactivateBranch(

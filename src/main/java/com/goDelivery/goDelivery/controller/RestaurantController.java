@@ -376,9 +376,9 @@ public class RestaurantController {
                 break;
         }
 
-        // Convert to DTOs using RestaurantMapper
+        // Convert to DTOs including active+approved branches
         List<RestaurantDTO> dtos = filtered.stream()
-                .map(restaurantMapper::toRestaurantDTO)
+                .map(restaurantService::toRestaurantDTOWithBranches)
                 .collect(java.util.stream.Collectors.toList());
 
         // Paginate
