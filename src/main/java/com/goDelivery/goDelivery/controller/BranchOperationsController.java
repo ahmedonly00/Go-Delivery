@@ -79,7 +79,7 @@ public class BranchOperationsController {
                 return ResponseEntity.ok(menu);
         }
 
-        @PostMapping(value = "/menu/items", consumes = {"multipart/form-data"})
+        @PostMapping(value = "/menu/items", consumes = { "multipart/form-data" })
         @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
                         +
                         "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
@@ -161,7 +161,7 @@ public class BranchOperationsController {
         }
 
         // User Management (Restaurant Admin and Branch Manager)
-        @PostMapping("/users")
+        @PostMapping("/CreateUser")
         @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
                         +
                         "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")

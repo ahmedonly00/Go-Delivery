@@ -9,6 +9,7 @@ import com.goDelivery.goDelivery.repository.BranchesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ public class BranchSecurity {
      * Checks if the user is a RESTAURANT_ADMIN for the restaurant that owns the
      * branch.
      */
+    @Transactional(readOnly = true)
     public boolean isRestaurantAdminOfBranch(String email, Long branchId) {
         log.debug("Checking if {} is RESTAURANT_ADMIN of branch {}", email, branchId);
 
@@ -62,6 +64,7 @@ public class BranchSecurity {
     /**
      * Checks if the user is a BRANCH_MANAGER for the specific branch.
      */
+    @Transactional(readOnly = true)
     public boolean isBranchManagerOfBranch(String email, Long branchId) {
         log.debug("Checking if {} is BRANCH_MANAGER of branch {}", email, branchId);
 
