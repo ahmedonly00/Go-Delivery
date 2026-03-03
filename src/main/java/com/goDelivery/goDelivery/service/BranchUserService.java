@@ -65,6 +65,9 @@ public class BranchUserService {
         branchUser.setPassword(passwordEncoder.encode(branchUserDTO.getPassword()));
         branchUser.setActive(true);
         branchUser.setEmailVerified(true);
+        if (branchUser.getPermissions() == null) {
+            branchUser.setPermissions("");
+        }
 
         // Set role based on input or default to BRANCH_MANAGER
         if (branchUserDTO.getRole() != null) {
