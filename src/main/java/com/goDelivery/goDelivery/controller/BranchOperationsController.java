@@ -27,9 +27,9 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/branches/{branchId}/operations")
+@RequestMapping("/api/v1/branches/operations")
 @RequiredArgsConstructor
-@Tag(name = "Branch Operations", description = "Branch-level operations for restaurant and branch managers")
+@Tag(name = "Branch Operations", description = "Branch-level operations for branch managers")
 @CrossOrigin("*")
 public class BranchOperationsController {
 
@@ -64,7 +64,7 @@ public class BranchOperationsController {
         }
 
         // Menu Operations
-        @GetMapping("/getBranchMenu")
+        @GetMapping("/getBranchMenu/{branchId}")
         @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get branch menu", description = "Retrieve the menu for a specific branch (includes restaurant menu with branch overrides)")
         public ResponseEntity<List<MenuItemResponse>> getBranchMenu(
@@ -72,11 +72,11 @@ public class BranchOperationsController {
                         @AuthenticationPrincipal UserDetails userDetails) {
 
                 log.info("Getting menu for branch {} by user {}", branchId, userDetails.getUsername());
-
+                List<MenuItemResponse> menu = delegationService.getBranchMenu(branchId);
                 return ResponseEntity.ok(menu);
         }
 
-        @GetMapping("/getBranchMenuItems")
+        @GetMapping("/getBranchMenuItems/{branchId}")
         @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get branch menu items", description = "Retrieve all menu items for a specific branch")
         public ResponseEntity<List<MenuItemResponse>> getBranchMenuItems(
@@ -88,7 +88,7 @@ public class BranchOperationsController {
                 return ResponseEntity.ok(menu);
         }
 
-        @GetMapping("/getBranchMenuCategories")
+        @GetMapping("/getBranchMenuCategories/{branchId}")
         @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get branch menu categories", description = "Retrieve all menu categories for a specific branch")
         public ResponseEntity<List<MenuCategoryResponseDTO>> getBranchMenuCategories(
@@ -100,7 +100,7 @@ public class BranchOperationsController {
                 return ResponseEntity.ok(categories);
         }
 
-        @PostMapping(value = "/addMenuItem", consumes = { "multipart/form-data" })
+        @PostMapping(value = "/addMenuItem/{branchId}", consumes = { "multipart/form-data" })
         @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Add menu item to branch", description = "Add a new menu item specific to this branch")
         public ResponseEntity<MenuItemResponse> addMenuItem(
@@ -114,7 +114,7 @@ public class BranchOperationsController {
                 return new ResponseEntity<>(created, HttpStatus.CREATED);
         }
 
-        @PutMapping("/updateMenuItem/{menuItemId}")
+        @PutMapping("/updateMenuItem/{branchId}/{menuItemId}")
         @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Update menu item", description = "Update a menu item in the branch menu")
         public ResponseEntity<MenuItemResponse> updateMenuItem(
@@ -131,7 +131,7 @@ public class BranchOperationsController {
         }
 
         // Order Operations
-        @PostMapping("/createOrder")
+        @PostMapping("/createOrder/{branchId}")
         @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Create order for branch", description = "Create a new order for this specific branch")
         public ResponseEntity<List<OrderResponse>> createOrder(
@@ -172,15 +172,15 @@ public class BranchOperationsController {
         }
 
         // User Management (Restaurant Admin and Branch Manager)
-        @PostMapping("/CreateUser")
-        @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
+        @PostMapping("/CreateUser/{branchId}")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Create branch user", description = "Create a new user for this branch (Restaurant Admin only)")
         public ResponseEntity<BranchUserDTO> createBranchUser(
                         @PathVariable Long branchId,
                         @RequestBody @Valid BranchUserDTO userDTO,
                         @AuthenticationPrincipal UserDetails userDetails) {
 
-                log.info("Creating branch user for branch {} by restaurant admin {}", branchId,
+                log.info("Creating branch user for branch {} by branch manager {}", branchId,
                                 userDetails.getUsername());
                 BranchUserDTO created = delegationService.createBranchUser(branchId, userDTO);
                 return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -193,7 +193,7 @@ public class BranchOperationsController {
                         @PathVariable Long branchId,
                         @AuthenticationPrincipal UserDetails userDetails) {
 
-                log.info("Getting users for branch {} by user {}", branchId, userDetails.getUsername());
+                log.info("Getting users for branch {} by branch manager {}", branchId, userDetails.getUsername());
                 List<BranchUserDTO> users = delegationService.getBranchUsers(branchId);
                 return ResponseEntity.ok(users);
         }
@@ -209,7 +209,7 @@ public class BranchOperationsController {
                         @Parameter(description = "End date") @RequestParam(required = false) String endDate,
                         @AuthenticationPrincipal UserDetails userDetails) {
 
-                log.info("Getting analytics for branch {} by user {}", branchId, userDetails.getUsername());
+                log.info("Getting analytics for branch {} by branch manager {}", branchId, userDetails.getUsername());
                 Object analytics = delegationService.getBranchAnalytics(branchId, reportType, startDate, endDate);
                 return ResponseEntity.ok(analytics);
         }
@@ -235,7 +235,7 @@ public class BranchOperationsController {
                         @RequestBody BranchSettingsDTO settings,
                         @AuthenticationPrincipal UserDetails userDetails) {
 
-                log.info("Updating settings for branch {} by user {}", branchId, userDetails.getUsername());
+                log.info("Updating settings for branch {} by branch manager {}", branchId, userDetails.getUsername());
                 Object updatedSettings = delegationService.updateBranchSettings(branchId, settings);
                 return ResponseEntity.ok(updatedSettings);
         }

@@ -153,7 +153,6 @@ public class SecurityConfig {
                                                                 "/api/v1/branches/*/orders/**",
                                                                 "/api/v1/branches/*/settings/**",
                                                                 "/api/v1/branches/**",
-                                                                "/api/v1/branches/*/operations/**",
                                                                 "/api/v1/branch-setup/**",
                                                                 "/api/v1/branch-orders/**")
                                                 .hasRole("BRANCH_MANAGER")
