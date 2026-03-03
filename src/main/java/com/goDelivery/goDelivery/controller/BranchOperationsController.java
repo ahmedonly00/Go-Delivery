@@ -36,10 +36,9 @@ public class BranchOperationsController {
         private final BranchDelegationService delegationService;
 
         // Branch Information Operations
-        @GetMapping("")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @GetMapping("/getBranchDetails")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
+
         @Operation(summary = "Get branch details", description = "Retrieve detailed information about a specific branch")
         public ResponseEntity<BranchesDTO> getBranchDetails(
                         @PathVariable Long branchId,
@@ -50,10 +49,9 @@ public class BranchOperationsController {
                 return ResponseEntity.ok(branch);
         }
 
-        @PutMapping("")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @PutMapping("/updateBranchDetails")
+
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Update branch details", description = "Update branch information")
         public ResponseEntity<BranchesDTO> updateBranchDetails(
                         @PathVariable Long branchId,
@@ -66,24 +64,20 @@ public class BranchOperationsController {
         }
 
         // Menu Operations
-        @GetMapping("/menu")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @GetMapping("/getBranchMenu")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get branch menu", description = "Retrieve the menu for a specific branch (includes restaurant menu with branch overrides)")
         public ResponseEntity<List<MenuItemResponse>> getBranchMenu(
                         @PathVariable Long branchId,
                         @AuthenticationPrincipal UserDetails userDetails) {
 
                 log.info("Getting menu for branch {} by user {}", branchId, userDetails.getUsername());
-                List<MenuItemResponse> menu = delegationService.getBranchMenu(branchId);
+
                 return ResponseEntity.ok(menu);
         }
 
-        @GetMapping("/menu/items")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @GetMapping("/getBranchMenuItems")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get branch menu items", description = "Retrieve all menu items for a specific branch")
         public ResponseEntity<List<MenuItemResponse>> getBranchMenuItems(
                         @PathVariable Long branchId,
@@ -94,10 +88,8 @@ public class BranchOperationsController {
                 return ResponseEntity.ok(menu);
         }
 
-        @GetMapping("/menu/categories")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @GetMapping("/getBranchMenuCategories")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get branch menu categories", description = "Retrieve all menu categories for a specific branch")
         public ResponseEntity<List<MenuCategoryResponseDTO>> getBranchMenuCategories(
                         @PathVariable Long branchId,
@@ -108,10 +100,8 @@ public class BranchOperationsController {
                 return ResponseEntity.ok(categories);
         }
 
-        @PostMapping(value = "/menu/items", consumes = { "multipart/form-data" })
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @PostMapping(value = "/addMenuItem", consumes = { "multipart/form-data" })
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Add menu item to branch", description = "Add a new menu item specific to this branch")
         public ResponseEntity<MenuItemResponse> addMenuItem(
                         @PathVariable Long branchId,
@@ -124,10 +114,8 @@ public class BranchOperationsController {
                 return new ResponseEntity<>(created, HttpStatus.CREATED);
         }
 
-        @PutMapping("/menu/items/{menuItemId}")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @PutMapping("/updateMenuItem/{menuItemId}")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Update menu item", description = "Update a menu item in the branch menu")
         public ResponseEntity<MenuItemResponse> updateMenuItem(
                         @PathVariable Long branchId,
@@ -143,10 +131,8 @@ public class BranchOperationsController {
         }
 
         // Order Operations
-        @PostMapping("/orders")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @PostMapping("/createOrder")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Create order for branch", description = "Create a new order for this specific branch")
         public ResponseEntity<List<OrderResponse>> createOrder(
                         @PathVariable Long branchId,
@@ -158,10 +144,8 @@ public class BranchOperationsController {
                 return new ResponseEntity<>(orders, HttpStatus.CREATED);
         }
 
-        @GetMapping("/orders")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @GetMapping("/getBranchOrders/{branchId}")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get branch orders", description = "Retrieve orders for this branch, optionally filtered by status")
         public ResponseEntity<List<OrderResponse>> getBranchOrders(
                         @PathVariable Long branchId,
@@ -174,12 +158,10 @@ public class BranchOperationsController {
                 return ResponseEntity.ok(orders);
         }
 
-        @GetMapping("/orders/{orderId}")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @GetMapping("/getBranchOrder/{branchId}/{orderId}")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get specific order", description = "Retrieve details of a specific order from this branch")
-        public ResponseEntity<OrderResponse> getOrder(
+        public ResponseEntity<OrderResponse> getBranchOrder(
                         @PathVariable Long branchId,
                         @PathVariable Long orderId,
                         @AuthenticationPrincipal UserDetails userDetails) {
@@ -191,9 +173,7 @@ public class BranchOperationsController {
 
         // User Management (Restaurant Admin and Branch Manager)
         @PostMapping("/CreateUser")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
         @Operation(summary = "Create branch user", description = "Create a new user for this branch (Restaurant Admin only)")
         public ResponseEntity<BranchUserDTO> createBranchUser(
                         @PathVariable Long branchId,
@@ -206,10 +186,8 @@ public class BranchOperationsController {
                 return new ResponseEntity<>(created, HttpStatus.CREATED);
         }
 
-        @GetMapping("/users")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @GetMapping("/getBranchUsers/{branchId}")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get branch users", description = "Retrieve all users belonging to this branch")
         public ResponseEntity<List<BranchUserDTO>> getBranchUsers(
                         @PathVariable Long branchId,
@@ -221,10 +199,8 @@ public class BranchOperationsController {
         }
 
         // Analytics and Reports (Restaurant Admin and Branch Manager)
-        @GetMapping("/analytics")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @GetMapping("/getBranchAnalytics/{branchId}")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get branch analytics", description = "Retrieve analytics and reports for this branch")
         public ResponseEntity<Object> getBranchAnalytics(
                         @PathVariable Long branchId,
@@ -239,10 +215,8 @@ public class BranchOperationsController {
         }
 
         // Settings and Configuration
-        @GetMapping("/settings")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @GetMapping("/getBranchSettings/{branchId}")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Get branch settings", description = "Retrieve configuration settings for this branch")
         public ResponseEntity<?> getBranchSettings(
                         @PathVariable Long branchId,
@@ -253,10 +227,8 @@ public class BranchOperationsController {
                 return ResponseEntity.ok(settings);
         }
 
-        @PutMapping("/settings")
-        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
-                        +
-                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @PutMapping("/updateBranchSettings/{branchId}")
+        @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Update branch settings", description = "Update configuration settings for this branch")
         public ResponseEntity<?> updateBranchSettings(
                         @PathVariable Long branchId,
