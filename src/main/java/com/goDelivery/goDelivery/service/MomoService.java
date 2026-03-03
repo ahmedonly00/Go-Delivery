@@ -337,8 +337,7 @@ public class MomoService {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + authToken);
 
-            String url = String.format("%s/disbursement/status/%s",
-                    momoConfig.getBaseUrl(), referenceId);
+            String url = momoConfig.getDisbursementStatusUrl(referenceId);
 
             ResponseEntity<DisbursementStatusResponse> response = restTemplate.exchange(
                     url,
