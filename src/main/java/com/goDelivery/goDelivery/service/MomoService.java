@@ -377,6 +377,33 @@ public class MomoService {
         }
     }
 
+    public DisbursementStatusResponse checkCollectionDisbursementStatus(String referenceId) {
+        try {
+            String authToken = generateAuthToken();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + authToken);
+
+            String url = momoConfig.getCollectionDisbursementStatusUrl(referenceId);
+
+            ResponseEntity<DisbursementStatusResponse> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    new HttpEntity<>(headers),
+                    DisbursementStatusResponse.class);
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Failed to check collection-disbursement status: " +
+                        response.getStatusCode().value());
+            }
+        } catch (Exception e) {
+            log.error("Error checking collection-disbursement status for reference: {}", referenceId, e);
+            throw new RuntimeException("Failed to check collection-disbursement status: " + e.getMessage());
+        }
+    }
+
     private String formatMsisdn(String msisdn) {
         // Remove any non-digit characters and ensure it starts with country code
         String digits = msisdn.replaceAll("[^0-9]", "");

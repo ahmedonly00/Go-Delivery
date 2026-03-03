@@ -561,8 +561,10 @@ public class DisbursementService {
                                                 transaction.getFinancialTransactionId(), transaction.getReferenceId());
 
                                 // Get the latest status from MoMo API
+                                // DisbursementTransaction.referenceId holds the collection-disbursement UUID,
+                                // so use the collection status endpoint (not disbursement status).
                                 DisbursementStatusResponse statusResponse = momoService
-                                                .checkDisbursementStatus(transaction.getReferenceId());
+                                                .checkCollectionDisbursementStatus(transaction.getReferenceId());
                                 String status = statusResponse.getStatus();
 
                                 log.info("Transaction {} status from provider: {}",
