@@ -31,7 +31,7 @@ public class MenuCategory {
     private LocalDate createdAt;
 
     @Builder.Default
-    @Column(name = "is_active", nullable = false)
+    @Column(name = "is_active", columnDefinition = "boolean default true")
     private Boolean isActive = true;
 
     @ManyToOne(fetch = FetchType.LAZY)

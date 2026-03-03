@@ -1,6 +1,7 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.Enum.OrderStatus;
+import com.goDelivery.goDelivery.dtos.menu.MenuCategoryResponseDTO;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,6 +74,21 @@ public class BranchDelegationService {
         }
 
         return menuItemMapper.toMenuItemResponse(mergedMenu);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MenuCategoryResponseDTO> getBranchMenuCategories(Long branchId) {
+        log.debug("Getting menu categories for branch {}", branchId);
+        branchesRepository.findByBranchId(branchId)
+                .orElseThrow(() -> new ResourceNotFoundException("Branch not found: " + branchId));
+
+        return menuCategoryRepository.findByBranch_BranchId(branchId).stream()
+                .map(cat -> MenuCategoryResponseDTO.builder()
+                        .categoryId(cat.getCategoryId())
+                        .categoryName(cat.getCategoryName())
+                        .isActive(cat.getIsActive())
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Transactional

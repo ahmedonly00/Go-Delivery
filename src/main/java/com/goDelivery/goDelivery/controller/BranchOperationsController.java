@@ -1,5 +1,6 @@
 package com.goDelivery.goDelivery.controller;
 
+import com.goDelivery.goDelivery.dtos.menu.MenuCategoryResponseDTO;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,6 +78,34 @@ public class BranchOperationsController {
                 log.info("Getting menu for branch {} by user {}", branchId, userDetails.getUsername());
                 List<MenuItemResponse> menu = delegationService.getBranchMenu(branchId);
                 return ResponseEntity.ok(menu);
+        }
+
+        @GetMapping("/menu/items")
+        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
+                        +
+                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @Operation(summary = "Get branch menu items", description = "Retrieve all menu items for a specific branch")
+        public ResponseEntity<List<MenuItemResponse>> getBranchMenuItems(
+                        @PathVariable Long branchId,
+                        @AuthenticationPrincipal UserDetails userDetails) {
+
+                log.info("Getting menu items for branch {} by user {}", branchId, userDetails.getUsername());
+                List<MenuItemResponse> menu = delegationService.getBranchMenu(branchId);
+                return ResponseEntity.ok(menu);
+        }
+
+        @GetMapping("/menu/categories")
+        @PreAuthorize("(hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)) or "
+                        +
+                        "(hasRole('BRANCH_MANAGER') and @branchSecurity.isBranchManagerOfBranch(authentication.name, #branchId))")
+        @Operation(summary = "Get branch menu categories", description = "Retrieve all menu categories for a specific branch")
+        public ResponseEntity<List<MenuCategoryResponseDTO>> getBranchMenuCategories(
+                        @PathVariable Long branchId,
+                        @AuthenticationPrincipal UserDetails userDetails) {
+
+                log.info("Getting menu categories for branch {} by user {}", branchId, userDetails.getUsername());
+                List<MenuCategoryResponseDTO> categories = delegationService.getBranchMenuCategories(branchId);
+                return ResponseEntity.ok(categories);
         }
 
         @PostMapping(value = "/menu/items", consumes = { "multipart/form-data" })
