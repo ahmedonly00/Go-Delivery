@@ -46,6 +46,10 @@ public class MomoConfig {
         return baseUrl + "/api/v1/disbursement/collection-disbursement";
     }
 
+    public String getCollectionDisbursementStatusUrl(String referenceId) {
+        return baseUrl + "/api/v1/collection/status/" + referenceId;
+    }
+
     public String getDisbursementStatusUrl(String referenceId) {
         return baseUrl + "/api/v1/disbursement/status/" + referenceId;
     }
