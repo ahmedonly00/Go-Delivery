@@ -99,9 +99,12 @@ public class BranchSecurityService {
             return false;
         }
 
-        // Only RESTAURANT_ADMIN can manage branch users
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RESTAURANT_ADMIN"))) {
             return isRestaurantAdminOfBranch(auth.getName(), branchId);
+        }
+
+        if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_BRANCH_MANAGER"))) {
+            return isBranchManagerOfBranch(auth.getName(), branchId);
         }
 
         return false;

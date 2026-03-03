@@ -235,9 +235,8 @@ public class BranchDelegationService {
     public BranchUserDTO createBranchUser(Long branchId, BranchUserDTO userDTO) {
         log.info("Creating branch user for branch {}", branchId);
 
-        // Validate restaurant admin access
         if (!branchSecurity.canManageBranchUsers(branchId)) {
-            throw new UnauthorizedException("Only restaurant admin can manage branch users");
+            throw new UnauthorizedException("Access denied: you do not have permission to manage users for this branch");
         }
 
         return branchUserService.createBranchUser(branchId, userDTO);
