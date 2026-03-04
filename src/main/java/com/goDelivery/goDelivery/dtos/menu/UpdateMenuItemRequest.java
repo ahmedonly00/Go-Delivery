@@ -19,8 +19,6 @@ public class UpdateMenuItemRequest {
     @Positive(message = "Price must be greater than 0")
     private Float price;
 
-    private String image;
-
     private String ingredients;
 
     private Boolean isAvailable;

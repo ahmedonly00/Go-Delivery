@@ -342,8 +342,6 @@ public class BranchMenuService {
             menuItem.setPrice(updateRequest.getPrice());
         if (imageFile != null && !imageFile.isEmpty())
             menuItem.setImage(uploadImage(imageFile));
-        else if (updateRequest.getImage() != null)
-            menuItem.setImage(updateRequest.getImage());
         if (updateRequest.getIngredients() != null)
             menuItem.setIngredients(updateRequest.getIngredients());
         if (updateRequest.getIsAvailable() != null)

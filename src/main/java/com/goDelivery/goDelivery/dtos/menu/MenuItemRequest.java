@@ -20,8 +20,6 @@ public class MenuItemRequest {
     @Positive(message = "Price must be greater than 0")
     private Float price;
 
-    private String image;
-
     private String ingredients;
     
     @Builder.Default

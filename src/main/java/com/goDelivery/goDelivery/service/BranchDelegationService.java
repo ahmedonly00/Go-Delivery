@@ -90,16 +90,17 @@ public class BranchDelegationService {
     }
 
     @Transactional
-    public MenuItemResponse addBranchMenuItem(Long branchId, MenuItemRequest menuItemRequest, MultipartFile imageFile) {
+    public MenuItemResponse addBranchMenuItem(Long branchId, Long categoryId, MenuItemRequest menuItemRequest,
+            MultipartFile imageFile) {
         log.info("Adding menu item {} to branch {}", menuItemRequest.getMenuItemName(), branchId);
 
         Branches branch = branchesRepository.findByBranchId(branchId)
                 .orElseThrow(() -> new RuntimeException("Branch not found: " + branchId));
 
         com.goDelivery.goDelivery.model.MenuCategory category = menuCategoryRepository
-                .findById(menuItemRequest.getCategoryId())
+                .findById(categoryId)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("Category not found: " + menuItemRequest.getCategoryId()));
+                        () -> new ResourceNotFoundException("Category not found: " + categoryId));
 
         // Upload image if provided
         String imageUrl = null;
@@ -130,7 +131,8 @@ public class BranchDelegationService {
     }
 
     @Transactional
-    public MenuItemResponse updateBranchMenuItem(Long branchId, Long menuItemId, MenuItemRequest menuItemRequest) {
+    public MenuItemResponse updateBranchMenuItem(Long branchId, Long menuItemId, MenuItemRequest menuItemRequest,
+            org.springframework.web.multipart.MultipartFile imageFile) {
         log.info("Updating menu item {} for branch {}", menuItemId, branchId);
 
         MenuItem existingItem = menuItemRepository.findById(menuItemId)
@@ -157,8 +159,9 @@ public class BranchDelegationService {
         if (menuItemRequest.getPreparationTime() != null) {
             existingItem.setPreparationTime(menuItemRequest.getPreparationTime());
         }
-        if (menuItemRequest.getImage() != null) {
-            existingItem.setImage(menuItemRequest.getImage());
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String filePath = fileStorageService.storeFile(imageFile, "menu-items/branches/" + branchId + "/images");
+            existingItem.setImage("/api/files/" + filePath.replace("\\", "/"));
         }
         existingItem.setUpdatedAt(java.time.LocalDate.now());
 
