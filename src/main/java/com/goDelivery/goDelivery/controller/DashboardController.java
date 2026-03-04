@@ -11,12 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/dashboard")
@@ -39,20 +36,18 @@ public class DashboardController {
     @GetMapping("/super-admin/overview")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<SuperAdminDashboard> getSuperAdminDashboard(
-            @Parameter(description = "Period: TODAY, WEEK, MONTH, YEAR, CUSTOM") @RequestParam(defaultValue = "MONTH") String period,
+            @Parameter(description = "Year e.g. 2025") @RequestParam(required = false) Integer year,
+            @Parameter(description = "Month 1-12") @RequestParam(required = false) Integer month,
+            @Parameter(description = "ISO week 1-53") @RequestParam(required = false) Integer week) {
 
-            @Parameter(description = "Start date for CUSTOM period") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-
-            @Parameter(description = "End date for CUSTOM period") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-
-        log.info("Super admin dashboard requested with period: {}", period);
-        SuperAdminDashboard dashboard = superAdminDashboardService.getSuperAdminDashboard(period, startDate, endDate);
-        return ResponseEntity.ok(dashboard);
+        log.info("Super admin dashboard requested year={} month={} week={}", year, month, week);
+        return ResponseEntity.ok(superAdminDashboardService.getSuperAdminDashboard(year, month, week));
     }
 
     // ============ Restaurant Admin Dashboard Endpoints ============
 
-    @Operation(summary = "Get Restaurant Dashboard", description = "Retrieves comprehensive restaurant-specific analytics")
+    @Operation(summary = "Get Restaurant Dashboard",
+               description = "Filter by year, month (1-12), or week (1-53). Defaults to current year if none provided.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Dashboard retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant not found"),
@@ -61,113 +56,22 @@ public class DashboardController {
     @GetMapping("/restaurant/{restaurantId}/overview")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<EnhancedRestaurantDashboard> getRestaurantDashboard(
-            @Parameter(description = "Restaurant ID") @PathVariable Long restaurantId,
+            @PathVariable Long restaurantId,
+            @Parameter(description = "Year e.g. 2025") @RequestParam(required = false) Integer year,
+            @Parameter(description = "Month 1-12") @RequestParam(required = false) Integer month,
+            @Parameter(description = "ISO week 1-53") @RequestParam(required = false) Integer week) {
 
-            @Parameter(description = "Period: TODAY, WEEK, MONTH, YEAR, CUSTOM") @RequestParam(defaultValue = "MONTH") String period,
-
-            @Parameter(description = "Start date for CUSTOM period") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-
-            @Parameter(description = "End date for CUSTOM period") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-
-        log.info("Restaurant dashboard requested for restaurant {} with period: {}", restaurantId, period);
-        EnhancedRestaurantDashboard dashboard = restaurantDashboardService.getRestaurantDashboard(
-                restaurantId, period, startDate, endDate);
-        return ResponseEntity.ok(dashboard);
+        log.info("Restaurant dashboard for {} year={} month={} week={}", restaurantId, year, month, week);
+        return ResponseEntity.ok(restaurantDashboardService.getRestaurantDashboard(restaurantId, year, month, week));
     }
 
-    @Operation(summary = "Get Today's Snapshot", description = "Quick overview of today's performance for a restaurant")
+    @Operation(summary = "Get Today's Snapshot", description = "Quick overview of today's performance")
     @GetMapping("/restaurant/{restaurantId}/today")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<EnhancedRestaurantDashboard.TodaySnapshot> getTodaySnapshot(
             @PathVariable Long restaurantId) {
 
-        log.info("Today's snapshot requested for restaurant {}", restaurantId);
-        EnhancedRestaurantDashboard dashboard = restaurantDashboardService.getRestaurantDashboard(
-                restaurantId, "TODAY", null, null);
-        return ResponseEntity.ok(dashboard.getTodaySnapshot());
-    }
-
-    @Operation(summary = "Get Order Metrics", description = "Detailed order analytics for a restaurant")
-    @GetMapping("/restaurant/{restaurantId}/orders")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<EnhancedRestaurantDashboard.OrderMetrics> getOrderMetrics(
-            @PathVariable Long restaurantId,
-            @RequestParam(defaultValue = "MONTH") String period,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-
-        EnhancedRestaurantDashboard dashboard = restaurantDashboardService.getRestaurantDashboard(
-                restaurantId, period, startDate, endDate);
-        return ResponseEntity.ok(dashboard.getOrderMetrics());
-    }
-
-    @Operation(summary = "Get Revenue Metrics", description = "Detailed revenue analytics for a restaurant")
-    @GetMapping("/restaurant/{restaurantId}/revenue")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<EnhancedRestaurantDashboard.RevenueMetrics> getRevenueMetrics(
-            @PathVariable Long restaurantId,
-            @RequestParam(defaultValue = "MONTH") String period,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-
-        EnhancedRestaurantDashboard dashboard = restaurantDashboardService.getRestaurantDashboard(
-                restaurantId, period, startDate, endDate);
-        return ResponseEntity.ok(dashboard.getRevenueMetrics());
-    }
-
-    @Operation(summary = "Get Menu Performance", description = "Menu item and category performance analytics")
-    @GetMapping("/restaurant/{restaurantId}/menu-performance")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<EnhancedRestaurantDashboard.MenuPerformance> getMenuPerformance(
-            @PathVariable Long restaurantId,
-            @RequestParam(defaultValue = "MONTH") String period,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-
-        EnhancedRestaurantDashboard dashboard = restaurantDashboardService.getRestaurantDashboard(
-                restaurantId, period, startDate, endDate);
-        return ResponseEntity.ok(dashboard.getMenuPerformance());
-    }
-
-    @Operation(summary = "Get Customer Metrics", description = "Customer analytics and behavior insights")
-    @GetMapping("/restaurant/{restaurantId}/customers")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<EnhancedRestaurantDashboard.CustomerMetrics> getCustomerMetrics(
-            @PathVariable Long restaurantId,
-            @RequestParam(defaultValue = "MONTH") String period,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-
-        EnhancedRestaurantDashboard dashboard = restaurantDashboardService.getRestaurantDashboard(
-                restaurantId, period, startDate, endDate);
-        return ResponseEntity.ok(dashboard.getCustomerMetrics());
-    }
-
-    @Operation(summary = "Get Delivery Metrics", description = "Delivery performance and zone analytics")
-    @GetMapping("/restaurant/{restaurantId}/delivery")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<EnhancedRestaurantDashboard.DeliveryMetrics> getDeliveryMetrics(
-            @PathVariable Long restaurantId,
-            @RequestParam(defaultValue = "MONTH") String period,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-
-        EnhancedRestaurantDashboard dashboard = restaurantDashboardService.getRestaurantDashboard(
-                restaurantId, period, startDate, endDate);
-        return ResponseEntity.ok(dashboard.getDeliveryMetrics());
-    }
-
-    @Operation(summary = "Get Time-Based Analytics", description = "Peak hours, day of week, and time slot performance")
-    @GetMapping("/restaurant/{restaurantId}/time-analytics")
-    @PreAuthorize("hasRole('RESTAURANT_ADMIN') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<EnhancedRestaurantDashboard.TimeBasedAnalytics> getTimeBasedAnalytics(
-            @PathVariable Long restaurantId,
-            @RequestParam(defaultValue = "MONTH") String period,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-
-        EnhancedRestaurantDashboard dashboard = restaurantDashboardService.getRestaurantDashboard(
-                restaurantId, period, startDate, endDate);
-        return ResponseEntity.ok(dashboard.getTimeBasedAnalytics());
+        log.info("Today's snapshot for restaurant {}", restaurantId);
+        return ResponseEntity.ok(restaurantDashboardService.getRestaurantDashboard(restaurantId, null, null, null).getTodaySnapshot());
     }
 }

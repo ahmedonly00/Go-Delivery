@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.time.DayOfWeek;
+import java.time.temporal.WeekFields;
 import java.util.*;
 
 @Service
@@ -32,69 +34,114 @@ public class AnalyticsService {
         private final SalesReportMapper salesReportMapper;
         private final CustomerTrendsMapper customerTrendsMapper;
 
-        public Page<OrderResponse> getOrderHistory(Long restaurantId, LocalDate startDate, LocalDate endDate,
-                        Pageable pageable) {
-                LocalDate start = startDate != null ? startDate : LocalDate.of(2000, 1, 1);
-                LocalDate end = endDate != null ? endDate : LocalDate.now();
+        // ── Date resolution ───────────────────────────────────────────────────────
 
+        private LocalDate[] resolveDateRange(Integer year, Integer month, Integer week) {
+                int y = year != null ? year : LocalDate.now().getYear();
+
+                if (week != null) {
+                        LocalDate monday = LocalDate.of(y, 6, 1)
+                                        .with(WeekFields.ISO.weekOfWeekBasedYear(), week)
+                                        .with(DayOfWeek.MONDAY);
+                        return new LocalDate[] { monday, monday.plusDays(6) };
+                } else if (month != null) {
+                        LocalDate start = LocalDate.of(y, month, 1);
+                        return new LocalDate[] { start, start.withDayOfMonth(start.lengthOfMonth()) };
+                } else {
+                        return new LocalDate[] { LocalDate.of(y, 1, 1), LocalDate.of(y, 12, 31) };
+                }
+        }
+
+        // ── Restaurant analytics ──────────────────────────────────────────────────
+
+        public Page<OrderResponse> getOrderHistory(Long restaurantId, Integer year, Integer month, Integer week,
+                        Pageable pageable) {
+                LocalDate[] range = resolveDateRange(year, month, week);
                 return orderAnalyticsRepository.findByRestaurant_RestaurantIdAndOrderPlacedAtBetween(
                                 restaurantId,
-                                start.atStartOfDay(),
-                                end.atTime(LocalTime.MAX),
+                                range[0].atStartOfDay(),
+                                range[1].atTime(LocalTime.MAX),
                                 pageable)
                                 .map(orderMapper::toOrderResponse);
         }
 
-        public Page<OrderResponse> getBranchOrderHistory(Long branchId, LocalDate startDate, LocalDate endDate,
-                        Pageable pageable) {
-                LocalDate start = startDate != null ? startDate : LocalDate.of(2000, 1, 1);
-                LocalDate end = endDate != null ? endDate : LocalDate.now();
-
-                return orderAnalyticsRepository.findByBranch_BranchIdAndOrderPlacedAtBetween(
-                                branchId,
-                                start.atStartOfDay(),
-                                end.atTime(LocalTime.MAX),
-                                pageable)
-                                .map(orderMapper::toOrderResponse);
-        }
-
-        public SalesReportDTO generateSalesReport(Long restaurantId, LocalDate startDate, LocalDate endDate,
+        public SalesReportDTO generateSalesReport(Long restaurantId, Integer year, Integer month, Integer week,
                         String period) {
-                // Verify restaurant exists
                 restaurantRepository.findById(restaurantId)
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "Restaurant not found with id: " + restaurantId));
 
-                // Generate the report using the mapper
-                SalesReportDTO report = salesReportMapper.toSalesReportDTO(restaurantId, startDate, endDate, period);
+                LocalDate[] range = resolveDateRange(year, month, week);
+                String resolvedPeriod = resolvePeriod(period, month, week);
 
-                // Add time series data
-                LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay()
-                                : LocalDateTime.of(2000, 1, 1, 0, 0);
-                LocalDateTime endDateTime = endDate != null ? endDate.atTime(LocalTime.MAX) : LocalDateTime.now();
+                SalesReportDTO report = salesReportMapper.toSalesReportDTO(restaurantId, range[0], range[1],
+                                resolvedPeriod);
 
                 List<SalesReportDTO.TimeSeriesDataPoint> timeSeriesData = generateTimeSeriesData(
-                                restaurantId, startDateTime, endDateTime, period);
+                                restaurantId, range[0].atStartOfDay(), range[1].atTime(LocalTime.MAX), resolvedPeriod);
                 report.setTimeSeriesData(timeSeriesData);
 
                 return report;
         }
 
-        public SalesReportDTO generateBranchSalesReport(Long branchId, LocalDate startDate, LocalDate endDate,
-                        String period) {
-                // Generate the report using the mapper
-                SalesReportDTO report = salesReportMapper.toBranchSalesReportDTO(branchId, startDate, endDate, period);
+        public List<CustomerTrendsDTO> analyzeCustomerTrends(Long restaurantId, Integer year, Integer month,
+                        Integer week) {
+                LocalDate[] range = resolveDateRange(year, month, week);
 
-                // Add time series data
-                LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay()
-                                : LocalDateTime.of(2000, 1, 1, 0, 0);
-                LocalDateTime endDateTime = endDate != null ? endDate.atTime(LocalTime.MAX) : LocalDateTime.now();
+                List<Order> orders = orderAnalyticsRepository.findByRestaurant_RestaurantIdAndOrderPlacedAtBetween(
+                                restaurantId, range[0].atStartOfDay(), range[1].atTime(LocalTime.MAX));
+
+                return customerTrendsMapper.toCustomerTrendsDTOs(orders);
+        }
+
+        // ── Branch analytics ──────────────────────────────────────────────────────
+
+        public Page<OrderResponse> getBranchOrderHistory(Long branchId, Integer year, Integer month, Integer week,
+                        Pageable pageable) {
+                LocalDate[] range = resolveDateRange(year, month, week);
+                return orderAnalyticsRepository.findByBranch_BranchIdAndOrderPlacedAtBetween(
+                                branchId,
+                                range[0].atStartOfDay(),
+                                range[1].atTime(LocalTime.MAX),
+                                pageable)
+                                .map(orderMapper::toOrderResponse);
+        }
+
+        public SalesReportDTO generateBranchSalesReport(Long branchId, Integer year, Integer month, Integer week,
+                        String period) {
+                LocalDate[] range = resolveDateRange(year, month, week);
+                String resolvedPeriod = resolvePeriod(period, month, week);
+
+                SalesReportDTO report = salesReportMapper.toBranchSalesReportDTO(branchId, range[0], range[1],
+                                resolvedPeriod);
 
                 List<SalesReportDTO.TimeSeriesDataPoint> timeSeriesData = generateBranchTimeSeriesData(
-                                branchId, startDateTime, endDateTime, period);
+                                branchId, range[0].atStartOfDay(), range[1].atTime(LocalTime.MAX), resolvedPeriod);
                 report.setTimeSeriesData(timeSeriesData);
 
                 return report;
+        }
+
+        public List<CustomerTrendsDTO> analyzeBranchCustomerTrends(Long branchId, Integer year, Integer month,
+                        Integer week) {
+                LocalDate[] range = resolveDateRange(year, month, week);
+
+                List<Order> orders = orderAnalyticsRepository.findByBranch_BranchIdAndOrderPlacedAtBetween(
+                                branchId, range[0].atStartOfDay(), range[1].atTime(LocalTime.MAX));
+
+                return customerTrendsMapper.toCustomerTrendsDTOs(orders);
+        }
+
+        // ── Time series helpers ───────────────────────────────────────────────────
+
+        private String resolvePeriod(String period, Integer month, Integer week) {
+                if (period != null && !period.isBlank())
+                        return period;
+                if (week != null)
+                        return "DAILY";
+                if (month != null)
+                        return "WEEKLY";
+                return "MONTHLY";
         }
 
         private List<SalesReportDTO.TimeSeriesDataPoint> generateTimeSeriesData(Long restaurantId, LocalDateTime start,
@@ -106,90 +153,67 @@ public class AnalyticsService {
                                         .plusDays(1)) {
                                 LocalDateTime dayStart = date.atStartOfDay();
                                 LocalDateTime dayEnd = date.atTime(LocalTime.MAX);
-
                                 Long orders = orderAnalyticsRepository
-                                                .countByRestaurant_RestaurantIdAndOrderPlacedAtBetween(
-                                                                restaurantId, dayStart, dayEnd);
-
-                                Double revenue = orderAnalyticsRepository.calculateTotalRevenueByDateRange(
-                                                restaurantId, dayStart, dayEnd);
-
-                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(
-                                                date,
-                                                orders != null ? orders : 0L,
+                                                .countByRestaurant_RestaurantIdAndOrderPlacedAtBetween(restaurantId,
+                                                                dayStart, dayEnd);
+                                Double revenue = orderAnalyticsRepository.calculateTotalRevenueByDateRange(restaurantId,
+                                                dayStart, dayEnd);
+                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(date, orders != null ? orders : 0L,
                                                 revenue != null ? BigDecimal.valueOf(revenue) : BigDecimal.ZERO,
                                                 period));
                         }
                 } else if ("WEEKLY".equalsIgnoreCase(period)) {
                         LocalDate current = start.toLocalDate();
-                        while (current.isBefore(end.toLocalDate()) || current.isEqual(end.toLocalDate())) {
-                                LocalDate weekStart = current.with(java.time.DayOfWeek.MONDAY);
+                        while (!current.isAfter(end.toLocalDate())) {
+                                LocalDate weekStart = current.with(DayOfWeek.MONDAY);
                                 LocalDate weekEnd = weekStart.plusDays(6);
-
                                 LocalDateTime weekStartTime = weekStart.atStartOfDay();
                                 LocalDateTime weekEndTime = weekEnd.atTime(LocalTime.MAX);
-
                                 Long orders = orderAnalyticsRepository
-                                                .countByRestaurant_RestaurantIdAndOrderPlacedAtBetween(
-                                                                restaurantId, weekStartTime, weekEndTime);
-
-                                Double revenue = orderAnalyticsRepository.calculateTotalRevenueByDateRange(
-                                                restaurantId, weekStartTime, weekEndTime);
-
-                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(
-                                                weekStart,
+                                                .countByRestaurant_RestaurantIdAndOrderPlacedAtBetween(restaurantId,
+                                                                weekStartTime, weekEndTime);
+                                Double revenue = orderAnalyticsRepository.calculateTotalRevenueByDateRange(restaurantId,
+                                                weekStartTime, weekEndTime);
+                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(weekStart,
                                                 orders != null ? orders : 0L,
                                                 revenue != null ? BigDecimal.valueOf(revenue) : BigDecimal.ZERO,
                                                 period));
-
                                 current = weekEnd.plusDays(1);
                         }
                 } else if ("MONTHLY".equalsIgnoreCase(period)) {
                         LocalDate current = start.toLocalDate().withDayOfMonth(1);
-                        while (current.isBefore(end.toLocalDate()) || current.isEqual(end.toLocalDate())) {
+                        while (!current.isAfter(end.toLocalDate())) {
                                 LocalDate monthStart = current.withDayOfMonth(1);
                                 LocalDate monthEnd = monthStart.plusMonths(1).minusDays(1);
-
                                 LocalDateTime monthStartTime = monthStart.atStartOfDay();
                                 LocalDateTime monthEndTime = monthEnd.atTime(LocalTime.MAX);
-
                                 Long orders = orderAnalyticsRepository
-                                                .countByRestaurant_RestaurantIdAndOrderPlacedAtBetween(
-                                                                restaurantId, monthStartTime, monthEndTime);
-
-                                Double revenue = orderAnalyticsRepository.calculateTotalRevenueByDateRange(
-                                                restaurantId, monthStartTime, monthEndTime);
-
-                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(
-                                                monthStart,
+                                                .countByRestaurant_RestaurantIdAndOrderPlacedAtBetween(restaurantId,
+                                                                monthStartTime, monthEndTime);
+                                Double revenue = orderAnalyticsRepository.calculateTotalRevenueByDateRange(restaurantId,
+                                                monthStartTime, monthEndTime);
+                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(monthStart,
                                                 orders != null ? orders : 0L,
                                                 revenue != null ? BigDecimal.valueOf(revenue) : BigDecimal.ZERO,
                                                 period));
-
                                 current = monthStart.plusMonths(1);
                         }
                 } else if ("YEARLY".equalsIgnoreCase(period)) {
                         LocalDate current = start.toLocalDate().withDayOfYear(1);
-                        while (current.isBefore(end.toLocalDate()) || current.isEqual(end.toLocalDate())) {
+                        while (!current.isAfter(end.toLocalDate())) {
                                 LocalDate yearStart = current.withDayOfYear(1);
                                 LocalDate yearEnd = yearStart.plusYears(1).minusDays(1);
-
                                 LocalDateTime yearStartTime = yearStart.atStartOfDay();
                                 LocalDateTime yearEndTime = yearEnd.atTime(LocalTime.MAX);
-
                                 Long orders = orderAnalyticsRepository
-                                                .countByRestaurant_RestaurantIdAndOrderPlacedAtBetween(
-                                                                restaurantId, yearStartTime, yearEndTime);
-
-                                Double revenue = orderAnalyticsRepository.calculateTotalRevenueByDateRange(
-                                                restaurantId, yearStartTime, yearEndTime);
-
-                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(
-                                                yearStart,
+                                                .countByRestaurant_RestaurantIdAndOrderPlacedAtBetween(restaurantId,
+                                                                yearStartTime, yearEndTime);
+                                Double revenue = orderAnalyticsRepository.calculateTotalRevenueByDateRange(restaurantId,
+                                                yearStartTime, yearEndTime);
+                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(yearStart,
                                                 orders != null ? orders : 0L,
                                                 revenue != null ? BigDecimal.valueOf(revenue) : BigDecimal.ZERO,
                                                 period));
-
                                 current = yearStart.plusYears(1);
                         }
                 }
@@ -206,126 +230,67 @@ public class AnalyticsService {
                                         .plusDays(1)) {
                                 LocalDateTime dayStart = date.atStartOfDay();
                                 LocalDateTime dayEnd = date.atTime(LocalTime.MAX);
-
                                 Long orders = orderAnalyticsRepository.countByBranch_BranchIdAndOrderPlacedAtBetween(
                                                 branchId, dayStart, dayEnd);
-
-                                Double revenue = orderAnalyticsRepository.calculateTotalRevenueByBranchAndDateRange(
-                                                branchId, dayStart, dayEnd);
-
-                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(
-                                                date,
-                                                orders != null ? orders : 0L,
+                                Double revenue = orderAnalyticsRepository
+                                                .calculateTotalRevenueByBranchAndDateRange(branchId, dayStart, dayEnd);
+                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(date, orders != null ? orders : 0L,
                                                 revenue != null ? BigDecimal.valueOf(revenue) : BigDecimal.ZERO,
                                                 period));
                         }
                 } else if ("WEEKLY".equalsIgnoreCase(period)) {
                         LocalDate current = start.toLocalDate();
-                        while (current.isBefore(end.toLocalDate()) || current.isEqual(end.toLocalDate())) {
-                                LocalDate weekStart = current.with(java.time.DayOfWeek.MONDAY);
+                        while (!current.isAfter(end.toLocalDate())) {
+                                LocalDate weekStart = current.with(DayOfWeek.MONDAY);
                                 LocalDate weekEnd = weekStart.plusDays(6);
-
                                 LocalDateTime weekStartTime = weekStart.atStartOfDay();
                                 LocalDateTime weekEndTime = weekEnd.atTime(LocalTime.MAX);
-
                                 Long orders = orderAnalyticsRepository.countByBranch_BranchIdAndOrderPlacedAtBetween(
                                                 branchId, weekStartTime, weekEndTime);
-
                                 Double revenue = orderAnalyticsRepository.calculateTotalRevenueByBranchAndDateRange(
                                                 branchId, weekStartTime, weekEndTime);
-
-                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(
-                                                weekStart,
+                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(weekStart,
                                                 orders != null ? orders : 0L,
                                                 revenue != null ? BigDecimal.valueOf(revenue) : BigDecimal.ZERO,
                                                 period));
-
                                 current = weekEnd.plusDays(1);
                         }
                 } else if ("MONTHLY".equalsIgnoreCase(period)) {
                         LocalDate current = start.toLocalDate().withDayOfMonth(1);
-                        while (current.isBefore(end.toLocalDate()) || current.isEqual(end.toLocalDate())) {
+                        while (!current.isAfter(end.toLocalDate())) {
                                 LocalDate monthStart = current.withDayOfMonth(1);
                                 LocalDate monthEnd = monthStart.plusMonths(1).minusDays(1);
-
                                 LocalDateTime monthStartTime = monthStart.atStartOfDay();
                                 LocalDateTime monthEndTime = monthEnd.atTime(LocalTime.MAX);
-
                                 Long orders = orderAnalyticsRepository.countByBranch_BranchIdAndOrderPlacedAtBetween(
                                                 branchId, monthStartTime, monthEndTime);
-
                                 Double revenue = orderAnalyticsRepository.calculateTotalRevenueByBranchAndDateRange(
                                                 branchId, monthStartTime, monthEndTime);
-
-                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(
-                                                monthStart,
+                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(monthStart,
                                                 orders != null ? orders : 0L,
                                                 revenue != null ? BigDecimal.valueOf(revenue) : BigDecimal.ZERO,
                                                 period));
-
                                 current = monthStart.plusMonths(1);
                         }
                 } else if ("YEARLY".equalsIgnoreCase(period)) {
                         LocalDate current = start.toLocalDate().withDayOfYear(1);
-                        while (current.isBefore(end.toLocalDate()) || current.isEqual(end.toLocalDate())) {
+                        while (!current.isAfter(end.toLocalDate())) {
                                 LocalDate yearStart = current.withDayOfYear(1);
                                 LocalDate yearEnd = yearStart.plusYears(1).minusDays(1);
-
                                 LocalDateTime yearStartTime = yearStart.atStartOfDay();
                                 LocalDateTime yearEndTime = yearEnd.atTime(LocalTime.MAX);
-
                                 Long orders = orderAnalyticsRepository.countByBranch_BranchIdAndOrderPlacedAtBetween(
                                                 branchId, yearStartTime, yearEndTime);
-
                                 Double revenue = orderAnalyticsRepository.calculateTotalRevenueByBranchAndDateRange(
                                                 branchId, yearStartTime, yearEndTime);
-
-                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(
-                                                yearStart,
+                                result.add(SalesReportDTO.buildTimeSeriesDataPoint(yearStart,
                                                 orders != null ? orders : 0L,
                                                 revenue != null ? BigDecimal.valueOf(revenue) : BigDecimal.ZERO,
                                                 period));
-
                                 current = yearStart.plusYears(1);
                         }
                 }
 
                 return result;
-        }
-
-        public List<CustomerTrendsDTO> analyzeCustomerTrends(Long restaurantId, LocalDate startDate,
-                        LocalDate endDate) {
-                if (startDate == null) {
-                        endDate = LocalDate.now();
-                        startDate = endDate.minusMonths(3);
-                } else if (endDate == null) {
-                        endDate = LocalDate.now();
-                }
-
-                LocalDateTime startDateTime = startDate.atStartOfDay();
-                LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
-
-                List<Order> orders = orderAnalyticsRepository.findByRestaurant_RestaurantIdAndOrderPlacedAtBetween(
-                                restaurantId, startDateTime, endDateTime);
-
-                return customerTrendsMapper.toCustomerTrendsDTOs(orders);
-        }
-
-        public List<CustomerTrendsDTO> analyzeBranchCustomerTrends(Long branchId, LocalDate startDate,
-                        LocalDate endDate) {
-                if (startDate == null) {
-                        endDate = LocalDate.now();
-                        startDate = endDate.minusMonths(3);
-                } else if (endDate == null) {
-                        endDate = LocalDate.now();
-                }
-
-                LocalDateTime startDateTime = startDate.atStartOfDay();
-                LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
-
-                List<Order> orders = orderAnalyticsRepository.findByBranch_BranchIdAndOrderPlacedAtBetween(
-                                branchId, startDateTime, endDateTime);
-
-                return customerTrendsMapper.toCustomerTrendsDTOs(orders);
         }
 }

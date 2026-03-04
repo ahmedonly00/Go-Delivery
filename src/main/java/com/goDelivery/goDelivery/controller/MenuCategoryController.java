@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
 import com.goDelivery.goDelivery.dtos.menu.MenuCategoryResponseDTO;
-import com.goDelivery.goDelivery.model.Restaurant;
 import com.goDelivery.goDelivery.service.MenuCategoryService;
 
 import lombok.RequiredArgsConstructor;
@@ -61,9 +60,7 @@ public class MenuCategoryController {
             menuCategoryDTO.setCreatedAt(LocalDate.now());
             
             // Set restaurant
-            Restaurant restaurant = new Restaurant();
-            restaurant.setRestaurantId(restaurantId);
-            menuCategoryDTO.setRestaurant(restaurant);
+            menuCategoryDTO.setRestaurantId(restaurantId);
             
             // Create the category
             MenuCategoryResponseDTO createdCategory = menuCategoryService.createMenuCategory(menuCategoryDTO);

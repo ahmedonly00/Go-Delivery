@@ -26,18 +26,14 @@ public class MenuCategoryMapper {
             return null;
         }
 
-        MenuCategoryDTO.MenuCategoryDTOBuilder builder = MenuCategoryDTO.builder()
+        return MenuCategoryDTO.builder()
                 .categoryId(menuCategory.getCategoryId())
                 .categoryName(menuCategory.getCategoryName())
+                .isActive(menuCategory.getIsActive() != null && menuCategory.getIsActive())
                 .createdAt(menuCategory.getCreatedAt())
-                .restaurant(menuCategory.getRestaurant());
-                
-        // Set menuItems if not null
-        if (menuCategory.getMenuItems() != null) {
-            builder.menuItems(menuCategory.getMenuItems());
-        }
-        
-        return builder.build();
+                .branchId(menuCategory.getBranch() != null ? menuCategory.getBranch().getBranchId() : null)
+                .restaurantId(menuCategory.getRestaurant() != null ? menuCategory.getRestaurant().getRestaurantId() : null)
+                .build();
     }
 
     public MenuCategory toMenuCategory(MenuCategoryDTO menuCategoryDTO){
@@ -58,10 +54,12 @@ public class MenuCategoryMapper {
         }
 
         return MenuCategoryResponseDTO.builder()
-            .categoryId(menuCategory.getCategoryId())
-            .categoryName(menuCategory.getCategoryName())
-            .isActive(menuCategory.getIsActive())
-            .build();
+                .categoryId(menuCategory.getCategoryId())
+                .categoryName(menuCategory.getCategoryName())
+                .isActive(menuCategory.getIsActive())
+                .branchId(menuCategory.getBranch() != null ? menuCategory.getBranch().getBranchId() : null)
+                .createdAt(menuCategory.getCreatedAt())
+                .build();
     }
 
     public List<MenuCategoryResponseDTO> toMenuCategoryResponseDTOList(List<MenuCategory> menuCategories) {

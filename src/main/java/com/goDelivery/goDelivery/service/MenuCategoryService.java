@@ -37,13 +37,12 @@ public class MenuCategoryService {
             throw new IllegalArgumentException("Category name cannot be empty");
         }
         
-        if (menuCategoryDTO.getRestaurant() == null || 
-            menuCategoryDTO.getRestaurant().getRestaurantId() == null) {
+        if (menuCategoryDTO.getRestaurantId() == null) {
             throw new IllegalArgumentException("Restaurant ID is required");
         }
-        
+
         // Check if restaurant exists
-        Long restaurantId = menuCategoryDTO.getRestaurant().getRestaurantId();
+        Long restaurantId = menuCategoryDTO.getRestaurantId();
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
             .orElseThrow(() -> 
                 new IllegalArgumentException("Restaurant not found with ID: " + restaurantId)

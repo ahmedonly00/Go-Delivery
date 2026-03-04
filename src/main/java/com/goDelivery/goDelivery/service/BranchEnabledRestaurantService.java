@@ -29,6 +29,7 @@ public class BranchEnabledRestaurantService {
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
     private final BranchSecurityService branchSecurity;
+    private final AnalyticsService analyticsService;
     private final OrderMapper orderMapper;
     private final RestaurantMapper restaurantMapper;
 
@@ -153,30 +154,32 @@ public class BranchEnabledRestaurantService {
 
     // Analytics and Reporting
     @Transactional(readOnly = true)
-    public Object getBranchAnalytics(Long branchId, String reportType, LocalDate startDate, LocalDate endDate) {
-        log.debug("Getting {} analytics for branch {} from {} to {}", reportType, branchId, startDate, endDate);
-        
-        // Validate branch access
+    public Object getBranchAnalytics(Long branchId, String reportType, Integer year, Integer month, Integer week) {
         branchSecurity.canAccessBranch(branchId, "");
-        
-        // Implementation would depend on your analytics service
-        // This is a placeholder for the actual implementation
-        return "Analytics data for branch " + branchId;
+
+        if ("SALES".equalsIgnoreCase(reportType)) {
+            return analyticsService.generateBranchSalesReport(branchId, year, month, week, null);
+        } else if ("CUSTOMER_TRENDS".equalsIgnoreCase(reportType)) {
+            return analyticsService.analyzeBranchCustomerTrends(branchId, year, month, week);
+        } else {
+            return analyticsService.getBranchOrderHistory(branchId, year, month, week, org.springframework.data.domain.Pageable.unpaged());
+        }
     }
 
     @Transactional(readOnly = true)
-    public Object getRestaurantAnalytics(Long restaurantId, String reportType, LocalDate startDate, LocalDate endDate) {
-        log.debug("Getting {} analytics for restaurant {} from {} to {}", reportType, restaurantId, startDate, endDate);
-        
-        // Validate access
+    public Object getRestaurantAnalytics(Long restaurantId, String reportType, Integer year, Integer month, Integer week) {
         RestaurantUsers currentUser = branchSecurity.getCurrentRestaurantUser();
         if (!currentUser.getRestaurant().getRestaurantId().equals(restaurantId)) {
             throw new UnauthorizedException("You can only view analytics for your restaurant");
         }
-        
-        // Implementation would depend on your analytics service
-        // This would aggregate data from all branches
-        return "Analytics data for restaurant " + restaurantId;
+
+        if ("SALES".equalsIgnoreCase(reportType)) {
+            return analyticsService.generateSalesReport(restaurantId, year, month, week, null);
+        } else if ("CUSTOMER_TRENDS".equalsIgnoreCase(reportType)) {
+            return analyticsService.analyzeCustomerTrends(restaurantId, year, month, week);
+        } else {
+            return analyticsService.getOrderHistory(restaurantId, year, month, week, org.springframework.data.domain.Pageable.unpaged());
+        }
     }
 
     // Helper Methods

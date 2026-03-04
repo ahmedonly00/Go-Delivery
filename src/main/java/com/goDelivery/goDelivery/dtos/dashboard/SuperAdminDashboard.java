@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -17,33 +18,22 @@ import java.util.Map;
 public class SuperAdminDashboard {
 
     // Metadata
-    private LocalDate generatedAt;
-    private String period; // TODAY, WEEK, MONTH, YEAR, CUSTOM
+    private LocalDateTime generatedAt;
+    private Integer year;
+    private Integer month;
+    private Integer week;
     private LocalDate startDate;
     private LocalDate endDate;
 
-    // Platform Overview
+    // Sections
     private PlatformOverview platformOverview;
-
-    // Revenue Analytics
     private RevenueAnalytics revenueAnalytics;
-
-    // Order Analytics
     private OrderAnalytics orderAnalytics;
-
-    // Restaurant Analytics
     private RestaurantAnalytics restaurantAnalytics;
-
-    // Customer Analytics
     private CustomerAnalytics customerAnalytics;
-
-    // Biker Analytics
     private BikerAnalytics bikerAnalytics;
 
-    // Geographic Analytics
-    private List<GeographicMetric> geographicMetrics;
-
-    // ============ Nested Classes ============
+    // ── Nested classes ────────────────────────────────────────────────────────
 
     @Data
     @Builder
@@ -71,10 +61,8 @@ public class SuperAdminDashboard {
     public static class RevenueAnalytics {
         private BigDecimal totalPlatformRevenue;
         private BigDecimal totalCommissionEarned;
-        private BigDecimal averageOrderValue;
-        private Map<String, BigDecimal> revenueByPaymentMethod; // MOMO, MPESA, CASH
+        private Map<String, BigDecimal> revenueByPaymentMethod;
         private List<RestaurantRevenue> topRevenueRestaurants;
-        private List<TimeSeriesData> revenueTimeSeries;
     }
 
     @Data
@@ -88,10 +76,6 @@ public class SuperAdminDashboard {
         private Long pendingOrders;
         private BigDecimal orderCompletionRate;
         private BigDecimal orderCancellationRate;
-        private Map<String, Long> ordersByStatus; // PLACED, PREPARING, READY, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
-        private Map<String, Long> ordersByDeliveryType; // SELF_DELIVERY, SYSTEM_DELIVERY
-        private Double averagePreparationTime;
-        private Double averageDeliveryTime;
     }
 
     @Data
@@ -99,12 +83,9 @@ public class SuperAdminDashboard {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RestaurantAnalytics {
-        private List<TopRestaurant> topPerformingRestaurants;
-        private List<RestaurantAlert> restaurantsNeedingAttention;
         private Long newRestaurantsToday;
         private Long newRestaurantsThisWeek;
         private Long newRestaurantsThisMonth;
-        private Map<String, Long> restaurantsByCuisineType;
         private Double averageRestaurantRating;
     }
 
@@ -116,11 +97,6 @@ public class SuperAdminDashboard {
         private Long newCustomersToday;
         private Long newCustomersThisWeek;
         private Long newCustomersThisMonth;
-        private BigDecimal customerRetentionRate;
-        private BigDecimal averageCustomerLifetimeValue;
-        private Double averageCustomerSatisfactionScore;
-        private Long totalReviews;
-        private Map<Integer, Long> ratingDistribution; // 1-5 stars
     }
 
     @Data
@@ -130,12 +106,7 @@ public class SuperAdminDashboard {
     public static class BikerAnalytics {
         private Long totalActiveBikers;
         private Long bikersOnlineNow;
-        private Long deliveriesCompletedToday;
-        private Long deliveriesCompletedThisWeek;
-        private Long deliveriesCompletedThisMonth;
-        private Double averageDeliveryTime;
         private Double averageBikerRating;
-        private List<TopBiker> topPerformingBikers;
     }
 
     @Data
@@ -145,72 +116,8 @@ public class SuperAdminDashboard {
     public static class RestaurantRevenue {
         private Long restaurantId;
         private String restaurantName;
-        private BigDecimal totalRevenue;
         private Long totalOrders;
+        private BigDecimal totalRevenue;
         private BigDecimal averageOrderValue;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class TopRestaurant {
-        private Long restaurantId;
-        private String restaurantName;
-        private String cuisineType;
-        private Long totalOrders;
-        private BigDecimal totalRevenue;
-        private Double rating;
-        private Integer totalReviews;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class RestaurantAlert {
-        private Long restaurantId;
-        private String restaurantName;
-        private String alertType; // LOW_RATING, HIGH_CANCELLATION, INACTIVE
-        private String alertMessage;
-        private Double rating;
-        private BigDecimal cancellationRate;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class TopBiker {
-        private Long bikerId;
-        private String bikerName;
-        private Long deliveriesCompleted;
-        private Double averageDeliveryTime;
-        private Double rating;
-        private BigDecimal totalEarnings;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GeographicMetric {
-        private String location;
-        private Long orderCount;
-        private BigDecimal totalRevenue;
-        private Long activeRestaurants;
-        private Long activeCustomers;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class TimeSeriesData {
-        private LocalDate date;
-        private Long orderCount;
-        private BigDecimal revenue;
-        private Long newCustomers;
-        private Long newRestaurants;
     }
 }

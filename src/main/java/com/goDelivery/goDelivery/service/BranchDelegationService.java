@@ -12,8 +12,6 @@ import com.goDelivery.goDelivery.dtos.restaurant.BranchUserDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.exception.UnauthorizedException;
-import com.goDelivery.goDelivery.dtos.analytics.CustomerTrendsDTO;
-import com.goDelivery.goDelivery.dtos.analytics.SalesReportDTO;
 import com.goDelivery.goDelivery.mapper.MenuItemMapper;
 import com.goDelivery.goDelivery.mapper.OrderMapper;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
@@ -100,7 +98,8 @@ public class BranchDelegationService {
 
         com.goDelivery.goDelivery.model.MenuCategory category = menuCategoryRepository
                 .findById(menuItemRequest.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + menuItemRequest.getCategoryId()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Category not found: " + menuItemRequest.getCategoryId()));
 
         // Upload image if provided
         String imageUrl = null;
@@ -236,7 +235,8 @@ public class BranchDelegationService {
         log.info("Creating branch user for branch {}", branchId);
 
         if (!branchSecurity.canManageBranchUsers(branchId)) {
-            throw new UnauthorizedException("Access denied: you do not have permission to manage users for this branch");
+            throw new UnauthorizedException(
+                    "Access denied: you do not have permission to manage users for this branch");
         }
 
         return branchUserService.createBranchUser(branchId, userDTO);
@@ -254,21 +254,17 @@ public class BranchDelegationService {
 
     // Analytics Operations
     @Transactional(readOnly = true)
-    public Object getBranchAnalytics(Long branchId, String reportType, String startDateStr, String endDateStr) {
+    public Object getBranchAnalytics(Long branchId, String reportType, Integer year, Integer month, Integer week) {
         log.info("Getting {} analytics for branch {}", reportType, branchId);
 
-        // Validate branch access
         branchSecurity.canAccessBranch(branchId, "");
 
-        LocalDate startDate = startDateStr != null ? LocalDate.parse(startDateStr) : null;
-        LocalDate endDate = endDateStr != null ? LocalDate.parse(endDateStr) : null;
-
         if ("SALES".equalsIgnoreCase(reportType)) {
-            return analyticsService.generateBranchSalesReport(branchId, startDate, endDate, "DAILY");
+            return analyticsService.generateBranchSalesReport(branchId, year, month, week, null);
         } else if ("CUSTOMER_TRENDS".equalsIgnoreCase(reportType)) {
-            return analyticsService.analyzeBranchCustomerTrends(branchId, startDate, endDate);
+            return analyticsService.analyzeBranchCustomerTrends(branchId, year, month, week);
         } else if ("HISTORY".equalsIgnoreCase(reportType)) {
-            return analyticsService.getBranchOrderHistory(branchId, startDate, endDate, Pageable.unpaged());
+            return analyticsService.getBranchOrderHistory(branchId, year, month, week, Pageable.unpaged());
         }
 
         throw new IllegalArgumentException("Unknown report type: " + reportType);

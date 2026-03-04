@@ -202,13 +202,14 @@ public class BranchOperationsController {
         @Operation(summary = "Get branch analytics", description = "Retrieve analytics and reports for this branch")
         public ResponseEntity<Object> getBranchAnalytics(
                         @PathVariable Long branchId,
-                        @Parameter(description = "Report type") @RequestParam(required = false) String reportType,
-                        @Parameter(description = "Start date") @RequestParam(required = false) String startDate,
-                        @Parameter(description = "End date") @RequestParam(required = false) String endDate,
+                        @Parameter(description = "Report type: SALES, CUSTOMER_TRENDS, HISTORY") @RequestParam(required = false, defaultValue = "SALES") String reportType,
+                        @Parameter(description = "Year (e.g. 2025)") @RequestParam(required = false) Integer year,
+                        @Parameter(description = "Month (1-12)") @RequestParam(required = false) Integer month,
+                        @Parameter(description = "ISO week number (1-53)") @RequestParam(required = false) Integer week,
                         @AuthenticationPrincipal UserDetails userDetails) {
 
                 log.info("Getting analytics for branch {} by branch manager {}", branchId, userDetails.getUsername());
-                Object analytics = delegationService.getBranchAnalytics(branchId, reportType, startDate, endDate);
+                Object analytics = delegationService.getBranchAnalytics(branchId, reportType, year, month, week);
                 return ResponseEntity.ok(analytics);
         }
 

@@ -7,14 +7,16 @@ import com.goDelivery.goDelivery.dtos.dashboard.SuperAdminDashboard.*;
 import com.goDelivery.goDelivery.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.WeekFields;
 import java.util.*;
 
 @Service
@@ -27,28 +29,32 @@ public class SuperAdminDashboardService {
     private final BikersRepository bikersRepository;
     private final OrderRepository orderRepository;
 
-    @Cacheable(value = "superAdminDashboard", key = "#period + '-' + #startDate + '-' + #endDate")
-    public SuperAdminDashboard getSuperAdminDashboard(String period, LocalDate startDate, LocalDate endDate) {
-        log.info("Generating super admin dashboard with period {}", period);
+    public SuperAdminDashboard getSuperAdminDashboard(Integer year, Integer month, Integer week) {
+        log.info("Generating super admin dashboard year={} month={} week={}", year, month, week);
 
-        DateRange dateRange = calculateDateRange(period, startDate, endDate);
+        LocalDate[] range = resolveDateRange(year, month, week);
+        LocalDate startDate = range[0];
+        LocalDate endDate = range[1];
 
         return SuperAdminDashboard.builder()
-                .generatedAt(LocalDate.now())
-                .period(period)
-                .startDate(dateRange.start)
-                .endDate(dateRange.end)
-                .platformOverview(getPlatformOverview(dateRange))
-                .revenueAnalytics(getRevenueAnalytics(dateRange))
-                .orderAnalytics(getOrderAnalytics(dateRange))
-                .restaurantAnalytics(getRestaurantAnalytics(dateRange))
-                .customerAnalytics(getCustomerAnalytics(dateRange))
-                .bikerAnalytics(getBikerAnalytics(dateRange))
-                .geographicMetrics(new ArrayList<>())
+                .generatedAt(LocalDateTime.now())
+                .year(year != null ? year : LocalDate.now().getYear())
+                .month(month)
+                .week(week)
+                .startDate(startDate)
+                .endDate(endDate)
+                .platformOverview(buildPlatformOverview())
+                .revenueAnalytics(buildRevenueAnalytics(startDate, endDate))
+                .orderAnalytics(buildOrderAnalytics(startDate, endDate))
+                .restaurantAnalytics(buildRestaurantAnalytics())
+                .customerAnalytics(buildCustomerAnalytics())
+                .bikerAnalytics(buildBikerAnalytics())
                 .build();
     }
 
-    private PlatformOverview getPlatformOverview(DateRange dateRange) {
+    // ── Sections ──────────────────────────────────────────────────────────────
+
+    private PlatformOverview buildPlatformOverview() {
         LocalDateTime todayStart = LocalDate.now().atStartOfDay();
         LocalDateTime todayEnd = LocalDate.now().atTime(LocalTime.MAX);
         LocalDateTime weekStart = LocalDate.now().minusWeeks(1).atStartOfDay();
@@ -63,32 +69,28 @@ public class SuperAdminDashboardService {
                 .totalBikers(bikersRepository.count())
                 .activeBikers(bikersRepository.countByIsActiveTrue())
                 .inactiveBikers(bikersRepository.count() - bikersRepository.countByIsActiveTrue())
-                .totalOrdersToday(orderRepository.countOrdersByDateRange(todayStart, todayEnd))
-                .totalOrdersThisWeek(orderRepository.countOrdersByDateRange(weekStart, todayEnd))
-                .totalOrdersThisMonth(orderRepository.countOrdersByDateRange(monthStart, todayEnd))
+                .totalOrdersToday(orZero(orderRepository.countOrdersByDateRange(todayStart, todayEnd)))
+                .totalOrdersThisWeek(orZero(orderRepository.countOrdersByDateRange(weekStart, todayEnd)))
+                .totalOrdersThisMonth(orZero(orderRepository.countOrdersByDateRange(monthStart, todayEnd)))
                 .totalOrdersAllTime(orderRepository.count())
                 .build();
     }
 
-    private RevenueAnalytics getRevenueAnalytics(DateRange dateRange) {
-        LocalDateTime start = dateRange.start.atStartOfDay();
-        LocalDateTime end = dateRange.end.atTime(LocalTime.MAX);
+    private RevenueAnalytics buildRevenueAnalytics(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(LocalTime.MAX);
 
         Double totalRevenue = orderRepository.sumRevenueByDateRange(start, end);
+        BigDecimal total = bd(totalRevenue);
 
-        // Get revenue by payment method
-        List<Object[]> paymentMethodData = orderRepository.getOrdersByPaymentMethod(start, end);
         Map<String, BigDecimal> revenueByPaymentMethod = new HashMap<>();
-        for (Object[] row : paymentMethodData) {
+        for (Object[] row : orderRepository.getOrdersByPaymentMethod(start, end)) {
             String method = row[0] != null ? row[0].toString() : "UNKNOWN";
-            BigDecimal amount = BigDecimal.valueOf(((Number) row[2]).doubleValue());
-            revenueByPaymentMethod.put(method, amount);
+            revenueByPaymentMethod.put(method, BigDecimal.valueOf(((Number) row[2]).doubleValue()));
         }
 
-        // Get top restaurants by revenue
-        List<Object[]> topRestaurants = orderRepository.getTopRestaurantsByRevenue(start, end, PageRequest.of(0, 10));
         List<RestaurantRevenue> topRevenueRestaurants = new ArrayList<>();
-        for (Object[] row : topRestaurants) {
+        for (Object[] row : orderRepository.getTopRestaurantsByRevenue(start, end, PageRequest.of(0, 10))) {
             topRevenueRestaurants.add(RestaurantRevenue.builder()
                     .restaurantId(((Number) row[0]).longValue())
                     .restaurantName((String) row[1])
@@ -99,127 +101,90 @@ public class SuperAdminDashboardService {
         }
 
         return RevenueAnalytics.builder()
-                .totalPlatformRevenue(BigDecimal.valueOf(totalRevenue != null ? totalRevenue : 0))
-                .totalCommissionEarned(BigDecimal.valueOf(totalRevenue != null ? totalRevenue * 0.1 : 0))
-                .averageOrderValue(BigDecimal.ZERO)
+                .totalPlatformRevenue(total)
+                .totalCommissionEarned(total.multiply(BigDecimal.valueOf(0.1)).setScale(2, RoundingMode.HALF_UP))
                 .revenueByPaymentMethod(revenueByPaymentMethod)
                 .topRevenueRestaurants(topRevenueRestaurants)
-                .revenueTimeSeries(new ArrayList<>())
                 .build();
     }
 
-    private OrderAnalytics getOrderAnalytics(DateRange dateRange) {
-        LocalDateTime start = dateRange.start.atStartOfDay();
-        LocalDateTime end = dateRange.end.atTime(LocalTime.MAX);
+    private OrderAnalytics buildOrderAnalytics(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(LocalTime.MAX);
 
-        Long totalOrders = orderRepository.countOrdersByDateRange(start, end);
-        Long completedOrders = orderRepository.countOrdersByStatusAndDateRange(OrderStatus.DELIVERED, start, end);
-        Long cancelledOrders = orderRepository.countOrdersByStatusAndDateRange(OrderStatus.CANCELLED, start, end);
-        Long pendingOrders = orderRepository.countOrdersByStatusAndDateRange(OrderStatus.PLACED, start, end);
+        Long total = orZero(orderRepository.countOrdersByDateRange(start, end));
+        Long completed = orZero(orderRepository.countOrdersByStatusAndDateRange(OrderStatus.DELIVERED, start, end));
+        Long cancelled = orZero(orderRepository.countOrdersByStatusAndDateRange(OrderStatus.CANCELLED, start, end));
+        Long pending = orZero(orderRepository.countOrdersByStatusAndDateRange(OrderStatus.PLACED, start, end));
 
-        BigDecimal completionRate = totalOrders > 0
-                ? BigDecimal.valueOf(completedOrders * 100.0 / totalOrders)
+        BigDecimal completionRate = total > 0
+                ? BigDecimal.valueOf(completed * 100.0 / total).setScale(2, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;
-        BigDecimal cancellationRate = totalOrders > 0
-                ? BigDecimal.valueOf(cancelledOrders * 100.0 / totalOrders)
+        BigDecimal cancellationRate = total > 0
+                ? BigDecimal.valueOf(cancelled * 100.0 / total).setScale(2, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;
 
         return OrderAnalytics.builder()
-                .totalOrders(totalOrders)
-                .completedOrders(completedOrders)
-                .cancelledOrders(cancelledOrders)
-                .pendingOrders(pendingOrders)
+                .totalOrders(total)
+                .completedOrders(completed)
+                .cancelledOrders(cancelled)
+                .pendingOrders(pending)
                 .orderCompletionRate(completionRate)
                 .orderCancellationRate(cancellationRate)
-                .ordersByStatus(new HashMap<>())
-                .ordersByDeliveryType(new HashMap<>())
-                .averagePreparationTime(0.0)
-                .averageDeliveryTime(0.0)
                 .build();
     }
 
-    private RestaurantAnalytics getRestaurantAnalytics(DateRange dateRange) {
+    private RestaurantAnalytics buildRestaurantAnalytics() {
         LocalDate today = LocalDate.now();
 
         return RestaurantAnalytics.builder()
-                .topPerformingRestaurants(new ArrayList<>())
-                .restaurantsNeedingAttention(new ArrayList<>())
-                .newRestaurantsToday(restaurantRepository.countRestaurantsByDateRange(today, today))
-                .newRestaurantsThisWeek(restaurantRepository.countRestaurantsByDateRange(today.minusWeeks(1), today))
-                .newRestaurantsThisMonth(restaurantRepository.countRestaurantsByDateRange(today.minusMonths(1), today))
-                .restaurantsByCuisineType(new HashMap<>())
+                .newRestaurantsToday(orZero(restaurantRepository.countRestaurantsByDateRange(today, today)))
+                .newRestaurantsThisWeek(orZero(restaurantRepository.countRestaurantsByDateRange(today.minusWeeks(1), today)))
+                .newRestaurantsThisMonth(orZero(restaurantRepository.countRestaurantsByDateRange(today.minusMonths(1), today)))
                 .averageRestaurantRating(restaurantRepository.getAverageRestaurantRating())
                 .build();
     }
 
-    private CustomerAnalytics getCustomerAnalytics(DateRange dateRange) {
+    private CustomerAnalytics buildCustomerAnalytics() {
         LocalDate today = LocalDate.now();
 
         return CustomerAnalytics.builder()
-                .newCustomersToday(customerRepository.countCustomersByDateRange(today, today))
-                .newCustomersThisWeek(customerRepository.countCustomersByDateRange(today.minusWeeks(1), today))
-                .newCustomersThisMonth(customerRepository.countCustomersByDateRange(today.minusMonths(1), today))
-                .customerRetentionRate(BigDecimal.ZERO)
-                .averageCustomerLifetimeValue(BigDecimal.ZERO)
-                .averageCustomerSatisfactionScore(0.0)
-                .totalReviews(0L)
-                .ratingDistribution(new HashMap<>())
+                .newCustomersToday(orZero(customerRepository.countCustomersByDateRange(today, today)))
+                .newCustomersThisWeek(orZero(customerRepository.countCustomersByDateRange(today.minusWeeks(1), today)))
+                .newCustomersThisMonth(orZero(customerRepository.countCustomersByDateRange(today.minusMonths(1), today)))
                 .build();
     }
 
-    private BikerAnalytics getBikerAnalytics(DateRange dateRange) {
-        LocalDateTime todayStart = LocalDate.now().atStartOfDay();
-        LocalDateTime todayEnd = LocalDate.now().atTime(LocalTime.MAX);
-        LocalDateTime weekStart = LocalDate.now().minusWeeks(1).atStartOfDay();
-        LocalDateTime monthStart = LocalDate.now().minusMonths(1).atStartOfDay();
-
+    private BikerAnalytics buildBikerAnalytics() {
         return BikerAnalytics.builder()
                 .totalActiveBikers(bikersRepository.countByIsActiveTrue())
                 .bikersOnlineNow(bikersRepository.countByIsOnlineTrue())
-                .deliveriesCompletedToday(0L) // TODO: Implement
-                .deliveriesCompletedThisWeek(0L)
-                .deliveriesCompletedThisMonth(0L)
-                .averageDeliveryTime(0.0)
                 .averageBikerRating(bikersRepository.getAverageBikerRating())
-                .topPerformingBikers(new ArrayList<>())
                 .build();
     }
 
-    private DateRange calculateDateRange(String period, LocalDate startDate, LocalDate endDate) {
-        if ("CUSTOM".equalsIgnoreCase(period) && startDate != null && endDate != null) {
-            return new DateRange(startDate, endDate);
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private LocalDate[] resolveDateRange(Integer year, Integer month, Integer week) {
+        int y = year != null ? year : LocalDate.now().getYear();
+        if (week != null) {
+            LocalDate monday = LocalDate.of(y, 6, 1)
+                    .with(WeekFields.ISO.weekOfWeekBasedYear(), week)
+                    .with(DayOfWeek.MONDAY);
+            return new LocalDate[] { monday, monday.plusDays(6) };
+        } else if (month != null) {
+            LocalDate start = LocalDate.of(y, month, 1);
+            return new LocalDate[] { start, start.withDayOfMonth(start.lengthOfMonth()) };
+        } else {
+            return new LocalDate[] { LocalDate.of(y, 1, 1), LocalDate.of(y, 12, 31) };
         }
-
-        LocalDate end = LocalDate.now();
-        LocalDate start;
-
-        switch (period.toUpperCase()) {
-            case "TODAY":
-                start = end;
-                break;
-            case "WEEK":
-                start = end.minusWeeks(1);
-                break;
-            case "MONTH":
-                start = end.minusMonths(1);
-                break;
-            case "YEAR":
-                start = end.minusYears(1);
-                break;
-            default:
-                start = end.minusMonths(1);
-        }
-
-        return new DateRange(start, end);
     }
 
-    private static class DateRange {
-        final LocalDate start;
-        final LocalDate end;
+    private Long orZero(Long value) {
+        return value != null ? value : 0L;
+    }
 
-        DateRange(LocalDate start, LocalDate end) {
-            this.start = start;
-            this.end = end;
-        }
+    private BigDecimal bd(Double value) {
+        return BigDecimal.valueOf(value != null ? value : 0);
     }
 }

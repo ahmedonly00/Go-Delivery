@@ -2,7 +2,6 @@ package com.goDelivery.goDelivery.dtos.restaurant;
 
 import com.goDelivery.goDelivery.Enum.DeliveryType;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

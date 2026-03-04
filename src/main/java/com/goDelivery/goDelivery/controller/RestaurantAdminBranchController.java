@@ -14,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -30,95 +29,76 @@ public class RestaurantAdminBranchController {
 
     @GetMapping("/branches")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
-    @Operation(
-        summary = "Get all restaurant branches",
-        description = "Retrieve all branches belonging to the restaurant admin's restaurant"
-    )
+    @Operation(summary = "Get all restaurant branches", description = "Retrieve all branches belonging to the restaurant admin's restaurant")
     public ResponseEntity<List<BranchesDTO>> getAllBranches(
             @AuthenticationPrincipal UserDetails userDetails) {
-        
+
         Long restaurantId = branchSecurity.getCurrentRestaurantUser().getRestaurant().getRestaurantId();
         log.info("Getting all branches for restaurant {} by admin {}", restaurantId, userDetails.getUsername());
-        
+
         List<BranchesDTO> branches = branchEnabledService.getRestaurantBranches(restaurantId);
         return ResponseEntity.ok(branches);
     }
 
     @GetMapping("/branches/{branchId}/analytics")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)")
-    @Operation(
-        summary = "Get branch analytics",
-        description = "Retrieve analytics for a specific branch"
-    )
+    @Operation(summary = "Get branch analytics", description = "Retrieve analytics for a specific branch")
     public ResponseEntity<?> getBranchAnalytics(
             @PathVariable Long branchId,
-            @Parameter(description = "Report type: sales, orders, customers") @RequestParam(required = false, defaultValue = "sales") String reportType,
-            @Parameter(description = "Start date (yyyy-MM-dd)") @RequestParam(required = false) String startDate,
-            @Parameter(description = "End date (yyyy-MM-dd)") @RequestParam(required = false) String endDate,
+            @Parameter(description = "Report type: SALES, CUSTOMER_TRENDS, HISTORY") @RequestParam(required = false, defaultValue = "SALES") String reportType,
+            @Parameter(description = "Year (e.g. 2025)") @RequestParam(required = false) Integer year,
+            @Parameter(description = "Month (1-12)") @RequestParam(required = false) Integer month,
+            @Parameter(description = "ISO week number (1-53)") @RequestParam(required = false) Integer week,
             @AuthenticationPrincipal UserDetails userDetails) {
-        
+
         log.info("Getting {} analytics for branch {} by admin {}", reportType, branchId, userDetails.getUsername());
-        
-        LocalDate start = startDate != null ? LocalDate.parse(startDate) : LocalDate.now().minusDays(30);
-        LocalDate end = endDate != null ? LocalDate.parse(endDate) : LocalDate.now();
-        
-        Object analytics = branchEnabledService.getBranchAnalytics(branchId, reportType, start, end);
+        Object analytics = branchEnabledService.getBranchAnalytics(branchId, reportType, year, month, week);
         return ResponseEntity.ok(analytics);
     }
 
     @GetMapping("/analytics")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
-    @Operation(
-        summary = "Get restaurant-wide analytics",
-        description = "Retrieve analytics for the entire restaurant (all branches combined)"
-    )
+    @Operation(summary = "Get restaurant-wide analytics", description = "Retrieve analytics for the entire restaurant (all branches combined)")
     public ResponseEntity<?> getRestaurantAnalytics(
-            @Parameter(description = "Report type: sales, orders, customers, performance") @RequestParam(required = false, defaultValue = "sales") String reportType,
-            @Parameter(description = "Start date (yyyy-MM-dd)") @RequestParam(required = false) String startDate,
-            @Parameter(description = "End date (yyyy-MM-dd)") @RequestParam(required = false) String endDate,
+            @Parameter(description = "Report type: SALES, CUSTOMER_TRENDS, HISTORY") @RequestParam(required = false, defaultValue = "SALES") String reportType,
+            @Parameter(description = "Year (e.g. 2025)") @RequestParam(required = false) Integer year,
+            @Parameter(description = "Month (1-12)") @RequestParam(required = false) Integer month,
+            @Parameter(description = "ISO week number (1-53)") @RequestParam(required = false) Integer week,
             @AuthenticationPrincipal UserDetails userDetails) {
-        
+
         Long restaurantId = branchSecurity.getCurrentRestaurantUser().getRestaurant().getRestaurantId();
-        log.info("Getting {} analytics for restaurant {} by admin {}", reportType, restaurantId, userDetails.getUsername());
-        
-        LocalDate start = startDate != null ? LocalDate.parse(startDate) : LocalDate.now().minusDays(30);
-        LocalDate end = endDate != null ? LocalDate.parse(endDate) : LocalDate.now();
-        
-        Object analytics = branchEnabledService.getRestaurantAnalytics(restaurantId, reportType, start, end);
+        log.info("Getting {} analytics for restaurant {} by admin {}", reportType, restaurantId,
+                userDetails.getUsername());
+        Object analytics = branchEnabledService.getRestaurantAnalytics(restaurantId, reportType, year, month, week);
         return ResponseEntity.ok(analytics);
     }
 
     @PostMapping("/branches/{branchId}/menu-items/{menuItemId}")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN') and @branchSecurity.isRestaurantAdminOfBranch(authentication.name, #branchId)")
-    @Operation(
-        summary = "Add menu item to branch",
-        description = "Copy a restaurant menu item to a specific branch"
-    )
+    @Operation(summary = "Add menu item to branch", description = "Copy a restaurant menu item to a specific branch")
     public ResponseEntity<String> addMenuItemToBranch(
             @PathVariable Long branchId,
             @PathVariable Long menuItemId,
             @AuthenticationPrincipal UserDetails userDetails) {
-        
+
         log.info("Adding menu item {} to branch {} by admin {}", menuItemId, branchId, userDetails.getUsername());
-        
+
         branchEnabledService.createMenuItemForBranch(menuItemId, branchId);
         return ResponseEntity.ok("Menu item successfully added to branch");
     }
 
     @GetMapping("/branches-comparison")
     @PreAuthorize("hasRole('RESTAURANT_ADMIN')")
-    @Operation(
-        summary = "Compare branches performance",
-        description = "Get performance comparison of all branches"
-    )
+    @Operation(summary = "Compare branches performance", description = "Get performance comparison of all branches")
     public ResponseEntity<?> compareBranches(
             @Parameter(description = "Metric to compare: revenue, orders, rating") @RequestParam(required = false, defaultValue = "revenue") String metric,
             @Parameter(description = "Period: daily, weekly, monthly") @RequestParam(required = false, defaultValue = "monthly") String period,
             @AuthenticationPrincipal UserDetails userDetails) {
-        
+
         Long restaurantId = branchSecurity.getCurrentRestaurantUser().getRestaurant().getRestaurantId();
-        log.info("Comparing branches for restaurant {} by admin {} using metric: {}", restaurantId, userDetails.getUsername(), metric);
-        
+        log.info("Comparing branches for restaurant {} by admin {} using metric: {}", restaurantId,
+                userDetails.getUsername(), metric);
+
         // This would implement branch comparison logic
         // For now, return a placeholder
         return ResponseEntity.ok("Branch comparison data for restaurant " + restaurantId);
