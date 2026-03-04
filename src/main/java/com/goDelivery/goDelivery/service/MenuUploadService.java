@@ -45,10 +45,10 @@ public class MenuUploadService {
     private final MenuItemRepository menuItemRepository;
     private final Tesseract tesseract;
     private final EmailService emailService;
-    
+
     @Value("${tess4j.data-path:./tessdata}")
     private String tessDataPath;
-    
+
     @Value("${app.base-url:https://delivery.apis.ivas.rw}")
     private String baseUrl;
 
@@ -56,13 +56,13 @@ public class MenuUploadService {
         try {
             // Validate restaurant exists
             Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
 
             // Get or create default category
             MenuCategory defaultCategory = menuCategoryRepository.findByRestaurantId(restaurantId)
-                .stream()
-                .findFirst()
-                .orElseGet(() -> createDefaultCategory(restaurant));
+                    .stream()
+                    .findFirst()
+                    .orElseGet(() -> createDefaultCategory(restaurant));
 
             String fileExtension = getFileExtension(file.getOriginalFilename());
             List<MenuItemRequest> menuItems = new ArrayList<>();
@@ -73,7 +73,7 @@ public class MenuUploadService {
                     break;
                 case "xlsx":
                 case "xls":
-            menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryId(), restaurantId);
+                    menuItems = processExcelFile(file.getInputStream(), defaultCategory.getCategoryId(), restaurantId);
                     break;
                 case "jpg":
                 case "jpeg":
@@ -88,21 +88,21 @@ public class MenuUploadService {
             List<MenuItem> savedItems = new ArrayList<>();
             // Get the default category for this restaurant
             MenuCategory category = menuCategoryRepository.findByRestaurantId(restaurantId)
-                .stream()
-                .findFirst()
-                .orElseGet(() -> createDefaultCategory(restaurant));
-            
+                    .stream()
+                    .findFirst()
+                    .orElseGet(() -> createDefaultCategory(restaurant));
+
             LocalDate now = LocalDate.now();
-            
+
             for (MenuItemRequest itemRequest : menuItems) {
                 // Set default values for required fields
                 String description = itemRequest.getDescription() != null ? itemRequest.getDescription() : "";
                 String ingredients = itemRequest.getIngredients() != null ? itemRequest.getIngredients() : "";
-                String image = itemRequest.getImage() != null ? itemRequest.getImage() : "";
+                String image = "";
                 Float price = itemRequest.getPrice() != null ? itemRequest.getPrice() : 0.0f;
                 Integer prepTime = itemRequest.getPreparationTime() != null ? itemRequest.getPreparationTime() : 15;
                 boolean isAvailable = itemRequest.isAvailable();
-                
+
                 // Create menu item with all required fields
                 MenuItem menuItem = MenuItem.builder()
                         .menuItemName(itemRequest.getMenuItemName())
@@ -111,40 +111,39 @@ public class MenuUploadService {
                         .image(image)
                         .ingredients(ingredients)
                         .preparationTime(prepTime)
-                        .preparationScore(5)  // Default score
+                        .preparationScore(5) // Default score
                         .createdAt(now)
                         .updatedAt(now)
                         .category(category)
                         .restaurant(restaurant)
                         .isAvailable(isAvailable)
                         .build();
-                        
+
                 savedItems.add(menuItemRepository.save(menuItem));
             }
 
             // Save the file
             String fileUrl = fileStorageService.storeFile(file, "restaurants/" + restaurantId + "/menu-uploads");
             String fullFileUrl = baseUrl + "/api/files/" + fileUrl.replace("\\", "/");
-            
+
             // Send "Under Review" email after successful menu upload (NOT OTP)
             try {
                 // Get restaurant admin user
                 RestaurantUsers admin = restaurant.getRestaurantUsers().stream()
-                    .filter(user -> user.getRole().name().equals("RESTAURANT_ADMIN"))
-                    .findFirst()
-                    .orElse(null);
-                
+                        .filter(user -> user.getRole().name().equals("RESTAURANT_ADMIN"))
+                        .findFirst()
+                        .orElse(null);
+
                 if (admin != null) {
                     // Mark email as verified and setup as complete
                     admin.setEmailVerified(true);
                     admin.setSetupComplete(true);
-                    
+
                     // Send "under review" email instead of OTP
                     emailService.sendRestaurantUnderReviewEmail(
-                        admin.getEmail(),
-                        admin.getFullName(),
-                        restaurant.getRestaurantName()
-                    );
+                            admin.getEmail(),
+                            admin.getFullName(),
+                            restaurant.getRestaurantName());
                     log.info("✅ 'Under Review' email sent to restaurant admin: {}", admin.getEmail());
                 } else {
                     log.warn("No restaurant admin found for restaurant: {}", restaurantId);
@@ -156,7 +155,8 @@ public class MenuUploadService {
 
             return FileUploadResponse.builder()
                     .success(true)
-                    .message("File processed successfully. " + savedItems.size() + " items saved. Your restaurant is now under review. You will receive an email notification once approved.")
+                    .message("File processed successfully. " + savedItems.size()
+                            + " items saved. Your restaurant is now under review. You will receive an email notification once approved.")
                     .menuItems(menuItems)
                     .fileUrl(fullFileUrl)
                     .build();
@@ -178,43 +178,47 @@ public class MenuUploadService {
         return menuCategoryRepository.save(category);
     }
 
-    private List<MenuItemRequest> processPdfFile(InputStream inputStream, Long categoryId, Long restaurantId) throws IOException {
+    private List<MenuItemRequest> processPdfFile(InputStream inputStream, Long categoryId, Long restaurantId)
+            throws IOException {
         List<MenuItemRequest> items = new ArrayList<>();
-        
+
         // Convert InputStream to byte array
         byte[] pdfBytes = inputStream.readAllBytes();
-        
+
         try (PDDocument document = Loader.loadPDF(pdfBytes)) {
             if (!document.isEncrypted()) {
                 PDFTextStripper stripper = new PDFTextStripper();
                 String text = stripper.getText(document);
-                
+
                 // Split text into lines and process each line
                 String[] lines = text.split("\\r?\\n");
-                
+
                 // Pattern to match various price formats:
                 // - $10.99
                 // - 10.99$
                 // - USD 10.99
                 // - 10.99 EGP
                 // - 10,99 (European format)
-                Pattern pricePattern = Pattern.compile("([$€£]?\\s*\\d+[.,]?\\d*\\.?\\d*\s*[$€£]?|\\d+\\.?\\d*\s*(?:USD|EGP|EUR|£|€))");
-                
+                Pattern pricePattern = Pattern
+                        .compile("([$€£]?\\s*\\d+[.,]?\\d*\\.?\\d*\s*[$€£]?|\\d+\\.?\\d*\s*(?:USD|EGP|EUR|£|€))");
+
                 for (String line : lines) {
                     line = line.trim();
-                    if (line.isEmpty()) continue;
-                    
+                    if (line.isEmpty())
+                        continue;
+
                     // Look for price in the line
                     Matcher matcher = pricePattern.matcher(line);
                     if (matcher.find()) {
                         String priceMatch = matcher.group(1);
-                        // Extract the price value by removing all non-digit characters except decimal point
+                        // Extract the price value by removing all non-digit characters except decimal
+                        // point
                         String priceStr = priceMatch.replaceAll("[^\\d.,]", "")
-                                                 .replace(',', '.'); // Handle European decimal format
-                        
+                                .replace(',', '.'); // Handle European decimal format
+
                         // Extract the item name (everything before the price)
                         String name = line.substring(0, matcher.start()).trim();
-                        
+
                         try {
                             float price = Float.parseFloat(priceStr);
                             if (name.length() > 0 && price > 0) {
@@ -235,21 +239,23 @@ public class MenuUploadService {
                         log.debug("No price found in line: {}", line);
                     }
                 }
-                
+
                 if (items.isEmpty()) {
-                    log.warn("No menu items were extracted from the PDF. Here's the extracted text for debugging:" + text);
+                    log.warn("No menu items were extracted from the PDF. Here's the extracted text for debugging:"
+                            + text);
                 }
             }
         }
-        
+
         return items;
     }
 
-    private List<MenuItemRequest> processExcelFile(InputStream inputStream, Long categoryId, Long restaurantId) throws IOException {
+    private List<MenuItemRequest> processExcelFile(InputStream inputStream, Long categoryId, Long restaurantId)
+            throws IOException {
         List<MenuItemRequest> items = new ArrayList<>();
         try (Workbook workbook = new XSSFWorkbook(inputStream)) {
             Sheet sheet = workbook.getSheetAt(0);
-            
+
             // Skip header row (assuming first row is header)
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
@@ -273,67 +279,70 @@ public class MenuUploadService {
         return items;
     }
 
-    private List<MenuItemRequest> processImageFile(MultipartFile file, Long categoryId, Long restaurantId) throws IOException, TesseractException {
+    private List<MenuItemRequest> processImageFile(MultipartFile file, Long categoryId, Long restaurantId)
+            throws IOException, TesseractException {
         List<MenuItemRequest> items = new ArrayList<>();
-        
+
         // Convert MultipartFile to File
         Path tempFile = Files.createTempFile("img-", "." + getFileExtension(file.getOriginalFilename()));
         try {
             Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
-            
+
             // Check if Tesseract is available
             if (!isTesseractAvailable()) {
                 log.error("Tesseract OCR is not available on this server. Please install tesseract-ocr.");
                 throw new RuntimeException("OCR service is not available. Please upload PDF or Excel files instead.");
             }
-            
+
             // Set the path to the tessdata directory and configure Tesseract
             tesseract.setDatapath(tessDataPath);
             tesseract.setPageSegMode(4); // Assume a single column of text
             tesseract.setVariable("preserve_interword_spaces", "1");
-            
+
             // Perform OCR on the image
             log.info("Starting OCR processing...");
             String result = tesseract.doOCR(tempFile.toFile());
             log.debug("OCR Result:\n" + result);
-            
+
             // Parse the OCR result
             String[] lines = result.split("\\r?\\n");
-            
+
             // Pattern to match various price formats:
             // - $10.99
             // - 10.99$
             // - 10.99 EGP
             // - 10,99 (European format)
             // - 10 MT or 10 MZN (Mozambican Metical)
-            // - 10  (just a number)
+            // - 10 (just a number)
             Pattern pricePattern = Pattern.compile(
-                "([$€£]?\\s*\\d+[.,]?\\d*\\.?\\d*\\s*[$€£]?|\\d+[.,]?\\d*\\s*(?:USD|EGP|EUR|MZN|MT|£|€))"
-            );
-            
+                    "([$€£]?\\s*\\d+[.,]?\\d*\\.?\\d*\\s*[$€£]?|\\d+[.,]?\\d*\\s*(?:USD|EGP|EUR|MZN|MT|£|€))");
+
             for (String line : lines) {
                 line = line.trim();
-                if (line.isEmpty() || line.length() < 3) continue; // Skip very short lines
-                
+                if (line.isEmpty() || line.length() < 3)
+                    continue; // Skip very short lines
+
                 log.debug("Processing line: " + line);
-                
+
                 // Look for price in the line
                 Matcher matcher = pricePattern.matcher(line);
                 if (matcher.find()) {
                     String priceMatch = matcher.group(1);
-                    // Extract the price value by removing all non-digit characters except decimal point
+                    // Extract the price value by removing all non-digit characters except decimal
+                    // point
                     String priceStr = priceMatch.replaceAll("[^\\d.,]", "")
-                                             .replace(',', '.'); // Handle European decimal format
-                    
+                            .replace(',', '.'); // Handle European decimal format
+
                     // Extract the item name (everything before the price)
                     String name = line.substring(0, matcher.start()).trim();
-                    
+
                     // Clean up the name - remove any trailing non-alphanumeric characters
                     name = name.replaceAll("[^\\p{L}\\p{N}\\s]$", "").trim();
-                    
+
                     // Skip if name is too short (likely not a real menu item)
-                    if (name.length() < 2) continue;
-                    
+                    if (name.length() < 2)
+                        continue;
+
                     try {
                         float price = Float.parseFloat(priceStr);
                         if (price > 0) {
@@ -354,12 +363,12 @@ public class MenuUploadService {
                     log.debug("No price found in line: {}", line);
                 }
             }
-            
+
         } finally {
             // Clean up the temporary file
             Files.deleteIfExists(tempFile);
         }
-        
+
         return items;
     }
 
@@ -368,8 +377,9 @@ public class MenuUploadService {
     }
 
     private String getCellValue(Cell cell, String defaultValue) {
-        if (cell == null) return defaultValue;
-        
+        if (cell == null)
+            return defaultValue;
+
         try {
             switch (cell.getCellType()) {
                 case STRING:
@@ -397,7 +407,7 @@ public class MenuUploadService {
             return defaultValue;
         }
     }
-    
+
     private float parseFloatSafely(String value, String defaultValue) {
         try {
             return Float.parseFloat(value);
@@ -406,7 +416,7 @@ public class MenuUploadService {
             return Float.parseFloat(defaultValue);
         }
     }
-    
+
     private int parseIntSafely(String value, String defaultValue) {
         try {
             return Integer.parseInt(value);
@@ -415,17 +425,18 @@ public class MenuUploadService {
             return Integer.parseInt(defaultValue);
         }
     }
-    
+
     private String getFileExtension(String filename) {
         if (filename == null || !filename.contains(".")) {
             return "";
         }
         return filename.substring(filename.lastIndexOf(".") + 1);
     }
-    
+
     private boolean isTesseractAvailable() {
         try {
-            // Try to perform a simple OCR operation on a dummy image to check if Tesseract is available
+            // Try to perform a simple OCR operation on a dummy image to check if Tesseract
+            // is available
             // Create a simple test by checking if we can set the datapath
             tesseract.setDatapath(tessDataPath);
             // If we get here without exception, Tesseract is available

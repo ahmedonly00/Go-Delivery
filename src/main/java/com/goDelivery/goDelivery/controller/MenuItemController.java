@@ -29,7 +29,7 @@ public class MenuItemController {
     private final MenuItemService menuItemService;
     private final FileStorageService fileStorageService;
 
-    @PostMapping(value = "/createMenuItem/{restaurantId}", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/createMenuItem/{restaurantId}", consumes = { "multipart/form-data" })
     @ResponseStatus(HttpStatus.CREATED)
     public MenuItemResponse createMenuItem(
             @PathVariable Long restaurantId,
@@ -40,18 +40,18 @@ public class MenuItemController {
             System.out.println("Received request - Restaurant ID: " + restaurantId);
             System.out.println("Category ID from request: " + request.getCategoryId());
             System.out.println("Menu Item Name: " + request.getMenuItemName());
-            
+
             // Set the restaurant ID from path variable
             request.setRestaurantId(restaurantId);
-            
+
             // Handle image upload if provided
+            String imageUrl = null;
             if (imageFile != null && !imageFile.isEmpty()) {
                 String filePath = fileStorageService.storeFile(imageFile, "menu-items/temp/images");
-                String fullUrl = "/api/files/" + filePath.replace("\\", "/");
-                request.setImage(fullUrl);
+                imageUrl = "/api/files/" + filePath.replace("\\", "/");
             }
-            
-            return menuItemService.createMenuItem(request);
+
+            return menuItemService.createMenuItem(request, imageUrl);
         } catch (Exception e) {
             System.err.println("Error creating menu item: " + e.getMessage());
             e.printStackTrace();
@@ -64,8 +64,8 @@ public class MenuItemController {
             @PathVariable Long restaurantId,
             @RequestParam(required = false) Boolean available) {
         return menuItemService.getMenuItemsByRestaurantId(restaurantId).stream()
-            .map(menuItemService::mapToResponse)
-            .collect(Collectors.toList());
+                .map(menuItemService::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/getMenuItemById/{menuItemId}")
@@ -87,7 +87,7 @@ public class MenuItemController {
         return menuItemService.getAllMenuItems();
     }
 
-    @PutMapping(value = "/updateMenuItem/{menuItemId}", consumes = {"multipart/form-data"})
+    @PutMapping(value = "/updateMenuItem/{menuItemId}", consumes = { "multipart/form-data" })
     public MenuItemResponse updateMenuItem(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long menuItemId,
@@ -95,13 +95,13 @@ public class MenuItemController {
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
         try {
             // Handle image upload if provided
+            String imageUrl = null;
             if (imageFile != null && !imageFile.isEmpty()) {
                 String filePath = fileStorageService.storeFile(imageFile, "menu-items/images");
-                String fullUrl = "/api/files/" + filePath.replace("\\", "/");
-                request.setImage(fullUrl);
+                imageUrl = "/api/files/" + filePath.replace("\\", "/");
             }
-            
-            return menuItemService.updateMenuItem(menuItemId, request);
+
+            return menuItemService.updateMenuItem(menuItemId, request, imageUrl);
         } catch (Exception e) {
             throw new RuntimeException("Failed to update menu item: " + e.getMessage(), e);
         }
@@ -132,7 +132,7 @@ public class MenuItemController {
             // Store the file
             String filePath = fileStorageService.storeFile(file, "menu-items/" + restaurantId + "/images");
             String fullUrl = "/api/files/" + filePath.replace("\\", "/");
-            
+
             // Update menu item image
             return menuItemService.updateMenuItemImage(menuItemId, fullUrl);
         } catch (Exception e) {
