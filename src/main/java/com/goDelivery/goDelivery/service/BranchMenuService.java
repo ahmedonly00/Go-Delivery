@@ -305,6 +305,7 @@ public class BranchMenuService {
     @Transactional
     public MenuItem updateMenuItem(Long branchId, Long menuItemId,
             UpdateMenuItemRequest updateRequest,
+            MultipartFile imageFile,
             HttpServletRequest request) {
         MenuItem menuItem = menuItemRepository.findById(menuItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu item not found"));
@@ -339,7 +340,9 @@ public class BranchMenuService {
             menuItem.setDescription(updateRequest.getDescription());
         if (updateRequest.getPrice() != null)
             menuItem.setPrice(updateRequest.getPrice());
-        if (updateRequest.getImage() != null)
+        if (imageFile != null && !imageFile.isEmpty())
+            menuItem.setImage(uploadImage(imageFile));
+        else if (updateRequest.getImage() != null)
             menuItem.setImage(updateRequest.getImage());
         if (updateRequest.getIngredients() != null)
             menuItem.setIngredients(updateRequest.getIngredients());

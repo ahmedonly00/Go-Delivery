@@ -148,12 +148,12 @@ public class BranchMenuController {
     @PostMapping("/categories/{categoryId}/items")
     @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
     @Operation(summary = "Create menu item",
-               description = "Create a new menu item in a category")
+               description = "Create a new menu item in a category. Send as multipart/form-data with individual fields + optional 'imageFile' file part.")
     public ResponseEntity<MenuItemResponse> createMenuItem(
             @PathVariable Long branchId,
             @PathVariable Long categoryId,
-            @RequestPart("itemData") @Valid MenuItemRequest menuItemRequest,
-            @RequestPart(value = "image", required = false) MultipartFile imageFile,
+            @ModelAttribute @Valid MenuItemRequest menuItemRequest,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         log.info("Creating menu item '{}' for category {} in branch {} by user {}",
@@ -164,16 +164,17 @@ public class BranchMenuController {
     @PutMapping("/items/{menuItemId}")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Update menu item",
-               description = "Update an existing menu item (can modify inherited items)")
+               description = "Update an existing menu item. Send as multipart/form-data with individual fields + optional 'imageFile' file part.")
     public ResponseEntity<MenuItem> updateMenuItem(
             @PathVariable Long branchId,
             @PathVariable Long menuItemId,
-            @RequestBody UpdateMenuItemRequest updateRequest,
+            @ModelAttribute UpdateMenuItemRequest updateRequest,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest request) {
 
         log.info("Updating menu item {} for branch {} by user {}", menuItemId, branchId, userDetails.getUsername());
-        return ResponseEntity.ok(branchMenuService.updateMenuItem(branchId, menuItemId, updateRequest, request));
+        return ResponseEntity.ok(branchMenuService.updateMenuItem(branchId, menuItemId, updateRequest, imageFile, request));
     }
 
     @PatchMapping("/items/{menuItemId}/autosave")
