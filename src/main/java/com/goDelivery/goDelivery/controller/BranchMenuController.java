@@ -129,7 +129,7 @@ public class BranchMenuController {
 
     // ── Menu items ────────────────────────────────────────────────────────────
 
-    @GetMapping("/categories/{categoryId}/items")
+    @GetMapping("/getMenuItems/{categoryId}")
     @Operation(summary = "Get menu items", description = "Get all menu items in a category")
     public ResponseEntity<List<MenuItemResponse>> getMenuItems(
             @PathVariable Long branchId,
@@ -138,71 +138,6 @@ public class BranchMenuController {
         log.info("Fetching menu items for category {} in branch {}", categoryId, branchId);
         return ResponseEntity.ok(branchMenuService.getBranchMenuItems(branchId, categoryId));
     }
-
-    // @PostMapping("/categories/{categoryId}/items")
-    // @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
-    // @Operation(summary = "Create menu item to a branch", description = "Create a
-    // new menu item in a category. Send as multipart/form-data with individual
-    // fields + optional 'imageFile' file part.")
-    // public ResponseEntity<MenuItemResponse> createMenuItem(
-    // @PathVariable Long branchId,
-    // @PathVariable Long categoryId,
-    // @ModelAttribute @Valid MenuItemRequest menuItemRequest,
-    // @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-    // @AuthenticationPrincipal UserDetails userDetails) {
-
-    // log.info("Creating menu item '{}' for category {} in branch {} by user {}",
-    // menuItemRequest.getMenuItemName(), categoryId, branchId,
-    // userDetails.getUsername());
-    // return ResponseEntity.ok(branchMenuService.createMenuItem(branchId,
-    // categoryId, menuItemRequest, imageFile));
-    // }
-
-    @PutMapping("/items/{menuItemId}")
-    @PreAuthorize("hasRole('BRANCH_MANAGER')")
-    @Operation(summary = "Update menu item", description = "Update an existing menu item. Send as multipart/form-data with individual fields + optional 'imageFile' file part.")
-    public ResponseEntity<MenuItem> updateMenuItem(
-            @PathVariable Long branchId,
-            @PathVariable Long menuItemId,
-            @ModelAttribute UpdateMenuItemRequest updateRequest,
-            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-            @AuthenticationPrincipal UserDetails userDetails,
-            HttpServletRequest request) {
-
-        log.info("Updating menu item {} for branch {} by user {}", menuItemId, branchId, userDetails.getUsername());
-        return ResponseEntity
-                .ok(branchMenuService.updateMenuItem(branchId, menuItemId, updateRequest, imageFile, request));
-    }
-
-    @PatchMapping("/items/{menuItemId}/autosave")
-    @PreAuthorize("hasRole('BRANCH_MANAGER')")
-    @Operation(summary = "Auto-save menu item", description = "Partially update a menu item field for auto-save functionality")
-    public ResponseEntity<MenuItem> autoSaveMenuItem(
-            @PathVariable Long branchId,
-            @PathVariable Long menuItemId,
-            @RequestBody MenuItemPartialUpdateDTO partialUpdate,
-            @AuthenticationPrincipal UserDetails userDetails,
-            HttpServletRequest request) {
-
-        log.info("Auto-saving menu item {} for branch {} by user {}", menuItemId, branchId, userDetails.getUsername());
-        return ResponseEntity.ok(branchMenuService.partialUpdateMenuItem(branchId, menuItemId, partialUpdate, request));
-    }
-
-    @DeleteMapping("/items/{menuItemId}")
-    @PreAuthorize("hasRole('BRANCH_MANAGER')")
-    @Operation(summary = "Delete menu item", description = "Delete a menu item from the branch")
-    public ResponseEntity<Void> deleteMenuItem(
-            @PathVariable Long branchId,
-            @PathVariable Long menuItemId,
-            @AuthenticationPrincipal UserDetails userDetails,
-            HttpServletRequest request) {
-
-        log.info("Deleting menu item {} from branch {} by user {}", menuItemId, branchId, userDetails.getUsername());
-        branchMenuService.deleteMenuItem(branchId, menuItemId, request);
-        return ResponseEntity.noContent().build();
-    }
-
-    // ── Delegation menu endpoints ─────────────────────────────────────────────
 
     @GetMapping("/getBranchMenuItems")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
@@ -215,7 +150,7 @@ public class BranchMenuController {
         return ResponseEntity.ok(delegationService.getBranchMenu(branchId));
     }
 
-    @PostMapping(value = "/items/add", consumes = "multipart/form-data")
+    @PostMapping(value = "/categories/{categoryId}/items/add", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
     @Operation(summary = "Add menu item to branch", description = "Add a new menu item to the branch. Send as multipart/form-data with individual fields + optional 'imageFile' file part.")
     public ResponseEntity<MenuItemResponse> addBranchMenuItem(
@@ -246,4 +181,33 @@ public class BranchMenuController {
         return ResponseEntity
                 .ok(delegationService.updateBranchMenuItem(branchId, menuItemId, menuItemRequest, imageFile));
     }
+
+    @PatchMapping("/items/{menuItemId}/autosave")
+    @PreAuthorize("hasRole('BRANCH_MANAGER')")
+    @Operation(summary = "Auto-save menu item", description = "Partially update a menu item field for auto-save functionality")
+    public ResponseEntity<MenuItem> autoSaveMenuItem(
+            @PathVariable Long branchId,
+            @PathVariable Long menuItemId,
+            @RequestBody MenuItemPartialUpdateDTO partialUpdate,
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request) {
+
+        log.info("Auto-saving menu item {} for branch {} by user {}", menuItemId, branchId, userDetails.getUsername());
+        return ResponseEntity.ok(branchMenuService.partialUpdateMenuItem(branchId, menuItemId, partialUpdate, request));
+    }
+
+    @DeleteMapping("/items/{menuItemId}")
+    @PreAuthorize("hasRole('BRANCH_MANAGER')")
+    @Operation(summary = "Delete menu item", description = "Delete a menu item from the branch")
+    public ResponseEntity<Void> deleteMenuItem(
+            @PathVariable Long branchId,
+            @PathVariable Long menuItemId,
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request) {
+
+        log.info("Deleting menu item {} from branch {} by user {}", menuItemId, branchId, userDetails.getUsername());
+        branchMenuService.deleteMenuItem(branchId, menuItemId, request);
+        return ResponseEntity.noContent().build();
+    }
+
 }
