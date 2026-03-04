@@ -9,11 +9,13 @@ import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
 import com.goDelivery.goDelivery.dtos.menu.UpdateMenuItemRequest;
 import com.goDelivery.goDelivery.model.MenuCategory;
 import com.goDelivery.goDelivery.model.MenuItem;
+import com.goDelivery.goDelivery.service.BranchDelegationService;
 import com.goDelivery.goDelivery.service.BranchMenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +36,7 @@ import java.util.List;
 public class BranchMenuController {
 
     private final BranchMenuService branchMenuService;
+    private final BranchDelegationService delegationService;
 
     // ── Inheritance ───────────────────────────────────────────────────────────
 
@@ -153,7 +156,7 @@ public class BranchMenuController {
             @PathVariable Long branchId,
             @PathVariable Long categoryId,
             @ModelAttribute @Valid MenuItemRequest menuItemRequest,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         log.info("Creating menu item '{}' for category {} in branch {} by user {}",
@@ -169,7 +172,7 @@ public class BranchMenuController {
             @PathVariable Long branchId,
             @PathVariable Long menuItemId,
             @ModelAttribute UpdateMenuItemRequest updateRequest,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest request) {
 
@@ -205,5 +208,49 @@ public class BranchMenuController {
         log.info("Deleting menu item {} from branch {} by user {}", menuItemId, branchId, userDetails.getUsername());
         branchMenuService.deleteMenuItem(branchId, menuItemId, request);
         return ResponseEntity.noContent().build();
+    }
+
+    // ── Delegation menu endpoints ─────────────────────────────────────────────
+
+    @GetMapping("/items")
+    @PreAuthorize("hasRole('BRANCH_MANAGER')")
+    @Operation(summary = "Get branch menu items (flat list)",
+               description = "Retrieve all menu items for the branch including restaurant menu with branch overrides")
+    public ResponseEntity<List<MenuItemResponse>> getBranchMenuItems(
+            @PathVariable Long branchId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        log.info("Getting flat menu items for branch {} by user {}", branchId, userDetails.getUsername());
+        return ResponseEntity.ok(delegationService.getBranchMenu(branchId));
+    }
+
+    @PostMapping(value = "/items/add", consumes = "multipart/form-data")
+    @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
+    @Operation(summary = "Add menu item to branch",
+               description = "Add a new menu item to the branch. Send as multipart/form-data with individual fields + optional 'imageFile' file part.")
+    public ResponseEntity<MenuItemResponse> addBranchMenuItem(
+            @PathVariable Long branchId,
+            @ModelAttribute @Valid MenuItemRequest menuItemRequest,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        log.info("Adding menu item '{}' to branch {} by user {}",
+                menuItemRequest.getMenuItemName(), branchId, userDetails.getUsername());
+        return new ResponseEntity<>(delegationService.addBranchMenuItem(branchId, menuItemRequest, imageFile),
+                HttpStatus.CREATED);
+    }
+
+    @PutMapping("/items/{menuItemId}/update")
+    @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
+    @Operation(summary = "Update branch menu item",
+               description = "Update a menu item in the branch menu")
+    public ResponseEntity<MenuItemResponse> updateBranchMenuItem(
+            @PathVariable Long branchId,
+            @PathVariable Long menuItemId,
+            @RequestBody @Valid MenuItemRequest menuItemRequest,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        log.info("Updating menu item {} for branch {} by user {}", menuItemId, branchId, userDetails.getUsername());
+        return ResponseEntity.ok(delegationService.updateBranchMenuItem(branchId, menuItemId, menuItemRequest));
     }
 }

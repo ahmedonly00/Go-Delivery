@@ -1,11 +1,5 @@
 package com.goDelivery.goDelivery.controller;
 
-import com.goDelivery.goDelivery.dtos.menu.MenuCategoryResponseDTO;
-import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
-import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
-import org.springframework.web.multipart.MultipartFile;
-import com.goDelivery.goDelivery.dtos.order.OrderRequest;
-import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchSettingsDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchUserDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
@@ -59,114 +53,6 @@ public class BranchOperationsController {
                 log.info("Updating branch {} by user {}", branchId, userDetails.getUsername());
                 BranchesDTO updated = delegationService.updateBranchDetails(branchId, branchDTO);
                 return ResponseEntity.ok(updated);
-        }
-
-        // Menu Operations
-        @GetMapping("/getBranchMenu/{branchId}")
-        @PreAuthorize("hasRole('BRANCH_MANAGER')")
-        @Operation(summary = "Get branch menu", description = "Retrieve the menu for a specific branch (includes restaurant menu with branch overrides)")
-        public ResponseEntity<List<MenuItemResponse>> getBranchMenu(
-                        @PathVariable Long branchId,
-                        @AuthenticationPrincipal UserDetails userDetails) {
-
-                log.info("Getting menu for branch {} by user {}", branchId, userDetails.getUsername());
-                List<MenuItemResponse> menu = delegationService.getBranchMenu(branchId);
-                return ResponseEntity.ok(menu);
-        }
-
-        @GetMapping("/getBranchMenuItems/{branchId}")
-        @PreAuthorize("hasRole('BRANCH_MANAGER')")
-        @Operation(summary = "Get branch menu items", description = "Retrieve all menu items for a specific branch")
-        public ResponseEntity<List<MenuItemResponse>> getBranchMenuItems(
-                        @PathVariable Long branchId,
-                        @AuthenticationPrincipal UserDetails userDetails) {
-
-                log.info("Getting menu items for branch {} by user {}", branchId, userDetails.getUsername());
-                List<MenuItemResponse> menu = delegationService.getBranchMenu(branchId);
-                return ResponseEntity.ok(menu);
-        }
-
-        @GetMapping("/getBranchMenuCategories/{branchId}")
-        @PreAuthorize("hasRole('BRANCH_MANAGER')")
-        @Operation(summary = "Get branch menu categories", description = "Retrieve all menu categories for a specific branch")
-        public ResponseEntity<List<MenuCategoryResponseDTO>> getBranchMenuCategories(
-                        @PathVariable Long branchId,
-                        @AuthenticationPrincipal UserDetails userDetails) {
-
-                log.info("Getting menu categories for branch {} by user {}", branchId, userDetails.getUsername());
-                List<MenuCategoryResponseDTO> categories = delegationService.getBranchMenuCategories(branchId);
-                return ResponseEntity.ok(categories);
-        }
-
-        @PostMapping(value = "/addMenuItem/{branchId}", consumes = { "multipart/form-data" })
-        @PreAuthorize("hasRole('BRANCH_MANAGER')")
-        @Operation(summary = "Add menu item to branch", description = "Add a new menu item specific to this branch")
-        public ResponseEntity<MenuItemResponse> addMenuItem(
-                        @PathVariable Long branchId,
-                        @RequestPart("menuItem") @Valid MenuItemRequest menuItemRequest,
-                        @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
-                        @AuthenticationPrincipal UserDetails userDetails) {
-
-                log.info("Adding menu item to branch {} by user {}", branchId, userDetails.getUsername());
-                MenuItemResponse created = delegationService.addBranchMenuItem(branchId, menuItemRequest, imageFile);
-                return new ResponseEntity<>(created, HttpStatus.CREATED);
-        }
-
-        @PutMapping("/updateMenuItem/{branchId}/{menuItemId}")
-        @PreAuthorize("hasRole('BRANCH_MANAGER')")
-        @Operation(summary = "Update menu item", description = "Update a menu item in the branch menu")
-        public ResponseEntity<MenuItemResponse> updateMenuItem(
-                        @PathVariable Long branchId,
-                        @PathVariable Long menuItemId,
-                        @RequestBody @Valid MenuItemRequest menuItemRequest,
-                        @AuthenticationPrincipal UserDetails userDetails) {
-
-                log.info("Updating menu item {} for branch {} by user {}", menuItemId, branchId,
-                                userDetails.getUsername());
-                MenuItemResponse updated = delegationService.updateBranchMenuItem(branchId, menuItemId,
-                                menuItemRequest);
-                return ResponseEntity.ok(updated);
-        }
-
-        // Order Operations
-        @PostMapping("/createOrder/{branchId}")
-        @PreAuthorize("hasRole('BRANCH_MANAGER')")
-        @Operation(summary = "Create order for branch", description = "Create a new order for this specific branch")
-        public ResponseEntity<List<OrderResponse>> createOrder(
-                        @PathVariable Long branchId,
-                        @RequestBody @Valid OrderRequest orderRequest,
-                        @AuthenticationPrincipal UserDetails userDetails) {
-
-                log.info("Creating order for branch {} by user {}", branchId, userDetails.getUsername());
-                List<OrderResponse> orders = delegationService.createOrderForBranch(orderRequest, branchId);
-                return new ResponseEntity<>(orders, HttpStatus.CREATED);
-        }
-
-        @GetMapping("/getBranchOrders/{branchId}")
-        @PreAuthorize("hasRole('BRANCH_MANAGER')")
-        @Operation(summary = "Get branch orders", description = "Retrieve orders for this branch, optionally filtered by status")
-        public ResponseEntity<List<OrderResponse>> getBranchOrders(
-                        @PathVariable Long branchId,
-                        @Parameter(description = "Filter by order status") @RequestParam(required = false) String status,
-                        @AuthenticationPrincipal UserDetails userDetails) {
-
-                log.info("Getting orders for branch {} with status {} by user {}", branchId, status,
-                                userDetails.getUsername());
-                List<OrderResponse> orders = delegationService.getBranchOrders(branchId, status);
-                return ResponseEntity.ok(orders);
-        }
-
-        @GetMapping("/getBranchOrder/{branchId}/{orderId}")
-        @PreAuthorize("hasRole('BRANCH_MANAGER')")
-        @Operation(summary = "Get specific order", description = "Retrieve details of a specific order from this branch")
-        public ResponseEntity<OrderResponse> getBranchOrder(
-                        @PathVariable Long branchId,
-                        @PathVariable Long orderId,
-                        @AuthenticationPrincipal UserDetails userDetails) {
-
-                log.info("Getting order {} for branch {} by user {}", orderId, branchId, userDetails.getUsername());
-                OrderResponse order = delegationService.getBranchOrder(branchId, orderId);
-                return ResponseEntity.ok(order);
         }
 
         // User Management (Restaurant Admin and Branch Manager)

@@ -1,8 +1,10 @@
 package com.goDelivery.goDelivery.controller;
 
+import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
 import com.goDelivery.goDelivery.dtos.payment.PaymentResponse;
+import com.goDelivery.goDelivery.service.BranchDelegationService;
 import com.goDelivery.goDelivery.service.OrderService;
 import com.goDelivery.goDelivery.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +32,7 @@ public class BranchOrderController {
 
     private final OrderService orderService;
     private final PaymentService paymentService;
+    private final BranchDelegationService delegationService;
 
     @GetMapping("/branch/{branchId}")
     @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
@@ -266,6 +270,44 @@ public class BranchOrderController {
         // PaymentResponse refundResponse = paymentService.processRefund(paymentId, refundReason);
         
         return ResponseEntity.ok(payment); // Placeholder
+    }
+
+    // ── Branch delegation order endpoints ─────────────────────────────────────
+
+    @PostMapping("/branch/{branchId}/create")
+    @PreAuthorize("hasRole('BRANCH_MANAGER')")
+    @Operation(summary = "Create order for branch", description = "Create a new order for this branch")
+    public ResponseEntity<List<OrderResponse>> createBranchOrder(
+            @PathVariable Long branchId,
+            @RequestBody @Valid OrderRequest orderRequest,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        log.info("Creating order for branch {} by user {}", branchId, userDetails.getUsername());
+        return new ResponseEntity<>(delegationService.createOrderForBranch(orderRequest, branchId), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/branch/{branchId}/all")
+    @PreAuthorize("hasRole('BRANCH_MANAGER')")
+    @Operation(summary = "Get branch orders (with status filter)", description = "Retrieve orders for this branch, optionally filtered by status")
+    public ResponseEntity<List<OrderResponse>> getBranchOrdersFiltered(
+            @PathVariable Long branchId,
+            @Parameter(description = "Filter by order status") @RequestParam(required = false) String status,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        log.info("Getting orders for branch {} with status {} by user {}", branchId, status, userDetails.getUsername());
+        return ResponseEntity.ok(delegationService.getBranchOrders(branchId, status));
+    }
+
+    @GetMapping("/branch/{branchId}/order/{orderId}")
+    @PreAuthorize("hasRole('BRANCH_MANAGER')")
+    @Operation(summary = "Get specific branch order", description = "Retrieve details of a specific order from this branch")
+    public ResponseEntity<OrderResponse> getBranchOrderById(
+            @PathVariable Long branchId,
+            @PathVariable Long orderId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        log.info("Getting order {} for branch {} by user {}", orderId, branchId, userDetails.getUsername());
+        return ResponseEntity.ok(delegationService.getBranchOrder(branchId, orderId));
     }
 
     // Statistics and Reports
