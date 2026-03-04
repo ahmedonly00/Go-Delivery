@@ -38,7 +38,6 @@ public class BranchOperationsController {
         // Branch Information Operations
         @GetMapping("/getBranchDetails")
         @PreAuthorize("hasRole('BRANCH_MANAGER')")
-
         @Operation(summary = "Get branch details", description = "Retrieve detailed information about a specific branch")
         public ResponseEntity<BranchesDTO> getBranchDetails(
                         @PathVariable Long branchId,
@@ -50,7 +49,6 @@ public class BranchOperationsController {
         }
 
         @PutMapping("/updateBranchDetails")
-
         @PreAuthorize("hasRole('BRANCH_MANAGER')")
         @Operation(summary = "Update branch details", description = "Update branch information")
         public ResponseEntity<BranchesDTO> updateBranchDetails(

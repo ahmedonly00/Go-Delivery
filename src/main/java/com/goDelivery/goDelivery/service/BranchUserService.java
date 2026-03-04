@@ -60,6 +60,7 @@ public class BranchUserService {
 
         // Create branch user
         BranchUsers branchUser = restaurantMapper.toBranchUser(branchUserDTO);
+        branchUser.setUserId(null); // always null so JPA generates a new ID
         branchUser.setBranch(branch);
         branchUser.setRestaurant(branch.getRestaurant());
         branchUser.setPassword(passwordEncoder.encode(branchUserDTO.getPassword()));
