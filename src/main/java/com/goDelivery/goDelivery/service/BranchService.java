@@ -325,6 +325,35 @@ public class BranchService {
                 .collect(Collectors.toList());
     }
 
+    public List<BranchesDTO> getAllBranchesByStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus status) {
+        return branchesRepository.findByApprovalStatus(status).stream()
+                .map(restaurantMapper::toBranchDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<BranchesDTO> getAllBranchesForRestaurant(Long restaurantId) {
+        return branchesRepository.findByRestaurant_RestaurantId(restaurantId).stream()
+                .map(restaurantMapper::toBranchDTO)
+                .collect(Collectors.toList());
+    }
+
+    public org.springframework.data.domain.Page<BranchesDTO> getAllBranchesPaged(
+            org.springframework.data.domain.Pageable pageable) {
+        return branchesRepository.findAll(pageable).map(restaurantMapper::toBranchDTO);
+    }
+
+    public org.springframework.data.domain.Page<BranchesDTO> getAllBranchesByStatusPaged(
+            com.goDelivery.goDelivery.Enum.ApprovalStatus status,
+            org.springframework.data.domain.Pageable pageable) {
+        return branchesRepository.findByApprovalStatus(status, pageable).map(restaurantMapper::toBranchDTO);
+    }
+
+    public org.springframework.data.domain.Page<BranchesDTO> getAllBranchesForRestaurantPaged(
+            Long restaurantId, org.springframework.data.domain.Pageable pageable) {
+        return branchesRepository.findByRestaurant_RestaurantId(restaurantId, pageable)
+                .map(restaurantMapper::toBranchDTO);
+    }
+
     // ==================== Private Helper Methods ====================
 
     private void updateBranchFromDTO(Branches branch, BranchCreationDTO dto) {

@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
        boolean existsByEmail(String email);
@@ -51,6 +54,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
        // Approval-related queries
        List<Restaurant> findByApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus approvalStatus);
+       Page<Restaurant> findByApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus approvalStatus, Pageable pageable);
 
        List<Restaurant> findByIsApprovedTrue();
 
@@ -70,6 +74,10 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
        @Query("SELECT COUNT(r) FROM Restaurant r WHERE r.createdAt BETWEEN :startDate AND :endDate")
        Long countRestaurantsByDateRange(@Param("startDate") java.time.LocalDate startDate,
                      @Param("endDate") java.time.LocalDate endDate);
+
+       @Query("SELECT COUNT(r) FROM Restaurant r WHERE r.approvalStatus = :status AND r.createdAt BETWEEN :startDate AND :endDate")
+       Long countByApprovalStatusAndCreatedAtBetween(@Param("status") com.goDelivery.goDelivery.Enum.ApprovalStatus status,
+                     @Param("startDate") java.time.LocalDate startDate, @Param("endDate") java.time.LocalDate endDate);
 
        // Get average restaurant rating
        @Query("SELECT AVG(r.rating) FROM Restaurant r WHERE r.isApproved = true")

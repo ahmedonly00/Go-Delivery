@@ -20,4 +20,8 @@ public interface BranchUsersRepository extends JpaRepository<BranchUsers, Long> 
     boolean existsByEmail(String email);
     boolean existsByBranch_BranchIdAndEmail(Long branchId, String email);
     List<BranchUsers> findByBranch_BranchIdAndIsActive(Long branchId, boolean isActive);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COUNT(bu) FROM BranchUsers bu WHERE bu.createdAt BETWEEN :start AND :end")
+    Long countStaffCreatedBetween(@org.springframework.data.repository.query.Param("start") java.time.LocalDate start,
+            @org.springframework.data.repository.query.Param("end") java.time.LocalDate end);
 }

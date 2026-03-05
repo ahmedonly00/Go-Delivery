@@ -4,6 +4,8 @@ package com.goDelivery.goDelivery.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,5 +20,7 @@ public interface BranchesRepository extends JpaRepository<Branches, Long> {
     List<Branches> findByRestaurant_RestaurantIdAndApprovalStatus(Long restaurantId, ApprovalStatus approvalStatus);
     boolean existsByRestaurant_RestaurantIdAndBranchName(Long restaurantId, String branchName);
     boolean existsByBranchIdAndRestaurant_RestaurantId(Long branchId, Long restaurantId);
-    
+    List<Branches> findByApprovalStatus(ApprovalStatus approvalStatus);
+    Page<Branches> findByApprovalStatus(ApprovalStatus approvalStatus, Pageable pageable);
+    Page<Branches> findByRestaurant_RestaurantId(Long restaurantId, Pageable pageable);
 }

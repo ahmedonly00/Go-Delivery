@@ -25,4 +25,10 @@ public interface RestaurantUsersRepository extends JpaRepository<RestaurantUsers
     @Transactional
     @Query("UPDATE RestaurantUsers ru SET ru.permissions = :permissions WHERE ru.role = :role")
     int updatePermissionsByRole(@Param("role") Roles role, @Param("permissions") String permissions);
+
+    @Query("SELECT COUNT(ru) FROM RestaurantUsers ru")
+    Long countAllStaff();
+
+    @Query("SELECT COUNT(ru) FROM RestaurantUsers ru WHERE ru.createdAt BETWEEN :start AND :end")
+    Long countStaffCreatedBetween(@Param("start") java.time.LocalDate start, @Param("end") java.time.LocalDate end);
 }

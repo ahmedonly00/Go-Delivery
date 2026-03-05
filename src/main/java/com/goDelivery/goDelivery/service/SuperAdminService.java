@@ -1,7 +1,10 @@
 package com.goDelivery.goDelivery.service;
 
+import com.goDelivery.goDelivery.Enum.ApprovalStatus;
 import com.goDelivery.goDelivery.Enum.Roles;
+import com.goDelivery.goDelivery.Enum.StatsPeriod;
 import com.goDelivery.goDelivery.dtos.admin.CreateSuperAdminRequest;
+import com.goDelivery.goDelivery.dtos.admin.SystemStatsDTO;
 import com.goDelivery.goDelivery.dtos.biker.BikerDetailsResponse;
 import com.goDelivery.goDelivery.dtos.biker.BikerUpdateRequest;
 import com.goDelivery.goDelivery.exception.DuplicateResourceException;
@@ -10,6 +13,10 @@ import com.goDelivery.goDelivery.mapper.BikerMapper;
 import com.goDelivery.goDelivery.model.Bikers;
 import com.goDelivery.goDelivery.model.SuperAdmin;
 import com.goDelivery.goDelivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.repository.BranchUsersRepository;
+import com.goDelivery.goDelivery.repository.OrderRepository;
+import com.goDelivery.goDelivery.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.repository.SuperAdminRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
+import java.time.DayOfWeek;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +40,10 @@ public class SuperAdminService {
     private final PasswordEncoder passwordEncoder;
     private final BikersRepository bikersRepository;
     private final BikerMapper bikerMapper;
+    private final RestaurantRepository restaurantRepository;
+    private final RestaurantUsersRepository restaurantUsersRepository;
+    private final BranchUsersRepository branchUsersRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional
     public SuperAdmin createSuperAdmin(CreateSuperAdminRequest request) {
@@ -146,5 +160,72 @@ public class SuperAdminService {
 
     public void deleteSuperAdmin(Long id) {
         superAdminRepository.deleteById(id);
-    } 
+    }
+
+    @Transactional(readOnly = true)
+    public SystemStatsDTO getSystemStats(StatsPeriod period) {
+        LocalDate today = LocalDate.now();
+        LocalDate dateStart;
+        LocalDateTime dateTimeStart;
+        LocalDateTime dateTimeEnd = today.plusDays(1).atStartOfDay();
+
+        switch (period) {
+            case DAY:
+                dateStart = today;
+                dateTimeStart = today.atStartOfDay();
+                break;
+            case WEEK:
+                dateStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                dateTimeStart = dateStart.atStartOfDay();
+                break;
+            case YEAR:
+                dateStart = today.with(TemporalAdjusters.firstDayOfYear());
+                dateTimeStart = dateStart.atStartOfDay();
+                break;
+            default: // ALL
+                dateStart = null;
+                dateTimeStart = null;
+                break;
+        }
+
+        long totalRestaurants;
+        long approvedRestaurants;
+        long pendingRestaurants;
+        long restaurantStaff;
+        long branchStaff;
+        Long totalOrders;
+        Double totalRevenue;
+
+        if (dateStart == null) {
+            // ALL — no date filter
+            totalRestaurants = restaurantRepository.count();
+            approvedRestaurants = restaurantRepository.countByApprovalStatus(ApprovalStatus.APPROVED);
+            pendingRestaurants = restaurantRepository.countByApprovalStatus(ApprovalStatus.PENDING);
+            restaurantStaff = restaurantUsersRepository.countAllStaff();
+            branchStaff = branchUsersRepository.count();
+            totalOrders = orderRepository.countPaidOrConfirmedOrders();
+            totalRevenue = orderRepository.sumRevenuePaidOrConfirmedOrders();
+        } else {
+            LocalDate dateEnd = today;
+            totalRestaurants = restaurantRepository.countRestaurantsByDateRange(dateStart, dateEnd);
+            approvedRestaurants = restaurantRepository.countByApprovalStatusAndCreatedAtBetween(ApprovalStatus.APPROVED, dateStart, dateEnd);
+            pendingRestaurants = restaurantRepository.countByApprovalStatusAndCreatedAtBetween(ApprovalStatus.PENDING, dateStart, dateEnd);
+            restaurantStaff = restaurantUsersRepository.countStaffCreatedBetween(dateStart, dateEnd);
+            branchStaff = branchUsersRepository.countStaffCreatedBetween(dateStart, dateEnd);
+            totalOrders = orderRepository.countPaidOrConfirmedOrdersByDateRange(dateTimeStart, dateTimeEnd);
+            totalRevenue = orderRepository.sumRevenuePaidOrConfirmedOrdersByDateRange(dateTimeStart, dateTimeEnd);
+        }
+
+        return SystemStatsDTO.builder()
+                .period(period)
+                .totalRestaurants(totalRestaurants)
+                .approvedRestaurants(approvedRestaurants)
+                .pendingRestaurants(pendingRestaurants)
+                .restaurantStaff(restaurantStaff)
+                .branchStaff(branchStaff)
+                .totalStaffMembers(restaurantStaff + branchStaff)
+                .totalOrders(totalOrders != null ? totalOrders : 0L)
+                .totalRevenue(totalRevenue != null ? totalRevenue : 0.0)
+                .build();
+    }
 }

@@ -1,5 +1,6 @@
 package com.goDelivery.goDelivery.service;
 
+import com.goDelivery.goDelivery.Enum.ApprovalStatus;
 import com.goDelivery.goDelivery.Enum.DeliveryType;
 import com.goDelivery.goDelivery.Enum.Roles;
 import com.goDelivery.goDelivery.dtos.restaurant.*;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -81,6 +84,17 @@ public class RestaurantService {
     public List<RestaurantDTO> getAllRestaurants() {
         List<Restaurant> restaurants = restaurantRepository.findAll();
         return restaurantMapper.toRestaurantDTO(restaurants);
+    }
+
+    public Page<RestaurantDTO> getAllRestaurantsPaged(
+            Pageable pageable) {
+        return restaurantRepository.findAll(pageable).map(restaurantMapper::toRestaurantDTO);
+    }
+
+    public Page<RestaurantDTO> getRestaurantsByApprovalStatusPaged(
+            ApprovalStatus status,
+            Pageable pageable) {
+        return restaurantRepository.findByApprovalStatus(status, pageable).map(restaurantMapper::toRestaurantDTO);
     }
 
     public RestaurantDTO updateRestaurantLogo(Long restaurantId, String logoUrl) {
@@ -395,6 +409,8 @@ public class RestaurantService {
 
     public RestaurantDTO toRestaurantDTOWithBranches(Restaurant restaurant) {
         List<Branches> branches = branchesRepository.findByRestaurant_RestaurantId(restaurant.getRestaurantId());
+        log.info("Restaurant {} '{}' has {} branch(es)", restaurant.getRestaurantId(),
+                restaurant.getRestaurantName(), branches.size());
         return restaurantMapper.toRestaurantDTOWithBranches(restaurant, branches);
     }
 
