@@ -1,6 +1,7 @@
 package com.goDelivery.goDelivery.service;
 
 import com.goDelivery.goDelivery.dto.menu.MenuItemUpdateDTO;
+import com.goDelivery.goDelivery.model.BranchMenuItem;
 import com.goDelivery.goDelivery.model.MenuItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,21 @@ public class MenuRealtimeService {
         messagingTemplate.convertAndSend("/topic/branch/" + branchId + "/menu", update);
         
         log.info("Broadcasted menu item update for branch {}: {}", branchId, menuItem.getMenuItemName());
+    }
+
+    public void broadcastBranchMenuItemUpdate(Long branchId, BranchMenuItem menuItem, String updatedBy) {
+        MenuItemUpdateDTO update = MenuItemUpdateDTO.builder()
+                .menuItemId(menuItem.getMenuItemId())
+                .menuItemName(menuItem.getMenuItemName())
+                .price(menuItem.getPrice())
+                .isAvailable(menuItem.isAvailable())
+                .categoryId(menuItem.getCategory().getCategoryId())
+                .updatedBy(updatedBy)
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        messagingTemplate.convertAndSend("/topic/branch/" + branchId + "/menu", update);
+        log.info("Broadcasted branch menu item update for branch {}: {}", branchId, menuItem.getMenuItemName());
     }
 
     public void broadcastMenuItemAvailability(Long branchId, Long menuItemId, boolean isAvailable, String updatedBy) {

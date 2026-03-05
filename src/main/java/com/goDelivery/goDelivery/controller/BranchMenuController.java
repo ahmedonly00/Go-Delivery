@@ -6,9 +6,8 @@ import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
 import com.goDelivery.goDelivery.dtos.menu.MenuCategoryResponseDTO;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
-import com.goDelivery.goDelivery.dtos.menu.UpdateMenuItemRequest;
-import com.goDelivery.goDelivery.model.MenuCategory;
-import com.goDelivery.goDelivery.model.MenuItem;
+import com.goDelivery.goDelivery.model.BranchMenuCategory;
+import com.goDelivery.goDelivery.model.BranchMenuItem;
 import com.goDelivery.goDelivery.service.BranchDelegationService;
 import com.goDelivery.goDelivery.service.BranchMenuService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +42,7 @@ public class BranchMenuController {
     @PostMapping("/inherit")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Inherit restaurant menu", description = "Copy all menu categories and items from the restaurant to the branch")
-    public ResponseEntity<List<MenuCategory>> inheritRestaurantMenu(
+    public ResponseEntity<List<BranchMenuCategory>> inheritRestaurantMenu(
             @PathVariable Long branchId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -56,7 +55,7 @@ public class BranchMenuController {
     @GetMapping
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Get full branch menu", description = "Get all menu categories and items for the branch")
-    public ResponseEntity<List<MenuCategory>> getBranchMenu(
+    public ResponseEntity<List<BranchMenuCategory>> getBranchMenu(
             @PathVariable Long branchId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -152,40 +151,65 @@ public class BranchMenuController {
 
     @PostMapping(value = "/categories/{categoryId}/items/add", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
-    @Operation(summary = "Add menu item to branch", description = "Add a new menu item to the branch. Send as multipart/form-data with individual fields + optional 'imageFile' file part.")
+    @Operation(summary = "Add menu item to branch", description = "Send as multipart/form-data. Fields: menuItemName (required), price (required), description, ingredients, isAvailable, preparationTime, imageFile (file).")
     public ResponseEntity<MenuItemResponse> addBranchMenuItem(
             @PathVariable Long branchId,
             @PathVariable Long categoryId,
-            @ModelAttribute @Valid MenuItemRequest menuItemRequest,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestParam String menuItemName,
+            @RequestParam Float price,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String ingredients,
+            @RequestParam(defaultValue = "true") boolean isAvailable,
+            @RequestParam(required = false) Integer preparationTime,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        log.info("Adding menu item '{}' to branch {} by user {}",
-                menuItemRequest.getMenuItemName(), branchId, categoryId, userDetails.getUsername());
+        log.info("Adding menu item '{}' to branch {} by user {}", menuItemName, branchId, userDetails.getUsername());
+        MenuItemRequest request = MenuItemRequest.builder()
+                .menuItemName(menuItemName)
+                .price(price)
+                .description(description)
+                .ingredients(ingredients)
+                .isAvailable(isAvailable)
+                .preparationTime(preparationTime)
+                .categoryId(categoryId)
+                .build();
         return new ResponseEntity<>(
-                delegationService.addBranchMenuItem(branchId, categoryId, menuItemRequest, imageFile),
+                delegationService.addBranchMenuItem(branchId, categoryId, request, imageFile),
                 HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/items/{menuItemId}/update", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
-    @Operation(summary = "Update branch menu item", description = "Update a menu item in the branch menu. Send as multipart/form-data with individual fields + optional 'imageFile' file part.")
+    @Operation(summary = "Update branch menu item", description = "Send as multipart/form-data. All fields optional. Fields: menuItemName, price, description, ingredients, isAvailable, preparationTime, imageFile (file).")
     public ResponseEntity<MenuItemResponse> updateBranchMenuItem(
             @PathVariable Long branchId,
             @PathVariable Long menuItemId,
-            @ModelAttribute @Valid MenuItemRequest menuItemRequest,
+            @RequestParam(required = false) String menuItemName,
+            @RequestParam(required = false) Float price,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String ingredients,
+            @RequestParam(required = false) Boolean isAvailable,
+            @RequestParam(required = false) Integer preparationTime,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         log.info("Updating menu item {} for branch {} by user {}", menuItemId, branchId, userDetails.getUsername());
-        return ResponseEntity
-                .ok(delegationService.updateBranchMenuItem(branchId, menuItemId, menuItemRequest, imageFile));
+        MenuItemRequest request = MenuItemRequest.builder()
+                .menuItemName(menuItemName)
+                .price(price)
+                .description(description)
+                .ingredients(ingredients)
+                .isAvailable(isAvailable != null && isAvailable)
+                .preparationTime(preparationTime)
+                .build();
+        return ResponseEntity.ok(delegationService.updateBranchMenuItem(branchId, menuItemId, request, imageFile));
     }
 
     @PatchMapping("/items/{menuItemId}/autosave")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Auto-save menu item", description = "Partially update a menu item field for auto-save functionality")
-    public ResponseEntity<MenuItem> autoSaveMenuItem(
+    public ResponseEntity<BranchMenuItem> autoSaveMenuItem(
             @PathVariable Long branchId,
             @PathVariable Long menuItemId,
             @RequestBody MenuItemPartialUpdateDTO partialUpdate,

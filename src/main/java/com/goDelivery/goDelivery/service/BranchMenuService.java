@@ -1,6 +1,5 @@
 package com.goDelivery.goDelivery.service;
 
-import com.goDelivery.goDelivery.dto.menu.MenuCategoryWithItemsDTO;
 import com.goDelivery.goDelivery.dto.menu.MenuItemPartialUpdateDTO;
 import com.goDelivery.goDelivery.dto.menu.MenuProgressiveResponseDTO;
 import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
@@ -8,11 +7,10 @@ import com.goDelivery.goDelivery.dtos.menu.MenuCategoryResponseDTO;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
 import com.goDelivery.goDelivery.dtos.menu.UpdateMenuItemRequest;
+import com.goDelivery.goDelivery.dto.menu.MenuCategoryWithItemsDTO;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.exception.UnauthorizedException;
 import com.goDelivery.goDelivery.exception.ValidationException;
-import com.goDelivery.goDelivery.mapper.MenuCategoryMapper;
-import com.goDelivery.goDelivery.mapper.MenuItemMapper;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.repository.*;
 
@@ -38,11 +36,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BranchMenuService {
 
+    private final BranchMenuCategoryRepository branchMenuCategoryRepository;
+    private final BranchMenuItemRepository branchMenuItemRepository;
     private final MenuCategoryRepository menuCategoryRepository;
     private final MenuItemRepository menuItemRepository;
     private final BranchesRepository branchesRepository;
-    private final MenuItemMapper menuItemMapper;
-    private final MenuCategoryMapper menuCategoryMapper;
     private final BranchSecurityService branchSecurityService;
     private final MenuAuditService menuAuditService;
     private final MenuRealtimeService menuRealtimeService;
@@ -52,7 +50,7 @@ public class BranchMenuService {
     // ── Inheritance ───────────────────────────────────────────────────────────
 
     @Transactional
-    public List<MenuCategory> inheritRestaurantMenu(Long branchId) {
+    public List<BranchMenuCategory> inheritRestaurantMenu(Long branchId) {
         log.info("Starting menu inheritance for branch: {}", branchId);
 
         Branches branch = branchesRepository.findById(branchId)
@@ -60,7 +58,7 @@ public class BranchMenuService {
 
         Restaurant restaurant = branch.getRestaurant();
 
-        long existingMenuCount = menuCategoryRepository.countByBranch_BranchId(branchId);
+        long existingMenuCount = branchMenuCategoryRepository.countByBranch_BranchId(branchId);
         if (existingMenuCount > 0) {
             throw new ValidationException("Branch already has menu items. Cannot inherit from restaurant.");
         }
@@ -68,21 +66,21 @@ public class BranchMenuService {
         List<MenuCategory> restaurantCategories = menuCategoryRepository
                 .findByRestaurantId(restaurant.getRestaurantId());
 
-        List<MenuCategory> inheritedCategories = new ArrayList<>();
+        List<BranchMenuCategory> inheritedCategories = new ArrayList<>();
 
         for (MenuCategory restaurantCategory : restaurantCategories) {
-            MenuCategory branchCategory = MenuCategory.builder()
+            BranchMenuCategory branchCategory = BranchMenuCategory.builder()
                     .categoryName(restaurantCategory.getCategoryName())
+                    .isActive(restaurantCategory.getIsActive())
                     .branch(branch)
-                    .restaurant(null)
                     .createdAt(LocalDate.now())
                     .build();
 
-            branchCategory = menuCategoryRepository.save(branchCategory);
+            branchCategory = branchMenuCategoryRepository.save(branchCategory);
 
-            List<MenuItem> branchItems = new ArrayList<>();
+            List<BranchMenuItem> branchItems = new ArrayList<>();
             for (MenuItem restaurantItem : restaurantCategory.getMenuItems()) {
-                MenuItem branchItem = MenuItem.builder()
+                BranchMenuItem branchItem = BranchMenuItem.builder()
                         .menuItemName(restaurantItem.getMenuItemName())
                         .description(restaurantItem.getDescription())
                         .price(restaurantItem.getPrice())
@@ -91,15 +89,15 @@ public class BranchMenuService {
                         .isAvailable(restaurantItem.isAvailable())
                         .preparationTime(restaurantItem.getPreparationTime())
                         .preparationScore(restaurantItem.getPreparationScore())
+                        .sourceRestaurantItemId(restaurantItem.getMenuItemId())
                         .branch(branch)
-                        .restaurant(null)
                         .category(branchCategory)
                         .createdAt(LocalDate.now())
                         .updatedAt(LocalDate.now())
                         .build();
 
                 for (MenuItemVariant restaurantVariant : restaurantItem.getVariants()) {
-                    MenuItemVariant branchVariant = MenuItemVariant.builder()
+                    BranchMenuItemVariant branchVariant = BranchMenuItemVariant.builder()
                             .variantName(restaurantVariant.getVariantName())
                             .priceModifier(restaurantVariant.getPriceModifier())
                             .menuItem(branchItem)
@@ -110,7 +108,7 @@ public class BranchMenuService {
                 branchItems.add(branchItem);
             }
 
-            menuItemRepository.saveAll(branchItems);
+            branchMenuItemRepository.saveAll(branchItems);
             branchCategory.setMenuItems(branchItems);
             inheritedCategories.add(branchCategory);
         }
@@ -126,29 +124,29 @@ public class BranchMenuService {
     // ── Full menu views ───────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
-    public List<MenuCategory> getBranchMenu(Long branchId) {
-        return menuCategoryRepository.findByBranch_BranchId(branchId);
+    public List<BranchMenuCategory> getBranchMenu(Long branchId) {
+        return branchMenuCategoryRepository.findByBranch_BranchId(branchId);
     }
 
     @Transactional(readOnly = true)
     public MenuProgressiveResponseDTO getMenuProgressive(Long branchId, int page, int size, String categoryName) {
-        long existingMenuCount = menuCategoryRepository.countByBranch_BranchId(branchId);
+        long existingMenuCount = branchMenuCategoryRepository.countByBranch_BranchId(branchId);
         if (existingMenuCount == 0) {
             log.info("Branch {} has no menu, inheriting from restaurant first", branchId);
             inheritRestaurantMenu(branchId);
         }
 
-        List<MenuCategory> categories;
+        List<BranchMenuCategory> categories;
         if (categoryName != null && !categoryName.isEmpty()) {
-            categories = menuCategoryRepository.findByBranch_BranchIdAndCategoryNameContainingIgnoreCase(
-                    branchId, categoryName);
+            categories = branchMenuCategoryRepository
+                    .findByBranch_BranchIdAndCategoryNameContainingIgnoreCase(branchId, categoryName);
         } else {
-            categories = menuCategoryRepository.findByBranch_BranchId(branchId);
+            categories = branchMenuCategoryRepository.findByBranch_BranchId(branchId);
         }
 
         int startIndex = page * size;
         int endIndex = Math.min(startIndex + size, categories.size());
-        List<MenuCategory> paginatedCategories = categories.subList(startIndex, endIndex);
+        List<BranchMenuCategory> paginatedCategories = categories.subList(startIndex, endIndex);
 
         List<MenuCategoryWithItemsDTO> categoryDTOs = paginatedCategories.stream()
                 .map(this::convertToCategoryWithItemsDTO)
@@ -172,9 +170,11 @@ public class BranchMenuService {
         branchesRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
 
-        return menuCategoryRepository.findByBranch_BranchId(branchId).stream()
+        return branchMenuCategoryRepository.findByBranch_BranchId(branchId).stream()
                 .map(category -> {
-                    MenuCategoryDTO dto = menuCategoryMapper.toMenuCategoryDTO(category);
+                    MenuCategoryDTO dto = new MenuCategoryDTO();
+                    dto.setCategoryName(category.getCategoryName());
+                    dto.setActive(category.getIsActive() != null && category.getIsActive());
                     dto.setBranchId(branchId);
                     return dto;
                 })
@@ -188,35 +188,38 @@ public class BranchMenuService {
         Branches branch = branchesRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
 
-        if (menuCategoryRepository.existsByBranch_BranchIdAndCategoryName(branchId, categoryDTO.getCategoryName())) {
+        if (branchMenuCategoryRepository.existsByBranch_BranchIdAndCategoryName(branchId, categoryDTO.getCategoryName())) {
             throw new IllegalArgumentException("Category with this name already exists for this branch");
         }
 
-        // Auto-inherit restaurant menu if branch has none yet
-        long existingMenuCount = menuCategoryRepository.countByBranch_BranchId(branchId);
+        long existingMenuCount = branchMenuCategoryRepository.countByBranch_BranchId(branchId);
         if (existingMenuCount == 0) {
             log.info("Branch {} has no menu, inheriting from restaurant first", branchId);
             inheritRestaurantMenu(branchId);
         }
 
-        MenuCategory category = MenuCategory.builder()
+        BranchMenuCategory category = BranchMenuCategory.builder()
                 .categoryName(categoryDTO.getCategoryName())
                 .isActive(categoryDTO.isActive())
                 .branch(branch)
                 .createdAt(LocalDate.now())
                 .build();
 
-        MenuCategory savedCategory = menuCategoryRepository.save(category);
-        log.info("Created menu category '{}' for branch {}", categoryDTO.getCategoryName(), branchId);
+        BranchMenuCategory saved = branchMenuCategoryRepository.save(category);
+        log.info("Created branch menu category '{}' for branch {}", categoryDTO.getCategoryName(), branchId);
 
-        return menuCategoryMapper.toMenuCategoryResponseDTO(savedCategory);
+        MenuCategoryResponseDTO response = new MenuCategoryResponseDTO();
+        response.setCategoryId(saved.getCategoryId());
+        response.setCategoryName(saved.getCategoryName());
+        response.setBranchId(branchId);
+        return response;
     }
 
     @Transactional
     public MenuCategoryResponseDTO updateMenuCategory(Long branchId, Long categoryId, MenuCategoryDTO categoryDTO) {
         verifyBranchAccess(branchId);
 
-        MenuCategory category = menuCategoryRepository.findById(categoryId)
+        BranchMenuCategory category = branchMenuCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu category not found"));
 
         if (!category.getBranch().getBranchId().equals(branchId)) {
@@ -225,15 +228,20 @@ public class BranchMenuService {
 
         if (categoryDTO.getCategoryName() != null)
             category.setCategoryName(categoryDTO.getCategoryName());
-        MenuCategory updatedCategory = menuCategoryRepository.save(category);
-        log.info("Updated menu category {} for branch {}", categoryId, branchId);
 
-        return menuCategoryMapper.toMenuCategoryResponseDTO(updatedCategory);
+        BranchMenuCategory updated = branchMenuCategoryRepository.save(category);
+        log.info("Updated branch menu category {} for branch {}", categoryId, branchId);
+
+        MenuCategoryResponseDTO response = new MenuCategoryResponseDTO();
+        response.setCategoryId(updated.getCategoryId());
+        response.setCategoryName(updated.getCategoryName());
+        response.setBranchId(branchId);
+        return response;
     }
 
     @Transactional
     public void deleteMenuCategory(Long branchId, Long categoryId) {
-        MenuCategory category = menuCategoryRepository.findById(categoryId)
+        BranchMenuCategory category = branchMenuCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
         if (!category.getBranch().getBranchId().equals(branchId)) {
@@ -244,23 +252,23 @@ public class BranchMenuService {
             throw new ValidationException("Cannot delete category with existing items. Remove items first.");
         }
 
-        menuCategoryRepository.delete(category);
-        log.info("Deleted menu category {} from branch {}", categoryId, branchId);
+        branchMenuCategoryRepository.delete(category);
+        log.info("Deleted branch menu category {} from branch {}", categoryId, branchId);
     }
 
     // ── Menu items ────────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
     public List<MenuItemResponse> getBranchMenuItems(Long branchId, Long categoryId) {
-        MenuCategory category = menuCategoryRepository.findById(categoryId)
+        BranchMenuCategory category = branchMenuCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu category not found"));
 
         if (!category.getBranch().getBranchId().equals(branchId)) {
             throw new UnauthorizedException("Category does not belong to this branch");
         }
 
-        return menuItemRepository.findByCategory_CategoryId(categoryId).stream()
-                .map(menuItemMapper::toMenuItemResponse)
+        return branchMenuItemRepository.findByCategory_CategoryId(categoryId).stream()
+                .map(this::toMenuItemResponse)
                 .collect(Collectors.toList());
     }
 
@@ -269,7 +277,7 @@ public class BranchMenuService {
             MultipartFile imageFile) {
         verifyBranchAccess(branchId);
 
-        MenuCategory category = menuCategoryRepository.findById(categoryId)
+        BranchMenuCategory category = branchMenuCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu category not found"));
 
         if (!category.getBranch().getBranchId().equals(branchId)) {
@@ -281,33 +289,34 @@ public class BranchMenuService {
             imageUrl = uploadImage(imageFile);
         }
 
-        MenuItem menuItem = new MenuItem();
-        menuItem.setMenuItemName(menuItemRequest.getMenuItemName());
-        menuItem.setDescription(menuItemRequest.getDescription());
-        menuItem.setPrice(menuItemRequest.getPrice());
-        menuItem.setCategory(category);
-        menuItem.setImage(imageUrl);
-        menuItem.setAvailable(menuItemRequest.isAvailable());
-        menuItem.setPreparationTime(menuItemRequest.getPreparationTime());
-        menuItem.setPreparationScore(0);
-        menuItem.setBranch(category.getBranch());
-        menuItem.setRestaurant(category.getBranch().getRestaurant());
-        menuItem.setCreatedAt(LocalDate.now());
-        menuItem.setUpdatedAt(LocalDate.now());
+        BranchMenuItem menuItem = BranchMenuItem.builder()
+                .menuItemName(menuItemRequest.getMenuItemName())
+                .description(menuItemRequest.getDescription())
+                .price(menuItemRequest.getPrice())
+                .image(imageUrl)
+                .ingredients(menuItemRequest.getIngredients())
+                .isAvailable(menuItemRequest.isAvailable())
+                .preparationTime(menuItemRequest.getPreparationTime())
+                .preparationScore(0)
+                .branch(category.getBranch())
+                .category(category)
+                .createdAt(LocalDate.now())
+                .updatedAt(LocalDate.now())
+                .build();
 
-        MenuItem savedItem = menuItemRepository.save(menuItem);
-        log.info("Created menu item '{}' for category {} in branch {}",
+        BranchMenuItem saved = branchMenuItemRepository.save(menuItem);
+        log.info("Created branch menu item '{}' for category {} in branch {}",
                 menuItemRequest.getMenuItemName(), categoryId, branchId);
 
-        return menuItemMapper.toMenuItemResponse(savedItem);
+        return toMenuItemResponse(saved);
     }
 
     @Transactional
-    public MenuItem updateMenuItem(Long branchId, Long menuItemId,
+    public BranchMenuItem updateMenuItem(Long branchId, Long menuItemId,
             UpdateMenuItemRequest updateRequest,
             MultipartFile imageFile,
             HttpServletRequest request) {
-        MenuItem menuItem = menuItemRepository.findById(menuItemId)
+        BranchMenuItem menuItem = branchMenuItemRepository.findById(menuItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu item not found"));
 
         if (!menuItem.getBranch().getBranchId().equals(branchId)) {
@@ -350,18 +359,18 @@ public class BranchMenuService {
             menuItem.setPreparationTime(updateRequest.getPreparationTime());
 
         menuItem.setUpdatedAt(LocalDate.now());
-        MenuItem savedItem = menuItemRepository.save(menuItem);
+        BranchMenuItem saved = branchMenuItemRepository.save(menuItem);
 
-        menuRealtimeService.broadcastMenuItemUpdate(branchId, savedItem, getCurrentUserEmail());
+        menuRealtimeService.broadcastBranchMenuItemUpdate(branchId, saved, getCurrentUserEmail());
 
-        return savedItem;
+        return saved;
     }
 
     @Transactional
-    public MenuItem partialUpdateMenuItem(Long branchId, Long menuItemId,
+    public BranchMenuItem partialUpdateMenuItem(Long branchId, Long menuItemId,
             MenuItemPartialUpdateDTO partialUpdate,
             HttpServletRequest request) {
-        MenuItem menuItem = menuItemRepository.findById(menuItemId)
+        BranchMenuItem menuItem = branchMenuItemRepository.findById(menuItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu item not found"));
 
         if (!menuItem.getBranch().getBranchId().equals(branchId)) {
@@ -399,21 +408,21 @@ public class BranchMenuService {
         }
 
         menuItem.setUpdatedAt(LocalDate.now());
-        MenuItem savedItem = menuItemRepository.save(menuItem);
+        BranchMenuItem saved = branchMenuItemRepository.save(menuItem);
 
         if (fieldName != null && oldValue != null && newValue != null) {
             menuAuditService.logMenuItemUpdate(menuItemId, branchId, fieldName,
                     oldValue, newValue, "Auto-save", request);
         }
 
-        menuRealtimeService.broadcastMenuItemUpdate(branchId, savedItem, getCurrentUserEmail());
+        menuRealtimeService.broadcastBranchMenuItemUpdate(branchId, saved, getCurrentUserEmail());
 
-        return savedItem;
+        return saved;
     }
 
     @Transactional
     public void deleteMenuItem(Long branchId, Long menuItemId, HttpServletRequest request) {
-        MenuItem menuItem = menuItemRepository.findById(menuItemId)
+        BranchMenuItem menuItem = branchMenuItemRepository.findById(menuItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu item not found"));
 
         if (!menuItem.getBranch().getBranchId().equals(branchId)) {
@@ -421,7 +430,7 @@ public class BranchMenuService {
         }
 
         menuAuditService.logMenuItemDelete(menuItemId, branchId, menuItem.getMenuItemName(), request);
-        menuItemRepository.delete(menuItem);
+        branchMenuItemRepository.delete(menuItem);
         menuRealtimeService.broadcastMenuItemRemoved(branchId, menuItemId, getCurrentUserEmail());
     }
 
@@ -445,7 +454,25 @@ public class BranchMenuService {
         }
     }
 
-    private MenuCategoryWithItemsDTO convertToCategoryWithItemsDTO(MenuCategory category) {
+    public MenuItemResponse toMenuItemResponse(BranchMenuItem item) {
+        return MenuItemResponse.builder()
+                .id(item.getMenuItemId())
+                .menuItemName(item.getMenuItemName())
+                .description(item.getDescription())
+                .price(item.getPrice())
+                .image(item.getImage())
+                .ingredients(item.getIngredients())
+                .isAvailable(item.isAvailable())
+                .preparationTime(item.getPreparationTime())
+                .preparationScore(item.getPreparationScore())
+                .categoryId(item.getCategory() != null ? item.getCategory().getCategoryId() : null)
+                .categoryName(item.getCategory() != null ? item.getCategory().getCategoryName() : null)
+                .createdAt(item.getCreatedAt())
+                .updatedAt(item.getUpdatedAt())
+                .build();
+    }
+
+    private MenuCategoryWithItemsDTO convertToCategoryWithItemsDTO(BranchMenuCategory category) {
         List<MenuCategoryWithItemsDTO.MenuItemDTO> itemDTOs = category.getMenuItems().stream()
                 .map(item -> MenuCategoryWithItemsDTO.MenuItemDTO.builder()
                         .menuItemId(item.getMenuItemId())
@@ -456,7 +483,7 @@ public class BranchMenuService {
                         .ingredients(item.getIngredients())
                         .isAvailable(item.isAvailable())
                         .preparationTime(item.getPreparationTime())
-                        .isInherited(true)
+                        .isInherited(item.getSourceRestaurantItemId() != null)
                         .build())
                 .toList();
 
@@ -464,7 +491,7 @@ public class BranchMenuService {
                 .categoryId(category.getCategoryId())
                 .categoryName(category.getCategoryName())
                 .items(itemDTOs)
-                .isInherited(true)
+                .isInherited(false)
                 .itemCount(itemDTOs.size())
                 .build();
     }

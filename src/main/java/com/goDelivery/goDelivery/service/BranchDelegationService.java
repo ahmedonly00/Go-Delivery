@@ -12,7 +12,6 @@ import com.goDelivery.goDelivery.dtos.restaurant.BranchUserDTO;
 import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.exception.UnauthorizedException;
-import com.goDelivery.goDelivery.mapper.MenuItemMapper;
 import com.goDelivery.goDelivery.mapper.OrderMapper;
 import com.goDelivery.goDelivery.mapper.RestaurantMapper;
 import com.goDelivery.goDelivery.model.*;
@@ -22,9 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Pageable;
 
 @Slf4j
@@ -36,42 +35,25 @@ public class BranchDelegationService {
     private final BranchUserService branchUserService;
     private final AnalyticsService analyticsService;
     private final BranchesRepository branchesRepository;
-    private final MenuItemRepository menuItemRepository;
+    private final BranchMenuItemRepository branchMenuItemRepository;
+    private final BranchMenuCategoryRepository branchMenuCategoryRepository;
     private final OrderRepository orderRepository;
     private final BranchSecurityService branchSecurity;
-    private final MenuItemMapper menuItemMapper;
+    private final BranchMenuService branchMenuService;
     private final OrderMapper orderMapper;
     private final RestaurantMapper restaurantMapper;
     private final FileStorageService fileStorageService;
-    private final com.goDelivery.goDelivery.repository.MenuCategoryRepository menuCategoryRepository;
 
     // Menu Operations
     @Transactional(readOnly = true)
     public List<MenuItemResponse> getBranchMenu(Long branchId) {
         log.debug("Getting menu for branch {}", branchId);
-
-        Branches branch = branchesRepository.findByBranchId(branchId)
+        branchesRepository.findByBranchId(branchId)
                 .orElseThrow(() -> new RuntimeException("Branch not found: " + branchId));
-        Long restaurantId = branch.getRestaurant().getRestaurantId();
 
-        // Get restaurant menu as base
-        List<MenuItem> restaurantMenuItems = menuItemRepository
-                .findByRestaurant_RestaurantIdAndBranchIsNull(restaurantId);
-
-        // Get branch-specific menu items (overrides)
-        List<MenuItem> branchMenuItems = menuItemRepository.findByBranch_BranchId(branchId);
-
-        // Merge menus (branch items override restaurant items with same name)
-        List<MenuItem> mergedMenu = new ArrayList<>(restaurantMenuItems);
-
-        for (MenuItem branchItem : branchMenuItems) {
-            // Remove restaurant item with same name if exists
-            mergedMenu.removeIf(item -> item.getMenuItemName().equals(branchItem.getMenuItemName()));
-            // Add branch item
-            mergedMenu.add(branchItem);
-        }
-
-        return menuItemMapper.toMenuItemResponse(mergedMenu);
+        return branchMenuItemRepository.findByBranch_BranchId(branchId).stream()
+                .map(branchMenuService::toMenuItemResponse)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -80,13 +62,13 @@ public class BranchDelegationService {
         branchesRepository.findByBranchId(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found: " + branchId));
 
-        return menuCategoryRepository.findByBranch_BranchId(branchId).stream()
+        return branchMenuCategoryRepository.findByBranch_BranchId(branchId).stream()
                 .map(cat -> MenuCategoryResponseDTO.builder()
                         .categoryId(cat.getCategoryId())
                         .categoryName(cat.getCategoryName())
                         .isActive(cat.getIsActive())
                         .build())
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -97,19 +79,16 @@ public class BranchDelegationService {
         Branches branch = branchesRepository.findByBranchId(branchId)
                 .orElseThrow(() -> new RuntimeException("Branch not found: " + branchId));
 
-        com.goDelivery.goDelivery.model.MenuCategory category = menuCategoryRepository
-                .findById(categoryId)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("Category not found: " + categoryId));
+        BranchMenuCategory category = branchMenuCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Branch menu category not found: " + categoryId));
 
-        // Upload image if provided
         String imageUrl = null;
         if (imageFile != null && !imageFile.isEmpty()) {
             String filePath = fileStorageService.storeFile(imageFile, "menu-items/branches/" + branchId + "/images");
             imageUrl = "/api/files/" + filePath.replace("\\", "/");
         }
 
-        MenuItem menuItem = new MenuItem();
+        BranchMenuItem menuItem = new BranchMenuItem();
         menuItem.setMenuItemName(menuItemRequest.getMenuItemName());
         menuItem.setDescription(menuItemRequest.getDescription());
         menuItem.setPrice(menuItemRequest.getPrice());
@@ -119,55 +98,46 @@ public class BranchDelegationService {
         menuItem.setPreparationScore(0);
         menuItem.setAvailable(menuItemRequest.isAvailable());
         menuItem.setCategory(category);
-        menuItem.setRestaurant(branch.getRestaurant());
         menuItem.setBranch(branch);
         menuItem.setCreatedAt(LocalDate.now());
         menuItem.setUpdatedAt(LocalDate.now());
 
-        MenuItem savedItem = menuItemRepository.save(menuItem);
-        log.info("Successfully added menu item to branch {}", branchId);
+        BranchMenuItem savedItem = branchMenuItemRepository.save(menuItem);
+        log.info("Successfully added branch menu item to branch {}", branchId);
 
-        return menuItemMapper.toMenuItemResponse(savedItem);
+        return branchMenuService.toMenuItemResponse(savedItem);
     }
 
     @Transactional
     public MenuItemResponse updateBranchMenuItem(Long branchId, Long menuItemId, MenuItemRequest menuItemRequest,
-            org.springframework.web.multipart.MultipartFile imageFile) {
-        log.info("Updating menu item {} for branch {}", menuItemId, branchId);
+            MultipartFile imageFile) {
+        log.info("Updating branch menu item {} for branch {}", menuItemId, branchId);
 
-        MenuItem existingItem = menuItemRepository.findById(menuItemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Menu item not found"));
+        BranchMenuItem existingItem = branchMenuItemRepository.findById(menuItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Branch menu item not found"));
 
-        // Verify item belongs to this branch or restaurant
-        if (!belongsToBranchOrRestaurant(existingItem, branchId)) {
+        if (!existingItem.getBranch().getBranchId().equals(branchId)) {
             throw new UnauthorizedException("Menu item does not belong to this branch");
         }
 
-        // Update fields
-        if (menuItemRequest.getMenuItemName() != null) {
+        if (menuItemRequest.getMenuItemName() != null)
             existingItem.setMenuItemName(menuItemRequest.getMenuItemName());
-        }
-        if (menuItemRequest.getDescription() != null) {
+        if (menuItemRequest.getDescription() != null)
             existingItem.setDescription(menuItemRequest.getDescription());
-        }
-        if (menuItemRequest.getPrice() != null) {
+        if (menuItemRequest.getPrice() != null)
             existingItem.setPrice(menuItemRequest.getPrice());
-        }
-        if (menuItemRequest.getIngredients() != null) {
+        if (menuItemRequest.getIngredients() != null)
             existingItem.setIngredients(menuItemRequest.getIngredients());
-        }
-        if (menuItemRequest.getPreparationTime() != null) {
+        if (menuItemRequest.getPreparationTime() != null)
             existingItem.setPreparationTime(menuItemRequest.getPreparationTime());
-        }
         if (imageFile != null && !imageFile.isEmpty()) {
             String filePath = fileStorageService.storeFile(imageFile, "menu-items/branches/" + branchId + "/images");
             existingItem.setImage("/api/files/" + filePath.replace("\\", "/"));
         }
-        existingItem.setUpdatedAt(java.time.LocalDate.now());
+        existingItem.setUpdatedAt(LocalDate.now());
 
-        MenuItem updatedItem = menuItemRepository.save(existingItem);
-
-        return menuItemMapper.toMenuItemResponse(updatedItem);
+        BranchMenuItem updatedItem = branchMenuItemRepository.save(existingItem);
+        return branchMenuService.toMenuItemResponse(updatedItem);
     }
 
     // Order Operations
@@ -340,17 +310,6 @@ public class BranchDelegationService {
         return restaurantMapper.toBranchDTO(savedBranch);
     }
 
-    // Helper Methods
-    private boolean belongsToBranchOrRestaurant(MenuItem item, Long branchId) {
-        Branches branch = branchesRepository.findById(branchId).orElse(null);
-        if (branch == null)
-            return false;
-
-        Long restaurantId = branch.getRestaurant().getRestaurantId();
-
-        return (item.getBranch() != null && item.getBranch().getBranchId().equals(branchId)) ||
-                (item.getBranch() == null && item.getRestaurant().getRestaurantId().equals(restaurantId));
-    }
 
     private void saveOrderWithBranch(List<OrderResponse> orders, Branches branch) {
         // This method saves orders with branch references to the database

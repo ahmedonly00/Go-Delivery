@@ -28,9 +28,7 @@ public class MenuItemRequest {
     @Positive(message = "Preparation time must be greater than 0")
     private Integer preparationTime;
     
-    @NotNull(message = "Category ID is required")
     private Long categoryId;
-    
-    @NotNull(message = "Restaurant ID is required")
+
     private Long restaurantId;
 }
