@@ -312,8 +312,8 @@ public class RestaurantController {
             "Includes distance information, ETA, and supports filtering by cuisine, rating, and delivery fee. " +
             "Only shows restaurants that will actually deliver to the customer location.")
     public ResponseEntity<?> getApprovedRestaurants(
-            @RequestParam double latitude,
-            @RequestParam double longitude,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude,
             @RequestParam(defaultValue = "10.0") double radiusKm,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
@@ -322,25 +322,27 @@ public class RestaurantController {
             @RequestParam(required = false) Double minRating,
             @RequestParam(required = false) Float maxDeliveryFee) {
 
-        // Validate coordinates
-        if (latitude < -90 || latitude > 90) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Latitude must be between -90 and 90"));
-        }
+        List<com.goDelivery.goDelivery.model.Restaurant> restaurants;
 
-        if (longitude < -180 || longitude > 180) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Longitude must be between -180 and 180"));
+        if (latitude != null && longitude != null) {
+            // Validate coordinates only when provided
+            if (latitude < -90 || latitude > 90) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Latitude must be between -90 and 90"));
+            }
+            if (longitude < -180 || longitude > 180) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Longitude must be between -180 and 180"));
+            }
+            if (radiusKm <= 0 || radiusKm > 50) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Radius must be between 0 and 50 km"));
+            }
+            restaurants = restaurantService.findNearbyApprovedRestaurants(latitude, longitude, radiusKm);
+        } else {
+            // No location provided — return all approved+active restaurants
+            restaurants = restaurantService.getAllApprovedRestaurants();
         }
-
-        if (radiusKm <= 0 || radiusKm > 50) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Radius must be between 0 and 50 km"));
-        }
-
-        // Get nearby approved restaurants using GeoLocationService
-        List<com.goDelivery.goDelivery.model.Restaurant> restaurants = restaurantService
-                .findNearbyApprovedRestaurants(latitude, longitude, radiusKm);
 
         // Apply additional filters
         java.util.stream.Stream<com.goDelivery.goDelivery.model.Restaurant> stream = restaurants.stream();

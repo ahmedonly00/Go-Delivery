@@ -250,6 +250,10 @@ public class RestaurantService {
 
     }
 
+    public List<Restaurant> getAllApprovedRestaurants() {
+        return restaurantRepository.findByIsApprovedTrueAndIsActiveTrue();
+    }
+
     /**
      * Find all approved restaurants, with nearby ones appearing first.
      * Nearby restaurants (within radiusKm) are sorted by distance first,
