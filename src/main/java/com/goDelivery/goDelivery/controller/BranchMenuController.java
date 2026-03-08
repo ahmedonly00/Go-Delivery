@@ -8,8 +8,10 @@ import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
 import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
 import com.goDelivery.goDelivery.model.BranchMenuCategory;
 import com.goDelivery.goDelivery.model.BranchMenuItem;
+import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
 import com.goDelivery.goDelivery.service.BranchDelegationService;
 import com.goDelivery.goDelivery.service.BranchMenuService;
+import com.goDelivery.goDelivery.service.BranchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/branches/{branchId}/menu")
+@RequestMapping("/api/v1/branches")
 @RequiredArgsConstructor
 @Tag(name = "Branch Menu", description = "Branch menu management")
 @CrossOrigin("*")
@@ -36,10 +38,11 @@ public class BranchMenuController {
 
     private final BranchMenuService branchMenuService;
     private final BranchDelegationService delegationService;
+    private final BranchService branchService;
 
     // ── Inheritance ───────────────────────────────────────────────────────────
 
-    @PostMapping("/inherit")
+    @PostMapping("/{branchId}/menu/inherit")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Inherit restaurant menu", description = "Copy all menu categories and items from the restaurant to the branch")
     public ResponseEntity<List<BranchMenuCategory>> inheritRestaurantMenu(
@@ -52,18 +55,16 @@ public class BranchMenuController {
 
     // ── Full menu views ───────────────────────────────────────────────────────
 
-    @GetMapping
-    @PreAuthorize("hasRole('BRANCH_MANAGER')")
-    @Operation(summary = "Get full branch menu", description = "Get all menu categories and items for the branch")
+    @GetMapping("/{branchId}/menu")
+    @Operation(summary = "Get full branch menu", description = "Get all menu categories and items for the branch. Accessible by branch managers and customers.")
     public ResponseEntity<List<BranchMenuCategory>> getBranchMenu(
-            @PathVariable Long branchId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable Long branchId) {
 
-        log.info("Fetching menu for branch {} by user {}", branchId, userDetails.getUsername());
+        log.info("Fetching menu for branch {}", branchId);
         return ResponseEntity.ok(branchMenuService.getBranchMenu(branchId));
     }
 
-    @GetMapping("/progressive")
+    @GetMapping("/{branchId}/menu/progressive")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Get menu progressively", description = "Get menu categories and items progressively for better performance")
     public ResponseEntity<MenuProgressiveResponseDTO> getMenuProgressive(
@@ -79,14 +80,14 @@ public class BranchMenuController {
 
     // ── Categories ────────────────────────────────────────────────────────────
 
-    @GetMapping("/categories")
+    @GetMapping("/{branchId}/menu/categories")
     @Operation(summary = "Get menu categories", description = "Get all menu categories for a branch")
     public ResponseEntity<List<MenuCategoryDTO>> getCategories(@PathVariable Long branchId) {
         log.info("Fetching menu categories for branch {}", branchId);
         return ResponseEntity.ok(branchMenuService.getBranchMenuCategories(branchId));
     }
 
-    @PostMapping("/categories")
+    @PostMapping("/{branchId}/menu/categories")
     @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
     @Operation(summary = "Create menu category", description = "Create a new menu category for the branch")
     public ResponseEntity<MenuCategoryResponseDTO> createCategory(
@@ -99,7 +100,7 @@ public class BranchMenuController {
         return ResponseEntity.ok(branchMenuService.createMenuCategory(branchId, categoryDTO));
     }
 
-    @PutMapping("/categories/{categoryId}")
+    @PutMapping("/{branchId}/menu/categories/{categoryId}")
     @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
     @Operation(summary = "Update menu category", description = "Update a menu category")
     public ResponseEntity<MenuCategoryResponseDTO> updateCategory(
@@ -113,7 +114,7 @@ public class BranchMenuController {
         return ResponseEntity.ok(branchMenuService.updateMenuCategory(branchId, categoryId, categoryDTO));
     }
 
-    @DeleteMapping("/categories/{categoryId}")
+    @DeleteMapping("/{branchId}/menu/categories/{categoryId}")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Delete menu category", description = "Delete a menu category from the branch")
     public ResponseEntity<Void> deleteCategory(
@@ -128,7 +129,7 @@ public class BranchMenuController {
 
     // ── Menu items ────────────────────────────────────────────────────────────
 
-    @GetMapping("/getMenuItems/{categoryId}")
+    @GetMapping("/{branchId}/menu/getMenuItems/{categoryId}")
     @Operation(summary = "Get menu items", description = "Get all menu items in a category")
     public ResponseEntity<List<MenuItemResponse>> getMenuItems(
             @PathVariable Long branchId,
@@ -138,7 +139,7 @@ public class BranchMenuController {
         return ResponseEntity.ok(branchMenuService.getBranchMenuItems(branchId, categoryId));
     }
 
-    @GetMapping("/getBranchMenuItems")
+    @GetMapping("/{branchId}/menu/getBranchMenuItems")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Get branch menu items (flat list)", description = "Retrieve all menu items for the branch including restaurant menu with branch overrides")
     public ResponseEntity<List<MenuItemResponse>> getBranchMenuItems(
@@ -149,7 +150,7 @@ public class BranchMenuController {
         return ResponseEntity.ok(delegationService.getBranchMenu(branchId));
     }
 
-    @PostMapping(value = "/categories/{categoryId}/items/add", consumes = "multipart/form-data")
+    @PostMapping(value = "/{branchId}/menu/categories/{categoryId}/items/add", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
     @Operation(summary = "Add menu item to branch", description = "Send as multipart/form-data. Fields: menuItemName (required), price (required), description, ingredients, isAvailable, preparationTime, imageFile (file).")
     public ResponseEntity<MenuItemResponse> addBranchMenuItem(
@@ -179,7 +180,7 @@ public class BranchMenuController {
                 HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/items/{menuItemId}/update", consumes = "multipart/form-data")
+    @PutMapping(value = "/{branchId}/menu/items/{menuItemId}/update", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('RESTAURANT_ADMIN', 'BRANCH_MANAGER')")
     @Operation(summary = "Update branch menu item", description = "Send as multipart/form-data. All fields optional. Fields: menuItemName, price, description, ingredients, isAvailable, preparationTime, imageFile (file).")
     public ResponseEntity<MenuItemResponse> updateBranchMenuItem(
@@ -206,7 +207,7 @@ public class BranchMenuController {
         return ResponseEntity.ok(delegationService.updateBranchMenuItem(branchId, menuItemId, request, imageFile));
     }
 
-    @PatchMapping("/items/{menuItemId}/autosave")
+    @PatchMapping("/{branchId}/menu/items/{menuItemId}/autosave")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Auto-save menu item", description = "Partially update a menu item field for auto-save functionality")
     public ResponseEntity<BranchMenuItem> autoSaveMenuItem(
@@ -220,7 +221,7 @@ public class BranchMenuController {
         return ResponseEntity.ok(branchMenuService.partialUpdateMenuItem(branchId, menuItemId, partialUpdate, request));
     }
 
-    @DeleteMapping("/items/{menuItemId}")
+    @DeleteMapping("/{branchId}/menu/items/{menuItemId}")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Delete menu item", description = "Delete a menu item from the branch")
     public ResponseEntity<Void> deleteMenuItem(
@@ -232,6 +233,32 @@ public class BranchMenuController {
         log.info("Deleting menu item {} from branch {} by user {}", menuItemId, branchId, userDetails.getUsername());
         branchMenuService.deleteMenuItem(branchId, menuItemId, request);
         return ResponseEntity.noContent().build();
+    }
+
+    // ── Customer-facing endpoints (no authentication required) ────────────────
+
+    @GetMapping("/restaurant/{restaurantId}/branches")
+    @Operation(
+            summary = "Get available branches for a restaurant",
+            description = "Returns all approved and active branches for the given restaurant. " +
+                    "Customer selects a branch before browsing the menu or placing an order.")
+    public ResponseEntity<List<BranchesDTO>> getAvailableBranches(
+            @PathVariable Long restaurantId) {
+
+        log.info("Customer fetching branches for restaurant {}", restaurantId);
+        return ResponseEntity.ok(branchService.getApprovedActiveBranchesForRestaurant(restaurantId));
+    }
+
+    @GetMapping("/{branchId}/details")
+    @Operation(
+            summary = "Get branch details (customer)",
+            description = "Returns branch details including address, delivery fee, and availability. " +
+                    "Use GET /{branchId}/menu to browse the full menu, then POST /api/orders/createOrder to place an order.")
+    public ResponseEntity<BranchesDTO> getBranchDetails(
+            @PathVariable Long branchId) {
+
+        log.info("Customer fetching details for branch {}", branchId);
+        return ResponseEntity.ok(branchService.getBranchById(branchId));
     }
 
 }

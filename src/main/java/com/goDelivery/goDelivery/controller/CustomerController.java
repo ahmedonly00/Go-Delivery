@@ -1,84 +1,85 @@
 package com.goDelivery.goDelivery.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.goDelivery.goDelivery.dtos.customer.CustomerRegistrationRequest;
 import com.goDelivery.goDelivery.dtos.customer.CustomerResponse;
 import com.goDelivery.goDelivery.service.CustomerService;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@Tag(name = "Customers", description = "Customers management")
+@Tag(name = "Customer", description = "Customer registration and profile management")
 public class CustomerController {
 
     private final CustomerService customerService;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> registerCustomer(
+    @Operation(summary = "Register a new customer", description = "Creates a customer account and sends a verification OTP to the provided email.")
+    public ResponseEntity<CustomerResponse> registerCustomer(
             @Valid @RequestBody CustomerRegistrationRequest request) {
-        log.info("Received registration request for email: {}", request.getEmail());
-        
-        try {
-            CustomerResponse customerResponse = customerService.registerCustomer(request);
-            log.info("Successfully registered user with email: {}", request.getEmail());
-            
-            Map<String, Object> successResponse = new HashMap<>();
-            successResponse.put("success", true);
-            successResponse.put("message", "Registration successful. Please check your email for the OTP to verify your account.");
-            successResponse.put("data", customerResponse);
-            successResponse.put("requiresVerification", true);
-            return ResponseEntity.ok(successResponse);
-            
-        } catch (Exception e) {
-            log.error("Error during registration for email: {}", request.getEmail(), e);
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+
+        log.info("Registering new customer with email: {}", request.getEmail());
+        CustomerResponse response = customerService.registerCustomer(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/profile/{email}")
-    public ResponseEntity<CustomerResponse> getCustomerProfile(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable String email) {
-        CustomerResponse customerResponse = customerService.getCustomerProfile(email);
-        return ResponseEntity.ok(customerResponse);
-    }
-
-    @GetMapping("/getAllCustomers")
-    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
-        List<CustomerResponse> customerResponses = customerService.getAllCustomers();
-        return ResponseEntity.ok(customerResponses);
-    }
-
-    @GetMapping("/getCustomerByEmail/{email}")
-    public ResponseEntity<CustomerResponse> getCustomerByEmail(String email,
+    @GetMapping("/profile")
+    @Operation(summary = "Get current customer profile", description = "Returns the profile of the currently authenticated customer.")
+    public ResponseEntity<CustomerResponse> getProfile(
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        CustomerResponse customerResponse = customerService.getCustomerByEmail(email);
-        return ResponseEntity.ok(customerResponse);
+        log.info("Fetching profile for customer: {}", userDetails.getUsername());
+        return ResponseEntity.ok(customerService.getCustomerProfile(userDetails.getUsername()));
     }
-    
+
+    @GetMapping("/{customerId}")
+    @Operation(summary = "Get customer by ID")
+    public ResponseEntity<CustomerResponse> getCustomerById(
+            @PathVariable Long customerId) {
+
+        return ResponseEntity.ok(customerService.getCustomerById(customerId));
+    }
+
+    @PutMapping("/{customerId}")
+    @Operation(summary = "Update customer", description = "Updates the customer's profile information.")
+    public ResponseEntity<CustomerResponse> updateCustomer(
+            @PathVariable Long customerId,
+            @Valid @RequestBody CustomerRegistrationRequest request) {
+
+        log.info("Updating customer with ID: {}", customerId);
+        return ResponseEntity.ok(customerService.updateCustomer(customerId, request));
+    }
+
+    @DeleteMapping("/{customerId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @Operation(summary = "Delete customer", description = "Permanently deletes a customer account. Super admin only.")
+    public ResponseEntity<Void> deleteCustomer(
+            @PathVariable Long customerId) {
+
+        log.info("Deleting customer with ID: {}", customerId);
+        customerService.deleteCustomer(customerId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @Operation(summary = "Get all customers", description = "Returns all registered customers. Super admin only.")
+    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
+
+        return ResponseEntity.ok(customerService.getAllCustomers());
+    }
 }

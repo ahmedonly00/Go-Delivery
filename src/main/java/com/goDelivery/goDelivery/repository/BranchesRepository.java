@@ -21,6 +21,7 @@ public interface BranchesRepository extends JpaRepository<Branches, Long> {
     boolean existsByRestaurant_RestaurantIdAndBranchName(Long restaurantId, String branchName);
     boolean existsByBranchIdAndRestaurant_RestaurantId(Long branchId, Long restaurantId);
     List<Branches> findByApprovalStatus(ApprovalStatus approvalStatus);
+    List<Branches> findByRestaurant_RestaurantIdAndApprovalStatusAndIsActiveTrue(Long restaurantId, ApprovalStatus approvalStatus);
     Page<Branches> findByApprovalStatus(ApprovalStatus approvalStatus, Pageable pageable);
     Page<Branches> findByRestaurant_RestaurantId(Long restaurantId, Pageable pageable);
 }
