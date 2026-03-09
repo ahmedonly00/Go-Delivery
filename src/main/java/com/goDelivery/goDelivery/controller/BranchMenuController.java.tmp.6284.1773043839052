@@ -247,6 +247,17 @@ public class BranchMenuController {
         return ResponseEntity.ok(branchService.getAllApprovedActiveBranches());
     }
 
+    @GetMapping("/restaurant/{restaurantId}/branches")
+    @Operation(
+            summary = "Get available branches for a restaurant",
+            description = "Returns all approved and active branches for the given restaurant.")
+    public ResponseEntity<List<BranchesDTO>> getAvailableBranches(
+            @PathVariable Long restaurantId) {
+
+        log.info("Customer fetching branches for restaurant {}", restaurantId);
+        return ResponseEntity.ok(branchService.getApprovedActiveBranchesForRestaurant(restaurantId));
+    }
+
     @GetMapping("/{branchId}/details")
     @Operation(
             summary = "Get branch details (customer)",
