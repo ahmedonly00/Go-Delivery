@@ -123,8 +123,12 @@ public class BranchMenuService {
 
     // ── Full menu views ───────────────────────────────────────────────────────
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<BranchMenuCategory> getBranchMenu(Long branchId) {
+        if (branchMenuCategoryRepository.countByBranch_BranchId(branchId) == 0) {
+            log.info("Branch {} has no menu, inheriting from restaurant", branchId);
+            inheritRestaurantMenu(branchId);
+        }
         return branchMenuCategoryRepository.findByBranch_BranchId(branchId);
     }
 
@@ -165,10 +169,15 @@ public class BranchMenuService {
 
     // ── Categories ────────────────────────────────────────────────────────────
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<MenuCategoryDTO> getBranchMenuCategories(Long branchId) {
         branchesRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
+
+        if (branchMenuCategoryRepository.countByBranch_BranchId(branchId) == 0) {
+            log.info("Branch {} has no categories, inheriting from restaurant", branchId);
+            inheritRestaurantMenu(branchId);
+        }
 
         return branchMenuCategoryRepository.findByBranch_BranchId(branchId).stream()
                 .map(category -> {
@@ -258,8 +267,13 @@ public class BranchMenuService {
 
     // ── Menu items ────────────────────────────────────────────────────────────
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<MenuItemResponse> getBranchMenuItems(Long branchId, Long categoryId) {
+        if (branchMenuCategoryRepository.countByBranch_BranchId(branchId) == 0) {
+            log.info("Branch {} has no menu, inheriting from restaurant", branchId);
+            inheritRestaurantMenu(branchId);
+        }
+
         BranchMenuCategory category = branchMenuCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu category not found"));
 
