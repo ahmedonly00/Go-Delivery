@@ -58,7 +58,15 @@ public class ShoppingCart {
     
     public Double getTotalPrice() {
         return items.stream()
-                .mapToDouble(item -> item.getMenuItem().getPrice() * item.getQuantity())
+                .mapToDouble(item -> {
+                    float price = 0f;
+                    if (item.getBranchMenuItem() != null) {
+                        price = item.getBranchMenuItem().getPrice();
+                    } else if (item.getMenuItem() != null) {
+                        price = item.getMenuItem().getPrice();
+                    }
+                    return price * item.getQuantity();
+                })
                 .sum();
     }
 }
