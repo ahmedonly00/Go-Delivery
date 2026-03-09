@@ -146,6 +146,8 @@ public class OrderService {
         if (branchId != null && branchId > 0) {
             branch = branchesRepository.findByBranchId(branchId)
                     .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
+            // Ensure the order's restaurant matches the branch's restaurant
+            restaurant = branch.getRestaurant();
         } else if (branchId != null && branchId <= 0) {
             log.warn("Ignoring invalid branchId {} in order request for restaurantId {}", branchId,
                     restaurantOrder.getRestaurantId());

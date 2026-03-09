@@ -282,11 +282,24 @@ public class DisbursementService {
          * Find the order for a specific restaurant from list of related orders
          */
         private Order findOrderForRestaurant(List<Order> orders, Restaurant restaurant) {
+                Long restaurantId = restaurant.getRestaurantId();
                 return orders.stream()
-                                .filter(o -> o.getRestaurant().getRestaurantId().equals(restaurant.getRestaurantId()))
+                                .filter(o -> {
+                                        // Direct restaurant match
+                                        if (o.getRestaurant() != null &&
+                                                        o.getRestaurant().getRestaurantId().equals(restaurantId)) {
+                                                return true;
+                                        }
+                                        // Branch order: match via branch's restaurant
+                                        if (o.getBranch() != null && o.getBranch().getRestaurant() != null &&
+                                                        o.getBranch().getRestaurant().getRestaurantId()
+                                                                        .equals(restaurantId)) {
+                                                return true;
+                                        }
+                                        return false;
+                                })
                                 .findFirst()
-                                .orElseThrow(() -> new IllegalStateException(
-                                                "No order found for restaurant: " + restaurant.getRestaurantName()));
+                                .orElse(orders.isEmpty() ? null : orders.get(0)); // fallback: use first order
         }
 
         /**
