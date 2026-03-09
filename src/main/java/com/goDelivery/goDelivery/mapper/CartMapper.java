@@ -31,7 +31,7 @@ public class CartMapper {
                     .menuItemName(bmi.getMenuItemName())
                     .price(bmi.getPrice().doubleValue())
                     .imageUrl(bmi.getImage());
-        } else {
+        } else if (cartItem.getMenuItem() != null) {
             MenuItem mi = cartItem.getMenuItem();
             builder.menuItemId(mi.getMenuItemId())
                     .menuItemName(mi.getMenuItemName())
