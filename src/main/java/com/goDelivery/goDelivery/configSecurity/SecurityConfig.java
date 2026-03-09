@@ -87,6 +87,14 @@ public class SecurityConfig {
                                                                 "/api/menu-items/getMenuItemsByRestaurant/**",
                                                                 "/api/restaurants/approved",
 
+                                                                // Public branch browsing (no login required)
+                                                                "/api/v1/branches/branches",
+                                                                "/api/v1/branches/*/menu",
+                                                                "/api/v1/branches/*/menu/categories",
+                                                                "/api/v1/branches/*/menu/getMenuItems/**",
+                                                                "/api/v1/branches/*/menu/getBranchMenuItems",
+                                                                "/api/v1/branches/*/details",
+
                                                                 // Public order tracking
                                                                 "/api/orders/*/track",
                                                                 "/api/bikers/tracking/*",
@@ -106,6 +114,10 @@ public class SecurityConfig {
                                                                 "/api/orders/cancelOrder/**",
                                                                 "/api/payments/process",
                                                                 "/api/payments/customer/**",
+                                                                "/api/v1/payments/mpesa/initiate",
+                                                                "/api/v1/payments/mpesa/status/**",
+                                                                "/api/v1/payments/momo/request",
+                                                                "/api/v1/payments/momo/status/**",
                                                                 "/api/locations/**")
                                                 .hasRole("CUSTOMER")
 

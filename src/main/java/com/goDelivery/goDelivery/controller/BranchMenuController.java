@@ -144,13 +144,11 @@ public class BranchMenuController {
     }
 
     @GetMapping("/{branchId}/menu/getBranchMenuItems")
-    @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Get branch menu items (flat list)", description = "Retrieve all menu items for the branch including restaurant menu with branch overrides")
     public ResponseEntity<List<MenuItemResponse>> getBranchMenuItems(
-            @PathVariable Long branchId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable Long branchId) {
 
-        log.info("Getting flat menu items for branch {} by user {}", branchId, userDetails.getUsername());
+        log.info("Getting flat menu items for branch {}", branchId);
         return ResponseEntity.ok(delegationService.getBranchMenu(branchId));
     }
 
