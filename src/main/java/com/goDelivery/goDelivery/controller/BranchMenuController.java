@@ -26,6 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import java.util.List;
 
 @Slf4j
@@ -240,11 +243,12 @@ public class BranchMenuController {
     @GetMapping("/branches")
     @Operation(
             summary = "Get all available branches",
-            description = "Returns all approved and active branches across every restaurant.")
-    public ResponseEntity<List<BranchesDTO>> getAllAvailableBranches() {
+            description = "Returns all approved and active branches across every restaurant. Supports pagination via ?page=0&size=20&sort=branchId.")
+    public ResponseEntity<Page<BranchesDTO>> getAllAvailableBranches(
+            @PageableDefault(size = 20, sort = "branchId") Pageable pageable) {
 
-        log.info("Customer fetching all approved active branches");
-        return ResponseEntity.ok(branchService.getAllApprovedActiveBranches());
+        log.info("Customer fetching all approved active branches - page {}", pageable.getPageNumber());
+        return ResponseEntity.ok(branchService.getAllApprovedActiveBranchesPaged(pageable));
     }
 
     @GetMapping("/{branchId}/details")

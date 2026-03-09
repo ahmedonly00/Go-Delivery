@@ -355,6 +355,14 @@ public class BranchService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<BranchesDTO> getAllApprovedActiveBranchesPaged(
+            org.springframework.data.domain.Pageable pageable) {
+        return branchesRepository
+                .findByApprovalStatusAndIsActiveTrue(ApprovalStatus.APPROVED, pageable)
+                .map(restaurantMapper::toBranchDTO);
+    }
+
     public org.springframework.data.domain.Page<BranchesDTO> getAllBranchesPaged(
             org.springframework.data.domain.Pageable pageable) {
         return branchesRepository.findAll(pageable).map(restaurantMapper::toBranchDTO);

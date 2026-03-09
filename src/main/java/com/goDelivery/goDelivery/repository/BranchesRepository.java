@@ -23,6 +23,7 @@ public interface BranchesRepository extends JpaRepository<Branches, Long> {
     List<Branches> findByApprovalStatus(ApprovalStatus approvalStatus);
     List<Branches> findByRestaurant_RestaurantIdAndApprovalStatusAndIsActiveTrue(Long restaurantId, ApprovalStatus approvalStatus);
     List<Branches> findByApprovalStatusAndIsActiveTrue(ApprovalStatus approvalStatus);
+    Page<Branches> findByApprovalStatusAndIsActiveTrue(ApprovalStatus approvalStatus, Pageable pageable);
     Page<Branches> findByApprovalStatus(ApprovalStatus approvalStatus, Pageable pageable);
     Page<Branches> findByRestaurant_RestaurantId(Long restaurantId, Pageable pageable);
 }
