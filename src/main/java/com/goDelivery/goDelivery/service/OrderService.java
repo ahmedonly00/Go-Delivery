@@ -12,6 +12,7 @@ import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.dtos.order.OrderTrackingResponse;
 import com.goDelivery.goDelivery.dtos.restaurant.RestaurantRevenueDTO;
 import com.goDelivery.goDelivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.repository.BranchMenuItemRepository;
 import com.goDelivery.goDelivery.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.repository.BranchesRepository;
 import com.goDelivery.goDelivery.repository.CustomerRepository;
@@ -44,6 +45,7 @@ public class OrderService {
     private final CustomerRepository customerRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuItemRepository menuItemRepository;
+    private final BranchMenuItemRepository branchMenuItemRepository;
     private final OrderMapper orderMapper;
     private final BikersRepository bikersRepository;
     private final BranchUsersRepository branchUsersRepository;
@@ -74,16 +76,23 @@ public class OrderService {
 
         log.debug("Found {} unique menu item IDs to fetch", menuItemIds.size());
 
-        // Fetch all menu items in one query to avoid N+1 problem
+        // Fetch from restaurant menu items first
         List<MenuItem> allMenuItems = menuItemRepository.findByMenuItemIdIn(menuItemIds);
-        log.debug("Retrieved {} menu items from database", allMenuItems.size());
-
-        if (allMenuItems.size() != menuItemIds.size()) {
-            log.error("Menu item count mismatch. Expected: {}, Found: {}", menuItemIds.size(), allMenuItems.size());
-        }
-
         Map<Long, MenuItem> menuItemMap = allMenuItems.stream()
                 .collect(Collectors.toMap(MenuItem::getMenuItemId, item -> item));
+
+        // Fetch remaining IDs from branch menu items
+        List<Long> missingIds = menuItemIds.stream()
+                .filter(id -> !menuItemMap.containsKey(id))
+                .collect(Collectors.toList());
+        List<BranchMenuItem> allBranchItems = missingIds.isEmpty()
+                ? List.of()
+                : branchMenuItemRepository.findAllById(missingIds);
+        Map<Long, BranchMenuItem> branchMenuItemMap = allBranchItems.stream()
+                .collect(Collectors.toMap(BranchMenuItem::getMenuItemId, item -> item));
+
+        log.debug("Retrieved {} restaurant items and {} branch items from database",
+                allMenuItems.size(), allBranchItems.size());
 
         List<OrderResponse> createdOrders = new ArrayList<>();
         String parentOrderNumber = generateParentOrderNumber(); // Generate a common prefix for all related orders
@@ -98,8 +107,9 @@ public class OrderService {
                     orderRequest,
                     restaurantOrder,
                     customer,
-                    parentOrderNumber + "-" + (i + 1), // Append index to make order numbers unique
-                    menuItemMap // Pass the pre-fetched menu items
+                    parentOrderNumber + "-" + (i + 1),
+                    menuItemMap,
+                    branchMenuItemMap
             );
             createdOrders.add(orderResponse);
             log.debug("Created order with number: {}", orderResponse.getOrderNumber());
@@ -114,7 +124,8 @@ public class OrderService {
             OrderRequest.RestaurantOrderRequest restaurantOrder,
             Customer customer,
             String orderNumber,
-            Map<Long, MenuItem> menuItemMap) {
+            Map<Long, MenuItem> menuItemMap,
+            Map<Long, BranchMenuItem> branchMenuItemMap) {
         // Validate restaurant exists
         Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantOrder.getRestaurantId())
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -140,40 +151,34 @@ public class OrderService {
                     restaurantOrder.getRestaurantId());
         }
 
-        // Calculate total amount using pre-fetched menu items
-        double totalAmount = restaurantOrder.getOrderItems().stream()
-                .mapToDouble(orderItem -> {
-                    MenuItem menuItem = menuItemMap.get(orderItem.getMenuItemId());
-                    if (menuItem == null) {
-                        throw new ResourceNotFoundException(
-                                "Menu item not found with id: " + orderItem.getMenuItemId());
-                    }
-                    return menuItem.getPrice() * orderItem.getQuantity();
-                })
-                .sum();
+        // Calculate total amount and build order items (handles both menu types)
+        double totalAmount = 0;
+        List<OrderItem> orderItems = new ArrayList<>();
 
-        // Create order items list using pre-fetched menu items
-        List<OrderItem> orderItems = restaurantOrder.getOrderItems().stream()
-                .map(item -> {
-                    MenuItem menuItem = menuItemMap.get(item.getMenuItemId());
-                    if (menuItem == null) {
-                        throw new ResourceNotFoundException("Menu item not found with id: " + item.getMenuItemId());
-                    }
+        for (OrderRequest.OrderItemRequest item : restaurantOrder.getOrderItems()) {
+            Long itemId = item.getMenuItemId();
+            OrderItem orderItem = new OrderItem();
+            orderItem.setQuantity(item.getQuantity());
+            orderItem.setSpecialRequests(item.getSpecialInstructions());
+            orderItem.setCreatedAt(LocalDate.now());
 
-                    OrderItem orderItem = new OrderItem();
-                    orderItem.setMenuItem(menuItem);
-                    orderItem.setQuantity(item.getQuantity());
-                    orderItem.setUnitPrice(menuItem.getPrice());
-                    orderItem.setTotalPrice(menuItem.getPrice() * item.getQuantity());
-                    orderItem.setSpecialRequests(item.getSpecialInstructions());
-                    orderItem.setCreatedAt(LocalDate.now());
+            if (menuItemMap.containsKey(itemId)) {
+                MenuItem menuItem = menuItemMap.get(itemId);
+                orderItem.setMenuItem(menuItem);
+                orderItem.setUnitPrice(menuItem.getPrice());
+                orderItem.setTotalPrice(menuItem.getPrice() * item.getQuantity());
+            } else if (branchMenuItemMap.containsKey(itemId)) {
+                BranchMenuItem bmi = branchMenuItemMap.get(itemId);
+                orderItem.setBranchMenuItem(bmi);
+                orderItem.setUnitPrice(bmi.getPrice());
+                orderItem.setTotalPrice(bmi.getPrice() * item.getQuantity());
+            } else {
+                throw new ResourceNotFoundException("Menu item not found with id: " + itemId);
+            }
 
-                    // Set the order reference (will be set after order is saved)
-                    // Note: We'll set this after saving the order
-
-                    return orderItem;
-                })
-                .collect(Collectors.toList());
+            totalAmount += orderItem.getTotalPrice();
+            orderItems.add(orderItem);
+        }
 
         // Create order with all details
         Order order = new Order();

@@ -43,8 +43,13 @@ public class OrderItem {
 
     // Many Order Items reference One Menu Item
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_item_id", nullable = false)
+    @JoinColumn(name = "menu_item_id")
     private MenuItem menuItem;
+
+    // Many Order Items can reference One Branch Menu Item (for branch orders)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_menu_item_id")
+    private BranchMenuItem branchMenuItem;
 
     // Many Order Items can reference One Variant (optional)
     @ManyToOne(fetch = FetchType.LAZY)
