@@ -296,7 +296,13 @@ public class DisbursementService {
                 // Group order items by restaurant and calculate total amount for each
                 return orderItems.stream()
                                 .collect(Collectors.groupingBy(
-                                                item -> item.getMenuItem().getRestaurant(),
+                                                item -> {
+                                                        if (item.getMenuItem() != null) {
+                                                                return item.getMenuItem().getRestaurant();
+                                                        } else {
+                                                                return item.getBranchMenuItem().getBranch().getRestaurant();
+                                                        }
+                                                },
                                                 Collectors.summingDouble(
                                                                 item -> item.getUnitPrice() * item.getQuantity())));
         }
