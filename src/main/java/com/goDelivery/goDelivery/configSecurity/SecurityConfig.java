@@ -90,6 +90,7 @@ public class SecurityConfig {
                                                                 // Public branch browsing (no login required)
                                                                 "/api/v1/branches/branches",
                                                                 "/api/v1/branches/*/menu",
+                                                                "/api/v1/branches/*/menu/inherit",
                                                                 "/api/v1/branches/*/menu/categories",
                                                                 "/api/v1/branches/*/menu/getMenuItems/**",
                                                                 "/api/v1/branches/*/menu/getBranchMenuItems",

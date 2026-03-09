@@ -47,13 +47,11 @@ public class BranchMenuController {
     // ── Inheritance ───────────────────────────────────────────────────────────
 
     @PostMapping("/{branchId}/menu/inherit")
-    @PreAuthorize("hasRole('BRANCH_MANAGER')")
     @Operation(summary = "Inherit restaurant menu", description = "Copy all menu categories and items from the restaurant to the branch")
     public ResponseEntity<List<BranchMenuCategory>> inheritRestaurantMenu(
-            @PathVariable Long branchId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable Long branchId) {
 
-        log.info("Inheriting restaurant menu for branch {} by user {}", branchId, userDetails.getUsername());
+        log.info("Inheriting restaurant menu for branch {}", branchId);
         return ResponseEntity.ok(branchMenuService.inheritRestaurantMenu(branchId));
     }
 
