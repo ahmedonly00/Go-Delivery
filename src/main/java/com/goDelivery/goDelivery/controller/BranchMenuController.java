@@ -29,6 +29,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springdoc.core.annotations.ParameterObject;
 import java.util.List;
 
 @Slf4j
@@ -245,7 +246,7 @@ public class BranchMenuController {
             summary = "Get all available branches",
             description = "Returns all approved and active branches across every restaurant. Supports pagination via ?page=0&size=20&sort=branchId.")
     public ResponseEntity<Page<BranchesDTO>> getAllAvailableBranches(
-            @PageableDefault(size = 20, sort = "branchId") Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 20, sort = "branchId") Pageable pageable) {
 
         log.info("Customer fetching all approved active branches - page {}", pageable.getPageNumber());
         return ResponseEntity.ok(branchService.getAllApprovedActiveBranchesPaged(pageable));
