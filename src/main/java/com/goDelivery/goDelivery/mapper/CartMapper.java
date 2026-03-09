@@ -2,7 +2,9 @@ package com.goDelivery.goDelivery.mapper;
 
 import com.goDelivery.goDelivery.dtos.cart.CartItemDTO;
 import com.goDelivery.goDelivery.dtos.cart.ShoppingCartDTO;
+import com.goDelivery.goDelivery.model.BranchMenuItem;
 import com.goDelivery.goDelivery.model.CartItem;
+import com.goDelivery.goDelivery.model.MenuItem;
 import com.goDelivery.goDelivery.model.ShoppingCart;
 import org.springframework.stereotype.Component;
 
@@ -18,15 +20,26 @@ public class CartMapper {
             return null;
         }
 
-        return CartItemDTO.builder()
+        CartItemDTO.CartItemDTOBuilder builder = CartItemDTO.builder()
                 .id(cartItem.getId())
-                .menuItemId(cartItem.getMenuItem().getMenuItemId())
-                .menuItemName(cartItem.getMenuItem().getMenuItemName())
-                .price(cartItem.getMenuItem().getPrice().doubleValue())
                 .quantity(cartItem.getQuantity())
-                .specialInstructions(cartItem.getSpecialInstructions())
-                .imageUrl(cartItem.getMenuItem().getImage())
-                .build();
+                .specialInstructions(cartItem.getSpecialInstructions());
+
+        if (cartItem.getBranchMenuItem() != null) {
+            BranchMenuItem bmi = cartItem.getBranchMenuItem();
+            builder.menuItemId(bmi.getMenuItemId())
+                    .menuItemName(bmi.getMenuItemName())
+                    .price(bmi.getPrice().doubleValue())
+                    .imageUrl(bmi.getImage());
+        } else {
+            MenuItem mi = cartItem.getMenuItem();
+            builder.menuItemId(mi.getMenuItemId())
+                    .menuItemName(mi.getMenuItemName())
+                    .price(mi.getPrice().doubleValue())
+                    .imageUrl(mi.getImage());
+        }
+
+        return builder.build();
     }
 
     //Convert ShoppingCart to ShoppingCartDTO

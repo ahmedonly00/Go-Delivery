@@ -21,8 +21,12 @@ public class CartItem {
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_item_id", nullable = false)
+    @JoinColumn(name = "menu_item_id")
     private MenuItem menuItem;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_menu_item_id")
+    private BranchMenuItem branchMenuItem;
     
     @Column(nullable = false)
     private Integer quantity;

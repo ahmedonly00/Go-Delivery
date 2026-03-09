@@ -9,10 +9,12 @@ import com.goDelivery.goDelivery.dtos.cart.CartItemDTO;
 import com.goDelivery.goDelivery.dtos.cart.ShoppingCartDTO;
 import com.goDelivery.goDelivery.exception.CartOperationException;
 import com.goDelivery.goDelivery.mapper.CartMapper;
+import com.goDelivery.goDelivery.model.BranchMenuItem;
 import com.goDelivery.goDelivery.model.CartItem;
 import com.goDelivery.goDelivery.model.Customer;
 import com.goDelivery.goDelivery.model.MenuItem;
 import com.goDelivery.goDelivery.model.ShoppingCart;
+import com.goDelivery.goDelivery.repository.BranchMenuItemRepository;
 import com.goDelivery.goDelivery.repository.CartItemRepository;
 import com.goDelivery.goDelivery.repository.MenuItemRepository;
 import com.goDelivery.goDelivery.repository.ShoppingCartRepository;
@@ -28,6 +30,7 @@ public class CartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final CartItemRepository cartItemRepository;
     private final MenuItemRepository menuItemRepository;
+    private final BranchMenuItemRepository branchMenuItemRepository;
     private final CartMapper cartMapper;
     
 
@@ -44,20 +47,36 @@ public class CartService {
     @Transactional
     public ShoppingCartDTO addItemToCart(Long customerId, CartItemDTO cartItemDTO) {
         log.info("Adding item to cart for customer ID: {}", customerId);
-        
+
         validateCartItem(cartItemDTO);
-        
+
         ShoppingCart cart = getOrCreateCart(customerId);
-        MenuItem menuItem = getMenuItem(cartItemDTO.getMenuItemId());
-        
-        Optional<CartItem> existingItem = findCartItem(cart, menuItem.getMenuItemId());
-        
-        if (existingItem.isPresent()) {
-            updateExistingCartItem(existingItem.get(), cartItemDTO);
+
+        // Try restaurant menu item first, then branch menu item
+        Optional<MenuItem> menuItemOpt = menuItemRepository.findById(cartItemDTO.getMenuItemId());
+        if (menuItemOpt.isPresent()) {
+            MenuItem menuItem = menuItemOpt.get();
+            Optional<CartItem> existingItem = cart.getItems().stream()
+                    .filter(i -> i.getMenuItem() != null && i.getMenuItem().getMenuItemId().equals(menuItem.getMenuItemId()))
+                    .findFirst();
+            if (existingItem.isPresent()) {
+                updateExistingCartItem(existingItem.get(), cartItemDTO);
+            } else {
+                addNewCartItem(cart, menuItem, cartItemDTO);
+            }
         } else {
-            addNewCartItem(cart, menuItem, cartItemDTO);
+            BranchMenuItem branchMenuItem = branchMenuItemRepository.findById(cartItemDTO.getMenuItemId())
+                    .orElseThrow(() -> new CartOperationException("Menu item not found with ID: " + cartItemDTO.getMenuItemId()));
+            Optional<CartItem> existingItem = cart.getItems().stream()
+                    .filter(i -> i.getBranchMenuItem() != null && i.getBranchMenuItem().getMenuItemId().equals(branchMenuItem.getMenuItemId()))
+                    .findFirst();
+            if (existingItem.isPresent()) {
+                updateExistingCartItem(existingItem.get(), cartItemDTO);
+            } else {
+                addNewBranchCartItem(cart, branchMenuItem, cartItemDTO);
+            }
         }
-        
+
         return cartMapper.toShoppingCartDTO(shoppingCartRepository.save(cart));
     }
 
@@ -121,17 +140,6 @@ public class CartService {
                 .orElseThrow(() -> new CartOperationException("Shopping cart not found for customer ID: " + customerId));
     }
     
-    private MenuItem getMenuItem(Long menuItemId) {
-        return menuItemRepository.findById(menuItemId)
-                .orElseThrow(() -> new CartOperationException("Menu item not found with ID: " + menuItemId));
-    }
-    
-    private Optional<CartItem> findCartItem(ShoppingCart cart, Long menuItemId) {
-        return cart.getItems().stream()
-                .filter(item -> item.getMenuItem().getMenuItemId().equals(menuItemId))
-                .findFirst();
-    }
-    
     private CartItem getCartItem(ShoppingCart cart, Long itemId) {
         return cartItemRepository.findById(itemId)
                 .filter(item -> item.getCart().getId().equals(cart.getId()))
@@ -155,6 +163,17 @@ public class CartService {
     private void addNewCartItem(ShoppingCart cart, MenuItem menuItem, CartItemDTO cartItemDTO) {
         CartItem newItem = CartItem.builder()
                 .menuItem(menuItem)
+                .quantity(cartItemDTO.getQuantity())
+                .specialInstructions(cartItemDTO.getSpecialInstructions())
+                .cart(cart)
+                .build();
+        cart.addItem(newItem);
+        cartItemRepository.save(newItem);
+    }
+
+    private void addNewBranchCartItem(ShoppingCart cart, BranchMenuItem branchMenuItem, CartItemDTO cartItemDTO) {
+        CartItem newItem = CartItem.builder()
+                .branchMenuItem(branchMenuItem)
                 .quantity(cartItemDTO.getQuantity())
                 .specialInstructions(cartItemDTO.getSpecialInstructions())
                 .cart(cart)
