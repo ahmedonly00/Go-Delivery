@@ -148,9 +148,23 @@ public class OrderService {
                     .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
             // Ensure the order's restaurant matches the branch's restaurant
             restaurant = branch.getRestaurant();
-        } else if (branchId != null && branchId <= 0) {
-            log.warn("Ignoring invalid branchId {} in order request for restaurantId {}", branchId,
-                    restaurantOrder.getRestaurantId());
+        } else {
+            // branchId is null or 0 — auto-resolve from branch menu items if present
+            Long resolvedBranchId = restaurantOrder.getOrderItems().stream()
+                    .map(item -> branchMenuItemMap.get(item.getMenuItemId()))
+                    .filter(bmi -> bmi != null && bmi.getBranch() != null)
+                    .map(bmi -> bmi.getBranch().getBranchId())
+                    .findFirst()
+                    .orElse(null);
+            if (resolvedBranchId != null) {
+                branch = branchesRepository.findByBranchId(resolvedBranchId)
+                        .orElse(null);
+                if (branch != null) {
+                    restaurant = branch.getRestaurant();
+                    log.info("Auto-resolved branchId {} from branch menu items for restaurantId {}",
+                            resolvedBranchId, restaurantOrder.getRestaurantId());
+                }
+            }
         }
 
         // Calculate total amount and build order items (handles both menu types)

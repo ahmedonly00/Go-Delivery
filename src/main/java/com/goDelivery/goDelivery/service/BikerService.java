@@ -186,8 +186,8 @@ public class BikerService {
             throw new IllegalStateException("Biker account is not active");
         }
 
-        // Validate order exists
-        Order order = orderRepository.findById(request.getOrderId())
+        // Lock the order row to prevent race conditions (two bikers accepting simultaneously)
+        Order order = orderRepository.findByOrderIdForUpdate(request.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + request.getOrderId()));
 
         // Check if order is in a valid state for acceptance
@@ -196,9 +196,13 @@ public class BikerService {
                     "Order is not available for delivery acceptance. Current status: " + order.getOrderStatus());
         }
 
-        // Check if order is already assigned to another biker
-        if (order.getBikers() != null && !order.getBikers().getBikerId().equals(biker.getBikerId())) {
-            throw new IllegalStateException("Order is already assigned to another biker");
+        // Check if order is already assigned to another biker — enforced for both
+        // restaurant and branch orders
+        if (order.getBikers() != null) {
+            if (!order.getBikers().getBikerId().equals(biker.getBikerId())) {
+                throw new IllegalStateException("Order is already accepted by another biker");
+            }
+            // Same biker re-accepting — idempotent, allow through
         }
 
         // Assign biker to order
@@ -298,8 +302,12 @@ public class BikerService {
             throw new IllegalStateException("Biker account is not active");
         }
 
-        // Get orders that are READY and not assigned to any biker
-        return orderRepository.findByOrderStatusAndBikersIsNull(OrderStatus.READY);
+        // Returns all READY orders (restaurant and branch) not yet assigned to any biker
+        List<Order> available = orderRepository.findByOrderStatusAndBikersIsNull(OrderStatus.READY);
+        log.info("Found {} available orders for biker {} ({} from branches)",
+                available.size(), bikerId,
+                available.stream().filter(o -> o.getBranch() != null).count());
+        return available;
     }
 
     @Transactional(readOnly = true)
