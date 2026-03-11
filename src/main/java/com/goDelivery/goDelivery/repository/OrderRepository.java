@@ -31,7 +31,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
         List<Order> findAllByBranch_BranchId(Long branchId);
 
+        Page<Order> findAllByBranch_BranchId(Long branchId, Pageable pageable);
+
         List<Order> findByBranch_BranchIdAndOrderStatus(Long branchId, OrderStatus orderStatus);
+
+        Page<Order> findByBranch_BranchIdAndOrderStatus(Long branchId, OrderStatus orderStatus, Pageable pageable);
 
         List<Order> findByRestaurant_RestaurantIdAndOrderStatus(Long restaurantId, OrderStatus orderStatus);
 

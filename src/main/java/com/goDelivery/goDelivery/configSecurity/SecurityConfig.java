@@ -173,8 +173,8 @@ public class SecurityConfig {
                                                 // Shared endpoints
                                                 .requestMatchers(
                                                                 "/api/orders/**")
-                                                .hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER", "BRANCH_MANAGER",
-                                                                "SUPER_ADMIN")
+                                                .hasAnyRole("RESTAURANT_ADMIN", "CUSTOMER", "CASHIER", "BRANCH_CASHIER",
+                                                                "BRANCH_MANAGER", "SUPER_ADMIN")
 
                                                 // Biker endpoints
                                                 .requestMatchers(
@@ -196,6 +196,10 @@ public class SecurityConfig {
                                                                 "/api/v1/disbursements/restaurant/summary",
                                                                 "/api/v1/disbursements/restaurant/transactions")
                                                 .hasRole("CASHIER")
+
+                                                // Branch cashier endpoints
+                                                .requestMatchers("/api/v1/branch-cashier/**")
+                                                .hasAnyRole("BRANCH_CASHIER", "BRANCH_MANAGER", "RESTAURANT_ADMIN")
 
                                                 // Profile endpoints - accessible to all authenticated users
                                                 .requestMatchers(
