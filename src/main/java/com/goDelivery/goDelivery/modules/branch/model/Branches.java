@@ -1,0 +1,177 @@
+package com.goDelivery.goDelivery.modules.branch.model;
+
+import com.goDelivery.goDelivery.Enum.ApprovalStatus;
+import com.goDelivery.goDelivery.Enum.BranchSetupStatus;
+import com.goDelivery.goDelivery.Enum.DeliveryType;
+import com.goDelivery.goDelivery.Enum.DistanceUnit;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "branches")
+public class Branches {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "branch_id", nullable = false)
+    private Long branchId;
+
+    @Column(name = "branch_name", nullable = false)
+    private String branchName;
+
+    @Column(name = "address", nullable = false)
+    private String address;
+
+    @Column(name = "location", nullable = false)
+    private String location;
+
+    @Column(name = "cuisine_type", nullable = false)
+    private String cuisineType;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
+
+    @Column(name = "logo_url")
+    private String logoUrl;
+
+    // Setup status tracking
+    @Enumerated(EnumType.STRING)
+    @Column(name = "setup_status")
+    @Builder.Default
+    private BranchSetupStatus setupStatus = BranchSetupStatus.ACCOUNT_CREATED;
+
+    // Delivery configuration
+    @Enumerated(EnumType.STRING)
+    @Column(name = "delivery_type", nullable = false)
+    private DeliveryType deliveryType;
+
+    @Column(name = "delivery_fee")
+    private Float deliveryFee;
+
+    @Column(name = "delivery_radius")
+    private Double deliveryRadius;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "radius_unit")
+    @Builder.Default
+    private DistanceUnit radiusUnit = DistanceUnit.KILOMETERS; // Unit for delivery radius
+
+    @Column(name = "base_delivery_fee")
+    private Float baseDeliveryFee; // Base fee for SELF_DELIVERY
+
+    @Column(name = "per_km_fee")
+    private Float perKmFee; // Additional fee per km for SELF_DELIVERY
+
+    @Column(name = "minimum_order_amount")
+    private Float minimumOrderAmount;
+
+    @Column(name = "average_preparation_time")
+    private Integer averagePreparationTime;
+
+    @Column(name = "delivery_available")
+    private Boolean deliveryAvailable;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDate createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDate updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status", nullable = false)
+    private ApprovalStatus approvalStatus;
+
+    // Business Documents
+    @Column(name = "commercial_registration_certificate_url")
+    private String commercialRegistrationCertificateUrl;
+
+    @Column(name = "tax_identification_number")
+    private String taxIdentificationNumber;
+
+    @Column(name = "tax_identification_document_url")
+    private String taxIdentificationDocumentUrl;
+
+    @Column(name = "description", length = 500)
+    private String description;
+
+    @Column(name = "approved_by")
+    private String approvedBy;
+
+    @Column(name = "approved_at")
+    private LocalDate approvedAt;
+
+    @Column(name = "reviewed_by")
+    private String reviewedBy;
+
+    @Column(name = "reviewed_at")
+    private LocalDate reviewedAt;
+
+    @Column(name = "rejection_reason", length = 500)
+    private String rejectionReason;
+
+    // Ratings
+    @Column(name = "average_rating")
+    private Double averageRating;
+
+    @Column(name = "review_count")
+    private Integer reviewCount;
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDate now = LocalDate.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDate.now();
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Restaurant restaurant;
+
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Order> orders;
+
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Review> reviews;
+
+    @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY)
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<BranchUsers> branchUsers = new ArrayList<>();
+
+    @OneToOne(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private OperatingHours operatingHours;
+
+}
