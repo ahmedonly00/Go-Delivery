@@ -7,6 +7,7 @@ import com.goDelivery.goDelivery.dtos.order.OrderItemResponse;
 import com.goDelivery.goDelivery.dtos.order.OrderRequest;
 import com.goDelivery.goDelivery.dtos.order.OrderResponse;
 import com.goDelivery.goDelivery.model.Branches;
+import com.goDelivery.goDelivery.model.BranchMenuItem;
 import com.goDelivery.goDelivery.model.Customer;
 import com.goDelivery.goDelivery.model.MenuItem;
 import com.goDelivery.goDelivery.model.Order;
@@ -55,6 +56,8 @@ public class OrderMapper {
                 .customerName(order.getCustomer() != null ? order.getCustomer().getFullNames() : null)
                 .restaurantId(order.getRestaurant() != null ? order.getRestaurant().getRestaurantId() : null)
                 .restaurantName(order.getRestaurant() != null ? order.getRestaurant().getRestaurantName() : null)
+                .branchId(order.getBranch() != null ? order.getBranch().getBranchId() : null)
+                .branchName(order.getBranch() != null ? order.getBranch().getBranchName() : null)
                 .bikerId(order.getBikers() != null ? order.getBikers().getBikerId() : null)
                 .items(toOrderItemResponseList(order.getOrderItems())) // Add this line to include order items
                 .build();
@@ -77,6 +80,12 @@ public class OrderMapper {
         }
 
         MenuItem menuItem = orderItem.getMenuItem();
+        BranchMenuItem branchMenuItem = orderItem.getBranchMenuItem();
+
+        Long menuItemId = menuItem != null ? menuItem.getMenuItemId()
+                : (branchMenuItem != null ? branchMenuItem.getMenuItemId() : null);
+        String menuItemName = menuItem != null ? menuItem.getMenuItemName()
+                : (branchMenuItem != null ? branchMenuItem.getMenuItemName() : null);
 
         return OrderItemResponse.builder()
                 .orderItemId(orderItem.getOrderItemId())
@@ -85,8 +94,8 @@ public class OrderMapper {
                 .totalPrice(orderItem.getTotalPrice())
                 .specialRequests(orderItem.getSpecialRequests())
                 .createdAt(LocalDate.now())
-                .menuItemId(menuItem != null ? menuItem.getMenuItemId() : null)
-                .menuItemName(menuItem != null ? menuItem.getMenuItemName() : null)
+                .menuItemId(menuItemId)
+                .menuItemName(menuItemName)
                 .build();
     }
 

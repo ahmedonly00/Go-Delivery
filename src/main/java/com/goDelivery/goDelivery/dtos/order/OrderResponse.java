@@ -42,11 +42,13 @@ public class OrderResponse {
     // Related entity IDs
     private Long customerId;
     private Long restaurantId;
+    private Long branchId;
     private Long bikerId;
 
     // Related entity names
     private String customerName;
     private String restaurantName;
+    private String branchName;
 
     // Order items
     private List<OrderItemResponse> items;
