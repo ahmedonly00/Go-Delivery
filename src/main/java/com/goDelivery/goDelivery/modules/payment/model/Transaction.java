@@ -17,8 +17,8 @@ import jakarta.persistence.PreUpdate;
 
 import java.time.LocalDateTime;
 
-import com.goDelivery.goDelivery.Enum.TransactionStatus;
-import com.goDelivery.goDelivery.Enum.TransactionType;
+import com.goDelivery.goDelivery.shared.enums.TransactionStatus;
+import com.goDelivery.goDelivery.shared.enums.TransactionType;
 
 @Entity
 @Table(name = "transactions")

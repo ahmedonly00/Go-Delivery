@@ -3,8 +3,8 @@ package com.goDelivery.goDelivery.modules.payment.dto;
  
 import java.time.LocalDateTime;
 
-import com.goDelivery.goDelivery.Enum.DisburseType;
-import com.goDelivery.goDelivery.Enum.DisbursementStatus;
+import com.goDelivery.goDelivery.shared.enums.DisburseType;
+import com.goDelivery.goDelivery.shared.enums.DisbursementStatus;
 
 import lombok.*;
 

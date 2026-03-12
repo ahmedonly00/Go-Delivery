@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.restaurant.repository;
 
-import com.goDelivery.goDelivery.model.MenuAuditLog;
+import com.goDelivery.goDelivery.modules.analytics.model.MenuAuditLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

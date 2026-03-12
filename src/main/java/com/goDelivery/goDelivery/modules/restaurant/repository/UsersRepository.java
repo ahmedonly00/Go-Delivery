@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.restaurant.repository;
 
-import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
+import com.goDelivery.goDelivery.shared.enums.Roles;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

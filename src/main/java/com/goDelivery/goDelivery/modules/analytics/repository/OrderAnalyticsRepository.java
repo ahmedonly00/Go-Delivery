@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.analytics.repository;
 
-import com.goDelivery.goDelivery.model.Order;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -8,10 +8,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
-import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
-import com.goDelivery.goDelivery.dtos.menu.UpdateMenuItemRequest;
-import com.goDelivery.goDelivery.service.MenuItemService;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemResponse;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemRequest;
+import com.goDelivery.goDelivery.modules.restaurant.dto.UpdateMenuItemRequest;
+import com.goDelivery.goDelivery.modules.restaurant.service.MenuItemService;
 import com.goDelivery.goDelivery.service.FileStorageService;
 import org.springframework.web.multipart.MultipartFile;
 

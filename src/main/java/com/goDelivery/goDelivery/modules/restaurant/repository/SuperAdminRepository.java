@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.restaurant.repository;
 
-import com.goDelivery.goDelivery.model.SuperAdmin;
+import com.goDelivery.goDelivery.modules.restaurant.model.SuperAdmin;
 
 import java.util.Optional;
 

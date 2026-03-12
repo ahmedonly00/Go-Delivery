@@ -5,9 +5,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
-import com.goDelivery.goDelivery.dtos.menu.MenuCategoryResponseDTO;
-import com.goDelivery.goDelivery.model.MenuCategory;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryResponseDTO;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuCategory;
 
 @Component
 public class MenuCategoryMapper {

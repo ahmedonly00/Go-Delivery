@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.payment.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.goDelivery.goDelivery.model.Transaction;
-import com.goDelivery.goDelivery.Enum.TransactionStatus;
+import com.goDelivery.goDelivery.modules.payment.model.Transaction;
+import com.goDelivery.goDelivery.shared.enums.TransactionStatus;
 
 import java.util.*;
 

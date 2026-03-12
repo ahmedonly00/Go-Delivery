@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.goDelivery.goDelivery.dtos.promotion.PromotionRequest;
-import com.goDelivery.goDelivery.dtos.promotion.PromotionResponse;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.mapper.PromotionMapper;
-import com.goDelivery.goDelivery.model.Promotion;
-import com.goDelivery.goDelivery.repository.PromotionRepository;
+import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionRequest;
+import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionResponse;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionMapper;
+import com.goDelivery.goDelivery.modules.restaurant.model.Promotion;
+import com.goDelivery.goDelivery.modules.restaurant.repository.PromotionRepository;
 
 import lombok.RequiredArgsConstructor;
 

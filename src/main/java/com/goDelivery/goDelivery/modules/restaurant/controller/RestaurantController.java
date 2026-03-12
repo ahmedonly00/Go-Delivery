@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.restaurant.controller;
 
-import com.goDelivery.goDelivery.dtos.report.OrderReportDTO;
-import com.goDelivery.goDelivery.dtos.report.SalesReportDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.*;
-import com.goDelivery.goDelivery.service.RestaurantService;
+import com.goDelivery.goDelivery.modules.analytics.dto.OrderReportDTO;
+import com.goDelivery.goDelivery.modules.analytics.dto.SalesReportDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.*;
+import com.goDelivery.goDelivery.modules.restaurant.service.RestaurantService;
 import com.goDelivery.goDelivery.service.FileStorageService;
 import com.goDelivery.goDelivery.service.ReportService;
 
@@ -38,7 +38,7 @@ public class RestaurantController {
     private final RestaurantRegistrationService registrationService;
     private final FileStorageService fileStorageService;
     private final ReportService reportService;
-    private final com.goDelivery.goDelivery.mapper.RestaurantMapper restaurantMapper;
+    private final com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantMapper restaurantMapper;
 
     @PostMapping("/registerAdmin")
     public ResponseEntity<RestaurantAdminResponseDTO> registerAdmin(
@@ -234,9 +234,9 @@ public class RestaurantController {
     // Super Admin: Get pending restaurants for review (with documents)
     @GetMapping(value = "/pending")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<List<com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO>> getPendingRestaurants(
+    public ResponseEntity<List<com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantReviewDTO>> getPendingRestaurants(
             @AuthenticationPrincipal UserDetails userDetails) {
-        List<com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO> pendingRestaurants = restaurantService
+        List<com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantReviewDTO> pendingRestaurants = restaurantService
                 .getPendingRestaurantsForReview();
         return ResponseEntity.ok(pendingRestaurants);
     }
@@ -244,10 +244,10 @@ public class RestaurantController {
     // Super Admin: Get specific restaurant details for review (with all documents)
     @GetMapping(value = "/{restaurantId}/review-details")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO> getRestaurantForReview(
+    public ResponseEntity<com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantReviewDTO> getRestaurantForReview(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long restaurantId) {
-        com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO restaurant = restaurantService
+        com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantReviewDTO restaurant = restaurantService
                 .getRestaurantForReview(restaurantId);
         return ResponseEntity.ok(restaurant);
     }
@@ -257,7 +257,7 @@ public class RestaurantController {
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<RestaurantDTO>> getRestaurantsByApprovalStatus(
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable com.goDelivery.goDelivery.Enum.ApprovalStatus status) {
+            @PathVariable com.goDelivery.goDelivery.shared.enums.ApprovalStatus status) {
         List<RestaurantDTO> restaurants = restaurantService.getRestaurantsByApprovalStatus(status);
         return ResponseEntity.ok(restaurants);
     }
@@ -268,7 +268,7 @@ public class RestaurantController {
     public ResponseEntity<?> reviewRestaurant(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long restaurantId,
-            @Valid @RequestBody com.goDelivery.goDelivery.dtos.restaurant.RestaurantApprovalRequest request) {
+            @Valid @RequestBody com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantApprovalRequest request) {
         try {
             RestaurantDTO reviewedRestaurant;
             String message;
@@ -322,7 +322,7 @@ public class RestaurantController {
             @RequestParam(required = false) Double minRating,
             @RequestParam(required = false) Float maxDeliveryFee) {
 
-        List<com.goDelivery.goDelivery.model.Restaurant> restaurants;
+        List<com.goDelivery.goDelivery.modules.restaurant.model.Restaurant> restaurants;
 
         if (latitude != null && longitude != null) {
             // Validate coordinates only when provided
@@ -345,7 +345,7 @@ public class RestaurantController {
         }
 
         // Apply additional filters
-        java.util.stream.Stream<com.goDelivery.goDelivery.model.Restaurant> stream = restaurants.stream();
+        java.util.stream.Stream<com.goDelivery.goDelivery.modules.restaurant.model.Restaurant> stream = restaurants.stream();
 
         if (cuisineType != null && !cuisineType.isEmpty()) {
             stream = stream.filter(r -> r.getCuisineType().equalsIgnoreCase(cuisineType));
@@ -359,18 +359,18 @@ public class RestaurantController {
             stream = stream.filter(r -> r.getDeliveryFee() != null && r.getDeliveryFee() <= maxDeliveryFee);
         }
 
-        List<com.goDelivery.goDelivery.model.Restaurant> filtered = stream
+        List<com.goDelivery.goDelivery.modules.restaurant.model.Restaurant> filtered = stream
                 .collect(java.util.stream.Collectors.toList());
 
         // Apply sorting
         switch (sortBy.toLowerCase()) {
             case "rating":
                 filtered.sort(java.util.Comparator
-                        .comparingDouble(com.goDelivery.goDelivery.model.Restaurant::getRating).reversed());
+                        .comparingDouble(com.goDelivery.goDelivery.modules.restaurant.model.Restaurant::getRating).reversed());
                 break;
             case "popularity":
                 filtered.sort(java.util.Comparator
-                        .comparingInt(com.goDelivery.goDelivery.model.Restaurant::getTotalReviews).reversed());
+                        .comparingInt(com.goDelivery.goDelivery.modules.restaurant.model.Restaurant::getTotalReviews).reversed());
                 break;
             case "distance":
             default:

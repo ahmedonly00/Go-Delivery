@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.customer.controller;
 
-import com.goDelivery.goDelivery.dtos.feedback.FeedbackRequest;
-import com.goDelivery.goDelivery.dtos.feedback.FeedbackResponse;
+import com.goDelivery.goDelivery.modules.customer.dto.FeedbackRequest;
+import com.goDelivery.goDelivery.modules.customer.dto.FeedbackResponse;
 import com.goDelivery.goDelivery.service.FeedbackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

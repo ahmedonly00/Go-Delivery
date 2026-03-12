@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.analytics.mapper;
 
-import com.goDelivery.goDelivery.dtos.analytics.SalesReportDTO;
-import com.goDelivery.goDelivery.repository.OrderAnalyticsRepository;
+import com.goDelivery.goDelivery.modules.analytics.dto.SalesReportDTO;
+import com.goDelivery.goDelivery.modules.analytics.repository.OrderAnalyticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

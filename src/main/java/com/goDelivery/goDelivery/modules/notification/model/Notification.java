@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.notification.model;
 
-import com.goDelivery.goDelivery.Enum.NotificationType;
-import com.goDelivery.goDelivery.Enum.RecipientType;
+import com.goDelivery.goDelivery.shared.enums.NotificationType;
+import com.goDelivery.goDelivery.shared.enums.RecipientType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

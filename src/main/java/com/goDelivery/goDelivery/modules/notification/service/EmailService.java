@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import com.goDelivery.goDelivery.exception.EmailSendingException;
+import com.goDelivery.goDelivery.shared.exception.EmailSendingException;
 
 import jakarta.annotation.PostConstruct;
 import java.util.concurrent.CompletableFuture;

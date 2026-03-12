@@ -1,20 +1,20 @@
 package com.goDelivery.goDelivery.modules.restaurant.service;
 
-import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
-import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantAdminRegistrationDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantAdminResponseDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
-import com.goDelivery.goDelivery.exception.ResourceAlreadyExistsException;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.mapper.OperatingHoursMapper;
-import com.goDelivery.goDelivery.mapper.RestaurantMapper;
-import com.goDelivery.goDelivery.mapper.RestaurantUserMapper;
-import com.goDelivery.goDelivery.model.OperatingHours;
-import com.goDelivery.goDelivery.model.Restaurant;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.repository.RestaurantRepository;
-import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.shared.enums.RestaurantSetupStatus;
+import com.goDelivery.goDelivery.shared.enums.Roles;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantAdminRegistrationDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantAdminResponseDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantDTO;
+import com.goDelivery.goDelivery.shared.exception.ResourceAlreadyExistsException;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.restaurant.dto.OperatingHoursMapper;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantMapper;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantUserMapper;
+import com.goDelivery.goDelivery.modules.restaurant.model.OperatingHours;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.service.email.EmailService;
 
 import lombok.RequiredArgsConstructor;

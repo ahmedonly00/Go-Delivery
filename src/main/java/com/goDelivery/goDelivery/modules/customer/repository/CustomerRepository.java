@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.customer.repository;
 
 import org.springframework.stereotype.Repository;
 
-import com.goDelivery.goDelivery.model.Customer;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

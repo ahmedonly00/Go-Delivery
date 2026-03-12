@@ -1,13 +1,13 @@
 package com.goDelivery.goDelivery.shared.security;
 
-import com.goDelivery.goDelivery.model.BranchUsers;
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.model.SuperAdmin;
-import com.goDelivery.goDelivery.repository.BranchUsersRepository;
-import com.goDelivery.goDelivery.repository.CustomerRepository;
-import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
-import com.goDelivery.goDelivery.repository.SuperAdminRepository;
+import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.restaurant.model.SuperAdmin;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchUsersRepository;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.SuperAdminRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;

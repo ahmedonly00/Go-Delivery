@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.customer.repository;
 
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.model.Feedback;
-import com.goDelivery.goDelivery.model.Order;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.customer.model.Feedback;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

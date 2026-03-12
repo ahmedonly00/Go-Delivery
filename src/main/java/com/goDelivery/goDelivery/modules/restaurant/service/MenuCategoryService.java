@@ -6,13 +6,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
-import com.goDelivery.goDelivery.dtos.menu.MenuCategoryResponseDTO;
-import com.goDelivery.goDelivery.mapper.MenuCategoryMapper;
-import com.goDelivery.goDelivery.model.MenuCategory;
-import com.goDelivery.goDelivery.model.Restaurant;
-import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
-import com.goDelivery.goDelivery.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryResponseDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryMapper;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuCategory;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.repository.MenuCategoryRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

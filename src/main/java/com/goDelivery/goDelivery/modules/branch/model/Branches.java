@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.branch.model;
 
-import com.goDelivery.goDelivery.Enum.ApprovalStatus;
-import com.goDelivery.goDelivery.Enum.BranchSetupStatus;
-import com.goDelivery.goDelivery.Enum.DeliveryType;
-import com.goDelivery.goDelivery.Enum.DistanceUnit;
+import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
+import com.goDelivery.goDelivery.shared.enums.BranchSetupStatus;
+import com.goDelivery.goDelivery.shared.enums.DeliveryType;
+import com.goDelivery.goDelivery.shared.enums.DistanceUnit;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

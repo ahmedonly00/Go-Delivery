@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.ordering.repository;
 
-import com.goDelivery.goDelivery.model.CartItem;
+import com.goDelivery.goDelivery.modules.ordering.model.CartItem;
 import com.goDelivery.goDelivery.model.*;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.ordering.dto;
 
-import com.goDelivery.goDelivery.Enum.OrderStatus;
-import com.goDelivery.goDelivery.Enum.PaymentMenthod;
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
+import com.goDelivery.goDelivery.shared.enums.PaymentMenthod;
+import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

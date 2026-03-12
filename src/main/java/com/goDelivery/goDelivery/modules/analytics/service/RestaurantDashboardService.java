@@ -1,11 +1,11 @@
 package com.goDelivery.goDelivery.modules.analytics.service;
 
-import com.goDelivery.goDelivery.Enum.OrderStatus;
-import com.goDelivery.goDelivery.dtos.dashboard.EnhancedRestaurantDashboard;
-import com.goDelivery.goDelivery.dtos.dashboard.EnhancedRestaurantDashboard.*;
-import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
+import com.goDelivery.goDelivery.modules.analytics.dto.EnhancedRestaurantDashboard;
+import com.goDelivery.goDelivery.modules.analytics.dto.EnhancedRestaurantDashboard.*;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 import com.goDelivery.goDelivery.repository.*;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

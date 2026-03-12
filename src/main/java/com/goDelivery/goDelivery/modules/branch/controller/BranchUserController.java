@@ -11,10 +11,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import com.goDelivery.goDelivery.dtos.auth.LoginRequest;
-import com.goDelivery.goDelivery.dtos.auth.LoginResponse;
-import com.goDelivery.goDelivery.dtos.restaurant.BranchUserDTO;
-import com.goDelivery.goDelivery.auth.AuthenticationService;
+import com.goDelivery.goDelivery.modules.auth.dto.LoginRequest;
+import com.goDelivery.goDelivery.modules.auth.dto.LoginResponse;
+import com.goDelivery.goDelivery.modules.restaurant.dto.BranchUserDTO;
+import com.goDelivery.goDelivery.modules.auth.service.AuthenticationService;
 import com.goDelivery.goDelivery.service.BranchUserService;
 
 import io.swagger.v3.oas.annotations.Operation;

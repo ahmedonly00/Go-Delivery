@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.customer.service;
 
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.repository.CustomerRepository;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
 import com.goDelivery.goDelivery.service.email.EmailService;
 
 import lombok.RequiredArgsConstructor;

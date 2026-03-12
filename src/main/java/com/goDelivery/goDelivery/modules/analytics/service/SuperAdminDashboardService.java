@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.analytics.service;
 
-import com.goDelivery.goDelivery.Enum.ApprovalStatus;
-import com.goDelivery.goDelivery.Enum.OrderStatus;
-import com.goDelivery.goDelivery.dtos.dashboard.SuperAdminDashboard;
-import com.goDelivery.goDelivery.dtos.dashboard.SuperAdminDashboard.*;
+import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
+import com.goDelivery.goDelivery.modules.analytics.dto.SuperAdminDashboard;
+import com.goDelivery.goDelivery.modules.analytics.dto.SuperAdminDashboard.*;
 import com.goDelivery.goDelivery.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

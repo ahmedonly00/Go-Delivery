@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.restaurant.controller;
 
-import com.goDelivery.goDelivery.dtos.restaurant.DeliverySettingsRequest;
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
-import com.goDelivery.goDelivery.service.RestaurantService;
+import com.goDelivery.goDelivery.modules.restaurant.dto.DeliverySettingsRequest;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantDTO;
+import com.goDelivery.goDelivery.modules.restaurant.service.RestaurantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

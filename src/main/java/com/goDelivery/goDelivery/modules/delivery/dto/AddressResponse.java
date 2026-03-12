@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.delivery.dto;
 
-import com.goDelivery.goDelivery.Enum.AddressType;
+import com.goDelivery.goDelivery.shared.enums.AddressType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

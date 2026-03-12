@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.customer.controller;
 
-import com.goDelivery.goDelivery.dtos.profile.PasswordChangeRequest;
-import com.goDelivery.goDelivery.dtos.profile.ProfileResponse;
-import com.goDelivery.goDelivery.dtos.profile.ProfileUpdateRequest;
+import com.goDelivery.goDelivery.modules.customer.dto.PasswordChangeRequest;
+import com.goDelivery.goDelivery.modules.customer.dto.ProfileResponse;
+import com.goDelivery.goDelivery.modules.customer.dto.ProfileUpdateRequest;
 import com.goDelivery.goDelivery.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.goDelivery.goDelivery.Enum.DisbursementStatus;
-import com.goDelivery.goDelivery.model.DisbursementTransaction;
-import com.goDelivery.goDelivery.model.Order;
+import com.goDelivery.goDelivery.shared.enums.DisbursementStatus;
+import com.goDelivery.goDelivery.modules.payment.model.DisbursementTransaction;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
 
 @Repository
 public interface DisbursementTransactionRepository extends JpaRepository<DisbursementTransaction, Long> {
@@ -34,7 +34,7 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
 
        // Temporarily commented out due to constructor resolution issues
        /*
-        * @Query("SELECT new com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO("
+        * @Query("SELECT new com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementSummaryDTO("
         * +
         * "dt.id, dt.referenceId, dt.order.orderId, dt.order.orderNumber, dt.restaurant.id, dt.restaurant.restaurantName, "
         * +
@@ -48,7 +48,7 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
         * findDisbursementSummaryByRestaurantId(@Param("restaurantId") Long
         * restaurantId);
         * 
-        * @Query("SELECT new com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO("
+        * @Query("SELECT new com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementSummaryDTO("
         * +
         * "dt.id, dt.referenceId, dt.order.orderId, dt.order.orderNumber, dt.restaurant.id, dt.restaurant.restaurantName, "
         * +
@@ -59,7 +59,7 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
         * "ORDER BY dt.createdAt DESC")
         * List<DisbursementSummaryDTO> findAllDisbursementSummaries();
         * 
-        * @Query("SELECT NEW com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.RestaurantDisbursementSummaryDTO("
+        * @Query("SELECT NEW com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.RestaurantDisbursementSummaryDTO("
         * +
         * "r.id, r.restaurantName, " +
         * "COALESCE(CAST(SUM(dt.amount) AS java.math.BigDecimal), 0), " +

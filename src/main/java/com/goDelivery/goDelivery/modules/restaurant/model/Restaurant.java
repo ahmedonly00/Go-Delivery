@@ -12,9 +12,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.goDelivery.goDelivery.Enum.DeliveryType;
-import com.goDelivery.goDelivery.Enum.DistanceUnit;
-import com.goDelivery.goDelivery.Enum.RestaurantSetupStatus;
+import com.goDelivery.goDelivery.shared.enums.DeliveryType;
+import com.goDelivery.goDelivery.shared.enums.DistanceUnit;
+import com.goDelivery.goDelivery.shared.enums.RestaurantSetupStatus;
 
 @Data
 @Builder(toBuilder = true)
@@ -111,7 +111,7 @@ public class Restaurant {
     @Column(name = "approval_status")
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private com.goDelivery.goDelivery.Enum.ApprovalStatus approvalStatus = com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING;
+    private com.goDelivery.goDelivery.shared.enums.ApprovalStatus approvalStatus = com.goDelivery.goDelivery.shared.enums.ApprovalStatus.PENDING;
 
     @Column(name = "rejection_reason")
     private String rejectionReason;

@@ -1,12 +1,12 @@
 package com.goDelivery.goDelivery.modules.branch.controller;
 
-import com.goDelivery.goDelivery.dtos.order.OrderRequest;
-import com.goDelivery.goDelivery.dtos.order.OrderResponse;
-import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
-import com.goDelivery.goDelivery.dtos.payment.PaymentResponse;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderRequest;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderStatusUpdate;
+import com.goDelivery.goDelivery.modules.payment.dto.PaymentResponse;
 import com.goDelivery.goDelivery.service.BranchDelegationService;
-import com.goDelivery.goDelivery.service.OrderService;
-import com.goDelivery.goDelivery.service.PaymentService;
+import com.goDelivery.goDelivery.modules.ordering.service.OrderService;
+import com.goDelivery.goDelivery.modules.payment.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -109,7 +109,7 @@ public class BranchOrderController {
         log.info("Accepting order {} for branch {} by user {}", orderId, branchId, userDetails.getUsername());
         
         OrderStatusUpdate statusUpdate = new OrderStatusUpdate();
-        statusUpdate.setStatus(com.goDelivery.goDelivery.Enum.OrderStatus.PREPARING);
+        statusUpdate.setStatus(com.goDelivery.goDelivery.shared.enums.OrderStatus.PREPARING);
         statusUpdate.setOrderId(orderId);
         
         OrderResponse updatedOrder = orderService.updateOrderStatus(orderId, statusUpdate);
@@ -133,7 +133,7 @@ public class BranchOrderController {
                 orderId, branchId, userDetails.getUsername());
         
         OrderStatusUpdate statusUpdate = new OrderStatusUpdate();
-        statusUpdate.setStatus(com.goDelivery.goDelivery.Enum.OrderStatus.READY);
+        statusUpdate.setStatus(com.goDelivery.goDelivery.shared.enums.OrderStatus.READY);
         statusUpdate.setOrderId(orderId);
         
         OrderResponse updatedOrder = orderService.updateOrderStatus(orderId, statusUpdate);
@@ -156,7 +156,7 @@ public class BranchOrderController {
         log.info("Completing order {} for branch {} by user {}", orderId, branchId, userDetails.getUsername());
         
         OrderStatusUpdate statusUpdate = new OrderStatusUpdate();
-        statusUpdate.setStatus(com.goDelivery.goDelivery.Enum.OrderStatus.DELIVERED);
+        statusUpdate.setStatus(com.goDelivery.goDelivery.shared.enums.OrderStatus.DELIVERED);
         statusUpdate.setOrderId(orderId);
         
         OrderResponse updatedOrder = orderService.updateOrderStatus(orderId, statusUpdate);

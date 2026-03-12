@@ -1,13 +1,13 @@
 package com.goDelivery.goDelivery.modules.analytics.service;
 
-import com.goDelivery.goDelivery.dtos.order.OrderResponse;
-import com.goDelivery.goDelivery.dtos.report.OrderReportDTO;
-import com.goDelivery.goDelivery.dtos.report.SalesReportDTO;
-import com.goDelivery.goDelivery.mapper.OrderMapper;
-import com.goDelivery.goDelivery.model.Order;
-import com.goDelivery.goDelivery.Enum.OrderStatus;
-import com.goDelivery.goDelivery.repository.OrderAnalyticsRepository;
-import com.goDelivery.goDelivery.repository.ReportRepository;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
+import com.goDelivery.goDelivery.modules.analytics.dto.OrderReportDTO;
+import com.goDelivery.goDelivery.modules.analytics.dto.SalesReportDTO;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderMapper;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
+import com.goDelivery.goDelivery.modules.analytics.repository.OrderAnalyticsRepository;
+import com.goDelivery.goDelivery.modules.analytics.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

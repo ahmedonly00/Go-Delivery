@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.goDelivery.goDelivery.dtos.promotion.PromotionRequest;
-import com.goDelivery.goDelivery.dtos.promotion.PromotionResponse;
-import com.goDelivery.goDelivery.model.Promotion;
-import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionRequest;
+import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionResponse;
+import com.goDelivery.goDelivery.modules.restaurant.model.Promotion;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 
 @Component
 public class PromotionMapper {

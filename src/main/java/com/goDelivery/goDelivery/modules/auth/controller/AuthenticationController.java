@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.auth.controller;
 
-import com.goDelivery.goDelivery.dtos.auth.LoginRequest;
-import com.goDelivery.goDelivery.dtos.auth.LoginResponse;
-import com.goDelivery.goDelivery.dtos.auth.ResetPasswordRequest;
-import com.goDelivery.goDelivery.dtos.auth.ForgotPasswordRequest;
+import com.goDelivery.goDelivery.modules.auth.dto.LoginRequest;
+import com.goDelivery.goDelivery.modules.auth.dto.LoginResponse;
+import com.goDelivery.goDelivery.modules.auth.dto.ResetPasswordRequest;
+import com.goDelivery.goDelivery.modules.auth.dto.ForgotPasswordRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

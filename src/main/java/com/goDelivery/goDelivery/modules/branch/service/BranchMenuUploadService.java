@@ -1,16 +1,16 @@
 package com.goDelivery.goDelivery.modules.branch.service;
 
 import com.goDelivery.goDelivery.dtos.file.FileUploadResponse;
-import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.Branches;
-import com.goDelivery.goDelivery.model.MenuCategory;
-import com.goDelivery.goDelivery.model.MenuItem;
-import com.goDelivery.goDelivery.model.BranchUsers;
-import com.goDelivery.goDelivery.repository.BranchesRepository;
-import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
-import com.goDelivery.goDelivery.repository.MenuItemRepository;
-import com.goDelivery.goDelivery.repository.BranchUsersRepository;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemRequest;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuCategory;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
+import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchesRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.MenuCategoryRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.MenuItemRepository;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchUsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.Tesseract;

@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.notification.service;
 
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.service.RestaurantOTPService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -92,7 +92,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     
     @Override
     @Transactional
-    public com.goDelivery.goDelivery.model.Restaurant getRestaurantByEmail(String email) {
+    public com.goDelivery.goDelivery.modules.restaurant.model.Restaurant getRestaurantByEmail(String email) {
         RestaurantUsers user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
         return user.getRestaurant();

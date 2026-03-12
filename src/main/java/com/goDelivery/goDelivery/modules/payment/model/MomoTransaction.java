@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.payment.model;
 
-import com.goDelivery.goDelivery.Enum.PaymentMenthod;
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
-import com.goDelivery.goDelivery.Enum.TransactionStatus;
-import com.goDelivery.goDelivery.Enum.TransactionType;
+import com.goDelivery.goDelivery.shared.enums.PaymentMenthod;
+import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
+import com.goDelivery.goDelivery.shared.enums.TransactionStatus;
+import com.goDelivery.goDelivery.shared.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.branch.controller;
 
-import com.goDelivery.goDelivery.dtos.order.OrderResponse;
-import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderStatusUpdate;
 import com.goDelivery.goDelivery.service.BranchCashierService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

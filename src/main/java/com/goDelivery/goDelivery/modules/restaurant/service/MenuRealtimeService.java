@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.restaurant.service;
 
 import com.goDelivery.goDelivery.dto.menu.MenuItemUpdateDTO;
-import com.goDelivery.goDelivery.model.BranchMenuItem;
-import com.goDelivery.goDelivery.model.MenuItem;
+import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItem;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

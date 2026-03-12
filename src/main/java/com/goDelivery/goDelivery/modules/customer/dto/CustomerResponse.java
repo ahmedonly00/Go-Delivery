@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.customer.dto;
 
-import com.goDelivery.goDelivery.Enum.Roles;
+import com.goDelivery.goDelivery.shared.enums.Roles;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

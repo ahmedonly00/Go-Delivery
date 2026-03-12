@@ -6,21 +6,21 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
-import com.goDelivery.goDelivery.dtos.menu.MenuItemRequest;
-import com.goDelivery.goDelivery.dtos.menu.UpdateMenuItemRequest;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.mapper.MenuItemMapper;
-import com.goDelivery.goDelivery.model.MenuCategory;
-import com.goDelivery.goDelivery.model.MenuItem;
-import com.goDelivery.goDelivery.repository.MenuCategoryRepository;
-import com.goDelivery.goDelivery.repository.MenuItemRepository;
-import com.goDelivery.goDelivery.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemResponse;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemRequest;
+import com.goDelivery.goDelivery.modules.restaurant.dto.UpdateMenuItemRequest;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemMapper;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuCategory;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
+import com.goDelivery.goDelivery.modules.restaurant.repository.MenuCategoryRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.MenuItemRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
 
 import lombok.RequiredArgsConstructor;
 

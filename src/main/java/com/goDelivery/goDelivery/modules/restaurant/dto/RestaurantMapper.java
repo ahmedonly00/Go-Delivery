@@ -1,14 +1,14 @@
 package com.goDelivery.goDelivery.modules.restaurant.mapper;
 
-import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.BranchUserDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantReviewDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.BranchSettingsDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.OperatingHoursDTO;
-import com.goDelivery.goDelivery.model.Branches;
-import com.goDelivery.goDelivery.model.BranchUsers;
-import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.BranchUserDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantReviewDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.BranchSettingsDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.OperatingHoursDTO;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -137,7 +137,7 @@ public class RestaurantMapper {
                 .taxIdentificationDocumentUrl(restaurantDTO.getTaxIdentificationDocumentUrl())
                 .isApproved(restaurantDTO.getIsApproved() != null ? restaurantDTO.getIsApproved() : false)
                 .approvalStatus(restaurantDTO.getApprovalStatus() != null ? restaurantDTO.getApprovalStatus()
-                        : com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING)
+                        : com.goDelivery.goDelivery.shared.enums.ApprovalStatus.PENDING)
                 .rejectionReason(restaurantDTO.getRejectionReason())
                 .reviewedBy(restaurantDTO.getReviewedBy())
                 .reviewedAt(restaurantDTO.getReviewedAt())
@@ -231,15 +231,15 @@ public class RestaurantMapper {
                 .phoneNumber(branchDTO.getPhoneNumber())
                 .email(branchDTO.getEmail())
                 .setupStatus(branchDTO.getSetupStatus() != null ? branchDTO.getSetupStatus()
-                        : com.goDelivery.goDelivery.Enum.BranchSetupStatus.ACCOUNT_CREATED)
+                        : com.goDelivery.goDelivery.shared.enums.BranchSetupStatus.ACCOUNT_CREATED)
                 .deliveryType(branchDTO.getDeliveryType() != null ? branchDTO.getDeliveryType()
-                        : com.goDelivery.goDelivery.Enum.DeliveryType.SYSTEM_DELIVERY)
+                        : com.goDelivery.goDelivery.shared.enums.DeliveryType.SYSTEM_DELIVERY)
                 .averagePreparationTime(branchDTO.getAveragePreparationTime())
                 .isActive(branchDTO.isActive())
                 .createdAt(branchDTO.getCreatedAt() != null ? branchDTO.getCreatedAt() : LocalDate.now())
                 .updatedAt(branchDTO.getUpdatedAt() != null ? branchDTO.getUpdatedAt() : LocalDate.now())
                 .approvalStatus(branchDTO.getApprovalStatus() != null ? branchDTO.getApprovalStatus()
-                        : com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING)
+                        : com.goDelivery.goDelivery.shared.enums.ApprovalStatus.PENDING)
                 .commercialRegistrationCertificateUrl(branchDTO.getCommercialRegistrationCertificateUrl())
                 .taxIdentificationDocumentUrl(branchDTO.getTaxIdentificationDocumentUrl())
                 .taxIdentificationNumber(branchDTO.getTaxIdentificationNumber())

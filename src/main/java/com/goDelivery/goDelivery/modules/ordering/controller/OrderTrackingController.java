@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.ordering.controller;
 
-import com.goDelivery.goDelivery.dtos.order.OrderTrackingResponse;
-import com.goDelivery.goDelivery.service.OrderService;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderTrackingResponse;
+import com.goDelivery.goDelivery.modules.ordering.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

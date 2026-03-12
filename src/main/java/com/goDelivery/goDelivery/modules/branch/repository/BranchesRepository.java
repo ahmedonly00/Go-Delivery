@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.goDelivery.goDelivery.model.Branches;
-import com.goDelivery.goDelivery.Enum.ApprovalStatus;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
 
 @Repository
 public interface BranchesRepository extends JpaRepository<Branches, Long> {

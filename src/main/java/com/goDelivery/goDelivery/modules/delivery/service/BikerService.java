@@ -1,15 +1,15 @@
 package com.goDelivery.goDelivery.modules.delivery.service;
 
-import com.goDelivery.goDelivery.Enum.OrderStatus;
-import com.goDelivery.goDelivery.dtos.biker.BikerRegistrationRequest;
-import com.goDelivery.goDelivery.dtos.biker.BikerRegistrationResponse;
-import com.goDelivery.goDelivery.dtos.delivery.*;
-import com.goDelivery.goDelivery.mapper.BikerMapper;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.Bikers;
-import com.goDelivery.goDelivery.model.Order;
-import com.goDelivery.goDelivery.repository.BikersRepository;
-import com.goDelivery.goDelivery.repository.OrderRepository;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
+import com.goDelivery.goDelivery.modules.delivery.dto.BikerRegistrationRequest;
+import com.goDelivery.goDelivery.modules.delivery.dto.BikerRegistrationResponse;
+import com.goDelivery.goDelivery.modules.delivery.dto.*;
+import com.goDelivery.goDelivery.modules.delivery.dto.BikerMapper;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.delivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

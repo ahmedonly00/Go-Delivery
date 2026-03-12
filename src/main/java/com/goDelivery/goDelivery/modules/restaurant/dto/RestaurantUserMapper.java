@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantAdminResponseDTO;
-import com.goDelivery.goDelivery.dtos.user.RestaurantUserRequest;
-import com.goDelivery.goDelivery.dtos.user.RestaurantUserResponse;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantAdminResponseDTO;
+import com.goDelivery.goDelivery.modules.customer.dto.RestaurantUserRequest;
+import com.goDelivery.goDelivery.modules.customer.dto.RestaurantUserResponse;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
 
 @Component
 public class RestaurantUserMapper {

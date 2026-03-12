@@ -1,12 +1,12 @@
 package com.goDelivery.goDelivery.modules.delivery.service;
 
-import com.goDelivery.goDelivery.dtos.tracking.BikerInfo;
-import com.goDelivery.goDelivery.dtos.tracking.BikerLocationUpdateRequest;
-import com.goDelivery.goDelivery.dtos.tracking.DeliveryTrackingResponse;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.Bikers;
-import com.goDelivery.goDelivery.model.DeliveryTracking;
-import com.goDelivery.goDelivery.repository.DeliveryTrackingRepository;
+import com.goDelivery.goDelivery.modules.delivery.dto.BikerInfo;
+import com.goDelivery.goDelivery.modules.delivery.dto.BikerLocationUpdateRequest;
+import com.goDelivery.goDelivery.modules.delivery.dto.DeliveryTrackingResponse;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
+import com.goDelivery.goDelivery.modules.delivery.model.DeliveryTracking;
+import com.goDelivery.goDelivery.modules.delivery.repository.DeliveryTrackingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

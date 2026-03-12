@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.payment.model;
 
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
+import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 

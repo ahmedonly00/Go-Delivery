@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementRequest;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementResponse;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.RestaurantDisbursementSummaryDTO;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.Restaurant;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.service.DisbursementService;
-import com.goDelivery.goDelivery.service.MomoService;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementRequest;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementResponse;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementSummaryDTO;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.RestaurantDisbursementSummaryDTO;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.payment.service.DisbursementService;
+import com.goDelivery.goDelivery.modules.payment.service.MomoService;
 import com.goDelivery.goDelivery.service.UsersService;
 
 import io.swagger.v3.oas.annotations.Operation;

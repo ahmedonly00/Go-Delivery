@@ -1,15 +1,15 @@
 package com.goDelivery.goDelivery.modules.analytics.service;
 
-import com.goDelivery.goDelivery.dtos.analytics.CustomerTrendsDTO;
-import com.goDelivery.goDelivery.dtos.analytics.SalesReportDTO;
-import com.goDelivery.goDelivery.dtos.order.OrderResponse;
-import com.goDelivery.goDelivery.mapper.CustomerTrendsMapper;
-import com.goDelivery.goDelivery.mapper.OrderMapper;
-import com.goDelivery.goDelivery.mapper.SalesReportMapper;
-import com.goDelivery.goDelivery.model.Order;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.repository.OrderAnalyticsRepository;
-import com.goDelivery.goDelivery.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.modules.analytics.dto.CustomerTrendsDTO;
+import com.goDelivery.goDelivery.modules.analytics.dto.SalesReportDTO;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
+import com.goDelivery.goDelivery.modules.analytics.dto.CustomerTrendsMapper;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderMapper;
+import com.goDelivery.goDelivery.modules.analytics.dto.SalesReportMapper;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.analytics.repository.OrderAnalyticsRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

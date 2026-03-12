@@ -1,11 +1,11 @@
 package com.goDelivery.goDelivery.modules.payment.controller;
 
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementResponse;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.Order;
-import com.goDelivery.goDelivery.repository.OrderRepository;
-import com.goDelivery.goDelivery.service.DisbursementService;
+import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementResponse;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
+import com.goDelivery.goDelivery.modules.payment.service.DisbursementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

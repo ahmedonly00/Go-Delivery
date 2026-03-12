@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.goDelivery.goDelivery.dtos.menu.MenuItemResponse;
-import com.goDelivery.goDelivery.model.MenuItem;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemResponse;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
 
 @Component
 public class MenuItemMapper {

@@ -1,13 +1,13 @@
 package com.goDelivery.goDelivery.modules.restaurant.service;
 
-import com.goDelivery.goDelivery.Enum.OrderStatus;
-import com.goDelivery.goDelivery.dtos.order.OrderRequest;
-import com.goDelivery.goDelivery.dtos.order.OrderResponse;
-import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.exception.UnauthorizedException;
-import com.goDelivery.goDelivery.mapper.OrderMapper;
-import com.goDelivery.goDelivery.mapper.RestaurantMapper;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderRequest;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
+import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.shared.exception.UnauthorizedException;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderMapper;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantMapper;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.repository.*;
 import lombok.RequiredArgsConstructor;

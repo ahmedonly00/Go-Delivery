@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.payment.repository;
 
-import com.goDelivery.goDelivery.model.MomoTransaction;
+import com.goDelivery.goDelivery.modules.payment.model.MomoTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

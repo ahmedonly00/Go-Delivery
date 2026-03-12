@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.payment.controller;
 
-import com.goDelivery.goDelivery.dtos.payment.PaymentRequest;
-import com.goDelivery.goDelivery.dtos.payment.PaymentResponse;
-import com.goDelivery.goDelivery.service.PaymentService;
+import com.goDelivery.goDelivery.modules.payment.dto.PaymentRequest;
+import com.goDelivery.goDelivery.modules.payment.dto.PaymentResponse;
+import com.goDelivery.goDelivery.modules.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

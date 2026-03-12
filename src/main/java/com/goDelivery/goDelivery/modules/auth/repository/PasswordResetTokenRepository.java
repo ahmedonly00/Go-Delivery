@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.goDelivery.goDelivery.dtos.auth.PasswordResetToken;
+import com.goDelivery.goDelivery.modules.auth.dto.PasswordResetToken;
 
 import java.util.Optional;
 

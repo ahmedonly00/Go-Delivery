@@ -1,15 +1,15 @@
 package com.goDelivery.goDelivery.modules.branch.service;
 
 import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
-import com.goDelivery.goDelivery.Enum.ApprovalStatus;
-import com.goDelivery.goDelivery.Enum.BranchSetupStatus;
-import com.goDelivery.goDelivery.Enum.DeliveryType;
-import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.exception.UnauthorizedException;
-import com.goDelivery.goDelivery.exception.ValidationException;
-import com.goDelivery.goDelivery.mapper.RestaurantMapper;
+import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
+import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
+import com.goDelivery.goDelivery.shared.enums.BranchSetupStatus;
+import com.goDelivery.goDelivery.shared.enums.DeliveryType;
+import com.goDelivery.goDelivery.shared.enums.Roles;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.shared.exception.UnauthorizedException;
+import com.goDelivery.goDelivery.shared.exception.ValidationException;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantMapper;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.repository.*;
 import com.goDelivery.goDelivery.service.email.EmailService;
@@ -325,7 +325,7 @@ public class BranchService {
                 .collect(Collectors.toList());
     }
 
-    public List<BranchesDTO> getAllBranchesByStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus status) {
+    public List<BranchesDTO> getAllBranchesByStatus(com.goDelivery.goDelivery.shared.enums.ApprovalStatus status) {
         return branchesRepository.findByApprovalStatus(status).stream()
                 .map(restaurantMapper::toBranchDTO)
                 .collect(Collectors.toList());
@@ -369,7 +369,7 @@ public class BranchService {
     }
 
     public org.springframework.data.domain.Page<BranchesDTO> getAllBranchesByStatusPaged(
-            com.goDelivery.goDelivery.Enum.ApprovalStatus status,
+            com.goDelivery.goDelivery.shared.enums.ApprovalStatus status,
             org.springframework.data.domain.Pageable pageable) {
         return branchesRepository.findByApprovalStatus(status, pageable).map(restaurantMapper::toBranchDTO);
     }

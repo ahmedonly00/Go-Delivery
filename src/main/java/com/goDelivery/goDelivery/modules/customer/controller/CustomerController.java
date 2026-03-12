@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.customer.controller;
 
-import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
-import com.goDelivery.goDelivery.model.BranchMenuCategory;
-import com.goDelivery.goDelivery.service.BranchMenuService;
-import com.goDelivery.goDelivery.service.BranchService;
+import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
+import com.goDelivery.goDelivery.modules.branch.model.BranchMenuCategory;
+import com.goDelivery.goDelivery.modules.branch.service.BranchMenuService;
+import com.goDelivery.goDelivery.modules.branch.service.BranchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

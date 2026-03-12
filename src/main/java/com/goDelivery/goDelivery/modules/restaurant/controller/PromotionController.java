@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import com.goDelivery.goDelivery.dtos.promotion.PromotionRequest;
-import com.goDelivery.goDelivery.dtos.promotion.PromotionResponse;
+import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionRequest;
+import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionResponse;
 import com.goDelivery.goDelivery.service.PromotionService;
 
 import lombok.RequiredArgsConstructor;

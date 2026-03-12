@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.restaurant.service;
 
-import com.goDelivery.goDelivery.model.AuditLog;
+import com.goDelivery.goDelivery.modules.analytics.model.AuditLog;
 import com.goDelivery.goDelivery.repository.AuditLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

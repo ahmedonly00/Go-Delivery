@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.delivery.controller;
 
-import com.goDelivery.goDelivery.dtos.delivery.DeliveryFeeCalculationRequest;
-import com.goDelivery.goDelivery.dtos.delivery.DeliveryFeeCalculationResponse;
+import com.goDelivery.goDelivery.modules.delivery.dto.DeliveryFeeCalculationRequest;
+import com.goDelivery.goDelivery.modules.delivery.dto.DeliveryFeeCalculationResponse;
 import com.goDelivery.goDelivery.service.DeliveryFeeCalculationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

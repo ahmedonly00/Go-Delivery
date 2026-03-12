@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.branch.controller;
 
-import com.goDelivery.goDelivery.dtos.order.OrderResponse;
-import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderStatusUpdate;
 import com.goDelivery.goDelivery.service.CashierService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

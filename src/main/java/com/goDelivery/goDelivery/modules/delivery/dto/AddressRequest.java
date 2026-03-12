@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.delivery.dto;
 
-import com.goDelivery.goDelivery.Enum.AddressType;
+import com.goDelivery.goDelivery.shared.enums.AddressType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

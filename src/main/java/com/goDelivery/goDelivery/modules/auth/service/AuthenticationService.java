@@ -1,14 +1,14 @@
 package com.goDelivery.goDelivery.modules.auth.service;
 
-import com.goDelivery.goDelivery.dtos.auth.*;
+import com.goDelivery.goDelivery.modules.auth.dto.*;
 import com.goDelivery.goDelivery.model.*;
-import com.goDelivery.goDelivery.repository.BikersRepository;
-import com.goDelivery.goDelivery.repository.BranchUsersRepository;
-import com.goDelivery.goDelivery.repository.CustomerRepository;
-import com.goDelivery.goDelivery.repository.PasswordResetTokenRepository;
-import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
-import com.goDelivery.goDelivery.repository.SuperAdminRepository;
-import com.goDelivery.goDelivery.configSecurity.JwtService;
+import com.goDelivery.goDelivery.modules.delivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchUsersRepository;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
+import com.goDelivery.goDelivery.modules.auth.repository.PasswordResetTokenRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.SuperAdminRepository;
+import com.goDelivery.goDelivery.shared.security.JwtService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

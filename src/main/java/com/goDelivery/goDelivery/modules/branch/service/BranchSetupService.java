@@ -1,13 +1,13 @@
 package com.goDelivery.goDelivery.modules.branch.service;
 
 import com.goDelivery.goDelivery.dto.branch.BranchManagerSetupDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.OperatingHoursDTO;
-import com.goDelivery.goDelivery.Enum.ApprovalStatus;
-import com.goDelivery.goDelivery.Enum.BranchSetupStatus;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.exception.UnauthorizedException;
-import com.goDelivery.goDelivery.mapper.RestaurantMapper;
+import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.OperatingHoursDTO;
+import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
+import com.goDelivery.goDelivery.shared.enums.BranchSetupStatus;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.shared.exception.UnauthorizedException;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantMapper;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.repository.*;
 

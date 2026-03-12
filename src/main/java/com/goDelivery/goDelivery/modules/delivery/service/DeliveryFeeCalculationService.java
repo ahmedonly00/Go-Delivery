@@ -1,11 +1,11 @@
 package com.goDelivery.goDelivery.modules.delivery.service;
 
-import com.goDelivery.goDelivery.Enum.DeliveryType;
-import com.goDelivery.goDelivery.Enum.DistanceUnit;
-import com.goDelivery.goDelivery.dtos.delivery.DeliveryFeeCalculationResponse;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.Restaurant;
-import com.goDelivery.goDelivery.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.shared.enums.DeliveryType;
+import com.goDelivery.goDelivery.shared.enums.DistanceUnit;
+import com.goDelivery.goDelivery.modules.delivery.dto.DeliveryFeeCalculationResponse;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;

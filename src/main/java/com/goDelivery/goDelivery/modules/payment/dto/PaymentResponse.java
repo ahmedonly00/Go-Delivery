@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.payment.dto;
 
-import com.goDelivery.goDelivery.Enum.PaymentMenthod;
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
+import com.goDelivery.goDelivery.shared.enums.PaymentMenthod;
+import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

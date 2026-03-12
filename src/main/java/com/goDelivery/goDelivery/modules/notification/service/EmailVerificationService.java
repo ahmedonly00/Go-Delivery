@@ -17,5 +17,5 @@ public interface EmailVerificationService {
     boolean verifyRestaurantEmail(String verificationToken, String email);
     
     @Transactional
-    com.goDelivery.goDelivery.model.Restaurant getRestaurantByEmail(String email);
+    com.goDelivery.goDelivery.modules.restaurant.model.Restaurant getRestaurantByEmail(String email);
 }

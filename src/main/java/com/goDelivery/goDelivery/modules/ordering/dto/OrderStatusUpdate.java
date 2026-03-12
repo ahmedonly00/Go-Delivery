@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.ordering.dto;
 
-import com.goDelivery.goDelivery.Enum.OrderStatus;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

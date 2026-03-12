@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.goDelivery.goDelivery.dtos.menu.MenuCategoryDTO;
-import com.goDelivery.goDelivery.dtos.menu.MenuCategoryResponseDTO;
-import com.goDelivery.goDelivery.service.MenuCategoryService;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryResponseDTO;
+import com.goDelivery.goDelivery.modules.restaurant.service.MenuCategoryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

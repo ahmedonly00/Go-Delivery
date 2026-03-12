@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.goDelivery.goDelivery.dtos.customer.CustomerRegistrationRequest;
-import com.goDelivery.goDelivery.dtos.customer.CustomerResponse;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.mapper.CustomerMapper;
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.repository.CustomerRepository;
+import com.goDelivery.goDelivery.modules.customer.dto.CustomerRegistrationRequest;
+import com.goDelivery.goDelivery.modules.customer.dto.CustomerResponse;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.customer.dto.CustomerMapper;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

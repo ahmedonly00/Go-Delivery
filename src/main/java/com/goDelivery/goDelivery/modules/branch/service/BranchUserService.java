@@ -7,17 +7,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.dtos.restaurant.BranchUserDTO;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.exception.UnauthorizedException;
-import com.goDelivery.goDelivery.exception.ValidationException;
-import com.goDelivery.goDelivery.mapper.RestaurantMapper;
-import com.goDelivery.goDelivery.model.BranchUsers;
-import com.goDelivery.goDelivery.model.Branches;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.repository.BranchUsersRepository;
-import com.goDelivery.goDelivery.repository.BranchesRepository;
+import com.goDelivery.goDelivery.shared.enums.Roles;
+import com.goDelivery.goDelivery.modules.restaurant.dto.BranchUserDTO;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.shared.exception.UnauthorizedException;
+import com.goDelivery.goDelivery.shared.exception.ValidationException;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantMapper;
+import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchUsersRepository;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchesRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,11 +1,11 @@
 package com.goDelivery.goDelivery.modules.ordering.mapper;
 
-import com.goDelivery.goDelivery.dtos.cart.CartItemDTO;
-import com.goDelivery.goDelivery.dtos.cart.ShoppingCartDTO;
-import com.goDelivery.goDelivery.model.BranchMenuItem;
-import com.goDelivery.goDelivery.model.CartItem;
-import com.goDelivery.goDelivery.model.MenuItem;
-import com.goDelivery.goDelivery.model.ShoppingCart;
+import com.goDelivery.goDelivery.modules.ordering.dto.CartItemDTO;
+import com.goDelivery.goDelivery.modules.ordering.dto.ShoppingCartDTO;
+import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItem;
+import com.goDelivery.goDelivery.modules.ordering.model.CartItem;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
+import com.goDelivery.goDelivery.modules.ordering.model.ShoppingCart;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

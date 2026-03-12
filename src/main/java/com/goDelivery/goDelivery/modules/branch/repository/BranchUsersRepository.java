@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.goDelivery.goDelivery.model.BranchUsers;
-import com.goDelivery.goDelivery.model.Branches;
-import com.goDelivery.goDelivery.Enum.Roles;
+import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.shared.enums.Roles;
 
 @Repository
 public interface BranchUsersRepository extends JpaRepository<BranchUsers, Long> {

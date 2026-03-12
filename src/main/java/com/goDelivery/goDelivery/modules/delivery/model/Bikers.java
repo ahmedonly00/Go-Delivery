@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.delivery.model;
 
-import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.Enum.VehicleType;
+import com.goDelivery.goDelivery.shared.enums.Roles;
+import com.goDelivery.goDelivery.shared.enums.VehicleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.payment.mapper;
 
-import com.goDelivery.goDelivery.dtos.payment.PaymentRequest;
-import com.goDelivery.goDelivery.dtos.payment.PaymentResponse;
-import com.goDelivery.goDelivery.model.Order;
-import com.goDelivery.goDelivery.model.Payment;
+import com.goDelivery.goDelivery.modules.payment.dto.PaymentRequest;
+import com.goDelivery.goDelivery.modules.payment.dto.PaymentResponse;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.payment.model.Payment;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;

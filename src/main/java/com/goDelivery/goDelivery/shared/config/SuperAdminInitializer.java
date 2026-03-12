@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.shared.config;
 
-import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.model.SuperAdmin;
-import com.goDelivery.goDelivery.repository.SuperAdminRepository;
+import com.goDelivery.goDelivery.shared.enums.Roles;
+import com.goDelivery.goDelivery.modules.restaurant.model.SuperAdmin;
+import com.goDelivery.goDelivery.modules.restaurant.repository.SuperAdminRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -13,9 +13,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 
-import com.goDelivery.goDelivery.Enum.ApprovalStatus;
-import com.goDelivery.goDelivery.Enum.DeliveryType;
-import com.goDelivery.goDelivery.Enum.DistanceUnit;
+import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
+import com.goDelivery.goDelivery.shared.enums.DeliveryType;
+import com.goDelivery.goDelivery.shared.enums.DistanceUnit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

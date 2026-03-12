@@ -1,16 +1,16 @@
 package com.goDelivery.goDelivery.modules.restaurant.service;
 
-import com.goDelivery.goDelivery.dtos.user.RestaurantUserRequest;
-import com.goDelivery.goDelivery.dtos.user.RestaurantUserResponse;
-import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.exception.ConflictException;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.exception.UnauthorizedException;
-import com.goDelivery.goDelivery.exception.ValidationException;
-import com.goDelivery.goDelivery.mapper.RestaurantUserMapper;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.repository.RestaurantRepository;
-import com.goDelivery.goDelivery.repository.UsersRepository;
+import com.goDelivery.goDelivery.modules.customer.dto.RestaurantUserRequest;
+import com.goDelivery.goDelivery.modules.customer.dto.RestaurantUserResponse;
+import com.goDelivery.goDelivery.shared.enums.Roles;
+import com.goDelivery.goDelivery.shared.exception.ConflictException;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.shared.exception.UnauthorizedException;
+import com.goDelivery.goDelivery.shared.exception.ValidationException;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantUserMapper;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.UsersRepository;
 
 import lombok.RequiredArgsConstructor;
 

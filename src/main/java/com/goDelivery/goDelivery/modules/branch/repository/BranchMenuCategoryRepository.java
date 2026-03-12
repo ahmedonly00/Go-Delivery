@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.branch.repository;
 
-import com.goDelivery.goDelivery.model.BranchMenuCategory;
+import com.goDelivery.goDelivery.modules.branch.model.BranchMenuCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

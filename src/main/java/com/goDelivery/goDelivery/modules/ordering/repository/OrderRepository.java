@@ -12,9 +12,9 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.goDelivery.goDelivery.Enum.OrderStatus;
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
-import com.goDelivery.goDelivery.model.Order;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
+import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
 
 import org.springframework.stereotype.Repository;
 
@@ -191,15 +191,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
         // ── System-wide stats (Super Admin) ──────────────────────────────────────
 
-        @Query("SELECT COUNT(o) FROM Order o WHERE o.paymentStatus = com.goDelivery.goDelivery.Enum.PaymentStatus.PAID OR o.orderStatus = com.goDelivery.goDelivery.Enum.OrderStatus.CONFIRMED")
+        @Query("SELECT COUNT(o) FROM Order o WHERE o.paymentStatus = com.goDelivery.goDelivery.shared.enums.PaymentStatus.PAID OR o.orderStatus = com.goDelivery.goDelivery.shared.enums.OrderStatus.CONFIRMED")
         Long countPaidOrConfirmedOrders();
 
-        @Query("SELECT COALESCE(SUM(o.finalAmount), 0) FROM Order o WHERE o.paymentStatus = com.goDelivery.goDelivery.Enum.PaymentStatus.PAID OR o.orderStatus = com.goDelivery.goDelivery.Enum.OrderStatus.CONFIRMED")
+        @Query("SELECT COALESCE(SUM(o.finalAmount), 0) FROM Order o WHERE o.paymentStatus = com.goDelivery.goDelivery.shared.enums.PaymentStatus.PAID OR o.orderStatus = com.goDelivery.goDelivery.shared.enums.OrderStatus.CONFIRMED")
         Double sumRevenuePaidOrConfirmedOrders();
 
-        @Query("SELECT COUNT(o) FROM Order o WHERE (o.paymentStatus = com.goDelivery.goDelivery.Enum.PaymentStatus.PAID OR o.orderStatus = com.goDelivery.goDelivery.Enum.OrderStatus.CONFIRMED) AND o.orderPlacedAt BETWEEN :start AND :end")
+        @Query("SELECT COUNT(o) FROM Order o WHERE (o.paymentStatus = com.goDelivery.goDelivery.shared.enums.PaymentStatus.PAID OR o.orderStatus = com.goDelivery.goDelivery.shared.enums.OrderStatus.CONFIRMED) AND o.orderPlacedAt BETWEEN :start AND :end")
         Long countPaidOrConfirmedOrdersByDateRange(@Param("start") java.time.LocalDateTime start, @Param("end") java.time.LocalDateTime end);
 
-        @Query("SELECT COALESCE(SUM(o.finalAmount), 0) FROM Order o WHERE (o.paymentStatus = com.goDelivery.goDelivery.Enum.PaymentStatus.PAID OR o.orderStatus = com.goDelivery.goDelivery.Enum.OrderStatus.CONFIRMED) AND o.orderPlacedAt BETWEEN :start AND :end")
+        @Query("SELECT COALESCE(SUM(o.finalAmount), 0) FROM Order o WHERE (o.paymentStatus = com.goDelivery.goDelivery.shared.enums.PaymentStatus.PAID OR o.orderStatus = com.goDelivery.goDelivery.shared.enums.OrderStatus.CONFIRMED) AND o.orderPlacedAt BETWEEN :start AND :end")
         Double sumRevenuePaidOrConfirmedOrdersByDateRange(@Param("start") java.time.LocalDateTime start, @Param("end") java.time.LocalDateTime end);
 }

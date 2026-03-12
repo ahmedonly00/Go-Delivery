@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.restaurant.mapper;
 
-import com.goDelivery.goDelivery.dtos.review.ReviewResponseDTO;
+import com.goDelivery.goDelivery.modules.customer.dto.ReviewResponseDTO;
 import com.goDelivery.goDelivery.model.*;
 import org.springframework.stereotype.Component;
 

@@ -1,16 +1,16 @@
 package com.goDelivery.goDelivery.modules.customer.service;
 
-import com.goDelivery.goDelivery.Enum.OrderStatus;
-import com.goDelivery.goDelivery.dtos.feedback.FeedbackRequest;
-import com.goDelivery.goDelivery.dtos.feedback.FeedbackResponse;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.mapper.FeedbackMapper;
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.model.Feedback;
-import com.goDelivery.goDelivery.model.Order;
-import com.goDelivery.goDelivery.repository.CustomerRepository;
-import com.goDelivery.goDelivery.repository.FeedbackRepository;
-import com.goDelivery.goDelivery.repository.OrderRepository;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
+import com.goDelivery.goDelivery.modules.customer.dto.FeedbackRequest;
+import com.goDelivery.goDelivery.modules.customer.dto.FeedbackResponse;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.customer.dto.FeedbackMapper;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.customer.model.Feedback;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
+import com.goDelivery.goDelivery.modules.customer.repository.FeedbackRepository;
+import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

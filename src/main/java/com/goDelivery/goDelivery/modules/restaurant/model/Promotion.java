@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.restaurant.model;
 
-import com.goDelivery.goDelivery.Enum.PromotionType;
+import com.goDelivery.goDelivery.shared.enums.PromotionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

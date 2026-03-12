@@ -1,18 +1,18 @@
 package com.goDelivery.goDelivery.modules.delivery.service;
 
-import com.goDelivery.goDelivery.dtos.location.AddressRequest;
-import com.goDelivery.goDelivery.dtos.location.AddressResponse;
-import com.goDelivery.goDelivery.dtos.location.CityResponse;
-import com.goDelivery.goDelivery.dtos.location.CountryResponse;
-import com.goDelivery.goDelivery.mapper.LocationMapper;
+import com.goDelivery.goDelivery.modules.delivery.dto.AddressRequest;
+import com.goDelivery.goDelivery.modules.delivery.dto.AddressResponse;
+import com.goDelivery.goDelivery.modules.delivery.dto.CityResponse;
+import com.goDelivery.goDelivery.modules.delivery.dto.CountryResponse;
+import com.goDelivery.goDelivery.modules.delivery.dto.LocationMapper;
 import com.goDelivery.goDelivery.model.City;
 import com.goDelivery.goDelivery.model.Country;
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.model.CustomerAddress;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.customer.model.CustomerAddress;
 import com.goDelivery.goDelivery.repository.CityRepository;
 import com.goDelivery.goDelivery.repository.CountryRepository;
-import com.goDelivery.goDelivery.repository.CustomerAddressRepository;
-import com.goDelivery.goDelivery.repository.CustomerRepository;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerAddressRepository;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

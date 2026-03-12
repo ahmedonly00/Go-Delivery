@@ -19,25 +19,25 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.goDelivery.goDelivery.Enum.DisbursementStatus;
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
-import com.goDelivery.goDelivery.config.CommissionConfig;
-import com.goDelivery.goDelivery.config.MomoConfig;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementRequest;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementResponse;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementCallback;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementRecipient;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementStatusResponse;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementSummaryDTO;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.RestaurantDisbursementSummaryDTO;
-import com.goDelivery.goDelivery.exception.PaymentProcessingException;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.DisbursementTransaction;
-import com.goDelivery.goDelivery.model.Order;
-import com.goDelivery.goDelivery.model.OrderItem;
-import com.goDelivery.goDelivery.model.Restaurant;
-import com.goDelivery.goDelivery.repository.DisbursementTransactionRepository;
-import com.goDelivery.goDelivery.repository.OrderRepository;
+import com.goDelivery.goDelivery.shared.enums.DisbursementStatus;
+import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
+import com.goDelivery.goDelivery.shared.config.CommissionConfig;
+import com.goDelivery.goDelivery.shared.config.MomoConfig;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementRequest;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementResponse;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementCallback;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementRecipient;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementStatusResponse;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementSummaryDTO;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.RestaurantDisbursementSummaryDTO;
+import com.goDelivery.goDelivery.shared.exception.PaymentProcessingException;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.payment.model.DisbursementTransaction;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.ordering.model.OrderItem;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.payment.repository.DisbursementTransactionRepository;
+import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -137,7 +137,7 @@ public class DisbursementService {
                         // Route delivery fee based on the restaurant's delivery type:
                         // SELF_DELIVERY → restaurant keeps the delivery fee (included in payout)
                         // SYSTEM_DELIVERY → delivery fee stays with platform/biker (excluded)
-                        if (restaurant.getDeliveryType() == com.goDelivery.goDelivery.Enum.DeliveryType.SELF_DELIVERY) {
+                        if (restaurant.getDeliveryType() == com.goDelivery.goDelivery.shared.enums.DeliveryType.SELF_DELIVERY) {
                                 amount += deliveryFee;
                                 log.info("Restaurant {} — SELF_DELIVERY: adding deliveryFee {} to disbursement amount",
                                                 restaurant.getRestaurantName(), deliveryFee);

@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.delivery.dto;
 
-import com.goDelivery.goDelivery.Enum.VehicleType;
+import com.goDelivery.goDelivery.shared.enums.VehicleType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

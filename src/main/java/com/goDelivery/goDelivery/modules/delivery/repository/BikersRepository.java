@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.delivery.repository;
 
-import com.goDelivery.goDelivery.model.Bikers;
+import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

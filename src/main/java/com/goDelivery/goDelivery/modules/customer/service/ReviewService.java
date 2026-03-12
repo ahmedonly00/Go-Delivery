@@ -1,10 +1,10 @@
 package com.goDelivery.goDelivery.modules.customer.service;
 
-import com.goDelivery.goDelivery.dtos.review.CreateReviewRequest;
-import com.goDelivery.goDelivery.dtos.review.ReviewResponseDTO;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.mapper.ReviewMapper;
-import com.goDelivery.goDelivery.Enum.OrderStatus;
+import com.goDelivery.goDelivery.modules.customer.dto.CreateReviewRequest;
+import com.goDelivery.goDelivery.modules.customer.dto.ReviewResponseDTO;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.restaurant.dto.ReviewMapper;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
 import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.repository.*;
 import lombok.RequiredArgsConstructor;

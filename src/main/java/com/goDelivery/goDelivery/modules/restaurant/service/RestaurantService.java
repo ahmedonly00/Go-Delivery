@@ -1,20 +1,20 @@
 package com.goDelivery.goDelivery.modules.restaurant.service;
 
-import com.goDelivery.goDelivery.Enum.ApprovalStatus;
-import com.goDelivery.goDelivery.Enum.DeliveryType;
-import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.dtos.restaurant.*;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.mapper.RestaurantMapper;
-import com.goDelivery.goDelivery.model.OperatingHours;
-import com.goDelivery.goDelivery.model.Restaurant;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.model.Branches;
-import com.goDelivery.goDelivery.repository.BranchesRepository;
-import com.goDelivery.goDelivery.repository.OperatingHoursRepository;
-import com.goDelivery.goDelivery.repository.OrderRepository;
-import com.goDelivery.goDelivery.repository.RestaurantRepository;
-import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
+import com.goDelivery.goDelivery.shared.enums.DeliveryType;
+import com.goDelivery.goDelivery.shared.enums.Roles;
+import com.goDelivery.goDelivery.modules.restaurant.dto.*;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantMapper;
+import com.goDelivery.goDelivery.modules.restaurant.model.OperatingHours;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchesRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.OperatingHoursRepository;
+import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
 import com.goDelivery.goDelivery.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -319,7 +319,7 @@ public class RestaurantService {
         return restaurantMapper.toRestaurantReviewDTO(restaurant);
     }
 
-    public List<RestaurantDTO> getRestaurantsByApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus status) {
+    public List<RestaurantDTO> getRestaurantsByApprovalStatus(com.goDelivery.goDelivery.shared.enums.ApprovalStatus status) {
         return restaurantRepository.findByApprovalStatus(status).stream()
                 .map(restaurantMapper::toRestaurantDTO)
                 .collect(Collectors.toList());
@@ -331,7 +331,7 @@ public class RestaurantService {
 
         restaurant.setIsApproved(true);
         restaurant.setIsActive(true); // Activate the restaurant when approved
-        restaurant.setApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus.APPROVED);
+        restaurant.setApprovalStatus(com.goDelivery.goDelivery.shared.enums.ApprovalStatus.APPROVED);
         restaurant.setReviewedBy(reviewerEmail);
         restaurant.setReviewedAt(LocalDate.now());
         restaurant.setRejectionReason(null);
@@ -366,7 +366,7 @@ public class RestaurantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
 
         restaurant.setIsApproved(false);
-        restaurant.setApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus.REJECTED);
+        restaurant.setApprovalStatus(com.goDelivery.goDelivery.shared.enums.ApprovalStatus.REJECTED);
         restaurant.setRejectionReason(rejectionReason);
         restaurant.setReviewedBy(reviewerEmail);
         restaurant.setReviewedAt(LocalDate.now());

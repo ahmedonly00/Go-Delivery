@@ -1,18 +1,18 @@
 package com.goDelivery.goDelivery.modules.ordering.mapper;
 
-import com.goDelivery.goDelivery.Enum.OrderStatus;
-import com.goDelivery.goDelivery.Enum.PaymentMenthod;
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
-import com.goDelivery.goDelivery.dtos.order.OrderItemResponse;
-import com.goDelivery.goDelivery.dtos.order.OrderRequest;
-import com.goDelivery.goDelivery.dtos.order.OrderResponse;
-import com.goDelivery.goDelivery.model.Branches;
-import com.goDelivery.goDelivery.model.BranchMenuItem;
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.model.MenuItem;
-import com.goDelivery.goDelivery.model.Order;
-import com.goDelivery.goDelivery.model.OrderItem;
-import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.shared.enums.OrderStatus;
+import com.goDelivery.goDelivery.shared.enums.PaymentMenthod;
+import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderItemResponse;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderRequest;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItem;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.ordering.model.OrderItem;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 
 import org.springframework.stereotype.Component;
 

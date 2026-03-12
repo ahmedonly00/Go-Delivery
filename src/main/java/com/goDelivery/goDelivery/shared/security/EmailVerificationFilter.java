@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.shared.security;
 
 import com.goDelivery.goDelivery.model.CustomUserDetails;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

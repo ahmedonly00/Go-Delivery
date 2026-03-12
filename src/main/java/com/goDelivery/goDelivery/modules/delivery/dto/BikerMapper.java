@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.delivery.mapper;
 
-import com.goDelivery.goDelivery.Enum.Roles;
-import com.goDelivery.goDelivery.dtos.biker.BikerRegistrationRequest;
-import com.goDelivery.goDelivery.dtos.biker.BikerRegistrationResponse;
-import com.goDelivery.goDelivery.model.Bikers;
+import com.goDelivery.goDelivery.shared.enums.Roles;
+import com.goDelivery.goDelivery.modules.delivery.dto.BikerRegistrationRequest;
+import com.goDelivery.goDelivery.modules.delivery.dto.BikerRegistrationResponse;
+import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -46,12 +46,12 @@ public class BikerMapper {
                 .build();
     }
 
-    public com.goDelivery.goDelivery.dtos.biker.BikerDetailsResponse toBikerDetailsResponse(Bikers biker) {
+    public com.goDelivery.goDelivery.modules.delivery.dto.BikerDetailsResponse toBikerDetailsResponse(Bikers biker) {
         if (biker == null) {
             return null;
         }
 
-        return com.goDelivery.goDelivery.dtos.biker.BikerDetailsResponse.builder()
+        return com.goDelivery.goDelivery.modules.delivery.dto.BikerDetailsResponse.builder()
                 .bikerId(biker.getBikerId())
                 .fullNames(biker.getFullNames())
                 .email(biker.getEmail())

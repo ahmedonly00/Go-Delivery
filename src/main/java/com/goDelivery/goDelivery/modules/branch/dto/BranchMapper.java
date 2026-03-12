@@ -2,12 +2,12 @@ package com.goDelivery.goDelivery.modules.branch.mapper;
 
 import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
 import com.goDelivery.goDelivery.dto.branch.BranchManagerSetupDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.OperatingHoursDTO;
-import com.goDelivery.goDelivery.Enum.ApprovalStatus;
-import com.goDelivery.goDelivery.Enum.BranchSetupStatus;
-import com.goDelivery.goDelivery.Enum.DeliveryType;
-import com.goDelivery.goDelivery.model.Branches;
-import com.goDelivery.goDelivery.model.OperatingHours;
+import com.goDelivery.goDelivery.modules.restaurant.dto.OperatingHoursDTO;
+import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
+import com.goDelivery.goDelivery.shared.enums.BranchSetupStatus;
+import com.goDelivery.goDelivery.shared.enums.DeliveryType;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.modules.restaurant.model.OperatingHours;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;

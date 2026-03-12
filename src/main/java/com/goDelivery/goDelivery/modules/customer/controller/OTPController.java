@@ -1,10 +1,10 @@
 package com.goDelivery.goDelivery.modules.customer.controller;
 
-import com.goDelivery.goDelivery.configSecurity.JwtService;
-import com.goDelivery.goDelivery.dtos.auth.OTPVerificationRequest;
-import com.goDelivery.goDelivery.dtos.auth.OTPVerificationResponse;
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.repository.CustomerRepository;
+import com.goDelivery.goDelivery.shared.security.JwtService;
+import com.goDelivery.goDelivery.modules.auth.dto.OTPVerificationRequest;
+import com.goDelivery.goDelivery.modules.auth.dto.OTPVerificationResponse;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
 import com.goDelivery.goDelivery.service.OTPService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

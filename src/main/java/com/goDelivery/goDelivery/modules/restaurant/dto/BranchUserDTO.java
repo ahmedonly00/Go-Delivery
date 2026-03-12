@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.restaurant.dto;
 
-import com.goDelivery.goDelivery.Enum.Roles;
+import com.goDelivery.goDelivery.shared.enums.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

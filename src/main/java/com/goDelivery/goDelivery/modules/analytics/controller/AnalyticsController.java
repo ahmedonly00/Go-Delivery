@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.analytics.controller;
 
-import com.goDelivery.goDelivery.dtos.analytics.CustomerTrendsDTO;
-import com.goDelivery.goDelivery.dtos.analytics.SalesReportDTO;
-import com.goDelivery.goDelivery.dtos.order.OrderResponse;
-import com.goDelivery.goDelivery.service.AnalyticsService;
+import com.goDelivery.goDelivery.modules.analytics.dto.CustomerTrendsDTO;
+import com.goDelivery.goDelivery.modules.analytics.dto.SalesReportDTO;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
+import com.goDelivery.goDelivery.modules.analytics.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

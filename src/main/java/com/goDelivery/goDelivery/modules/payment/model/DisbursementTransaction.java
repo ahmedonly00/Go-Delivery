@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.payment.model;
 
 import java.time.LocalDateTime;
 
-import com.goDelivery.goDelivery.Enum.DisbursementStatus;
+import com.goDelivery.goDelivery.shared.enums.DisbursementStatus;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;

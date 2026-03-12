@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.analytics.mapper;
 
-import com.goDelivery.goDelivery.dtos.analytics.CustomerTrendsDTO;
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.model.Order;
-import com.goDelivery.goDelivery.model.OrderItem;
+import com.goDelivery.goDelivery.modules.analytics.dto.CustomerTrendsDTO;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.ordering.model.OrderItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

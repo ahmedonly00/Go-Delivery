@@ -11,10 +11,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.goDelivery.goDelivery.repository.BranchUsersRepository;
-import com.goDelivery.goDelivery.repository.CustomerRepository;
-import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
-import com.goDelivery.goDelivery.repository.SuperAdminRepository;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchUsersRepository;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.SuperAdminRepository;
 
 @Configuration
 @RequiredArgsConstructor

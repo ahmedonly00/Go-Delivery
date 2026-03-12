@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.restaurant.mapper;
 
 import org.springframework.stereotype.Component;
-import com.goDelivery.goDelivery.dtos.restaurant.OperatingHoursDTO;
-import com.goDelivery.goDelivery.model.OperatingHours;
+import com.goDelivery.goDelivery.modules.restaurant.dto.OperatingHoursDTO;
+import com.goDelivery.goDelivery.modules.restaurant.model.OperatingHours;
 
 @Component
 public class OperatingHoursMapper {

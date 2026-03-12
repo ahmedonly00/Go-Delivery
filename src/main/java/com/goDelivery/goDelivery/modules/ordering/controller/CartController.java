@@ -1,10 +1,10 @@
 package com.goDelivery.goDelivery.modules.ordering.controller;
 
-import com.goDelivery.goDelivery.dtos.cart.CartItemDTO;
-import com.goDelivery.goDelivery.dtos.cart.ShoppingCartDTO;
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.repository.CustomerRepository;
-import com.goDelivery.goDelivery.service.CartService;
+import com.goDelivery.goDelivery.modules.ordering.dto.CartItemDTO;
+import com.goDelivery.goDelivery.modules.ordering.dto.ShoppingCartDTO;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
+import com.goDelivery.goDelivery.modules.ordering.service.CartService;
 import lombok.RequiredArgsConstructor;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;

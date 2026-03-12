@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.auth.repository;
 
-import com.goDelivery.goDelivery.model.EmailVerificationToken;
+import com.goDelivery.goDelivery.modules.auth.model.EmailVerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

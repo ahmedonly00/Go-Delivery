@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.ordering.repository;
 
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.model.ShoppingCart;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.ordering.model.ShoppingCart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

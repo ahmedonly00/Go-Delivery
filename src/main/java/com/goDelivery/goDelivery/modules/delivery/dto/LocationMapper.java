@@ -1,13 +1,13 @@
 package com.goDelivery.goDelivery.modules.delivery.mapper;
 
-import com.goDelivery.goDelivery.dtos.location.AddressRequest;
-import com.goDelivery.goDelivery.dtos.location.AddressResponse;
-import com.goDelivery.goDelivery.dtos.location.CityResponse;
-import com.goDelivery.goDelivery.dtos.location.CountryResponse;
+import com.goDelivery.goDelivery.modules.delivery.dto.AddressRequest;
+import com.goDelivery.goDelivery.modules.delivery.dto.AddressResponse;
+import com.goDelivery.goDelivery.modules.delivery.dto.CityResponse;
+import com.goDelivery.goDelivery.modules.delivery.dto.CountryResponse;
 import com.goDelivery.goDelivery.model.City;
 import com.goDelivery.goDelivery.model.Country;
-import com.goDelivery.goDelivery.model.Customer;
-import com.goDelivery.goDelivery.model.CustomerAddress;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.customer.model.CustomerAddress;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

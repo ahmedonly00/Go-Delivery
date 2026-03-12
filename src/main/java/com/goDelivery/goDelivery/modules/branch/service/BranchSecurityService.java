@@ -1,11 +1,11 @@
 package com.goDelivery.goDelivery.modules.branch.service;
 
-import com.goDelivery.goDelivery.model.BranchUsers;
-import com.goDelivery.goDelivery.model.RestaurantUsers;
-import com.goDelivery.goDelivery.model.Branches;
-import com.goDelivery.goDelivery.repository.BranchUsersRepository;
-import com.goDelivery.goDelivery.repository.RestaurantUsersRepository;
-import com.goDelivery.goDelivery.repository.BranchesRepository;
+import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchUsersRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

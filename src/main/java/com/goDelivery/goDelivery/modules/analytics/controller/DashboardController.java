@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.analytics.controller;
 
-import com.goDelivery.goDelivery.dtos.dashboard.EnhancedRestaurantDashboard;
-import com.goDelivery.goDelivery.dtos.dashboard.SuperAdminDashboard;
+import com.goDelivery.goDelivery.modules.analytics.dto.EnhancedRestaurantDashboard;
+import com.goDelivery.goDelivery.modules.analytics.dto.SuperAdminDashboard;
 import com.goDelivery.goDelivery.service.dashboard.RestaurantDashboardService;
 import com.goDelivery.goDelivery.service.dashboard.SuperAdminDashboardService;
 import io.swagger.v3.oas.annotations.Operation;

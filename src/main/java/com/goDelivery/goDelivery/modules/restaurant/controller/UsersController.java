@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.restaurant.controller;
 
-import com.goDelivery.goDelivery.dtos.user.RestaurantUserRequest;
-import com.goDelivery.goDelivery.dtos.user.RestaurantUserResponse;
-import com.goDelivery.goDelivery.Enum.Roles;
+import com.goDelivery.goDelivery.modules.customer.dto.RestaurantUserRequest;
+import com.goDelivery.goDelivery.modules.customer.dto.RestaurantUserResponse;
+import com.goDelivery.goDelivery.shared.enums.Roles;
 import com.goDelivery.goDelivery.service.UsersService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

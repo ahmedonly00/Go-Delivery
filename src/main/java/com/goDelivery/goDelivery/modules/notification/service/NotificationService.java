@@ -1,13 +1,13 @@
 package com.goDelivery.goDelivery.modules.notification.service;
 
-import com.goDelivery.goDelivery.Enum.NotificationType;
-import com.goDelivery.goDelivery.Enum.RecipientType;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.Bikers;
-import com.goDelivery.goDelivery.model.Notification;
-import com.goDelivery.goDelivery.model.Restaurant;
-import com.goDelivery.goDelivery.repository.NotificationRepository;
-import com.goDelivery.goDelivery.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.shared.enums.NotificationType;
+import com.goDelivery.goDelivery.shared.enums.RecipientType;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
+import com.goDelivery.goDelivery.modules.notification.model.Notification;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.notification.repository.NotificationRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -313,8 +313,8 @@ public class NotificationService {
         log.info("Payment confirmation sent for order {}", orderId);
     }
 
-    public void notifyDeliveryAccepted(com.goDelivery.goDelivery.model.Order order,
-            com.goDelivery.goDelivery.model.Bikers biker,
+    public void notifyDeliveryAccepted(com.goDelivery.goDelivery.modules.ordering.model.Order order,
+            com.goDelivery.goDelivery.modules.delivery.model.Bikers biker,
             Integer estimatedDeliveryMinutes) {
         // Notify customer that biker accepted delivery
         if (order.getCustomer() != null) {
@@ -381,8 +381,8 @@ public class NotificationService {
         log.info("Sent delivery acceptance notifications for order {}", order.getOrderNumber());
     }
 
-    public void notifyDeliveryRejected(com.goDelivery.goDelivery.model.Order order,
-            com.goDelivery.goDelivery.model.Bikers biker,
+    public void notifyDeliveryRejected(com.goDelivery.goDelivery.modules.ordering.model.Order order,
+            com.goDelivery.goDelivery.modules.delivery.model.Bikers biker,
             String reason) {
         // Notify restaurant that biker rejected delivery
         if (order.getRestaurant() != null && order.getRestaurant().getEmail() != null) {
@@ -411,8 +411,8 @@ public class NotificationService {
         }
     }
 
-    public void notifyPickupConfirmed(com.goDelivery.goDelivery.model.Order order,
-            com.goDelivery.goDelivery.model.Bikers biker) {
+    public void notifyPickupConfirmed(com.goDelivery.goDelivery.modules.ordering.model.Order order,
+            com.goDelivery.goDelivery.modules.delivery.model.Bikers biker) {
         // Notify customer that order is picked up and on the way
         if (order.getCustomer() != null) {
             String customerEmail = order.getCustomer().getEmail();
@@ -497,9 +497,9 @@ public class NotificationService {
         log.info("Sent pickup confirmation notifications for order {}", order.getOrderNumber());
     }
 
-    public void notifyCustomerLocationUpdate(com.goDelivery.goDelivery.model.Order order,
-            com.goDelivery.goDelivery.model.Bikers biker,
-            com.goDelivery.goDelivery.dtos.delivery.LocationUpdateRequest locationUpdate) {
+    public void notifyCustomerLocationUpdate(com.goDelivery.goDelivery.modules.ordering.model.Order order,
+            com.goDelivery.goDelivery.modules.delivery.model.Bikers biker,
+            com.goDelivery.goDelivery.modules.delivery.dto.LocationUpdateRequest locationUpdate) {
         // In production, this would send real-time location updates to customer via
         // WebSocket
         // For now, log the location update
@@ -514,9 +514,9 @@ public class NotificationService {
         log.info("Customer tracking update sent for order {}", order.getOrderNumber());
     }
 
-    public void notifyDeliveryCompleted(com.goDelivery.goDelivery.model.Order order,
-            com.goDelivery.goDelivery.model.Bikers biker,
-            com.goDelivery.goDelivery.dtos.delivery.DeliveryConfirmationRequest confirmation) {
+    public void notifyDeliveryCompleted(com.goDelivery.goDelivery.modules.ordering.model.Order order,
+            com.goDelivery.goDelivery.modules.delivery.model.Bikers biker,
+            com.goDelivery.goDelivery.modules.delivery.dto.DeliveryConfirmationRequest confirmation) {
         // Notify customer that delivery is complete
         if (order.getCustomer() != null) {
             String customerEmail = order.getCustomer().getEmail();

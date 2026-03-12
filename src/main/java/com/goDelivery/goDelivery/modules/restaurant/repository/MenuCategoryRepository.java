@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.goDelivery.goDelivery.model.MenuCategory;
-import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuCategory;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 
 @Repository
 public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Long> {

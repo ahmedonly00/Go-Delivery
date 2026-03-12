@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.restaurant.repository;
 
-import com.goDelivery.goDelivery.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -53,14 +53,14 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
        List<Restaurant> findRestaurantsWithMinRating(@Param("minRating") float minRating);
 
        // Approval-related queries
-       List<Restaurant> findByApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus approvalStatus);
-       Page<Restaurant> findByApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus approvalStatus, Pageable pageable);
+       List<Restaurant> findByApprovalStatus(com.goDelivery.goDelivery.shared.enums.ApprovalStatus approvalStatus);
+       Page<Restaurant> findByApprovalStatus(com.goDelivery.goDelivery.shared.enums.ApprovalStatus approvalStatus, Pageable pageable);
 
        List<Restaurant> findByIsApprovedTrue();
 
        List<Restaurant> findByIsApprovedTrueAndIsActiveTrue();
 
-       @Query("SELECT r FROM Restaurant r WHERE r.approvalStatus = com.goDelivery.goDelivery.Enum.ApprovalStatus.PENDING ORDER BY r.createdAt ASC")
+       @Query("SELECT r FROM Restaurant r WHERE r.approvalStatus = com.goDelivery.goDelivery.shared.enums.ApprovalStatus.PENDING ORDER BY r.createdAt ASC")
        List<Restaurant> findPendingRestaurants();
 
        // ============ Dashboard Aggregation Queries ============
@@ -68,7 +68,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
        // Count restaurants by approval status
        Long countByIsApprovedTrue();
 
-       Long countByApprovalStatus(com.goDelivery.goDelivery.Enum.ApprovalStatus approvalStatus);
+       Long countByApprovalStatus(com.goDelivery.goDelivery.shared.enums.ApprovalStatus approvalStatus);
 
        // Count restaurants by date range
        @Query("SELECT COUNT(r) FROM Restaurant r WHERE r.createdAt BETWEEN :startDate AND :endDate")
@@ -76,7 +76,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
                      @Param("endDate") java.time.LocalDate endDate);
 
        @Query("SELECT COUNT(r) FROM Restaurant r WHERE r.approvalStatus = :status AND r.createdAt BETWEEN :startDate AND :endDate")
-       Long countByApprovalStatusAndCreatedAtBetween(@Param("status") com.goDelivery.goDelivery.Enum.ApprovalStatus status,
+       Long countByApprovalStatusAndCreatedAtBetween(@Param("status") com.goDelivery.goDelivery.shared.enums.ApprovalStatus status,
                      @Param("startDate") java.time.LocalDate startDate, @Param("endDate") java.time.LocalDate endDate);
 
        // Get average restaurant rating

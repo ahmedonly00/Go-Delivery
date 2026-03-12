@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.restaurant.dto;
 
-import com.goDelivery.goDelivery.Enum.DeliveryType;
+import com.goDelivery.goDelivery.shared.enums.DeliveryType;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

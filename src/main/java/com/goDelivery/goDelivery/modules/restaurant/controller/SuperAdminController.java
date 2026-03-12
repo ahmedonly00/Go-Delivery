@@ -1,16 +1,16 @@
 package com.goDelivery.goDelivery.modules.restaurant.controller;
 
-import com.goDelivery.goDelivery.Enum.ApprovalStatus;
-import com.goDelivery.goDelivery.Enum.StatsPeriod;
-import com.goDelivery.goDelivery.dtos.admin.CreateSuperAdminRequest;
-import com.goDelivery.goDelivery.dtos.admin.SystemStatsDTO;
-import com.goDelivery.goDelivery.dtos.biker.BikerDetailsResponse;
-import com.goDelivery.goDelivery.dtos.biker.BikerUpdateRequest;
-import com.goDelivery.goDelivery.dtos.restaurant.BranchesDTO;
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantDTO;
-import com.goDelivery.goDelivery.model.SuperAdmin;
-import com.goDelivery.goDelivery.service.BranchService;
-import com.goDelivery.goDelivery.service.RestaurantService;
+import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
+import com.goDelivery.goDelivery.shared.enums.StatsPeriod;
+import com.goDelivery.goDelivery.modules.restaurant.dto.CreateSuperAdminRequest;
+import com.goDelivery.goDelivery.modules.restaurant.dto.SystemStatsDTO;
+import com.goDelivery.goDelivery.modules.delivery.dto.BikerDetailsResponse;
+import com.goDelivery.goDelivery.modules.delivery.dto.BikerUpdateRequest;
+import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantDTO;
+import com.goDelivery.goDelivery.modules.restaurant.model.SuperAdmin;
+import com.goDelivery.goDelivery.modules.branch.service.BranchService;
+import com.goDelivery.goDelivery.modules.restaurant.service.RestaurantService;
 import com.goDelivery.goDelivery.service.SuperAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

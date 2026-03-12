@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.customer.repository;
 
-import com.goDelivery.goDelivery.model.CustomerAddress;
+import com.goDelivery.goDelivery.modules.customer.model.CustomerAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

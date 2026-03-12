@@ -1,13 +1,13 @@
 package com.goDelivery.goDelivery.modules.ordering.controller;
 
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
-import com.goDelivery.goDelivery.dtos.order.OrderRequest;
-import com.goDelivery.goDelivery.dtos.order.OrderResponse;
-import com.goDelivery.goDelivery.dtos.order.OrderStatusCountsDTO;
-import com.goDelivery.goDelivery.dtos.order.OrderStatusUpdate;
-import com.goDelivery.goDelivery.dtos.restaurant.RestaurantRevenueDTO;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.service.OrderService;
+import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderRequest;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderStatusCountsDTO;
+import com.goDelivery.goDelivery.modules.ordering.dto.OrderStatusUpdate;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantRevenueDTO;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.ordering.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;

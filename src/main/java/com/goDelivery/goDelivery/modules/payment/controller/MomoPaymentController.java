@@ -1,16 +1,16 @@
 package com.goDelivery.goDelivery.modules.payment.controller;
 
-import com.goDelivery.goDelivery.Enum.PaymentStatus;
-import com.goDelivery.goDelivery.dtos.momo.*;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.CollectionDisbursementResponse;
-import com.goDelivery.goDelivery.dtos.momo.collectionDisbursement.DisbursementCallback;
-import com.goDelivery.goDelivery.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.model.DisbursementTransaction;
-import com.goDelivery.goDelivery.model.Order;
-import com.goDelivery.goDelivery.repository.DisbursementTransactionRepository;
-import com.goDelivery.goDelivery.repository.OrderRepository;
-import com.goDelivery.goDelivery.service.DisbursementService;
-import com.goDelivery.goDelivery.service.MomoService;
+import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
+import com.goDelivery.goDelivery.modules.payment.dto.*;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementResponse;
+import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementCallback;
+import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
+import com.goDelivery.goDelivery.modules.payment.model.DisbursementTransaction;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.payment.repository.DisbursementTransactionRepository;
+import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
+import com.goDelivery.goDelivery.modules.payment.service.DisbursementService;
+import com.goDelivery.goDelivery.modules.payment.service.MomoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
