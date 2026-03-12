@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.delivery.service;
 
-import com.goDelivery.goDelivery.model.Coordinates;
+import com.goDelivery.goDelivery.modules.delivery.model.Coordinates;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

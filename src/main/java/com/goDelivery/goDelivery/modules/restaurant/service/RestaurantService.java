@@ -480,7 +480,7 @@ public class RestaurantService {
 
         try {
             log.info("Geocoding restaurant location: {}", restaurant.getLocation());
-            com.goDelivery.goDelivery.model.Coordinates coords = geocodingService
+            com.goDelivery.goDelivery.modules.delivery.model.Coordinates coords = geocodingService
                     .geocodeAddress(restaurant.getLocation());
 
             restaurant.setLatitude(coords.getLatitude());

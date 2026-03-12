@@ -108,8 +108,8 @@ public class RestaurantRegistrationService {
         }
 
         // Check if phone number is valid
-        if (!com.goDelivery.goDelivery.util.PhoneNumberValidator.isValid(registrationDTO.getPhoneNumber())) {
-            throw new IllegalArgumentException(com.goDelivery.goDelivery.util.PhoneNumberValidator.getErrorMessage());
+        if (!com.goDelivery.goDelivery.shared.util.PhoneNumberValidator.isValid(registrationDTO.getPhoneNumber())) {
+            throw new IllegalArgumentException(com.goDelivery.goDelivery.shared.util.PhoneNumberValidator.getErrorMessage());
         }
 
         // Create admin user without restaurant association

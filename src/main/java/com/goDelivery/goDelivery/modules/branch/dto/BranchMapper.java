@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.branch.mapper;
 
-import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
-import com.goDelivery.goDelivery.dto.branch.BranchManagerSetupDTO;
+import com.goDelivery.goDelivery.modules.branch.dto.BranchCreationDTO;
+import com.goDelivery.goDelivery.modules.branch.dto.BranchManagerSetupDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.OperatingHoursDTO;
 import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
 import com.goDelivery.goDelivery.shared.enums.BranchSetupStatus;

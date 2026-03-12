@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.branch.controller;
 
-import com.goDelivery.goDelivery.dto.menu.MenuItemPartialUpdateDTO;
-import com.goDelivery.goDelivery.dto.menu.MenuProgressiveResponseDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemPartialUpdateDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuProgressiveResponseDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryResponseDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemRequest;

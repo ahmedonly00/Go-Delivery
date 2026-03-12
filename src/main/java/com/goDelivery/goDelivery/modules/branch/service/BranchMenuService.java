@@ -1,13 +1,13 @@
 package com.goDelivery.goDelivery.modules.branch.service;
 
-import com.goDelivery.goDelivery.dto.menu.MenuItemPartialUpdateDTO;
-import com.goDelivery.goDelivery.dto.menu.MenuProgressiveResponseDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemPartialUpdateDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuProgressiveResponseDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryResponseDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemRequest;
 import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemResponse;
 import com.goDelivery.goDelivery.modules.restaurant.dto.UpdateMenuItemRequest;
-import com.goDelivery.goDelivery.dto.menu.MenuCategoryWithItemsDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryWithItemsDTO;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.shared.exception.UnauthorizedException;
 import com.goDelivery.goDelivery.shared.exception.ValidationException;

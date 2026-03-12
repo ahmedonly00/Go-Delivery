@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.branch.controller;
 
-import com.goDelivery.goDelivery.dto.branch.BranchManagerSetupDTO;
+import com.goDelivery.goDelivery.modules.branch.dto.BranchManagerSetupDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
 import com.goDelivery.goDelivery.service.BranchSetupService;
 import io.swagger.v3.oas.annotations.Operation;

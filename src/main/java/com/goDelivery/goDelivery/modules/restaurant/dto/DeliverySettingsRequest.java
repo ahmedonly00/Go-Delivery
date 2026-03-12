@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.restaurant.dto;
 
 import com.goDelivery.goDelivery.shared.enums.DeliveryType;
 import com.goDelivery.goDelivery.shared.enums.DistanceUnit;
-import com.goDelivery.goDelivery.validation.ValidDeliverySettings;
+import com.goDelivery.goDelivery.shared.validation.ValidDeliverySettings;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;

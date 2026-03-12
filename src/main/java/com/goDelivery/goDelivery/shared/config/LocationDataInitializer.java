@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.shared.config;
 
-import com.goDelivery.goDelivery.model.City;
-import com.goDelivery.goDelivery.model.Country;
+import com.goDelivery.goDelivery.modules.delivery.model.City;
+import com.goDelivery.goDelivery.modules.delivery.model.Country;
 import com.goDelivery.goDelivery.repository.CityRepository;
 import com.goDelivery.goDelivery.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;

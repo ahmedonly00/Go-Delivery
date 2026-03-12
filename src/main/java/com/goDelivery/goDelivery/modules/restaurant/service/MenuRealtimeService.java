@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.restaurant.service;
 
-import com.goDelivery.goDelivery.dto.menu.MenuItemUpdateDTO;
+import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemUpdateDTO;
 import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItem;
 import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
 import lombok.RequiredArgsConstructor;

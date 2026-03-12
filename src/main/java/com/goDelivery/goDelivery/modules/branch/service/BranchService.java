@@ -1,6 +1,6 @@
 package com.goDelivery.goDelivery.modules.branch.service;
 
-import com.goDelivery.goDelivery.dto.branch.BranchCreationDTO;
+import com.goDelivery.goDelivery.modules.branch.dto.BranchCreationDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
 import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
 import com.goDelivery.goDelivery.shared.enums.BranchSetupStatus;
@@ -507,8 +507,8 @@ public class BranchService {
         if (StringUtils.isBlank(branchDTO.getPhoneNumber())) {
             throw new ValidationException("Phone number is required");
         }
-        if (!com.goDelivery.goDelivery.util.PhoneNumberValidator.isValid(branchDTO.getPhoneNumber())) {
-            throw new ValidationException(com.goDelivery.goDelivery.util.PhoneNumberValidator.getErrorMessage());
+        if (!com.goDelivery.goDelivery.shared.util.PhoneNumberValidator.isValid(branchDTO.getPhoneNumber())) {
+            throw new ValidationException(com.goDelivery.goDelivery.shared.util.PhoneNumberValidator.getErrorMessage());
         }
     }
 
