@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.customer.controller;
 
 import com.goDelivery.goDelivery.modules.customer.dto.FeedbackRequest;
 import com.goDelivery.goDelivery.modules.customer.dto.FeedbackResponse;
-import com.goDelivery.goDelivery.service.FeedbackService;
+import com.goDelivery.goDelivery.modules.customer.service.FeedbackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

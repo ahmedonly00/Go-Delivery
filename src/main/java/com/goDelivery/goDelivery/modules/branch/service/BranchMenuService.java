@@ -11,8 +11,20 @@ import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryWithItemsDTO
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.shared.exception.UnauthorizedException;
 import com.goDelivery.goDelivery.shared.exception.ValidationException;
-import com.goDelivery.goDelivery.model.*;
-import com.goDelivery.goDelivery.repository.*;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.modules.branch.model.BranchMenuCategory;
+import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItem;
+import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItemVariant;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuCategory;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItemVariant;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchesRepository;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchMenuCategoryRepository;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchMenuItemRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.MenuCategoryRepository;
+import com.goDelivery.goDelivery.modules.restaurant.service.MenuAuditService;
+import com.goDelivery.goDelivery.modules.restaurant.service.MenuRealtimeService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +51,6 @@ public class BranchMenuService {
     private final BranchMenuCategoryRepository branchMenuCategoryRepository;
     private final BranchMenuItemRepository branchMenuItemRepository;
     private final MenuCategoryRepository menuCategoryRepository;
-    private final MenuItemRepository menuItemRepository;
     private final BranchesRepository branchesRepository;
     private final BranchSecurityService branchSecurityService;
     private final MenuAuditService menuAuditService;
@@ -197,7 +208,8 @@ public class BranchMenuService {
         Branches branch = branchesRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
 
-        if (branchMenuCategoryRepository.existsByBranch_BranchIdAndCategoryName(branchId, categoryDTO.getCategoryName())) {
+        if (branchMenuCategoryRepository.existsByBranch_BranchIdAndCategoryName(branchId,
+                categoryDTO.getCategoryName())) {
             throw new IllegalArgumentException("Category with this name already exists for this branch");
         }
 

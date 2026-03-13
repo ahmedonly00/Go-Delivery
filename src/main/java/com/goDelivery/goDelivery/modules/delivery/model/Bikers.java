@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery.modules.delivery.model;
 
 import com.goDelivery.goDelivery.shared.enums.Roles;
 import com.goDelivery.goDelivery.shared.enums.VehicleType;
+import com.goDelivery.goDelivery.shared.security.CustomUserDetails;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,8 @@ import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.restaurant.model.Review;
 
 @Data
 @Builder

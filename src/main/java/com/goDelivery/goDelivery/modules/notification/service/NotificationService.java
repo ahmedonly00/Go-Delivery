@@ -4,6 +4,7 @@ import com.goDelivery.goDelivery.shared.enums.NotificationType;
 import com.goDelivery.goDelivery.shared.enums.RecipientType;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
+import com.goDelivery.goDelivery.modules.delivery.service.GeoLocationService;
 import com.goDelivery.goDelivery.modules.notification.model.Notification;
 import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 import com.goDelivery.goDelivery.modules.notification.repository.NotificationRepository;

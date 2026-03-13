@@ -11,11 +11,13 @@ import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
 import com.goDelivery.goDelivery.modules.branch.model.Branches;
 import com.goDelivery.goDelivery.modules.branch.repository.BranchesRepository;
+import com.goDelivery.goDelivery.modules.delivery.service.GeoLocationService;
+import com.goDelivery.goDelivery.modules.delivery.service.GeocodingService;
 import com.goDelivery.goDelivery.modules.restaurant.repository.OperatingHoursRepository;
 import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
 import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
 import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
-import com.goDelivery.goDelivery.service.email.EmailService;
+import com.goDelivery.goDelivery.modules.notification.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -319,7 +321,8 @@ public class RestaurantService {
         return restaurantMapper.toRestaurantReviewDTO(restaurant);
     }
 
-    public List<RestaurantDTO> getRestaurantsByApprovalStatus(com.goDelivery.goDelivery.shared.enums.ApprovalStatus status) {
+    public List<RestaurantDTO> getRestaurantsByApprovalStatus(
+            com.goDelivery.goDelivery.shared.enums.ApprovalStatus status) {
         return restaurantRepository.findByApprovalStatus(status).stream()
                 .map(restaurantMapper::toRestaurantDTO)
                 .collect(Collectors.toList());

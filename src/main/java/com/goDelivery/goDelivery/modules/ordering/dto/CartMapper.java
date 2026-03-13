@@ -1,7 +1,5 @@
-package com.goDelivery.goDelivery.modules.ordering.mapper;
+package com.goDelivery.goDelivery.modules.ordering.dto;
 
-import com.goDelivery.goDelivery.modules.ordering.dto.CartItemDTO;
-import com.goDelivery.goDelivery.modules.ordering.dto.ShoppingCartDTO;
 import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItem;
 import com.goDelivery.goDelivery.modules.ordering.model.CartItem;
 import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
@@ -14,7 +12,7 @@ import java.util.stream.Collectors;
 @Component
 public class CartMapper {
 
-    //Convert CartItem to CartItemDTO
+    // Convert CartItem to CartItemDTO
     public CartItemDTO toCartItemDTO(CartItem cartItem) {
         if (cartItem == null) {
             return null;
@@ -42,7 +40,7 @@ public class CartMapper {
         return builder.build();
     }
 
-    //Convert ShoppingCart to ShoppingCartDTO
+    // Convert ShoppingCart to ShoppingCartDTO
     public ShoppingCartDTO toShoppingCartDTO(ShoppingCart cart) {
         if (cart == null) {
             return null;

@@ -1,5 +1,6 @@
 package com.goDelivery.goDelivery.modules.customer.model;
 
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import com.goDelivery.goDelivery.shared.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class WalletTransaction {
     private Float balanceAfter;
 
     @Column(name = "description", nullable = false)
-    private  String description;
+    private String description;
 
     @Column(name = "reference", nullable = false)
     private String reference;

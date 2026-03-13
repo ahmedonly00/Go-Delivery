@@ -34,7 +34,7 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
 
        // Temporarily commented out due to constructor resolution issues
        /*
-        * @Query("SELECT new com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementSummaryDTO("
+        * @Query("SELECT new com.goDelivery.goDelivery.modules.payment.dto.DisbursementSummaryDTO("
         * +
         * "dt.id, dt.referenceId, dt.order.orderId, dt.order.orderNumber, dt.restaurant.id, dt.restaurant.restaurantName, "
         * +
@@ -48,7 +48,7 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
         * findDisbursementSummaryByRestaurantId(@Param("restaurantId") Long
         * restaurantId);
         * 
-        * @Query("SELECT new com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementSummaryDTO("
+        * @Query("SELECT new com.goDelivery.goDelivery.modules.payment.dto.DisbursementSummaryDTO("
         * +
         * "dt.id, dt.referenceId, dt.order.orderId, dt.order.orderNumber, dt.restaurant.id, dt.restaurant.restaurantName, "
         * +
@@ -59,7 +59,7 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
         * "ORDER BY dt.createdAt DESC")
         * List<DisbursementSummaryDTO> findAllDisbursementSummaries();
         * 
-        * @Query("SELECT NEW com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.RestaurantDisbursementSummaryDTO("
+        * @Query("SELECT NEW com.goDelivery.goDelivery.modules.payment.dto.RestaurantDisbursementSummaryDTO("
         * +
         * "r.id, r.restaurantName, " +
         * "COALESCE(CAST(SUM(dt.amount) AS java.math.BigDecimal), 0), " +

@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.branch.controller;
 
 import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
 import com.goDelivery.goDelivery.modules.ordering.dto.OrderStatusUpdate;
-import com.goDelivery.goDelivery.service.BranchCashierService;
+import com.goDelivery.goDelivery.modules.branch.service.BranchCashierService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

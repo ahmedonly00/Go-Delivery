@@ -1,8 +1,6 @@
-package com.goDelivery.goDelivery.modules.delivery.mapper;
+package com.goDelivery.goDelivery.modules.delivery.dto;
 
 import com.goDelivery.goDelivery.shared.enums.Roles;
-import com.goDelivery.goDelivery.modules.delivery.dto.BikerRegistrationRequest;
-import com.goDelivery.goDelivery.modules.delivery.dto.BikerRegistrationResponse;
 import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,9 +35,9 @@ public class BikerMapper {
                 .successfulDeliveries(0)
                 .currentLatitude(0.0f)
                 .currentLongitude(0.0f)
-                .isAvailable(false)  // New bikers are not available by default
-                .isOnline(false)     // New bikers are offline by default
-                .isActive(true)      // Set to false if email verification is required
+                .isAvailable(false) // New bikers are not available by default
+                .isOnline(false) // New bikers are offline by default
+                .isActive(true) // Set to false if email verification is required
                 .joinedAt(LocalDate.now())
                 .lastActive(LocalDate.now())
                 .roles(Roles.BIKER)
@@ -72,7 +70,7 @@ public class BikerMapper {
                 .lastActive(biker.getLastActive())
                 .build();
     }
-    
+
     public BikerRegistrationResponse toBikerResponse(Bikers biker) {
         if (biker == null) {
             return null;

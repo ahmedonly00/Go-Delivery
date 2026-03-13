@@ -2,8 +2,8 @@ package com.goDelivery.goDelivery.modules.payment.controller;
 
 import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
 import com.goDelivery.goDelivery.modules.payment.dto.*;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementResponse;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementCallback;
+import com.goDelivery.goDelivery.modules.payment.dto.CollectionDisbursementResponse;
+import com.goDelivery.goDelivery.modules.payment.dto.DisbursementCallback;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.modules.payment.model.DisbursementTransaction;
 import com.goDelivery.goDelivery.modules.ordering.model.Order;

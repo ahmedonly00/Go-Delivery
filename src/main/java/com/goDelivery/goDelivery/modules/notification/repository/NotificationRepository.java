@@ -7,5 +7,5 @@ import com.goDelivery.goDelivery.modules.notification.model.Notification;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    
+
 }

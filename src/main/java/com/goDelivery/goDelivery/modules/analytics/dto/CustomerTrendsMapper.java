@@ -1,6 +1,5 @@
-package com.goDelivery.goDelivery.modules.analytics.mapper;
+package com.goDelivery.goDelivery.modules.analytics.dto;
 
-import com.goDelivery.goDelivery.modules.analytics.dto.CustomerTrendsDTO;
 import com.goDelivery.goDelivery.modules.customer.model.Customer;
 import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import com.goDelivery.goDelivery.modules.ordering.model.OrderItem;
@@ -20,7 +19,6 @@ public class CustomerTrendsMapper {
                         return Collections.emptyList();
                 }
 
-                // Group orders by customer
                 Map<Customer, List<Order>> ordersByCustomer = orders.stream()
                                 .filter(order -> order.getCustomer() != null)
                                 .collect(Collectors.groupingBy(Order::getCustomer));
@@ -36,7 +34,6 @@ public class CustomerTrendsMapper {
                         return null;
                 }
 
-                // Calculate metrics
                 int orderCount = customerOrders.size();
                 BigDecimal totalSpent = customerOrders.stream()
                                 .map(Order::getFinalAmount)
@@ -48,11 +45,9 @@ public class CustomerTrendsMapper {
                                 ? totalSpent.divide(BigDecimal.valueOf(orderCount), 2, java.math.RoundingMode.HALF_UP)
                                 : BigDecimal.ZERO;
 
-                // Get most recent order
                 Optional<Order> mostRecentOrder = customerOrders.stream()
                                 .max(Comparator.comparing(Order::getOrderPlacedAt));
 
-                // Get popular items
                 Map<String, Long> popularItems = customerOrders.stream()
                                 .flatMap(order -> order.getOrderItems().stream())
                                 .collect(Collectors.groupingBy(
@@ -60,31 +55,26 @@ public class CustomerTrendsMapper {
                                                                 : item.getMenuItem().getMenuItemName(),
                                                 Collectors.summingLong(OrderItem::getQuantity)));
 
-                // Find the most popular item
                 Map.Entry<String, Long> mostPopularItem = popularItems.entrySet().stream()
                                 .max(Map.Entry.comparingByValue())
                                 .orElse(null);
 
-                // Create a list of PopularItem (currently only including the most popular one)
                 List<CustomerTrendsDTO.PopularItem> favoriteItems = new ArrayList<>();
                 if (mostPopularItem != null) {
-                        // For now, we're just using the item name and count
-                        // You might want to include the menuItemId if available
-                        CustomerTrendsDTO.PopularItem popularItem = new CustomerTrendsDTO.PopularItem(
-                                        null, // menuItemId - set to null or get from your data if available
+                        favoriteItems.add(new CustomerTrendsDTO.PopularItem(
+                                        null,
                                         mostPopularItem.getKey(),
-                                        mostPopularItem.getValue().intValue());
-                        favoriteItems.add(popularItem);
+                                        mostPopularItem.getValue().intValue()));
                 }
 
                 return CustomerTrendsDTO.builder()
-                                .customerId(customer.getId())
-                                .customerName(customer.getFullName())
+                                .customerId(customer.getCustomerId())
+                                .customerName(customer.getFullNames())
                                 .customerEmail(customer.getEmail())
                                 .orderCount(orderCount)
                                 .totalSpent(totalSpent)
                                 .averageOrderValue(averageOrderValue)
-                                .lastOrderDate(mostRecentOrder.map(order -> order.getOrderPlacedAt()).orElse(null))
+                                .lastOrderDate(mostRecentOrder.map(Order::getOrderPlacedAt).orElse(null))
                                 .favoriteItems(favoriteItems)
                                 .build();
         }

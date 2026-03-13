@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.customer.controller;
 
 import com.goDelivery.goDelivery.modules.customer.dto.CreateReviewRequest;
 import com.goDelivery.goDelivery.modules.customer.dto.ReviewResponseDTO;
-import com.goDelivery.goDelivery.service.ReviewService;
+import com.goDelivery.goDelivery.modules.customer.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

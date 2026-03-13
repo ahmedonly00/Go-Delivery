@@ -1,5 +1,9 @@
 package com.goDelivery.goDelivery.modules.branch.model;
 
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.restaurant.model.OperatingHours;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.model.Review;
 import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
 import com.goDelivery.goDelivery.shared.enums.BranchSetupStatus;
 import com.goDelivery.goDelivery.shared.enums.DeliveryType;

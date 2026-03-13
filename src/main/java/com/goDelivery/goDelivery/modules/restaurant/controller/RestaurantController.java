@@ -4,13 +4,13 @@ import com.goDelivery.goDelivery.modules.analytics.dto.OrderReportDTO;
 import com.goDelivery.goDelivery.modules.analytics.dto.SalesReportDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.*;
 import com.goDelivery.goDelivery.modules.restaurant.service.RestaurantService;
-import com.goDelivery.goDelivery.service.FileStorageService;
-import com.goDelivery.goDelivery.service.ReportService;
+import com.goDelivery.goDelivery.modules.branch.service.FileStorageService;
+import com.goDelivery.goDelivery.modules.analytics.service.ReportService;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import com.goDelivery.goDelivery.service.RestaurantRegistrationService;
+import com.goDelivery.goDelivery.modules.restaurant.service.RestaurantRegistrationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

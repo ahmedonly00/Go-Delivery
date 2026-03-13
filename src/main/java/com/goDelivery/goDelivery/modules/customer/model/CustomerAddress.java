@@ -1,4 +1,5 @@
 package com.goDelivery.goDelivery.modules.customer.model;
+import com.goDelivery.goDelivery.modules.delivery.model.City;
 
 import com.goDelivery.goDelivery.shared.enums.AddressType;
 import jakarta.persistence.*;

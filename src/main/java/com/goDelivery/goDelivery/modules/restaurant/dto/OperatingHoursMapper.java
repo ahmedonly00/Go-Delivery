@@ -1,7 +1,6 @@
-package com.goDelivery.goDelivery.modules.restaurant.mapper;
+package com.goDelivery.goDelivery.modules.restaurant.dto;
 
 import org.springframework.stereotype.Component;
-import com.goDelivery.goDelivery.modules.restaurant.dto.OperatingHoursDTO;
 import com.goDelivery.goDelivery.modules.restaurant.model.OperatingHours;
 
 @Component
@@ -50,22 +49,34 @@ public class OperatingHoursMapper {
     }
 
     private String findFirstNonNullOpenTime(OperatingHours entity) {
-        if (entity.getMondayOpen() != null) return entity.getMondayOpen();
-        if (entity.getTuesdayOpen() != null) return entity.getTuesdayOpen();
-        if (entity.getWednesdayOpen() != null) return entity.getWednesdayOpen();
-        if (entity.getThursdayOpen() != null) return entity.getThursdayOpen();
-        if (entity.getFridayOpen() != null) return entity.getFridayOpen();
-        if (entity.getSaturdayOpen() != null) return entity.getSaturdayOpen();
+        if (entity.getMondayOpen() != null)
+            return entity.getMondayOpen();
+        if (entity.getTuesdayOpen() != null)
+            return entity.getTuesdayOpen();
+        if (entity.getWednesdayOpen() != null)
+            return entity.getWednesdayOpen();
+        if (entity.getThursdayOpen() != null)
+            return entity.getThursdayOpen();
+        if (entity.getFridayOpen() != null)
+            return entity.getFridayOpen();
+        if (entity.getSaturdayOpen() != null)
+            return entity.getSaturdayOpen();
         return entity.getSundayOpen();
     }
 
     private String findFirstNonNullCloseTime(OperatingHours entity) {
-        if (entity.getMondayClose() != null) return entity.getMondayClose();
-        if (entity.getTuesdayClose() != null) return entity.getTuesdayClose();
-        if (entity.getWednesdayClose() != null) return entity.getWednesdayClose();
-        if (entity.getThursdayClose() != null) return entity.getThursdayClose();
-        if (entity.getFridayClose() != null) return entity.getFridayClose();
-        if (entity.getSaturdayClose() != null) return entity.getSaturdayClose();
+        if (entity.getMondayClose() != null)
+            return entity.getMondayClose();
+        if (entity.getTuesdayClose() != null)
+            return entity.getTuesdayClose();
+        if (entity.getWednesdayClose() != null)
+            return entity.getWednesdayClose();
+        if (entity.getThursdayClose() != null)
+            return entity.getThursdayClose();
+        if (entity.getFridayClose() != null)
+            return entity.getFridayClose();
+        if (entity.getSaturdayClose() != null)
+            return entity.getSaturdayClose();
         return entity.getSundayClose();
     }
 }

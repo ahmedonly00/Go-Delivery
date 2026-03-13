@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.branch.controller;
 
 import com.goDelivery.goDelivery.modules.branch.dto.BranchManagerSetupDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
-import com.goDelivery.goDelivery.service.BranchSetupService;
+import com.goDelivery.goDelivery.modules.branch.service.BranchSetupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,47 +31,42 @@ public class BranchSetupController {
 
     @PostMapping("/{branchId}/manager-setup")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
-    @Operation(
-        summary = "Complete branch manager setup (Single API)",
-        description = "Branch manager completes all remaining setup in a single API call. " +
-                      "Only provide fields that need to be set - null fields are ignored. " +
-                      "This allows the branch manager to fill in only what the restaurant admin didn't set."
-    )
+    @Operation(summary = "Complete branch manager setup (Single API)", description = "Branch manager completes all remaining setup in a single API call. "
+            +
+            "Only provide fields that need to be set - null fields are ignored. " +
+            "This allows the branch manager to fill in only what the restaurant admin didn't set.")
     public ResponseEntity<BranchesDTO> completeBranchManagerSetup(
             @PathVariable Long branchId,
             @RequestPart("setup") @Valid BranchManagerSetupDTO setupDTO,
             @RequestPart(value = "commercialRegistrationFile", required = false) MultipartFile commercialRegistrationFile,
             @RequestPart(value = "taxIdentificationFile", required = false) MultipartFile taxIdentificationFile,
             @AuthenticationPrincipal UserDetails userDetails) {
-        
-        log.info("Branch manager completing setup for branch {} by user {}", 
+
+        log.info("Branch manager completing setup for branch {} by user {}",
                 branchId, userDetails.getUsername());
 
         setupDTO.setCommercialRegistrationFile(commercialRegistrationFile);
         setupDTO.setTaxIdentificationFile(taxIdentificationFile);
 
         BranchesDTO result = branchSetupService.completeBranchManagerSetup(branchId, setupDTO);
-        
+
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{branchId}/manager-setup")
     @PreAuthorize("hasRole('BRANCH_MANAGER')")
-    @Operation(
-        summary = "Get current branch setup status",
-        description = "Returns the current state of the branch so the frontend can show which fields are already set " +
-                      "and which ones the branch manager still needs to fill in."
-    )
+    @Operation(summary = "Get current branch setup status", description = "Returns the current state of the branch so the frontend can show which fields are already set "
+            +
+            "and which ones the branch manager still needs to fill in.")
     public ResponseEntity<BranchManagerSetupDTO> getBranchManagerSetupStatus(
-            @Parameter(description = "Branch ID") 
-            @PathVariable Long branchId,
+            @Parameter(description = "Branch ID") @PathVariable Long branchId,
             @AuthenticationPrincipal UserDetails userDetails) {
-        
-        log.info("Fetching branch manager setup status for branch {} by user {}", 
+
+        log.info("Fetching branch manager setup status for branch {} by user {}",
                 branchId, userDetails.getUsername());
-        
+
         BranchManagerSetupDTO status = branchSetupService.getBranchManagerSetupStatus(branchId);
-        
+
         return ResponseEntity.ok(status);
     }
 }

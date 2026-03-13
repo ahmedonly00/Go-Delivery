@@ -1,7 +1,8 @@
 package com.goDelivery.goDelivery.modules.restaurant.service;
 
 import com.goDelivery.goDelivery.modules.analytics.model.AuditLog;
-import com.goDelivery.goDelivery.repository.AuditLogRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.AuditLogRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,6 @@ public class AuditService {
 
     private final AuditLogRepository auditLogRepository;
 
-   
     @Transactional
     public void logPaymentWebhook(String transactionId, String status, String details) {
         try {
@@ -27,7 +27,7 @@ public class AuditService {
             auditLog.setStatus(status);
             auditLog.setDetails(details);
             auditLog.setCreatedAt(LocalDateTime.now());
-            
+
             auditLogRepository.save(auditLog);
             log.debug("Logged payment webhook for transaction: {}", transactionId);
         } catch (Exception e) {
@@ -36,7 +36,6 @@ public class AuditService {
         }
     }
 
-    
     @Transactional
     public void logPaymentAction(Long paymentId, String action, String status, String details) {
         try {
@@ -47,7 +46,7 @@ public class AuditService {
             auditLog.setStatus(status);
             auditLog.setDetails(details);
             auditLog.setCreatedAt(LocalDateTime.now());
-            
+
             auditLogRepository.save(auditLog);
             log.debug("Logged payment action for payment {}: {}/{}", paymentId, action, status);
         } catch (Exception e) {

@@ -3,8 +3,8 @@ package com.goDelivery.goDelivery.modules.branch.dto;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.goDelivery.goDelivery.Enum.DeliveryType;
-import com.goDelivery.goDelivery.dtos.restaurant.OperatingHoursDTO;
+import com.goDelivery.goDelivery.shared.enums.DeliveryType;
+import com.goDelivery.goDelivery.modules.restaurant.dto.OperatingHoursDTO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

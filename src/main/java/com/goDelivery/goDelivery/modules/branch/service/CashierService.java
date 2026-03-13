@@ -3,11 +3,14 @@ package com.goDelivery.goDelivery.modules.branch.service;
 import com.goDelivery.goDelivery.shared.enums.OrderStatus;
 import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
 import com.goDelivery.goDelivery.modules.ordering.dto.OrderStatusUpdate;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.modules.ordering.dto.OrderMapper;
-import com.goDelivery.goDelivery.model.*;
+import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
 import com.goDelivery.goDelivery.modules.delivery.repository.BikersRepository;
 import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
+import com.goDelivery.goDelivery.modules.ordering.service.OrderStatusUpdateService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,7 +24,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @Slf4j
 public class CashierService {
-    
+
     private final OrderRepository orderRepository;
     private final BikersRepository bikersRepository;
     private final OrderMapper orderMapper;
@@ -30,17 +33,17 @@ public class CashierService {
     @Transactional
     public OrderResponse acceptOrder(Long orderId, Integer estimatedPrepTimeMinutes) {
         log.info("Accepting order ID: {} with estimated prep time: {} minutes", orderId, estimatedPrepTimeMinutes);
-        
+
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
-        
+
         if (order.getOrderStatus() != OrderStatus.PLACED) {
             throw new IllegalStateException("Only PLACED orders can be accepted");
         }
-        
+
         order.setAcceptedAt(LocalDate.now());
         order.setEstimatedPrepTimeMinutes(estimatedPrepTimeMinutes);
-        
+
         // Use status update service to handle status change and notifications
         return statusUpdateService.updateOrderStatusWithNotification(order, OrderStatus.CONFIRMED);
     }
@@ -52,37 +55,37 @@ public class CashierService {
                 .map(orderMapper::toOrderResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
     }
-    
+
     @Transactional
     public OrderResponse markOrderReadyForPickup(Long orderId) {
         log.info("Marking order ID: {} as ready for pickup", orderId);
-        
+
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
-        
+
         if (order.getOrderStatus() != OrderStatus.PREPARING) {
             throw new IllegalStateException("Only orders in PREPARING status can be marked as ready for pickup");
         }
-        
+
         // Use status update service to handle status change and notifications
         return statusUpdateService.updateOrderStatusWithNotification(order, OrderStatus.READY);
     }
-    
+
     @Transactional
     public OrderResponse confirmOrderDispatch(Long orderId) {
         log.info("Confirming dispatch for order ID: {}", orderId);
-        
+
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
-        
+
         if (order.getOrderStatus() != OrderStatus.READY) {
             throw new IllegalStateException("Only orders in READY status can be dispatched");
         }
-        
+
         if (order.getBikers() == null) {
             throw new IllegalStateException("Cannot dispatch order: No biker assigned");
         }
-        
+
         // Use status update service to handle status change and notifications
         return statusUpdateService.updateOrderStatusWithNotification(order, OrderStatus.PICKED_UP);
     }
@@ -104,14 +107,15 @@ public class CashierService {
     @Transactional
     public OrderResponse updateOrderStatus(OrderStatusUpdate statusUpdate) {
         log.info("Updating status for order ID: {} to {}", statusUpdate.getOrderId(), statusUpdate.getStatus());
-        
+
         Order order = orderRepository.findByOrderId(statusUpdate.getOrderId())
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + statusUpdate.getOrderId()));
-        
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Order not found with id: " + statusUpdate.getOrderId()));
+
         // Update order status
         OrderStatus newStatus = statusUpdate.getStatus();
         order.setOrderStatus(newStatus);
-        
+
         // Update timestamps based on status
         LocalDate now = LocalDate.now();
         switch (newStatus) {
@@ -137,7 +141,7 @@ public class CashierService {
                 order.setCancelledAt(now);
                 break;
         }
-        
+
         Order updatedOrder = orderRepository.save(order);
         return orderMapper.toOrderResponse(updatedOrder);
     }
@@ -153,20 +157,20 @@ public class CashierService {
     @Transactional
     public OrderResponse assignToDelivery(Long orderId, Long bikerId) {
         log.info("Assigning order ID: {} to delivery person ID: {}", orderId, bikerId);
-        
+
         // Find the order
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
-        
+
         // Find the delivery person (biker)
         Bikers biker = bikersRepository.findByBikerId(bikerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Delivery person not found with id: " + bikerId));
-        
+
         // Update order with delivery person
         order.setBikers(biker);
         order.setOrderStatus(OrderStatus.CONFIRMED);
         order.setOrderConfirmedAt(LocalDate.now());
-        
+
         Order updatedOrder = orderRepository.save(order);
         return orderMapper.toOrderResponse(updatedOrder);
     }

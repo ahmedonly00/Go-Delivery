@@ -1,12 +1,10 @@
-package com.goDelivery.goDelivery.modules.restaurant.mapper;
+package com.goDelivery.goDelivery.modules.restaurant.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryDTO;
-import com.goDelivery.goDelivery.modules.restaurant.dto.MenuCategoryResponseDTO;
 import com.goDelivery.goDelivery.modules.restaurant.model.MenuCategory;
 
 @Component
@@ -21,8 +19,8 @@ public class MenuCategoryMapper {
                 .collect(Collectors.toList());
     }
 
-    public MenuCategoryDTO toMenuCategoryDTO(MenuCategory menuCategory){
-        if(menuCategory == null){
+    public MenuCategoryDTO toMenuCategoryDTO(MenuCategory menuCategory) {
+        if (menuCategory == null) {
             return null;
         }
 
@@ -32,22 +30,23 @@ public class MenuCategoryMapper {
                 .isActive(menuCategory.getIsActive() != null && menuCategory.getIsActive())
                 .createdAt(menuCategory.getCreatedAt())
                 .branchId(menuCategory.getBranch() != null ? menuCategory.getBranch().getBranchId() : null)
-                .restaurantId(menuCategory.getRestaurant() != null ? menuCategory.getRestaurant().getRestaurantId() : null)
+                .restaurantId(
+                        menuCategory.getRestaurant() != null ? menuCategory.getRestaurant().getRestaurantId() : null)
                 .build();
     }
 
-    public MenuCategory toMenuCategory(MenuCategoryDTO menuCategoryDTO){
-        if(menuCategoryDTO == null){
+    public MenuCategory toMenuCategory(MenuCategoryDTO menuCategoryDTO) {
+        if (menuCategoryDTO == null) {
             return null;
         }
 
         MenuCategory menuCategory = new MenuCategory();
         menuCategory.setCategoryName(menuCategoryDTO.getCategoryName());
         menuCategory.setCreatedAt(menuCategoryDTO.getCreatedAt());
-        
+
         return menuCategory;
     }
-    
+
     public MenuCategoryResponseDTO toMenuCategoryResponseDTO(MenuCategory menuCategory) {
         if (menuCategory == null) {
             return null;

@@ -1,7 +1,9 @@
-package com.goDelivery.goDelivery.modules.restaurant.mapper;
+package com.goDelivery.goDelivery.modules.restaurant.dto;
 
 import com.goDelivery.goDelivery.modules.customer.dto.ReviewResponseDTO;
-import com.goDelivery.goDelivery.model.*;
+import com.goDelivery.goDelivery.modules.restaurant.model.Review;
+import com.goDelivery.goDelivery.modules.restaurant.model.ReviewResponse;
+
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -17,11 +19,11 @@ public class ReviewMapper {
             return null;
         }
 
-        List<String> reviewImages = review.getReviewImages() != null ?
-                Arrays.stream(review.getReviewImages().split(","))
+        List<String> reviewImages = review.getReviewImages() != null
+                ? Arrays.stream(review.getReviewImages().split(","))
                         .filter(s -> !s.trim().isEmpty())
-                        .collect(Collectors.toList()) :
-                List.of();
+                        .collect(Collectors.toList())
+                : List.of();
 
         // Get the latest response if any
         String responseText = null;
@@ -36,13 +38,11 @@ public class ReviewMapper {
                 .reviewId(review.getReviewId())
                 .orderId(review.getOrder().getOrderId())
                 .customerId(review.getCustomer().getCustomerId())
-                .customerName(review.isAnonymous() ? "Anonymous" : 
-                    review.getCustomer().getFullName())
+                .customerName(review.isAnonymous() ? "Anonymous" : review.getCustomer().getFullName())
                 .restaurantId(review.getRestaurant().getRestaurantId())
                 .restaurantName(review.getRestaurant().getRestaurantName())
                 .bikerId(review.getBikers() != null ? review.getBikers().getBikerId() : null)
-                .bikerName(review.getBikers() != null ? 
-                    review.getBikers().getFullName() : null)
+                .bikerName(review.getBikers() != null ? review.getBikers().getFullName() : null)
                 .foodRating(review.getFoodRating())
                 .deliveryRating(review.getDeliveryRating())
                 .overallRating(review.getOverallRating())

@@ -2,8 +2,8 @@ package com.goDelivery.goDelivery.modules.analytics.controller;
 
 import com.goDelivery.goDelivery.modules.analytics.dto.EnhancedRestaurantDashboard;
 import com.goDelivery.goDelivery.modules.analytics.dto.SuperAdminDashboard;
-import com.goDelivery.goDelivery.service.dashboard.RestaurantDashboardService;
-import com.goDelivery.goDelivery.service.dashboard.SuperAdminDashboardService;
+import com.goDelivery.goDelivery.modules.analytics.service.RestaurantDashboardService;
+import com.goDelivery.goDelivery.modules.analytics.service.SuperAdminDashboardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -46,8 +46,7 @@ public class DashboardController {
 
     // ============ Restaurant Admin Dashboard Endpoints ============
 
-    @Operation(summary = "Get Restaurant Dashboard",
-               description = "Filter by year, month (1-12), or week (1-53). Defaults to current year if none provided.")
+    @Operation(summary = "Get Restaurant Dashboard", description = "Filter by year, month (1-12), or week (1-53). Defaults to current year if none provided.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Dashboard retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant not found"),
@@ -72,6 +71,7 @@ public class DashboardController {
             @PathVariable Long restaurantId) {
 
         log.info("Today's snapshot for restaurant {}", restaurantId);
-        return ResponseEntity.ok(restaurantDashboardService.getRestaurantDashboard(restaurantId, null, null, null).getTodaySnapshot());
+        return ResponseEntity.ok(
+                restaurantDashboardService.getRestaurantDashboard(restaurantId, null, null, null).getTodaySnapshot());
     }
 }

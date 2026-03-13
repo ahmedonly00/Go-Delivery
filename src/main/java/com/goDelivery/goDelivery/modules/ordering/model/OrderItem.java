@@ -1,4 +1,7 @@
 package com.goDelivery.goDelivery.modules.ordering.model;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItemVariant;
+import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItem;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -9,7 +9,7 @@ import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemResponse;
 import com.goDelivery.goDelivery.modules.branch.model.BranchMenuCategory;
 import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItem;
 import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
-import com.goDelivery.goDelivery.service.BranchDelegationService;
+import com.goDelivery.goDelivery.modules.branch.service.BranchDelegationService;
 import com.goDelivery.goDelivery.modules.branch.service.BranchMenuService;
 import com.goDelivery.goDelivery.modules.branch.service.BranchService;
 import io.swagger.v3.oas.annotations.Operation;

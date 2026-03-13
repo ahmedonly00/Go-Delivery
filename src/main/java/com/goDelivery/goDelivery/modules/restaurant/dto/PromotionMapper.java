@@ -1,13 +1,10 @@
-package com.goDelivery.goDelivery.modules.restaurant.mapper;
-
+package com.goDelivery.goDelivery.modules.restaurant.dto;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionRequest;
-import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionResponse;
 import com.goDelivery.goDelivery.modules.restaurant.model.Promotion;
 import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 
@@ -49,11 +46,11 @@ public class PromotionMapper {
                 .build();
     }
 
-    public Promotion toEntity(PromotionRequest promotionRequest){
-        if(promotionRequest == null){
+    public Promotion toEntity(PromotionRequest promotionRequest) {
+        if (promotionRequest == null) {
             return null;
         }
-        
+
         Promotion promotion = new Promotion();
         promotion.setTitle(promotionRequest.getTitle());
         promotion.setDescription(promotionRequest.getDescription());
@@ -69,14 +66,14 @@ public class PromotionMapper {
         promotion.setEndDate(promotionRequest.getEndDate());
         promotion.setActive(promotionRequest.isActive());
         promotion.setCreatedAt(promotionRequest.getCreatedAt());
-        
+
         // Create a new Restaurant and set its ID
         Restaurant restaurant = new Restaurant();
         restaurant.setRestaurantId(promotionRequest.getRestaurantId());
         promotion.setRestaurant(restaurant);
-        
+
         return promotion;
 
     }
-    
+
 }

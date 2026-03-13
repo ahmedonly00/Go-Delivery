@@ -7,10 +7,11 @@ import com.goDelivery.goDelivery.modules.delivery.dto.CountryResponse;
 import com.goDelivery.goDelivery.modules.delivery.dto.LocationMapper;
 import com.goDelivery.goDelivery.modules.delivery.model.City;
 import com.goDelivery.goDelivery.modules.delivery.model.Country;
+import com.goDelivery.goDelivery.modules.branch.service.FileStorageService;
+import com.goDelivery.goDelivery.modules.delivery.repository.CountryRepository;
+import com.goDelivery.goDelivery.modules.delivery.repository.CityRepository;
 import com.goDelivery.goDelivery.modules.customer.model.Customer;
 import com.goDelivery.goDelivery.modules.customer.model.CustomerAddress;
-import com.goDelivery.goDelivery.repository.CityRepository;
-import com.goDelivery.goDelivery.repository.CountryRepository;
 import com.goDelivery.goDelivery.modules.customer.repository.CustomerAddressRepository;
 import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,24 +32,21 @@ public class LocationService {
     private final LocationMapper locationMapper;
     private final FileStorageService fileStorageService;
 
-   
     public List<CountryResponse> getAllCountries() {
         List<Country> countries = countryRepository.findAll();
         return locationMapper.toCountryResponseList(countries);
     }
 
-    
     public List<CityResponse> getCitiesByCountry(Long countryId) {
         // Verify country exists
         if (!countryRepository.existsById(countryId)) {
             throw new RuntimeException("Country not found with ID: " + countryId);
         }
 
-        List<City> cities = cityRepository.findByCountryCountryId(countryId);
+        List<City> cities = cityRepository.findByCountry_CountryId(countryId);
         return locationMapper.toCityResponseList(cities);
     }
 
-    
     @Transactional
     public AddressResponse createAddress(AddressRequest request, MultipartFile image) {
         // Verify customer exists
@@ -61,7 +59,8 @@ public class LocationService {
 
         // If this address is set as default, unset other default addresses
         if (request.getIsDefault() != null && request.getIsDefault()) {
-            List<CustomerAddress> existingAddresses = addressRepository.findByCustomerCustomerId(request.getCustomerId());
+            List<CustomerAddress> existingAddresses = addressRepository
+                    .findByCustomerCustomerId(request.getCustomerId());
             existingAddresses.forEach(addr -> {
                 addr.setDefault(false);
                 addressRepository.save(addr);
@@ -83,7 +82,6 @@ public class LocationService {
         return locationMapper.toAddressResponse(savedAddress);
     }
 
-    
     public List<AddressResponse> getCustomerAddresses(Long customerId) {
         // Verify customer exists
         if (!customerRepository.existsById(customerId)) {
@@ -94,7 +92,6 @@ public class LocationService {
         return locationMapper.toAddressResponseList(addresses);
     }
 
-   
     public AddressResponse getAddressById(Long addressId) {
         CustomerAddress address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new RuntimeException("Address not found with ID: " + addressId));

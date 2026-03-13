@@ -3,7 +3,7 @@ package com.goDelivery.goDelivery.modules.branch.controller;
 import com.goDelivery.goDelivery.modules.restaurant.dto.BranchSettingsDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.BranchUserDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
-import com.goDelivery.goDelivery.service.BranchDelegationService;
+import com.goDelivery.goDelivery.modules.branch.service.BranchDelegationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

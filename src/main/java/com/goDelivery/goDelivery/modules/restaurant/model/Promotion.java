@@ -1,4 +1,5 @@
 package com.goDelivery.goDelivery.modules.restaurant.model;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
 
 import com.goDelivery.goDelivery.shared.enums.PromotionType;
 import jakarta.persistence.*;

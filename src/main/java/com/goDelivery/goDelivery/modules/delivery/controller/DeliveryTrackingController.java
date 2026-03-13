@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.delivery.controller;
 
 import com.goDelivery.goDelivery.modules.delivery.dto.BikerLocationUpdateRequest;
 import com.goDelivery.goDelivery.modules.delivery.dto.DeliveryTrackingResponse;
-import com.goDelivery.goDelivery.service.DeliveryTrackingService;
+import com.goDelivery.goDelivery.modules.delivery.service.DeliveryTrackingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

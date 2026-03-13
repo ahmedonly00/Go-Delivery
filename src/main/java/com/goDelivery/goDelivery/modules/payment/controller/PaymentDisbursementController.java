@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.payment.controller;
 
 import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementResponse;
+import com.goDelivery.goDelivery.modules.payment.dto.CollectionDisbursementResponse;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;

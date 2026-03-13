@@ -1,7 +1,5 @@
-package com.goDelivery.goDelivery.modules.payment.mapper;
+package com.goDelivery.goDelivery.modules.payment.dto;
 
-import com.goDelivery.goDelivery.modules.payment.dto.PaymentRequest;
-import com.goDelivery.goDelivery.modules.payment.dto.PaymentResponse;
 import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import com.goDelivery.goDelivery.modules.payment.model.Payment;
 import org.springframework.stereotype.Component;

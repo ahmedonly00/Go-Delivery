@@ -2,11 +2,19 @@ package com.goDelivery.goDelivery.modules.customer.service;
 
 import com.goDelivery.goDelivery.modules.customer.dto.CreateReviewRequest;
 import com.goDelivery.goDelivery.modules.customer.dto.ReviewResponseDTO;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
+import com.goDelivery.goDelivery.modules.customer.repository.ReviewRepository;
+import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
+import com.goDelivery.goDelivery.modules.delivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.modules.restaurant.dto.ReviewMapper;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.model.Review;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
 import com.goDelivery.goDelivery.shared.enums.OrderStatus;
-import com.goDelivery.goDelivery.model.*;
-import com.goDelivery.goDelivery.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,40 +40,44 @@ public class ReviewService {
         // Verify order exists and is completed
         Order order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + request.getOrderId()));
-        
+
         if (order.getOrderStatus() != OrderStatus.DELIVERED && order.getOrderStatus() != OrderStatus.CANCELLED) {
-            throw new IllegalStateException("Cannot review an order that is not completed (status: " + order.getOrderStatus() + ")");
+            throw new IllegalStateException(
+                    "Cannot review an order that is not completed (status: " + order.getOrderStatus() + ")");
         }
-        
+
         // Check if review already exists for this order
         if (reviewRepository.existsByOrder_OrderId(order.getOrderId())) {
             throw new IllegalStateException("A review already exists for this order");
         }
-        
+
         // Verify customer exists
         Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + request.getCustomerId()));
-        
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Customer not found with id: " + request.getCustomerId()));
+
         // Verify restaurant exists
         Restaurant restaurant = restaurantRepository.findByRestaurantId(request.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + request.getRestaurantId()));
-        
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Restaurant not found with id: " + request.getRestaurantId()));
+
         // Verify biker if provided
         Bikers biker = null;
         if (request.getBikerId() != null) {
             biker = bikerRepository.findById(request.getBikerId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + request.getBikerId()));
-            
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException("Biker not found with id: " + request.getBikerId()));
+
             if (request.getDeliveryRating() == null) {
                 throw new IllegalArgumentException("Delivery rating is required when reviewing a biker");
             }
         }
-        
+
         // Calculate overall rating (average of food and delivery ratings if both exist)
-        Integer overallRating = request.getDeliveryRating() != null ? 
-                (request.getFoodRating() + request.getDeliveryRating()) / 2 : 
-                request.getFoodRating();
-        
+        Integer overallRating = request.getDeliveryRating() != null
+                ? (request.getFoodRating() + request.getDeliveryRating()) / 2
+                : request.getFoodRating();
+
         // Create and save the review
         Review review = Review.builder()
                 .order(order)
@@ -81,81 +93,81 @@ public class ReviewService {
                 .isVerified(false)
                 .helpfulCount(0)
                 .build();
-        
+
         Review savedReview = reviewRepository.save(review);
-        
+
         // Update restaurant's average rating
         updateRestaurantRating(restaurant.getRestaurantId());
-        
+
         // Update biker's average rating if reviewed
         if (biker != null) {
             updateBikerRating(biker.getBikerId());
         }
-        
+
         return reviewMapper.toReviewResponseDTO(savedReview);
     }
-    
+
     @Transactional(readOnly = true)
     public List<ReviewResponseDTO> getRestaurantReviews(Long restaurantId) {
         return reviewRepository.findByRestaurant_RestaurantId(restaurantId).stream()
                 .map(reviewMapper::toReviewResponseDTO)
                 .collect(Collectors.toList());
     }
-    
+
     @Transactional(readOnly = true)
     public List<ReviewResponseDTO> getBikerReviews(Long bikerId) {
         return reviewRepository.findByBikers_BikerId(bikerId).stream()
                 .map(reviewMapper::toReviewResponseDTO)
                 .collect(Collectors.toList());
     }
-    
+
     @Transactional(readOnly = true)
     public List<ReviewResponseDTO> getCustomerReviews(Long customerId) {
         return reviewRepository.findByCustomer_CustomerId(customerId).stream()
                 .map(reviewMapper::toReviewResponseDTO)
                 .collect(Collectors.toList());
     }
-    
+
     @Transactional
     public void markReviewAsHelpful(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + reviewId));
-        
+
         review.setHelpfulCount(review.getHelpfulCount() + 1);
         reviewRepository.save(review);
     }
-    
+
     @Transactional
     public void verifyReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + reviewId));
-        
+
         if (review.isVerified()) {
             throw new IllegalStateException("Review is already verified");
         }
-        
+
         review.setVerified(true);
         reviewRepository.save(review);
     }
-    
+
     private void updateRestaurantRating(Long restaurantId) {
         Double averageRating = reviewRepository.findAverageFoodRatingByRestaurantId(restaurantId);
         int reviewCount = reviewRepository.countByRestaurantId(restaurantId);
-        
+
         Restaurant restaurant = restaurantRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
-        
+
         restaurant.setRating(averageRating);
         restaurant.setTotalReviews(reviewCount);
         restaurantRepository.save(restaurant);
     }
-    
+
     private void updateBikerRating(Long bikerId) {
         Double averageRating = reviewRepository.findAverageDeliveryRatingByBikerId(bikerId);
-        
+
         Bikers biker = bikerRepository.findById(bikerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Biker not found with id: " + bikerId));
-        
+
         biker.setRating(averageRating != null ? averageRating.floatValue() : null);
         bikerRepository.save(biker);
     }

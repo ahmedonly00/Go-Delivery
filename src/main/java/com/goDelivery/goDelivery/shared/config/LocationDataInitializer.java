@@ -2,13 +2,12 @@ package com.goDelivery.goDelivery.shared.config;
 
 import com.goDelivery.goDelivery.modules.delivery.model.City;
 import com.goDelivery.goDelivery.modules.delivery.model.Country;
-import com.goDelivery.goDelivery.repository.CityRepository;
-import com.goDelivery.goDelivery.repository.CountryRepository;
+import com.goDelivery.goDelivery.modules.delivery.repository.CityRepository;
+import com.goDelivery.goDelivery.modules.delivery.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
 
 @Component
 @RequiredArgsConstructor
@@ -68,7 +67,7 @@ public class LocationDataInitializer implements CommandLineRunner {
         createCity("Inhambane", mozambique);
         createCity("Lichinga", mozambique);
 
-        log.info("Created {} countries and {} cities", 
+        log.info("Created {} countries and {} cities",
                 countryRepository.count(), cityRepository.count());
     }
 

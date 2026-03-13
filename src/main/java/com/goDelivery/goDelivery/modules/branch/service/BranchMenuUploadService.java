@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.branch.service;
 
-import com.goDelivery.goDelivery.dtos.file.FileUploadResponse;
 import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemRequest;
+import com.goDelivery.goDelivery.modules.branch.dto.FileUploadResponse;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.modules.branch.model.Branches;
 import com.goDelivery.goDelivery.modules.restaurant.model.MenuCategory;
@@ -45,7 +45,7 @@ public class BranchMenuUploadService {
     private final MenuItemRepository menuItemRepository;
     private final BranchUsersRepository branchUsersRepository;
     private final Tesseract tesseract;
-    
+
     @Value("${tess4j.data-path:./tessdata}")
     private String tessDataPath;
 
@@ -53,7 +53,7 @@ public class BranchMenuUploadService {
         try {
             // Validate branch exists
             Branches branch = branchesRepository.findByBranchId(branchId)
-                .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
 
             // Verify branch is properly set up
             if (branch.getRestaurant() == null) {
@@ -62,9 +62,9 @@ public class BranchMenuUploadService {
 
             // Get or create default category for the branch
             MenuCategory defaultCategory = menuCategoryRepository.findByBranch_BranchId(branchId)
-                .stream()
-                .findFirst()
-                .orElseGet(() -> createDefaultCategory(branch));
+                    .stream()
+                    .findFirst()
+                    .orElseGet(() -> createDefaultCategory(branch));
 
             String fileExtension = getFileExtension(file.getOriginalFilename());
             List<MenuItemRequest> menuItems = new ArrayList<>();
@@ -88,11 +88,11 @@ public class BranchMenuUploadService {
 
             // Save menu items using the BranchMenuService
             List<MenuItem> savedItems = new ArrayList<>();
-            
+
             for (MenuItemRequest itemRequest : menuItems) {
                 // Set the category ID and branch context
                 itemRequest.setCategoryId(defaultCategory.getCategoryId());
-                
+
                 // Create menu item using the service (handles image upload if needed)
                 try {
                     // Create a temporary MenuItemRequest without image for batch processing
@@ -101,11 +101,12 @@ public class BranchMenuUploadService {
                             .description(itemRequest.getDescription() != null ? itemRequest.getDescription() : "")
                             .price(itemRequest.getPrice() != null ? itemRequest.getPrice() : 0.0f)
                             .ingredients(itemRequest.getIngredients() != null ? itemRequest.getIngredients() : "")
-                            .preparationTime(itemRequest.getPreparationTime() != null ? itemRequest.getPreparationTime() : 15)
+                            .preparationTime(
+                                    itemRequest.getPreparationTime() != null ? itemRequest.getPreparationTime() : 15)
                             .isAvailable(itemRequest.isAvailable())
                             .categoryId(defaultCategory.getCategoryId())
                             .build();
-                    
+
                     // Use the service to create the menu item
                     MenuItem savedItem = createMenuItemFromRequest(tempRequest, defaultCategory, branch);
                     savedItems.add(savedItem);
@@ -116,15 +117,16 @@ public class BranchMenuUploadService {
 
             // Save the file
             String fileUrl = fileStorageService.storeFile(file, "branches/" + branchId + "/menu-uploads");
-            
+
             // Mark branch setup as complete after successful menu upload
             markBranchSetupComplete(branchId);
-            
+
             log.info("Successfully processed menu upload for branch {}: {} items saved", branchId, savedItems.size());
 
             return FileUploadResponse.builder()
                     .success(true)
-                    .message("File processed successfully. " + savedItems.size() + " items saved to branch menu. Branch setup is now complete!")
+                    .message("File processed successfully. " + savedItems.size()
+                            + " items saved to branch menu. Branch setup is now complete!")
                     .menuItems(menuItems)
                     .fileUrl(fileUrl)
                     .build();
@@ -145,7 +147,7 @@ public class BranchMenuUploadService {
                 .price(request.getPrice())
                 .ingredients(request.getIngredients())
                 .preparationTime(request.getPreparationTime())
-                .preparationScore(5)  // Default score
+                .preparationScore(5) // Default score
                 .createdAt(LocalDate.now())
                 .updatedAt(LocalDate.now())
                 .category(category)
@@ -153,7 +155,7 @@ public class BranchMenuUploadService {
                 .restaurant(branch.getRestaurant())
                 .isAvailable(request.isAvailable())
                 .build();
-                
+
         return menuItemRepository.save(menuItem);
     }
 
@@ -169,30 +171,32 @@ public class BranchMenuUploadService {
 
     private List<MenuItemRequest> processPdfFile(InputStream inputStream, Long categoryId) throws IOException {
         List<MenuItemRequest> items = new ArrayList<>();
-        
+
         byte[] pdfBytes = inputStream.readAllBytes();
-        
+
         try (PDDocument document = Loader.loadPDF(pdfBytes)) {
             if (!document.isEncrypted()) {
                 PDFTextStripper stripper = new PDFTextStripper();
                 String text = stripper.getText(document);
-                
+
                 String[] lines = text.split("\\r?\\n");
-                
-                Pattern pricePattern = Pattern.compile("([$€£]?\\s*\\d+[.,]?\\d*\\.?\\d*\\s*[$€£]?|\\d+\\.?\\d*\\s*(?:USD|EGP|EUR|MZN|MT|£|€))");
-                
+
+                Pattern pricePattern = Pattern.compile(
+                        "([$€£]?\\s*\\d+[.,]?\\d*\\.?\\d*\\s*[$€£]?|\\d+\\.?\\d*\\s*(?:USD|EGP|EUR|MZN|MT|£|€))");
+
                 for (String line : lines) {
                     line = line.trim();
-                    if (line.isEmpty()) continue;
-                    
+                    if (line.isEmpty())
+                        continue;
+
                     Matcher matcher = pricePattern.matcher(line);
                     if (matcher.find()) {
                         String priceMatch = matcher.group(1);
                         String priceStr = priceMatch.replaceAll("[^\\d.,]", "")
-                                                 .replace(',', '.');
-                        
+                                .replace(',', '.');
+
                         String name = line.substring(0, matcher.start()).trim();
-                        
+
                         try {
                             float price = Float.parseFloat(priceStr);
                             if (name.length() > 0 && price > 0) {
@@ -210,13 +214,13 @@ public class BranchMenuUploadService {
                         }
                     }
                 }
-                
+
                 if (items.isEmpty()) {
                     log.warn("No menu items were extracted from the PDF");
                 }
             }
         }
-        
+
         return items;
     }
 
@@ -224,7 +228,7 @@ public class BranchMenuUploadService {
         List<MenuItemRequest> items = new ArrayList<>();
         try (Workbook workbook = new XSSFWorkbook(inputStream)) {
             Sheet sheet = workbook.getSheetAt(0);
-            
+
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row != null) {
@@ -248,42 +252,44 @@ public class BranchMenuUploadService {
         return items;
     }
 
-    private List<MenuItemRequest> processImageFile(MultipartFile file, Long categoryId) throws IOException, TesseractException {
+    private List<MenuItemRequest> processImageFile(MultipartFile file, Long categoryId)
+            throws IOException, TesseractException {
         List<MenuItemRequest> items = new ArrayList<>();
-        
+
         Path tempFile = Files.createTempFile("img-", "." + getFileExtension(file.getOriginalFilename()));
         try {
             Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
-            
+
             tesseract.setDatapath(tessDataPath);
             tesseract.setPageSegMode(4);
             tesseract.setVariable("preserve_interword_spaces", "1");
-            
+
             log.info("Starting OCR processing for branch menu...");
             String result = tesseract.doOCR(tempFile.toFile());
             log.debug("OCR Result:\n" + result);
-            
+
             String[] lines = result.split("\\r?\\n");
-            
+
             Pattern pricePattern = Pattern.compile(
-                "([$€£]?\\s*\\d+[.,]?\\d*\\.?\\d*\\s*[$€£]?|\\d+[.,]?\\d*\\s*(?:USD|EGP|EUR|MZN|MT|£|€))"
-            );
-            
+                    "([$€£]?\\s*\\d+[.,]?\\d*\\.?\\d*\\s*[$€£]?|\\d+[.,]?\\d*\\s*(?:USD|EGP|EUR|MZN|MT|£|€))");
+
             for (String line : lines) {
                 line = line.trim();
-                if (line.isEmpty() || line.length() < 3) continue;
-                
+                if (line.isEmpty() || line.length() < 3)
+                    continue;
+
                 Matcher matcher = pricePattern.matcher(line);
                 if (matcher.find()) {
                     String priceMatch = matcher.group(1);
                     String priceStr = priceMatch.replaceAll("[^\\d.,]", "")
-                                             .replace(',', '.');
-                    
+                            .replace(',', '.');
+
                     String name = line.substring(0, matcher.start()).trim();
                     name = name.replaceAll("[^\\p{L}\\p{N}\\s]$", "").trim();
-                    
-                    if (name.length() < 2) continue;
-                    
+
+                    if (name.length() < 2)
+                        continue;
+
                     try {
                         float price = Float.parseFloat(priceStr);
                         if (price > 0) {
@@ -301,11 +307,11 @@ public class BranchMenuUploadService {
                     }
                 }
             }
-            
+
         } finally {
             Files.deleteIfExists(tempFile);
         }
-        
+
         return items;
     }
 
@@ -314,8 +320,9 @@ public class BranchMenuUploadService {
     }
 
     private String getCellValue(Cell cell, String defaultValue) {
-        if (cell == null) return defaultValue;
-        
+        if (cell == null)
+            return defaultValue;
+
         try {
             switch (cell.getCellType()) {
                 case STRING:
@@ -342,7 +349,7 @@ public class BranchMenuUploadService {
             return defaultValue;
         }
     }
-    
+
     private float parseFloatSafely(String value, String defaultValue) {
         try {
             return Float.parseFloat(value);
@@ -351,7 +358,7 @@ public class BranchMenuUploadService {
             return Float.parseFloat(defaultValue);
         }
     }
-    
+
     private int parseIntSafely(String value, String defaultValue) {
         try {
             return Integer.parseInt(value);
@@ -360,19 +367,19 @@ public class BranchMenuUploadService {
             return Integer.parseInt(defaultValue);
         }
     }
-    
+
     private String getFileExtension(String filename) {
         if (filename == null || !filename.contains(".")) {
             return "";
         }
         return filename.substring(filename.lastIndexOf(".") + 1);
     }
-    
+
     private void markBranchSetupComplete(Long branchId) {
         try {
             // Get all branch users and mark setup as complete
             List<BranchUsers> branchUsers = branchUsersRepository.findByBranch_BranchId(branchId);
-            
+
             for (BranchUsers user : branchUsers) {
                 if (!user.isSetupComplete()) {
                     user.setSetupComplete(true);
@@ -381,7 +388,7 @@ public class BranchMenuUploadService {
                     log.info("Marked setup complete for branch user: {}", user.getEmail());
                 }
             }
-            
+
             log.info("Branch setup marked as complete for branch ID: {}", branchId);
         } catch (Exception e) {
             log.error("Error marking branch setup complete for branch {}: {}", branchId, e.getMessage());

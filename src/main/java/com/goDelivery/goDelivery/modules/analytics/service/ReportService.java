@@ -38,23 +38,22 @@ public class ReportService {
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
         List<Order> orders = reportRepository.findOrdersByRestaurantAndDateRange(
-            restaurantId, startDateTime, endDateTime);
+                restaurantId, startDateTime, endDateTime);
 
         // Calculate sales metrics
-        int totalOrders = orders.size();
+        long totalOrders = orders.size();
         BigDecimal totalRevenue = orders.stream()
-            .map(order -> BigDecimal.valueOf(order.getFinalAmount()))
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-    
-        
-        BigDecimal averageOrderValue = totalOrders > 0 
-            ? totalRevenue.divide(BigDecimal.valueOf(totalOrders), 2, RoundingMode.HALF_UP)
-            : BigDecimal.ZERO;
+                .map(order -> BigDecimal.valueOf(order.getFinalAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal averageOrderValue = totalOrders > 0
+                ? totalRevenue.divide(BigDecimal.valueOf(totalOrders), 2, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
 
         // Get most popular item
         List<Object[]> popularItems = reportRepository.findMostPopularItems(
-            restaurantId, startDateTime, endDateTime);
-        
+                restaurantId, startDateTime, endDateTime);
+
         String mostPopularItem = popularItems.isEmpty() ? "N/A" : (String) popularItems.get(0)[0];
         Long mostPopularItemCount = popularItems.isEmpty() ? 0L : (Long) popularItems.get(0)[1];
 
@@ -75,34 +74,33 @@ public class ReportService {
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
         List<Order> orders = reportRepository.findOrdersByRestaurantAndDateRange(
-            restaurantId, startDateTime, endDateTime);
+                restaurantId, startDateTime, endDateTime);
 
         // Calculate order metrics
         Map<OrderStatus, Long> statusCounts = orders.stream()
-            .collect(Collectors.groupingBy(Order::getOrderStatus, Collectors.counting()));
+                .collect(Collectors.groupingBy(Order::getOrderStatus, Collectors.counting()));
 
         // Get peak hour
         List<Object[]> peakHours = reportRepository.findPeakOrderHours(
-            restaurantId, startDateTime, endDateTime);
-        
-        String peakHour = peakHours.isEmpty() 
-            ? "No orders" 
-            : String.format("%02d:00", peakHours.get(0)[1]);
+                restaurantId, startDateTime, endDateTime);
+
+        String peakHour = peakHours.isEmpty()
+                ? "No orders"
+                : String.format("%02d:00", peakHours.get(0)[1]);
 
         // Calculate average preparation time (in minutes)
         double avgPrepTime = orders.stream()
-            .filter(o -> o.getOrderStatus() == OrderStatus.DELIVERED)
-            .mapToLong(order -> {
-                if (order.getDeliveredAt() != null && order.getOrderPreparedAt() != null) {
-                    return java.time.Duration.between(
-                        order.getOrderPreparedAt(), 
-                        order.getDeliveredAt()
-                    ).toMinutes();
-                }
-                return 0;
-            })
-            .average()
-            .orElse(0.0);
+                .filter(o -> o.getOrderStatus() == OrderStatus.DELIVERED)
+                .mapToLong(order -> {
+                    if (order.getDeliveredAt() != null && order.getOrderPreparedAt() != null) {
+                        return java.time.Duration.between(
+                                order.getOrderPreparedAt(),
+                                order.getDeliveredAt()).toMinutes();
+                    }
+                    return 0;
+                })
+                .average()
+                .orElse(0.0);
 
         OrderReportDTO report = new OrderReportDTO();
         report.setDate(LocalDate.now());
@@ -117,10 +115,11 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OrderResponse> getOrderHistory(Long restaurantId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public Page<OrderResponse> getOrderHistory(Long restaurantId, LocalDate startDate, LocalDate endDate,
+            Pageable pageable) {
         LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay() : LocalDateTime.of(2000, 1, 1, 0, 0);
         LocalDateTime endDateTime = endDate != null ? endDate.atTime(LocalTime.MAX) : LocalDateTime.now();
-        
+
         return orderAnalyticsRepository.findByRestaurant_RestaurantIdAndOrderPlacedAtBetween(
                 restaurantId, startDateTime, endDateTime, pageable)
                 .map(orderMapper::toOrderResponse);

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.goDelivery.goDelivery.modules.customer.dto.CustomerRegistrationRequest;
 import com.goDelivery.goDelivery.modules.customer.dto.CustomerResponse;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.modules.customer.dto.CustomerMapper;
 import com.goDelivery.goDelivery.modules.customer.model.Customer;
 import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
 
@@ -32,19 +31,19 @@ public class CustomerService {
     @Transactional
     public CustomerResponse registerCustomer(CustomerRegistrationRequest request) {
         log.info("Starting registration for email: {}", request.getEmail());
-        
+
         // Validate request
         if (request == null) {
             log.error("Registration request is null");
             throw new IllegalArgumentException("Registration request cannot be null");
         }
-        
+
         // Check if email already exists
         if (customerRepository.existsByEmail(request.getEmail())) {
             log.warn("Registration failed: Email already exists - {}", request.getEmail());
             throw new IllegalStateException("Email already registered");
         }
-        
+
         try {
             // Map and save the customer
             Customer customer = customerMapper.toEntity(request);
@@ -52,22 +51,23 @@ public class CustomerService {
             customer.setVerified(false);
             customer.setEmailVerified(false);
             customer.setPhoneVerified(false);
-            
+
             // Encode password
             String encodedPassword = passwordEncoder.encode(request.getPassword());
             customer.setPassword(encodedPassword);
             customer.setConfirmPassword(encodedPassword);
-            
+
             // Set creation and update timestamps
             LocalDate now = LocalDate.now();
             customer.setCreatedAt(now);
             customer.setUpdatedAt(now);
-            
+
             // Save customer first to get the ID
             Customer savedCustomer = customerRepository.save(customer);
             log.info("Customer registered successfully with ID: {}", savedCustomer.getId());
-            
-            // Generate and send OTP in a separate try-catch to not fail registration if email fails
+
+            // Generate and send OTP in a separate try-catch to not fail registration if
+            // email fails
             try {
                 otpService.generateAndSaveOTP(savedCustomer);
                 log.info("OTP sent to email: {}", savedCustomer.getEmail());
@@ -76,9 +76,9 @@ public class CustomerService {
                 // Don't fail the registration if email sending fails
                 // The user can request a new OTP later
             }
-            
+
             return customerMapper.toResponse(savedCustomer);
-            
+
         } catch (Exception e) {
             log.error("Error during registration for email: {}", request.getEmail(), e);
             throw new RuntimeException("Failed to register customer: " + e.getMessage(), e);
@@ -94,7 +94,7 @@ public class CustomerService {
     public CustomerResponse updateCustomer(Long customerId, CustomerRegistrationRequest customerRegistrationRequest) {
         Customer existingCustomer = customerRepository.findByCustomerId(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
-        
+
         existingCustomer.setFullNames(customerRegistrationRequest.getFullNames());
         existingCustomer.setLocation(customerRegistrationRequest.getLocation());
         existingCustomer.setEmail(customerRegistrationRequest.getEmail());
@@ -106,7 +106,7 @@ public class CustomerService {
         existingCustomer.setCreatedAt(LocalDate.now());
         existingCustomer.setUpdatedAt(LocalDate.now());
         return customerMapper.toResponse(customerRepository.save(existingCustomer));
-    }   
+    }
 
     public void deleteCustomer(Long customerId) {
         customerRepository.deleteById(customerId);
@@ -114,9 +114,9 @@ public class CustomerService {
 
     public List<CustomerResponse> getAllCustomers() {
         return customerRepository.findAll()
-        .stream()
-        .map(customerMapper::toResponse)
-        .collect(Collectors.toList());
+                .stream()
+                .map(customerMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     public CustomerResponse getCustomerByEmail(String email) {

@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import java.time.LocalDateTime;
 
 @Data

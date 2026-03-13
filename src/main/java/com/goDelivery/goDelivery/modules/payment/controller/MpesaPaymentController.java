@@ -3,7 +3,7 @@ package com.goDelivery.goDelivery.modules.payment.controller;
 import com.goDelivery.goDelivery.modules.payment.dto.MpesaPaymentRequest;
 import com.goDelivery.goDelivery.modules.payment.dto.MpesaPaymentResponse;
 import com.goDelivery.goDelivery.modules.payment.dto.MpesaWebhookRequest;
-import com.goDelivery.goDelivery.service.MpesaPaymentService;
+import com.goDelivery.goDelivery.modules.payment.service.MpesaPaymentService;
 import com.goDelivery.goDelivery.modules.payment.service.PaymentService;
 
 import io.swagger.v3.oas.annotations.Operation;

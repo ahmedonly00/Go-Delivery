@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -40,7 +42,6 @@ public class OrderAnalytics {
 
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
-
 
     // Many Analytics records belong to One Restaurant
     @ManyToOne(fetch = FetchType.LAZY)

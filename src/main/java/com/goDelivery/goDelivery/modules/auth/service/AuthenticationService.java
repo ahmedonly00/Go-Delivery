@@ -1,7 +1,12 @@
 package com.goDelivery.goDelivery.modules.auth.service;
 
 import com.goDelivery.goDelivery.modules.auth.dto.*;
-import com.goDelivery.goDelivery.model.*;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
+import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
+import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.restaurant.model.SuperAdmin;
+import com.goDelivery.goDelivery.shared.security.CustomUserDetails;
 import com.goDelivery.goDelivery.modules.delivery.repository.BikersRepository;
 import com.goDelivery.goDelivery.modules.branch.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
@@ -34,7 +39,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-    private final com.goDelivery.goDelivery.service.email.EmailService emailService;
+    private final com.goDelivery.goDelivery.modules.notification.service.EmailService emailService;
 
     public LoginResponse authenticate(LoginRequest request) {
         if (request == null) {

@@ -1,19 +1,16 @@
-package com.goDelivery.goDelivery.modules.restaurant.mapper;
+package com.goDelivery.goDelivery.modules.restaurant.dto;
 
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
-import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantAdminResponseDTO;
-import com.goDelivery.goDelivery.modules.customer.dto.RestaurantUserRequest;
-import com.goDelivery.goDelivery.modules.customer.dto.RestaurantUserResponse;
 import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
 
 @Component
 public class RestaurantUserMapper {
 
     public RestaurantUserResponse mapToResponse(RestaurantUsers restaurantUser) {
-        
+
         return RestaurantUserResponse.builder()
                 .userId(restaurantUser.getUserId())
                 .fullName(restaurantUser.getFullName())
@@ -25,8 +22,11 @@ public class RestaurantUserMapper {
                 .lastLogin(LocalDateTime.now())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .restaurantId(restaurantUser.getRestaurant() != null ? restaurantUser.getRestaurant().getRestaurantId() : null)
-                .restaurantName(restaurantUser.getRestaurant() != null ? restaurantUser.getRestaurant().getRestaurantName() : null)
+                .restaurantId(restaurantUser.getRestaurant() != null ? restaurantUser.getRestaurant().getRestaurantId()
+                        : null)
+                .restaurantName(
+                        restaurantUser.getRestaurant() != null ? restaurantUser.getRestaurant().getRestaurantName()
+                                : null)
                 .build();
     }
 
@@ -40,7 +40,7 @@ public class RestaurantUserMapper {
                 .isActive(true)
                 .build();
     }
-    
+
     public RestaurantUserRequest mapToRequest(RestaurantUsers user) {
         RestaurantUserRequest request = new RestaurantUserRequest();
         request.setFullName(user.getFullName());
@@ -51,7 +51,7 @@ public class RestaurantUserMapper {
         request.setPassword(user.getPassword()); // Note: This is already encoded
         return request;
     }
-    
+
     public RestaurantAdminResponseDTO toAdminResponseDTO(RestaurantUsers user) {
         return RestaurantAdminResponseDTO.builder()
                 .userId(user.getUserId())

@@ -1,4 +1,5 @@
 package com.goDelivery.goDelivery.modules.restaurant.model;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

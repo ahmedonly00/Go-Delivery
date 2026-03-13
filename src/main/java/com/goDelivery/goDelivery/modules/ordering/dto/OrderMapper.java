@@ -1,11 +1,8 @@
-package com.goDelivery.goDelivery.modules.ordering.mapper;
+package com.goDelivery.goDelivery.modules.ordering.dto;
 
 import com.goDelivery.goDelivery.shared.enums.OrderStatus;
 import com.goDelivery.goDelivery.shared.enums.PaymentMenthod;
 import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
-import com.goDelivery.goDelivery.modules.ordering.dto.OrderItemResponse;
-import com.goDelivery.goDelivery.modules.ordering.dto.OrderRequest;
-import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
 import com.goDelivery.goDelivery.modules.branch.model.Branches;
 import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItem;
 import com.goDelivery.goDelivery.modules.customer.model.Customer;

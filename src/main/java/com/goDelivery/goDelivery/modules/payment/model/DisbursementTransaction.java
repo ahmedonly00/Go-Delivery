@@ -3,6 +3,8 @@ package com.goDelivery.goDelivery.modules.payment.model;
 import java.time.LocalDateTime;
 
 import com.goDelivery.goDelivery.shared.enums.DisbursementStatus;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;

@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.modules.restaurant.service;
 
 import com.goDelivery.goDelivery.modules.analytics.model.MenuAuditLog;
-import com.goDelivery.goDelivery.repository.MenuAuditLogRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.MenuAuditLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

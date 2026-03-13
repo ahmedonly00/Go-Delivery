@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

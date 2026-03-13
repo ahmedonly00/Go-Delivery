@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.payment.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.goDelivery.goDelivery.service.MpesaPaymentService;
+import com.goDelivery.goDelivery.modules.payment.service.MpesaPaymentService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

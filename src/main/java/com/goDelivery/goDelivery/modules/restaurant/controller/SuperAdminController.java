@@ -11,7 +11,7 @@ import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantDTO;
 import com.goDelivery.goDelivery.modules.restaurant.model.SuperAdmin;
 import com.goDelivery.goDelivery.modules.branch.service.BranchService;
 import com.goDelivery.goDelivery.modules.restaurant.service.RestaurantService;
-import com.goDelivery.goDelivery.service.SuperAdminService;
+import com.goDelivery.goDelivery.modules.restaurant.service.SuperAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

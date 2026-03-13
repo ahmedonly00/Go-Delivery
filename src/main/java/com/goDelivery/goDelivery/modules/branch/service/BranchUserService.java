@@ -16,6 +16,7 @@ import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantMapper;
 import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
 import com.goDelivery.goDelivery.modules.branch.model.Branches;
 import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.restaurant.service.UsersService;
 import com.goDelivery.goDelivery.modules.branch.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.modules.branch.repository.BranchesRepository;
 
@@ -32,16 +33,16 @@ public class BranchUserService {
     private final RestaurantMapper restaurantMapper;
     private final PasswordEncoder passwordEncoder;
     private final UsersService usersService;
-    
+
     @Transactional(readOnly = true)
     public BranchUserDTO getCurrentUserBranch() {
         // Get current authenticated user
         RestaurantUsers currentUser = usersService.getCurrentUser();
-        
+
         // Find the branch user
         BranchUsers branchUser = branchUsersRepository.findByEmail(currentUser.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Branch user not found"));
-        
+
         // Convert to DTO
         BranchUserDTO dto = restaurantMapper.toBranchUserDTO(branchUser);
         return dto;
@@ -98,16 +99,17 @@ public class BranchUserService {
     public BranchUserDTO updateBranchUser(Long userId, BranchUserDTO branchUserDTO) {
         // Get current user
         RestaurantUsers currentUser = usersService.getCurrentUser();
-        
+
         // Get the branch user to update
         BranchUsers existingUser = branchUsersRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch user not found with id: " + userId));
-        
+
         // Verify the branch belongs to the current user's restaurant
-        if (!existingUser.getBranch().getRestaurant().getRestaurantId().equals(currentUser.getRestaurant().getRestaurantId())) {
+        if (!existingUser.getBranch().getRestaurant().getRestaurantId()
+                .equals(currentUser.getRestaurant().getRestaurantId())) {
             throw new UnauthorizedException("You don't have permission to update this user");
         }
-        
+
         // Update fields
         if (branchUserDTO.getFullName() != null) {
             existingUser.setFullName(branchUserDTO.getFullName());
@@ -124,10 +126,10 @@ public class BranchUserService {
         if (branchUserDTO.getPassword() != null && !branchUserDTO.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(branchUserDTO.getPassword()));
         }
-        
+
         BranchUsers updatedUser = branchUsersRepository.save(existingUser);
         log.info("Updated branch user '{}' by restaurant admin '{}'", updatedUser.getEmail(), currentUser.getEmail());
-        
+
         return restaurantMapper.toBranchUserDTO(updatedUser);
     }
 
@@ -135,20 +137,21 @@ public class BranchUserService {
     public void toggleBranchUserStatus(Long userId, boolean isActive) {
         // Get current user
         RestaurantUsers currentUser = usersService.getCurrentUser();
-        
+
         // Get the branch user
         BranchUsers branchUser = branchUsersRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch user not found with id: " + userId));
-        
+
         // Verify the branch belongs to the current user's restaurant
-        if (!branchUser.getBranch().getRestaurant().getRestaurantId().equals(currentUser.getRestaurant().getRestaurantId())) {
+        if (!branchUser.getBranch().getRestaurant().getRestaurantId()
+                .equals(currentUser.getRestaurant().getRestaurantId())) {
             throw new UnauthorizedException("You don't have permission to modify this user");
         }
-        
+
         branchUser.setActive(isActive);
         branchUsersRepository.save(branchUser);
-        
-        log.info("{} branch user '{}' by restaurant admin '{}'", 
+
+        log.info("{} branch user '{}' by restaurant admin '{}'",
                 isActive ? "Activated" : "Deactivated", branchUser.getEmail(), currentUser.getEmail());
     }
 
@@ -156,14 +159,14 @@ public class BranchUserService {
     public List<BranchUserDTO> getActiveBranchUsers(Long branchId) {
         // Get current user and verify permission
         RestaurantUsers currentUser = usersService.getCurrentUser();
-        
+
         Branches branch = branchesRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found with id: " + branchId));
-        
+
         if (!branch.getRestaurant().getRestaurantId().equals(currentUser.getRestaurant().getRestaurantId())) {
             throw new UnauthorizedException("You don't have permission to view users of this branch");
         }
-        
+
         return branchUsersRepository.findByBranch_BranchIdAndIsActive(branchId, true).stream()
                 .map(restaurantMapper::toBranchUserDTO)
                 .collect(Collectors.toList());

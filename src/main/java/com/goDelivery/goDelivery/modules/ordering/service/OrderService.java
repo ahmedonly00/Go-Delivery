@@ -8,13 +8,21 @@ import com.goDelivery.goDelivery.modules.ordering.dto.OrderStatusCountsDTO;
 import com.goDelivery.goDelivery.modules.ordering.dto.OrderStatusUpdate;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.modules.ordering.dto.OrderMapper;
-import com.goDelivery.goDelivery.model.*;
 import com.goDelivery.goDelivery.modules.ordering.dto.OrderTrackingResponse;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
+import com.goDelivery.goDelivery.modules.ordering.model.OrderItem;
 import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantRevenueDTO;
+import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
 import com.goDelivery.goDelivery.modules.delivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.modules.branch.model.BranchMenuItem;
+import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
 import com.goDelivery.goDelivery.modules.branch.repository.BranchMenuItemRepository;
 import com.goDelivery.goDelivery.modules.branch.repository.BranchUsersRepository;
 import com.goDelivery.goDelivery.modules.branch.repository.BranchesRepository;
+import com.goDelivery.goDelivery.modules.customer.model.Customer;
 import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
 import com.goDelivery.goDelivery.modules.restaurant.repository.MenuItemRepository;
 import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
@@ -109,8 +117,7 @@ public class OrderService {
                     customer,
                     parentOrderNumber + "-" + (i + 1),
                     menuItemMap,
-                    branchMenuItemMap
-            );
+                    branchMenuItemMap);
             createdOrders.add(orderResponse);
             log.debug("Created order with number: {}", orderResponse.getOrderNumber());
         }
@@ -379,9 +386,6 @@ public class OrderService {
             }
         }
 
-        // Calculate estimated delivery time (simplified example)
-        String estimatedDeliveryTime = calculateEstimatedDeliveryTime(order);
-
         // Create status history
         List<OrderTrackingResponse.StatusUpdate> statusHistory = createStatusHistory(order);
 
@@ -448,41 +452,6 @@ public class OrderService {
                 .timestamp(timestamp != null ? timestamp.atStartOfDay() : LocalDateTime.now())
                 .message(message)
                 .build();
-    }
-
-    private String calculateEstimatedDeliveryTime(Order order) {
-        // Simplified estimation logic
-        // In a real app, you'd use distance, traffic, etc.
-        if (order.getOrderStatus() == OrderStatus.DELIVERED) {
-            return "Delivered at " + order.getDeliveredAt();
-        }
-
-        LocalDateTime estimatedTime = LocalDateTime.now().plusMinutes(30); // Base 30 minutes
-
-        // Adjust based on status
-        switch (order.getOrderStatus()) {
-            case PLACED:
-                estimatedTime = estimatedTime.plusMinutes(45); // +45 minutes if just placed
-                break;
-            case CONFIRMED:
-                estimatedTime = estimatedTime.plusMinutes(30);
-                break;
-            case PREPARING:
-                estimatedTime = estimatedTime.plusMinutes(20);
-                break;
-            case READY:
-                estimatedTime = estimatedTime.plusMinutes(15);
-                break;
-            case PICKED_UP:
-                estimatedTime = estimatedTime.plusMinutes(10);
-                break;
-            case DELIVERED:
-            case CANCELLED:
-                // No time to add for these statuses
-                break;
-        }
-
-        return estimatedTime.toString();
     }
 
     private Double calculateDistanceRemaining(Order order) {

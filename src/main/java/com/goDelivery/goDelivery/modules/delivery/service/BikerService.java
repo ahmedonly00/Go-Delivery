@@ -3,12 +3,14 @@ package com.goDelivery.goDelivery.modules.delivery.service;
 import com.goDelivery.goDelivery.shared.enums.OrderStatus;
 import com.goDelivery.goDelivery.modules.delivery.dto.BikerRegistrationRequest;
 import com.goDelivery.goDelivery.modules.delivery.dto.BikerRegistrationResponse;
+import com.goDelivery.goDelivery.modules.branch.service.FileStorageService;
 import com.goDelivery.goDelivery.modules.delivery.dto.*;
 import com.goDelivery.goDelivery.modules.delivery.dto.BikerMapper;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.modules.delivery.model.Bikers;
 import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import com.goDelivery.goDelivery.modules.delivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.modules.notification.service.NotificationService;
 import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -186,7 +188,8 @@ public class BikerService {
             throw new IllegalStateException("Biker account is not active");
         }
 
-        // Lock the order row to prevent race conditions (two bikers accepting simultaneously)
+        // Lock the order row to prevent race conditions (two bikers accepting
+        // simultaneously)
         Order order = orderRepository.findByOrderIdForUpdate(request.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + request.getOrderId()));
 
@@ -302,7 +305,8 @@ public class BikerService {
             throw new IllegalStateException("Biker account is not active");
         }
 
-        // Returns all READY orders (restaurant and branch) not yet assigned to any biker
+        // Returns all READY orders (restaurant and branch) not yet assigned to any
+        // biker
         List<Order> available = orderRepository.findByOrderStatusAndBikersIsNull(OrderStatus.READY);
         log.info("Found {} available orders for biker {} ({} from branches)",
                 available.size(), bikerId,
@@ -539,7 +543,7 @@ public class BikerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
 
         DeliveryTrackingResponse response = new DeliveryTrackingResponse();
-        response.setOrderId(orderId.toString());
+        response.setOrderId(orderId);
         response.setCurrentStatus(order.getOrderStatus().toString());
         response.setDelivered(order.getOrderStatus() == OrderStatus.DELIVERED);
 

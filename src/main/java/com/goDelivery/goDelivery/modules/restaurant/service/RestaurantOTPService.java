@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.restaurant.service;
 
 import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
 import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
-import com.goDelivery.goDelivery.service.email.EmailService;
+import com.goDelivery.goDelivery.modules.notification.service.EmailService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

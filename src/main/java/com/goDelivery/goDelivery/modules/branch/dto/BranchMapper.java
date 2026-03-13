@@ -1,7 +1,5 @@
-package com.goDelivery.goDelivery.modules.branch.mapper;
+package com.goDelivery.goDelivery.modules.branch.dto;
 
-import com.goDelivery.goDelivery.modules.branch.dto.BranchCreationDTO;
-import com.goDelivery.goDelivery.modules.branch.dto.BranchManagerSetupDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.OperatingHoursDTO;
 import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
 import com.goDelivery.goDelivery.shared.enums.BranchSetupStatus;
@@ -89,27 +87,38 @@ public class BranchMapper {
         }
 
         // Basic info - only update if provided
-        if (dto.getBranchName() != null) branch.setBranchName(dto.getBranchName());
-        if (dto.getCuisineType() != null) branch.setCuisineType(dto.getCuisineType());
-        if (dto.getEmail() != null) branch.setEmail(dto.getEmail());
-        if (dto.getPhoneNumber() != null) branch.setPhoneNumber(dto.getPhoneNumber());
-        if (dto.getLogoUrl() != null) branch.setLogoUrl(dto.getLogoUrl());
-        if (dto.getDescription() != null) branch.setDescription(dto.getDescription());
+        if (dto.getBranchName() != null)
+            branch.setBranchName(dto.getBranchName());
+        if (dto.getCuisineType() != null)
+            branch.setCuisineType(dto.getCuisineType());
+        if (dto.getEmail() != null)
+            branch.setEmail(dto.getEmail());
+        if (dto.getPhoneNumber() != null)
+            branch.setPhoneNumber(dto.getPhoneNumber());
+        if (dto.getLogoUrl() != null)
+            branch.setLogoUrl(dto.getLogoUrl());
+        if (dto.getDescription() != null)
+            branch.setDescription(dto.getDescription());
 
         // Delivery settings
-        if (dto.getDeliveryType() != null) branch.setDeliveryType(dto.getDeliveryType());
-        if (dto.getDeliveryFee() != null) branch.setDeliveryFee(dto.getDeliveryFee());
-        if (dto.getDeliveryRadius() != null) branch.setDeliveryRadius(dto.getDeliveryRadius());
-        if (dto.getAveragePreparationTime() != null) branch.setAveragePreparationTime(dto.getAveragePreparationTime());
-        if (dto.getMinimumOrderAmount() != null) branch.setMinimumOrderAmount(dto.getMinimumOrderAmount());
+        if (dto.getDeliveryType() != null)
+            branch.setDeliveryType(dto.getDeliveryType());
+        if (dto.getDeliveryFee() != null)
+            branch.setDeliveryFee(dto.getDeliveryFee());
+        if (dto.getDeliveryRadius() != null)
+            branch.setDeliveryRadius(dto.getDeliveryRadius());
+        if (dto.getAveragePreparationTime() != null)
+            branch.setAveragePreparationTime(dto.getAveragePreparationTime());
+        if (dto.getMinimumOrderAmount() != null)
+            branch.setMinimumOrderAmount(dto.getMinimumOrderAmount());
 
         // Documents
-        if (dto.getTaxIdentificationNumber() != null) branch.setTaxIdentificationNumber(dto.getTaxIdentificationNumber());
+        if (dto.getTaxIdentificationNumber() != null)
+            branch.setTaxIdentificationNumber(dto.getTaxIdentificationNumber());
 
         branch.setUpdatedAt(LocalDate.now());
     }
 
-    
     public void updateOperatingHoursFromSetupDTO(OperatingHours hours, BranchManagerSetupDTO dto) {
         if (hours == null || dto == null || dto.getOperatingHours() == null) {
             return;
@@ -143,26 +152,29 @@ public class BranchMapper {
 
     private String buildFullAddress(BranchCreationDTO dto) {
         StringBuilder address = new StringBuilder();
-        
+
         if (dto.getAddress() != null) {
             address.append(dto.getAddress());
         }
-        
+
         if (dto.getLocation() != null) {
-            if (address.length() > 0) address.append(", ");
+            if (address.length() > 0)
+                address.append(", ");
             address.append(dto.getLocation());
         }
-        
+
         if (dto.getCity() != null) {
-            if (address.length() > 0) address.append(", ");
+            if (address.length() > 0)
+                address.append(", ");
             address.append(dto.getCity());
         }
-        
+
         if (dto.getState() != null) {
-            if (address.length() > 0) address.append(", ");
+            if (address.length() > 0)
+                address.append(", ");
             address.append(dto.getState());
         }
-        
+
         return address.toString();
     }
 }

@@ -4,7 +4,6 @@ import com.goDelivery.goDelivery.shared.enums.OrderStatus;
 import com.goDelivery.goDelivery.modules.customer.dto.FeedbackRequest;
 import com.goDelivery.goDelivery.modules.customer.dto.FeedbackResponse;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
-import com.goDelivery.goDelivery.modules.customer.dto.FeedbackMapper;
 import com.goDelivery.goDelivery.modules.customer.model.Customer;
 import com.goDelivery.goDelivery.modules.customer.model.Feedback;
 import com.goDelivery.goDelivery.modules.ordering.model.Order;
@@ -49,14 +48,14 @@ public class FeedbackService {
 
         Feedback feedback = feedbackMapper.toEntity(request, order, customer);
         Feedback savedFeedback = feedbackRepository.save(feedback);
-        
+
         return feedbackMapper.toDto(savedFeedback);
     }
 
     public List<FeedbackResponse> getFeedbackByCustomer(Long customerId) {
         Customer customer = customerRepository.findByCustomerId(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
-                
+
         return feedbackRepository.findByCustomer(customer).stream()
                 .map(feedbackMapper::toDto)
                 .collect(Collectors.toList());
@@ -65,7 +64,7 @@ public class FeedbackService {
     public List<FeedbackResponse> getFeedbackByOrder(Long orderId) {
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
-                
+
         return feedbackRepository.findByOrder(order).stream()
                 .map(feedbackMapper::toDto)
                 .collect(Collectors.toList());

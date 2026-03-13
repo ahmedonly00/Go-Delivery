@@ -1,4 +1,6 @@
 package com.goDelivery.goDelivery.modules.restaurant.model;
+import com.goDelivery.goDelivery.modules.analytics.model.OrderAnalytics;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

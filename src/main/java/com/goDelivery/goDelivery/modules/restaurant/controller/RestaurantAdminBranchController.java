@@ -1,8 +1,8 @@
 package com.goDelivery.goDelivery.modules.restaurant.controller;
 
 import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
-import com.goDelivery.goDelivery.service.BranchEnabledRestaurantService;
-import com.goDelivery.goDelivery.service.BranchSecurityService;
+import com.goDelivery.goDelivery.modules.restaurant.service.BranchEnabledRestaurantService;
+import com.goDelivery.goDelivery.modules.branch.service.BranchSecurityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

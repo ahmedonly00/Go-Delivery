@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionRequest;
 import com.goDelivery.goDelivery.modules.restaurant.dto.PromotionResponse;
-import com.goDelivery.goDelivery.service.PromotionService;
+import com.goDelivery.goDelivery.modules.restaurant.service.PromotionService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,16 +26,17 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins = "*")
 @Tag(name = "Promotion", description = "Promotion management")
 public class PromotionController {
-    
+
     private final PromotionService promotionService;
-    
+
     @PostMapping(value = "/createPromotion", consumes = "application/json", produces = "application/json")
-    public PromotionResponse createPromotion(@RequestBody PromotionRequest promotionRequest){
+    public PromotionResponse createPromotion(@RequestBody PromotionRequest promotionRequest) {
         return promotionService.createPromotion(promotionRequest);
     }
 
     @PutMapping(value = "/updatePromotion/{promotionId}", consumes = "application/json", produces = "application/json")
-    public PromotionResponse updatePromotion(@PathVariable Long promotionId, @RequestBody PromotionRequest promotionRequest) {
+    public PromotionResponse updatePromotion(@PathVariable Long promotionId,
+            @RequestBody PromotionRequest promotionRequest) {
         return promotionService.updatePromotion(promotionId, promotionRequest);
     }
 
@@ -48,8 +51,8 @@ public class PromotionController {
     }
 
     @GetMapping(value = "/getAllPromotions", produces = "application/json")
-    public List<PromotionResponse> getAllPromotions(){
-        return promotionService.getAllPromotions(); 
+    public List<PromotionResponse> getAllPromotions() {
+        return promotionService.getAllPromotions();
     }
 
     @GetMapping(value = "/getActivePromotionsByRestaurant/{restaurantId}", produces = "application/json")
@@ -61,5 +64,5 @@ public class PromotionController {
     public List<PromotionResponse> getAllPromotionsByRestaurant(@PathVariable Long restaurantId) {
         return promotionService.getAllPromotionsByRestaurant(restaurantId);
     }
-    
+
 }

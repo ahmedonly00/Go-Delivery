@@ -23,16 +23,17 @@ import com.goDelivery.goDelivery.shared.enums.DisbursementStatus;
 import com.goDelivery.goDelivery.shared.enums.PaymentStatus;
 import com.goDelivery.goDelivery.shared.config.CommissionConfig;
 import com.goDelivery.goDelivery.shared.config.MomoConfig;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementRequest;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementResponse;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementCallback;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementRecipient;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementStatusResponse;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementSummaryDTO;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.RestaurantDisbursementSummaryDTO;
+import com.goDelivery.goDelivery.modules.payment.dto.CollectionDisbursementRequest;
+import com.goDelivery.goDelivery.modules.payment.dto.CollectionDisbursementResponse;
+import com.goDelivery.goDelivery.modules.payment.dto.DisbursementCallback;
+import com.goDelivery.goDelivery.modules.payment.dto.DisbursementRecipient;
+import com.goDelivery.goDelivery.modules.payment.dto.DisbursementStatusResponse;
+import com.goDelivery.goDelivery.modules.payment.dto.DisbursementSummaryDTO;
+import com.goDelivery.goDelivery.modules.payment.dto.RestaurantDisbursementSummaryDTO;
 import com.goDelivery.goDelivery.shared.exception.PaymentProcessingException;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.modules.payment.model.DisbursementTransaction;
+import com.goDelivery.goDelivery.modules.notification.service.NotificationService;
 import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import com.goDelivery.goDelivery.modules.ordering.model.OrderItem;
 import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
@@ -313,7 +314,8 @@ public class DisbursementService {
                                                         if (item.getMenuItem() != null) {
                                                                 return item.getMenuItem().getRestaurant();
                                                         } else {
-                                                                return item.getBranchMenuItem().getBranch().getRestaurant();
+                                                                return item.getBranchMenuItem().getBranch()
+                                                                                .getRestaurant();
                                                         }
                                                 },
                                                 Collectors.summingDouble(

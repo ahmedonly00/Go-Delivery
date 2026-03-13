@@ -2,7 +2,7 @@ package com.goDelivery.goDelivery.modules.branch.controller;
 
 import com.goDelivery.goDelivery.modules.ordering.dto.OrderResponse;
 import com.goDelivery.goDelivery.modules.ordering.dto.OrderStatusUpdate;
-import com.goDelivery.goDelivery.service.CashierService;
+import com.goDelivery.goDelivery.modules.branch.service.CashierService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +80,7 @@ public class CashierController {
         log.info("Fetching timeline for order ID: {}", orderId);
         return ResponseEntity.ok(cashierService.getOrderTimeline(orderId));
     }
-    
+
     @PostMapping(value = "/markOrderReadyForPickup/{orderId}")
     public ResponseEntity<OrderResponse> markOrderReadyForPickup(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -88,7 +88,7 @@ public class CashierController {
         log.info("Marking order ID: {} as ready for pickup", orderId);
         return ResponseEntity.ok(cashierService.markOrderReadyForPickup(orderId));
     }
-    
+
     @PostMapping(value = "/confirmOrderDispatch/{orderId}")
     public ResponseEntity<OrderResponse> confirmOrderDispatch(
             @AuthenticationPrincipal UserDetails userDetails,

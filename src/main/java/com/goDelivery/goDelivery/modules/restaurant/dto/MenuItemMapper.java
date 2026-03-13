@@ -1,17 +1,16 @@
-package com.goDelivery.goDelivery.modules.restaurant.mapper;
+package com.goDelivery.goDelivery.modules.restaurant.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.goDelivery.goDelivery.modules.restaurant.dto.MenuItemResponse;
 import com.goDelivery.goDelivery.modules.restaurant.model.MenuItem;
 
 @Component
 public class MenuItemMapper {
 
-    //MenuItem
+    // MenuItem
     public List<MenuItemResponse> toMenuItemResponse(List<MenuItem> menuItems) {
         if (menuItems == null) {
             return null;
@@ -22,7 +21,7 @@ public class MenuItemMapper {
     }
 
     public MenuItemResponse toMenuItemResponse(MenuItem menuItem) {
-        if(menuItem == null){
+        if (menuItem == null) {
             return null;
         }
 
@@ -45,7 +44,7 @@ public class MenuItemMapper {
     }
 
     public MenuItem toMenuItem(MenuItemResponse menuItemResponse) {
-        if(menuItemResponse == null) {
+        if (menuItemResponse == null) {
             return null;
         }
 
@@ -59,8 +58,8 @@ public class MenuItemMapper {
         menuItem.setAvailable(menuItemResponse.isAvailable());
         menuItem.setPreparationTime(menuItemResponse.getPreparationTime());
         menuItem.setPreparationScore(menuItemResponse.getPreparationScore());
-                
+
         return menuItem;
-    } 
-    
+    }
+
 }

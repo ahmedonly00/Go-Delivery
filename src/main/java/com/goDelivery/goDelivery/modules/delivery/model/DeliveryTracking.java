@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import java.time.LocalDateTime;
 
 @Data

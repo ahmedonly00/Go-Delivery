@@ -1,6 +1,8 @@
 package com.goDelivery.goDelivery.modules.branch.model;
 
 import com.goDelivery.goDelivery.shared.enums.Roles;
+import com.goDelivery.goDelivery.shared.security.CustomUserDetails;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 import jakarta.persistence.*;
 import lombok.*;
 

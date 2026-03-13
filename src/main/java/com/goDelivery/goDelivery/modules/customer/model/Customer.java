@@ -2,6 +2,7 @@ package com.goDelivery.goDelivery.modules.customer.model;
 
 import com.goDelivery.goDelivery.shared.enums.Roles;
 
+import com.goDelivery.goDelivery.shared.security.CustomUserDetails;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

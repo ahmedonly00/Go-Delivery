@@ -1,6 +1,11 @@
 package com.goDelivery.goDelivery.modules.branch.service;
 
 import com.goDelivery.goDelivery.modules.branch.dto.BranchCreationDTO;
+import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchUsersRepository;
+import com.goDelivery.goDelivery.modules.branch.repository.BranchesRepository;
+import com.goDelivery.goDelivery.modules.notification.service.EmailService;
 import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
 import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
 import com.goDelivery.goDelivery.shared.enums.BranchSetupStatus;
@@ -10,12 +15,15 @@ import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.shared.exception.UnauthorizedException;
 import com.goDelivery.goDelivery.shared.exception.ValidationException;
 import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantMapper;
-import com.goDelivery.goDelivery.model.*;
-import com.goDelivery.goDelivery.repository.*;
-import com.goDelivery.goDelivery.service.email.EmailService;
+import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
+import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantUsersRepository;
+import com.goDelivery.goDelivery.modules.restaurant.service.UsersService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.platform.commons.util.StringUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -498,13 +506,13 @@ public class BranchService {
     }
 
     private void validateBranchData(BranchesDTO branchDTO) {
-        if (StringUtils.isBlank(branchDTO.getBranchName())) {
+        if (!StringUtils.hasText(branchDTO.getBranchName())) {
             throw new ValidationException("Branch name is required");
         }
-        if (StringUtils.isBlank(branchDTO.getAddress())) {
+        if (!StringUtils.hasText(branchDTO.getAddress())) {
             throw new ValidationException("Branch address is required");
         }
-        if (StringUtils.isBlank(branchDTO.getPhoneNumber())) {
+        if (!StringUtils.hasText(branchDTO.getPhoneNumber())) {
             throw new ValidationException("Phone number is required");
         }
         if (!com.goDelivery.goDelivery.shared.util.PhoneNumberValidator.isValid(branchDTO.getPhoneNumber())) {

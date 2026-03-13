@@ -3,7 +3,7 @@ package com.goDelivery.goDelivery.modules.customer.controller;
 import com.goDelivery.goDelivery.modules.customer.dto.PasswordChangeRequest;
 import com.goDelivery.goDelivery.modules.customer.dto.ProfileResponse;
 import com.goDelivery.goDelivery.modules.customer.dto.ProfileUpdateRequest;
-import com.goDelivery.goDelivery.service.ProfileService;
+import com.goDelivery.goDelivery.modules.customer.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

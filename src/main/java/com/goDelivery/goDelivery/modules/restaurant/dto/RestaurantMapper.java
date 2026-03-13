@@ -1,11 +1,5 @@
-package com.goDelivery.goDelivery.modules.restaurant.mapper;
+package com.goDelivery.goDelivery.modules.restaurant.dto;
 
-import com.goDelivery.goDelivery.modules.restaurant.dto.BranchesDTO;
-import com.goDelivery.goDelivery.modules.restaurant.dto.BranchUserDTO;
-import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantDTO;
-import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantReviewDTO;
-import com.goDelivery.goDelivery.modules.restaurant.dto.BranchSettingsDTO;
-import com.goDelivery.goDelivery.modules.restaurant.dto.OperatingHoursDTO;
 import com.goDelivery.goDelivery.modules.branch.model.Branches;
 import com.goDelivery.goDelivery.modules.branch.model.BranchUsers;
 import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;

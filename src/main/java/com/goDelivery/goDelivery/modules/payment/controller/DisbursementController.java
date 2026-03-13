@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementRequest;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.CollectionDisbursementResponse;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.DisbursementSummaryDTO;
-import com.goDelivery.goDelivery.modules.payment.dto.collectionDisbursement.RestaurantDisbursementSummaryDTO;
+import com.goDelivery.goDelivery.modules.payment.dto.CollectionDisbursementRequest;
+import com.goDelivery.goDelivery.modules.payment.dto.CollectionDisbursementResponse;
+import com.goDelivery.goDelivery.modules.payment.dto.DisbursementSummaryDTO;
+import com.goDelivery.goDelivery.modules.payment.dto.RestaurantDisbursementSummaryDTO;
 import com.goDelivery.goDelivery.shared.exception.ResourceNotFoundException;
 import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
 import com.goDelivery.goDelivery.modules.restaurant.model.RestaurantUsers;
+import com.goDelivery.goDelivery.modules.restaurant.service.UsersService;
 import com.goDelivery.goDelivery.modules.payment.service.DisbursementService;
 import com.goDelivery.goDelivery.modules.payment.service.MomoService;
-import com.goDelivery.goDelivery.service.UsersService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,30 +43,24 @@ public class DisbursementController {
 
     @PostMapping("/collection-disbursement")
     @PreAuthorize("hasAuthority('DISBURSEMENT_COLLECTION')")
-    @Operation(
-        summary = "Collect money from one person and distribute it to multiple recipients",
-        description = "Collect money from the specified MSISDN and distribute it to multiple recipients",
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Collection initiated successfully",
-                content = @Content(schema = @Schema(implementation = CollectionDisbursementResponse.class))),
+    @Operation(summary = "Collect money from one person and distribute it to multiple recipients", description = "Collect money from the specified MSISDN and distribute it to multiple recipients", responses = {
+            @ApiResponse(responseCode = "200", description = "Collection initiated successfully", content = @Content(schema = @Schema(implementation = CollectionDisbursementResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request parameters"),
             @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
-        }
-    )
+    })
     public ResponseEntity<CollectionDisbursementResponse> initiateCollectionDisbursement(
-            @Parameter(description = "Collection and disbursement details") 
-            @Valid @RequestBody CollectionDisbursementRequest request) {
-        
+            @Parameter(description = "Collection and disbursement details") @Valid @RequestBody CollectionDisbursementRequest request) {
+
         try {
             CollectionDisbursementResponse response = momoService.initiateCollectionDisbursement(request);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                .body(CollectionDisbursementResponse.builder()
-                    .status("FAILED")
-                    .message("Failed to process collection-disbursement: " + e.getMessage())
-                    .build());
+                    .body(CollectionDisbursementResponse.builder()
+                            .status("FAILED")
+                            .message("Failed to process collection-disbursement: " + e.getMessage())
+                            .build());
         }
     }
 
@@ -79,7 +73,7 @@ public class DisbursementController {
         if (restaurant == null) {
             throw new ResourceNotFoundException("Restaurant not found for current user");
         }
-        
+
         return ResponseEntity.ok(disbursementService.getRestaurantDisbursementSummary(restaurant.getRestaurantId()));
     }
 
@@ -91,7 +85,7 @@ public class DisbursementController {
         if (restaurant == null) {
             throw new ResourceNotFoundException("Restaurant not found for current user");
         }
-        
+
         return ResponseEntity.ok(disbursementService.getDisbursementsForRestaurant(restaurant.getRestaurantId()));
     }
 

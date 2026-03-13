@@ -1,9 +1,5 @@
-package com.goDelivery.goDelivery.modules.delivery.mapper;
+package com.goDelivery.goDelivery.modules.delivery.dto;
 
-import com.goDelivery.goDelivery.modules.delivery.dto.AddressRequest;
-import com.goDelivery.goDelivery.modules.delivery.dto.AddressResponse;
-import com.goDelivery.goDelivery.modules.delivery.dto.CityResponse;
-import com.goDelivery.goDelivery.modules.delivery.dto.CountryResponse;
 import com.goDelivery.goDelivery.modules.delivery.model.City;
 import com.goDelivery.goDelivery.modules.delivery.model.Country;
 import com.goDelivery.goDelivery.modules.customer.model.Customer;

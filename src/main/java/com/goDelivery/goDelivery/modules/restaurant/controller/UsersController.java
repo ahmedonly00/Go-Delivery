@@ -1,9 +1,9 @@
 package com.goDelivery.goDelivery.modules.restaurant.controller;
 
-import com.goDelivery.goDelivery.modules.customer.dto.RestaurantUserRequest;
-import com.goDelivery.goDelivery.modules.customer.dto.RestaurantUserResponse;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantUserRequest;
+import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantUserResponse;
 import com.goDelivery.goDelivery.shared.enums.Roles;
-import com.goDelivery.goDelivery.service.UsersService;
+import com.goDelivery.goDelivery.modules.restaurant.service.UsersService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

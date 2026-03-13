@@ -1,7 +1,7 @@
 package com.goDelivery.goDelivery.shared.validation;
 
-import com.goDelivery.goDelivery.Enum.DeliveryType;
-import com.goDelivery.goDelivery.dtos.restaurant.DeliverySettingsRequest;
+import com.goDelivery.goDelivery.shared.enums.DeliveryType;
+import com.goDelivery.goDelivery.modules.restaurant.dto.DeliverySettingsRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

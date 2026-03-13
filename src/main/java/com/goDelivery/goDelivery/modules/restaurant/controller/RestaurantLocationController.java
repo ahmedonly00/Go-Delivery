@@ -3,7 +3,7 @@ package com.goDelivery.goDelivery.modules.restaurant.controller;
 import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantDTO;
 import com.goDelivery.goDelivery.modules.restaurant.dto.RestaurantMapper;
 import com.goDelivery.goDelivery.modules.restaurant.model.Restaurant;
-import com.goDelivery.goDelivery.service.GeoLocationService;
+import com.goDelivery.goDelivery.modules.delivery.service.GeoLocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

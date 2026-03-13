@@ -4,7 +4,11 @@ import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
 import com.goDelivery.goDelivery.shared.enums.OrderStatus;
 import com.goDelivery.goDelivery.modules.analytics.dto.SuperAdminDashboard;
 import com.goDelivery.goDelivery.modules.analytics.dto.SuperAdminDashboard.*;
-import com.goDelivery.goDelivery.repository.*;
+import com.goDelivery.goDelivery.modules.customer.repository.CustomerRepository;
+import com.goDelivery.goDelivery.modules.delivery.repository.BikersRepository;
+import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
+import com.goDelivery.goDelivery.modules.restaurant.repository.RestaurantRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -139,8 +143,10 @@ public class SuperAdminDashboardService {
 
         return RestaurantAnalytics.builder()
                 .newRestaurantsToday(orZero(restaurantRepository.countRestaurantsByDateRange(today, today)))
-                .newRestaurantsThisWeek(orZero(restaurantRepository.countRestaurantsByDateRange(today.minusWeeks(1), today)))
-                .newRestaurantsThisMonth(orZero(restaurantRepository.countRestaurantsByDateRange(today.minusMonths(1), today)))
+                .newRestaurantsThisWeek(
+                        orZero(restaurantRepository.countRestaurantsByDateRange(today.minusWeeks(1), today)))
+                .newRestaurantsThisMonth(
+                        orZero(restaurantRepository.countRestaurantsByDateRange(today.minusMonths(1), today)))
                 .averageRestaurantRating(restaurantRepository.getAverageRestaurantRating())
                 .build();
     }
@@ -151,7 +157,8 @@ public class SuperAdminDashboardService {
         return CustomerAnalytics.builder()
                 .newCustomersToday(orZero(customerRepository.countCustomersByDateRange(today, today)))
                 .newCustomersThisWeek(orZero(customerRepository.countCustomersByDateRange(today.minusWeeks(1), today)))
-                .newCustomersThisMonth(orZero(customerRepository.countCustomersByDateRange(today.minusMonths(1), today)))
+                .newCustomersThisMonth(
+                        orZero(customerRepository.countCustomersByDateRange(today.minusMonths(1), today)))
                 .build();
     }
 
