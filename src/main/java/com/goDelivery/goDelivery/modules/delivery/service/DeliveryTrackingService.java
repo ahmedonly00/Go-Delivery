@@ -22,7 +22,6 @@ public class DeliveryTrackingService {
 
         private final DeliveryTrackingRepository trackingRepository;
         private final SimpMessagingTemplate messagingTemplate;
-        private final DistanceCalculationService distanceService;
 
         /**
          * Update biker location and send real-time update via WebSocket

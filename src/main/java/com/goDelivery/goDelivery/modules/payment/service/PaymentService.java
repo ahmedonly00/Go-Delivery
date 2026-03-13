@@ -10,7 +10,8 @@ import com.goDelivery.goDelivery.modules.ordering.model.Order;
 import com.goDelivery.goDelivery.modules.payment.repository.PaymentRepository;
 import com.goDelivery.goDelivery.modules.restaurant.service.AuditService;
 
-import io.jsonwebtoken.lang.Arrays;
+import java.util.Arrays;
+import java.util.HexFormat;
 
 import com.goDelivery.goDelivery.modules.ordering.repository.OrderRepository;
 import com.goDelivery.goDelivery.modules.payment.dto.PaymentMapper;
@@ -427,7 +428,7 @@ public class PaymentService {
                     key.getBytes(java.nio.charset.StandardCharsets.UTF_8), "HmacSHA256");
             sha256Hmac.init(secretKey);
             byte[] signedBytes = sha256Hmac.doFinal(data.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-            return javax.xml.bind.DatatypeConverter.printHexBinary(signedBytes).toLowerCase();
+            return HexFormat.of().formatHex(signedBytes);
         } catch (Exception e) {
             log.error("Error generating HMAC-SHA256 hash: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to generate signature hash", e);
