@@ -3,23 +3,15 @@ package com.goDelivery.goDelivery;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import com.goDelivery.goDelivery.config.AsyncConfig;
+import com.goDelivery.goDelivery.shared.config.AsyncConfig;
 
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
-@EntityScan(basePackages = {"com.goDelivery.goDelivery.model", "com.goDelivery.goDelivery.dtos.auth"})
-@ComponentScan(basePackages = {
-    "com.goDelivery.goDelivery",
-    "com.goDelivery.goDelivery.config",
-    "com.goDelivery.goDelivery.configSecurity",
-    "com.goDelivery.goDelivery.service",
-    "com.goDelivery.goDelivery.controller"
-})
+@EntityScan(basePackages = "com.goDelivery.goDelivery")
 @Import(AsyncConfig.class)
 public class GoDeliveryApplication {
 

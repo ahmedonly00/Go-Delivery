@@ -1,0 +1,29 @@
+package com.goDelivery.goDelivery.modules.branch.repository;
+
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.goDelivery.goDelivery.modules.branch.model.Branches;
+import com.goDelivery.goDelivery.shared.enums.ApprovalStatus;
+
+@Repository
+public interface BranchesRepository extends JpaRepository<Branches, Long> {
+    Optional<Branches> findByBranchId(Long branchId);
+    Optional<Branches> findByBranchName(String branchName);
+    List<Branches> findByRestaurant_RestaurantId(Long restaurantId);
+    List<Branches> findByRestaurant_RestaurantIdAndApprovalStatus(Long restaurantId, ApprovalStatus approvalStatus);
+    boolean existsByRestaurant_RestaurantIdAndBranchName(Long restaurantId, String branchName);
+    boolean existsByBranchIdAndRestaurant_RestaurantId(Long branchId, Long restaurantId);
+    List<Branches> findByApprovalStatus(ApprovalStatus approvalStatus);
+    List<Branches> findByRestaurant_RestaurantIdAndApprovalStatusAndIsActiveTrue(Long restaurantId, ApprovalStatus approvalStatus);
+    List<Branches> findByApprovalStatusAndIsActiveTrue(ApprovalStatus approvalStatus);
+    Page<Branches> findByApprovalStatusAndIsActiveTrue(ApprovalStatus approvalStatus, Pageable pageable);
+    Page<Branches> findByApprovalStatus(ApprovalStatus approvalStatus, Pageable pageable);
+    Page<Branches> findByRestaurant_RestaurantId(Long restaurantId, Pageable pageable);
+}

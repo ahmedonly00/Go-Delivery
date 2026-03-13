@@ -59,10 +59,11 @@ public class MomoApiChecker {
             HttpEntity<Map<String, String>> entity = new HttpEntity<>(authRequest, headers);
             
             System.out.println("   Sending POST to: " + authUrl);
+            @SuppressWarnings("rawtypes")
             ResponseEntity<Map> response = restTemplate.postForEntity(authUrl, entity, Map.class);
-            
+
             System.out.println("   ✓ Auth endpoint responded: " + response.getStatusCode());
-            
+
             if (response.getBody() != null) {
                 Object token = response.getBody().get("token");
                 if (token != null) {

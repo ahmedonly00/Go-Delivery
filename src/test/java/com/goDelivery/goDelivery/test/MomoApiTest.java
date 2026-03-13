@@ -63,6 +63,7 @@ public class MomoApiTest {
                     authRequest.put("username", "test");
                     authRequest.put("password", "test");
                     
+                    @SuppressWarnings("rawtypes")
                     ResponseEntity<Map> response = restTemplate.postForEntity(url, authRequest, Map.class);
                     System.out.println("  POST Auth: " + response.getStatusCode());
                 } catch (Exception e) {

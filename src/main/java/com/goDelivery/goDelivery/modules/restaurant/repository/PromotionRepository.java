@@ -1,0 +1,18 @@
+package com.goDelivery.goDelivery.modules.restaurant.repository;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.goDelivery.goDelivery.modules.restaurant.model.Promotion;
+
+@Repository
+public interface PromotionRepository extends JpaRepository<Promotion, Long> {
+    Optional<Promotion> findByPromotionId(Long promotionId);
+    Optional<Promotion> findByPromoCode(String promoCode);
+    List<Promotion> findByRestaurant_RestaurantIdAndIsActiveTrue(Long restaurantId);
+    List<Promotion> findByRestaurant_RestaurantId(Long restaurantId);
+    
+}
